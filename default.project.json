@@ -1,0 +1,27 @@
+{
+	"name": "Testing Place",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"$ignoreUnknownInstances": true,
+			"Libraries": {
+				"$className": "Folder",
+				"$ignoreUnknownInstances": true,
+				"ReFusion": {
+					"$path": "src"
+				}
+			}
+		},
+
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"$ignoreUnknownInstances": true,
+				
+				"Demos": {
+					"$path": "demos"
+				}
+			}
+		}
+	}
+}
