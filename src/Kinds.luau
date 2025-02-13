@@ -1,17 +1,12 @@
 local Symbols = require(script.Parent.Symbols)
 
-local function createKind(name)
-	local newSymbol = newproxy(true)
-
-	getmetatable(newSymbol).__tostring = function()
-		return `<Kind '{name}'>`
-	end
-
-	return newSymbol
+local function createKind(name: string)
+	return Symbols.named(name, 'Kind')
 end
 
 local Kinds = {
 	State = createKind 'State',
+	Graph = createKind 'Graph',
 	Key = createKind 'Key',
 }
 

@@ -1,20 +1,15 @@
-local function named(name)
-	local newSymbol = newproxy(true)
+local package = script.Parent
 
-	getmetatable(newSymbol).__tostring = function()
-		return `<Symbol '{name}'>`
-	end
-
-	return newSymbol
-end
+local named = require(package.Utility.named)
 
 local Symbols = {
 	named = named,
 	DebugId = named 'DebugId',
+	Scope = named 'Scope',
 
 	Type = named 'Type',
 	Kind = named 'Kind',
-	Internal = named 'Internal',
+	InternalValue = named 'InternalValue',
 
 	Validity = named 'Validity',
 	LastChange = named 'LastChange',
