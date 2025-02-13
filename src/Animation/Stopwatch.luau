@@ -6,24 +6,32 @@ local Types = require(package.Types)
 
 local change = require(package.State.change)
 local depend = require(package.Graph.depend)
+local destructor = require(package.Memory.destructor)
 local peek = require(package.State.peek)
 
 local Clock = require(package.Utility.Clock)
 
-local Start = Symbols.named('Start')
-local Paused = Symbols.named('Paused')
+local Start = Symbols.named 'Start'
+local Paused = Symbols.named 'Paused'
+
+export type Stopwatch = Types.StateObject<number> & {
+	reset: (Stopwatch) -> (),
+	pause: (Stopwatch) -> (),
+	unpause: (Stopwatch) -> (),
+}
 
 local StopwatchClass = {
 	[Symbols.Kind] = Kinds.State,
 	[Symbols.Type] = Types.Stopwatch,
 }
 
-local METATABLE = table.freeze({ __index = StopwatchClass })
+local METATABLE = table.freeze { __index = StopwatchClass }
 
-local function createStopwatch()
+local function Stopwatch(scope: Types.Scope): Stopwatch
 	local newStopwatch = setmetatable({
+		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.Internal] = 0,
+		[Symbols.InternalValue] = 0,
 
 		[Symbols.Users] = {},
 		[Symbols.Using] = {},
@@ -32,12 +40,16 @@ local function createStopwatch()
 		[Paused] = true,
 	}, METATABLE)
 
+	table.insert(scope, destructor(newStopwatch))
+
 	depend(newStopwatch, Clock)
 
 	return newStopwatch
 end
 
 function StopwatchClass:reset()
+	self = self :: Stopwatch
+
 	local now = peek(Clock)
 
 	if now == self[Start] then
@@ -45,12 +57,14 @@ function StopwatchClass:reset()
 	end
 
 	self[Start] = peek(Clock)
-	self[Symbols.Internal] = 0
+	self[Symbols.InternalValue] = 0
 
 	change(self)
 end
 
 function StopwatchClass:pause()
+	self = self :: Stopwatch
+
 	if self[Paused] then
 		return
 	end
@@ -61,17 +75,21 @@ function StopwatchClass:pause()
 end
 
 function StopwatchClass:unpause()
+	self = self :: Stopwatch
+
 	if not self[Paused] then
 		return
 	end
 
 	self[Paused] = false
-	self[Start] = peek(Clock) - self[Symbols.Internal]
+	self[Start] = peek(Clock) - self[Symbols.InternalValue]
 
 	change(self)
 end
 
 function StopwatchClass:_evaluate()
+	self = self :: Stopwatch
+
 	if self[Paused] then
 		return false
 	end
@@ -79,14 +97,14 @@ function StopwatchClass:_evaluate()
 	depend(self, Clock)
 
 	local currentTime = peek(Clock)
-	local oldValue = self[Symbols.Internal]
+	local oldValue = self[Symbols.InternalValue]
 	local newValue = currentTime - self[Start]
 
-	self[Symbols.Internal] = newValue
+	self[Symbols.InternalValue] = newValue
 
 	return newValue ~= oldValue
 end
 
 table.freeze(StopwatchClass)
 
-return createStopwatch
+return Stopwatch

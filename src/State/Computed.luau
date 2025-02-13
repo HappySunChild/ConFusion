@@ -6,25 +6,27 @@ local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
 
-local castToState = require(script.Parent.castToState)
+local castToState = require(package.State.castToState)
 local depend = require(package.Graph.depend)
+local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
 local isSimilar = require(package.Utility.isSimilar)
-local peek = require(script.Parent.peek)
+local peek = require(package.State.peek)
 
 local Processor = Symbols.named 'Processor'
 
-local ComputedClass = {
+local class = {
 	[Symbols.Kind] = Kinds.State,
 	[Symbols.Type] = Types.Computed,
 }
 
-local METATABLE = table.freeze { __index = ComputedClass }
+local METATABLE = table.freeze { __index = class }
 
-local function Computed<V, T>(processor: Types.ComputedProcessor<T>, debugId): Types.Computed<V, T>
+local function Computed<V, T>(scope, processor: Types.ComputedProcessor<T>, debugId): Types.Computed<V, T>
 	local newComputed = setmetatable({
+		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.Internal] = nil,
+		[Symbols.InternalValue] = nil,
 		[Symbols.DebugId] = debugId,
 
 		[Symbols.Using] = {},
@@ -33,24 +35,26 @@ local function Computed<V, T>(processor: Types.ComputedProcessor<T>, debugId): T
 		[Processor] = processor,
 	}, METATABLE)
 
+	table.insert(scope, destructor(newComputed))
+
 	evaluate(newComputed, true)
 
 	return newComputed
 end
 
-function ComputedClass:onChange(callback)
-	local observer = Observer(self)
+function class:onChange(callback)
+	local observer = Observer(self[Symbols.Scope], self)
 
 	return observer:onChange(callback), observer
 end
 
-function ComputedClass:map(processor)
-	return Computed(function(use)
+function class:map(processor)
+	return Computed(self[Symbols.Scope], function(use)
 		return processor(use(self))
 	end, `Computed({self[Symbols.DebugId]})`)
 end
 
-function ComputedClass:_evaluate()
+function class:_evaluate()
 	local function use(target)
 		if castToState(target) then
 			depend(self, target)
@@ -60,9 +64,9 @@ function ComputedClass:_evaluate()
 	end
 
 	local newValue = self[Processor](use)
-	local oldValue = self[Symbols.Internal]
+	local oldValue = self[Symbols.InternalValue]
 
-	self[Symbols.Internal] = newValue
+	self[Symbols.InternalValue] = newValue
 
 	if not isSimilar(newValue, oldValue) then
 		return true
@@ -71,6 +75,6 @@ function ComputedClass:_evaluate()
 	return false
 end
 
-table.freeze(ComputedClass)
+table.freeze(class)
 
 return Computed

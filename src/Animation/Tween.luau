@@ -4,21 +4,22 @@ local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local createStopwatch = require(script.Parent.createStopwatch)
 local getTweenAlpha = require(script.Parent.getTweenAlpha)
 local getTweenDuration = require(script.Parent.getTweenDuration)
 local lerp = require(script.Parent.lerp)
 
 local Observer = require(package.Graph.Observer)
+local Stopwatch = require(package.Animation.Stopwatch)
 
 local castToState = require(package.State.castToState)
 local depend = require(package.Graph.depend)
+local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
 local peek = require(package.State.peek)
 
 local Info = Symbols.named 'Info'
 local Goal = Symbols.named 'Goal'
-local Stopwatch = Symbols.named 'Stopwatch'
+local _Stopwatch = Symbols.named 'Stopwatch'
 
 local TweenFinish = Symbols.named 'TweenFinish'
 local TweenStart = Symbols.named 'TweenStart'
@@ -26,24 +27,25 @@ local TweenDuration = Symbols.named 'TweenDuration'
 
 local Elapsed = Symbols.named 'Elapsed'
 
-local TweenClass = {
+local class = {
 	[Symbols.Type] = Types.Tween,
 	[Symbols.Kind] = Kinds.State,
 }
 
-local METATABLE = table.freeze { __index = TweenClass }
+local METATABLE = table.freeze { __index = class }
 
-local function Tween<V>(goal: Types.UsedAs<V>, info: Types.UsedAs<TweenInfo>)
+local function Tween<V>(scope: Types.Scope, goal: Types.UsedAs<V>, info: Types.UsedAs<TweenInfo>)
 	local newTween = setmetatable({
+		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.Internal] = peek(goal),
+		[Symbols.InternalValue] = peek(goal),
 
 		[Symbols.Using] = {},
 		[Symbols.Users] = {},
 
 		[Info] = info,
 		[Goal] = goal,
-		[Stopwatch] = createStopwatch(),
+		[_Stopwatch] = Stopwatch(scope),
 
 		[TweenStart] = nil,
 		[TweenFinish] = nil,
@@ -52,22 +54,24 @@ local function Tween<V>(goal: Types.UsedAs<V>, info: Types.UsedAs<TweenInfo>)
 		[Elapsed] = 0,
 	}, METATABLE)
 
+	table.insert(scope, destructor(newTween))
+
 	evaluate(newTween, true)
 
 	return newTween
 end
 
-function TweenClass:onChange(callback)
-	local observer = Observer(self)
+function class:onChange(callback)
+	local observer = Observer(self[Symbols.Scope], self)
 
 	return observer:onChange(callback), observer
 end
 
-function TweenClass:_evaluate()
+function class:_evaluate()
 	local goal = self[Goal]
 
 	if not castToState(goal) then
-		self[Symbols.Internal] = goal
+		self[Symbols.InternalValue] = goal
 
 		return false
 	end
@@ -77,11 +81,11 @@ function TweenClass:_evaluate()
 	local finish = peek(goal)
 	local info = peek(self[Info])
 
-	local stopwatch = self[Stopwatch]
+	local stopwatch = self[_Stopwatch]
 
 	if finish ~= self[TweenFinish] then
 		self[TweenDuration] = getTweenDuration(info)
-		self[TweenStart] = self[Symbols.Internal]
+		self[TweenStart] = self[Symbols.InternalValue]
 		self[TweenFinish] = finish
 
 		stopwatch:reset()
@@ -100,14 +104,14 @@ function TweenClass:_evaluate()
 	end
 
 	local alpha = getTweenAlpha(info, self[Elapsed])
-	local oldValue = self[Symbols.Internal]
+	local oldValue = self[Symbols.InternalValue]
 	local newValue = lerp(self[TweenStart], self[TweenFinish], alpha)
 
-	self[Symbols.Internal] = newValue
+	self[Symbols.InternalValue] = newValue
 
 	return newValue ~= oldValue
 end
 
-table.freeze(TweenClass)
+table.freeze(class)
 
 return Tween
