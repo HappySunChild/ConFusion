@@ -3,6 +3,8 @@ local package = script.Parent.Parent
 local Symbols = require(package.Symbols)
 
 local function destroy(target)
+	target[Symbols.Scope] = nil
+
 	local using = target[Symbols.Using]
 
 	if using then
