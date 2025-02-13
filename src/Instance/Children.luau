@@ -4,56 +4,84 @@ local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
+local Observer = require(package.Graph.Observer)
+
 local castToState = require(package.State.castToState)
+local doCleanup = require(package.Memory.doCleanup)
 local peek = require(package.State.peek)
 
-type Child = Instance | { Child } | Types.UsedAs<Child>
-
-local Children = {
+local Children: Types.SpecialKey = {
 	[Symbols.Kind] = Kinds.Key,
 	[Symbols.Type] = Types.Children,
 
-	apply = function(parent: Instance, children: { Child })
-		local currentChildren = {}
+	apply = function(scope: Types.Scope, parent: Instance, children: Types.Child)
+		local newChildren, oldChildren = {}, {}
+		local newScopes, oldScopes = {}, {}
 
 		local function updateChildren()
-			local removeChildren = currentChildren
-			currentChildren = {}
+			oldChildren, newChildren = newChildren, oldChildren
+			oldScopes, newScopes = newScopes, oldScopes
 
-			local function addChild(child: Child, name: string)
+			local function processChild(child: Types.Child, name: string?)
 				local childType = typeof(child)
 
-				if childType == 'table' then
-					for key, subChild in child do
-						addChild(subChild, key)
-					end
-				elseif childType == 'Instance' then
-					currentChildren[child] = true
-					removeChildren[child] = nil
+				if childType == 'Instance' then
+					newChildren[child] = true
 
-					child.Parent = parent
+					if not oldChildren[child] then
+						child.Parent = parent
+					else
+						oldChildren[child] = nil
+					end
+
 					child.Name = name
 				elseif castToState(child) then
 					local value = peek(child)
 
 					if value ~= nil then
-						addChild(value)
+						processChild(value)
 					end
 
-					child:onChange(updateChildren)
+					local childScope = oldScopes[child]
+
+					if not childScope then
+						childScope = {}
+						Observer(childScope, child):onChange(updateChildren)
+					else
+						oldScopes[child] = nil
+					end
+
+					newScopes[child] = childScope
+				elseif childType == 'table' then
+					for key, subChild in child do
+						processChild(subChild, key)
+					end
 				else
 					error(`Unknown child type, '{childType}'`, 2)
 				end
 			end
 
-			addChild(children)
-
-			for child in removeChildren do
-				child.Parent = nil
+			if children then
+				processChild(children)
 			end
 
-			table.clear(removeChildren)
+			for instance in oldChildren do
+				instance.Parent = nil
+			end
+
+			table.clear(oldChildren)
+
+			for _, childScope in oldScopes do
+				doCleanup(childScope)
+			end
+
+			table.clear(oldScopes)
 		end
+
+		table.insert(scope, function()
+			children = nil
+			updateChildren()
+		end)
 
 		updateChildren()
 	end,

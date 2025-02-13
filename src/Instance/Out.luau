@@ -6,20 +6,22 @@ local Types = require(package.Types)
 
 local outCache = {}
 
-local function Out(property: string)
+local function Out(property: string): Types.SpecialKey
 	local key = outCache[property]
 
 	if not key then
 		key = table.freeze {
-			[Symbols.Type] = Types.Out,
 			[Symbols.Kind] = Kinds.Key,
+			[Symbols.Type] = Types.Out,
 
-			apply = function(instance: Instance, value: Types.Value<any>)
+			apply = function(_: Types.Scope, instance: Instance, value: Types.Value<any>)
 				if Types.of(value) ~= Types.Value then
-					return error(`Invalud Out type.`, 2)
+					return error(`Invalid Out type.`, 2)
 				end
 
 				value:bindToInstanceProperty(instance, property)
+				
+				return
 			end,
 		}
 
