@@ -1,17 +1,21 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
+local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
 
+local Parent = require(package.Instance.Keys._Parent)
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
-local sortKeys = require(script.Parent.sortKeys)
+local sortKeys = require(package.Instance.Keys.sortKeys)
+
+local kindof = require(package.Utility.kindOf)
+local typeof = require(package.Utility.typeOf)
 
 local function setProperty(instance: Instance, property: string, value: any)
 	local success, err = pcall(function()
-		instance[property] = value
+		(instance :: any)[property] = value
 	end)
 
 	if not success then
@@ -32,26 +36,33 @@ local function applyProperty(scope: Types.Scope, instance: Instance, property: s
 end
 
 local function applyProperties(scope: Types.Scope, instance: Instance, props: Types.Properties)
+	props = table.clone(props)
+
 	local specialKeys: { Types.SpecialKey } = {}
 
-	for key, value in props do
-		local keyType = Types.of(key)
+	props[Parent] = props.Parent
+	props.Parent = nil
 
-		if keyType == 'string' and key ~= 'Parent' then
+	for key, value in props do
+		local keyType = typeof(key)
+
+		if keyType == 'string' then
 			applyProperty(scope, instance, key, value)
-		elseif Kinds.of(key) == Kinds.Key then
+		elseif kindof(key) == 'key' then
 			table.insert(specialKeys, key)
 		end
-	end
-
-	if props.Parent then
-		applyProperty(scope, instance, 'Parent', props.Parent)
 	end
 
 	table.sort(specialKeys, sortKeys)
 
 	for _, key in specialKeys do
+		print(key[Symbols.Type])
+
 		key.apply(scope, instance, props[key])
+	end
+
+	if props.Parent then
+		applyProperty(scope, instance, 'Parent', props.Parent)
 	end
 end
 
