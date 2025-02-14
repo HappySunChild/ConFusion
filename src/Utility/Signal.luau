@@ -1,12 +1,11 @@
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
-local Types = require(package.Types)
 
 local Subscriptions = Symbols.named 'Subscriptions'
 
 local SignalClass = {
-	[Symbols.Type] = Types.Signal,
+	[Symbols.Type] = 'signal',
 }
 
 local METATABLE = table.freeze { __index = SignalClass }

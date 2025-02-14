@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -21,8 +20,8 @@ export type Stopwatch = Types.StateObject<number> & {
 }
 
 local StopwatchClass = {
-	[Symbols.Kind] = Kinds.State,
-	[Symbols.Type] = Types.Stopwatch,
+	[Symbols.Kind] = 'state',
+	[Symbols.Type] = 'stopwatch',
 }
 
 local METATABLE = table.freeze { __index = StopwatchClass }

@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -13,8 +12,8 @@ local isSimilar = require(package.Utility.isSimilar)
 local peek = require(package.State.peek)
 
 local class = {
-	[Symbols.Kind] = Kinds.State,
-	[Symbols.Type] = Types.Table,
+	[Symbols.Kind] = 'state',
+	[Symbols.Type] = 'table',
 	[Symbols.Using] = table.freeze {},
 }
 

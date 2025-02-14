@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -28,8 +27,8 @@ local TweenDuration = Symbols.named 'TweenDuration'
 local Elapsed = Symbols.named 'Elapsed'
 
 local class = {
-	[Symbols.Type] = Types.Tween,
-	[Symbols.Kind] = Kinds.State,
+	[Symbols.Type] = 'tween',
+	[Symbols.Kind] = 'state',
 }
 
 local METATABLE = table.freeze { __index = class }

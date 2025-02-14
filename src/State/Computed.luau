@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -16,8 +15,8 @@ local peek = require(package.State.peek)
 local Processor = Symbols.named 'Processor'
 
 local class = {
-	[Symbols.Kind] = Kinds.State,
-	[Symbols.Type] = Types.Computed,
+	[Symbols.Kind] = 'state',
+	[Symbols.Type] = 'computed',
 }
 
 local METATABLE = table.freeze { __index = class }

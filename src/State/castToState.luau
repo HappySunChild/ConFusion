@@ -1,9 +1,9 @@
 local package = script.Parent.Parent
 
-local Kinds = require(package.Kinds)
+local kindof = require(package.Utility.kindOf)
 
 local function castToState(target)
-	if Kinds.of(target) == Kinds.State then
+	if kindof(target) == 'state' then
 		return target
 	end
 

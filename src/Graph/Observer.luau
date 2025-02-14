@@ -13,7 +13,7 @@ local Observing = Symbols.named 'Observing'
 local Listeners = Symbols.named 'Listeners'
 
 local ObserverClass = {
-	[Symbols.Type] = Types.Observer,
+	[Symbols.Type] = 'observer',
 	[Symbols.Users] = table.freeze {},
 }
 

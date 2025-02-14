@@ -2,7 +2,6 @@ local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
-local kinds = require(package.Kinds)
 
 local Observer = require(package.Graph.Observer)
 
@@ -16,8 +15,8 @@ local Input = Symbols.named 'Input'
 local Processor = Symbols.named 'Processor'
 
 local class = {
-	[Symbols.Type] = Types.For,
-	[Symbols.Kind] = kinds.State,
+	[Symbols.Type] = 'for',
+	[Symbols.Kind] = 'state',
 }
 
 local METATABLE = table.freeze { __index = class }
