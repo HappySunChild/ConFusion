@@ -1,3 +1,5 @@
+--!strict
+
 type NilFunc = () -> ()
 type Disconnect = NilFunc
 type GenericTable<K = any, V = any> = { [K]: V }
@@ -15,7 +17,8 @@ export type Scope<Constructors = any> = { Task } & Constructors
 export type Child = Instance | { Child } | UsedAs<Child>
 
 export type Observer<V> = {
-	onChange: (callback: (new: V) -> nil) -> Disconnect,
+	onChange: (Observer<V>, callback: (new: V) -> nil) -> Disconnect,
+	onBind: (Observer<V>, callback: (new: V) -> nil) -> Disconnect,
 }
 
 export type UsedAs<V> = StateObject<V> | V
@@ -54,45 +57,4 @@ export type SpecialKey = {
 	apply: (scope: Scope, instance: Instance, value: any) -> ()
 }
 
-
-local Symbols = require(script.Parent.Symbols)
-
-local function createType(name: string)
-	return Symbols.named(name, 'Type')
-end
-
-local Types = {
-	Children = createType 'Children',
-	Event = createType 'Event',
-	Out = createType 'Out',
-	Ref = createType 'Ref',
-	Startup = createType 'Startup',
-	Cleanup = createType 'Cleanup',
-
-	Stopwatch = createType 'Stopwatch',
-
-	Tween = createType 'Tween',
-	Table = createType 'Table',
-	Value = createType 'Value',
-	Computed = createType 'Computed',
-	For = createType 'For',
-
-	Disassembly = createType 'Disassembly',
-
-	Observer = createType 'Observer',
-	Signal = createType 'Signal',
-}
-
-function Types.of(value)
-	local vType = typeof(value)
-
-	if vType == 'table' then
-		if value[Symbols.Type] then
-			return value[Symbols.Type]
-		end
-	end
-
-	return vType
-end
-
-return Types
+return nil
