@@ -34,6 +34,7 @@ local ReFusion = table.freeze {
 	Startup = require(Keys.Startup),
 	Cleanup = require(Keys.Cleanup),
 	Ref = require(Keys.Ref),
+	Apply = require(Keys.Apply),
 	Attribute = require(Keys.Attribute),
 	Tag = require(Keys.Tag),
 	Out = require(Keys.Out),

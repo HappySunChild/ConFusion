@@ -18,6 +18,8 @@ local keyOrder = table.freeze {
 	'cleanup',
 	'startup',
 	'out',
+
+	'apply',
 }
 
 local function sortKeys(a, b)
