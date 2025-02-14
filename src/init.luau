@@ -1,31 +1,44 @@
 local Types = require(script.Types)
 
+local Graph = script.Graph
+local State = script.State
+local Animation = script.Animation
+local Memory = script.Memory
+local Utility = script.Utility
+
+local Instance = script.Instance
+local Keys = Instance.Keys
+
 local ReFusion = table.freeze {
-	scoped = require(script.Memory.scoped),
-	deriveScope = require(script.Memory.deriveScope),
-	doCleanup = require(script.Memory.doCleanup),
+	scoped = require(Memory.scoped),
+	deriveScope = require(Memory.deriveScope),
+	innerScope = require(Memory.innerScope),
+	doCleanup = require(Memory.doCleanup),
 
-	Tween = require(script.Animation.Tween),
-	Computed = require(script.State.Computed),
-	ForPairs = require(script.State.ForPairs),
-	Value = require(script.State.Value),
-	Table = require(script.State.Table),
-	peek = require(script.State.peek),
+	Tween = require(Animation.Tween),
+	Computed = require(State.Computed),
+	ForPairs = require(State.ForPairs),
+	Value = require(State.Value),
+	Table = require(State.Table),
+	peek = require(State.peek),
 
-	Observer = require(script.Graph.Observer),
+	Observer = require(Graph.Observer),
 
-	New = require(script.Instance.New),
-	Hydrate = require(script.Instance.Hydrate),
+	New = require(Instance.New),
+	Hydrate = require(Instance.Hydrate),
 
-	Signal = require(script.Utility.Signal),
-	Clock = require(script.Utility.Clock),
+	Signal = require(Utility.Signal),
+	Clock = require(Utility.Clock),
 
-	Children = require(script.Instance.Children),
-	Startup = require(script.Instance.Startup),
-	Cleanup = require(script.Instance.Cleanup),
-	Ref = require(script.Instance.Ref),
-	Out = require(script.Instance.Out),
-	OnEvent = require(script.Instance.OnEvent),
+	Children = require(Keys.Children),
+	Startup = require(Keys.Startup),
+	Cleanup = require(Keys.Cleanup),
+	Ref = require(Keys.Ref),
+	Attribute = require(Keys.Attribute),
+	Tag = require(Keys.Tag),
+	Out = require(Keys.Out),
+	OnEvent = require(Keys.OnEvent),
+	OnChange = require(Keys.OnChange),
 }
 
 type ReFusion = typeof(ReFusion)
