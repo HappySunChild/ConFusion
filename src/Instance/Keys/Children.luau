@@ -1,6 +1,5 @@
-local package = script.Parent.Parent
+local package = script.Parent.Parent.Parent
 
-local Kinds = require(package.Kinds)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -10,9 +9,9 @@ local castToState = require(package.State.castToState)
 local doCleanup = require(package.Memory.doCleanup)
 local peek = require(package.State.peek)
 
-local Children: Types.SpecialKey = {
-	[Symbols.Kind] = Kinds.Key,
-	[Symbols.Type] = Types.Children,
+local Children: Types.SpecialKey = table.freeze {
+	[Symbols.Kind] = 'key',
+	[Symbols.Type] = 'children',
 
 	apply = function(scope: Types.Scope, parent: Instance, children: Types.Child)
 		local newChildren, oldChildren = {}, {}
@@ -34,12 +33,14 @@ local Children: Types.SpecialKey = {
 						oldChildren[child] = nil
 					end
 
-					child.Name = name
+					if name then
+						child.Name = name
+					end
 				elseif castToState(child) then
 					local value = peek(child)
 
 					if value ~= nil then
-						processChild(value)
+						processChild(value, name)
 					end
 
 					local childScope = oldScopes[child]
