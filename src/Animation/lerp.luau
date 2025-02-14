@@ -2,41 +2,41 @@ local package = script.Parent.Parent
 
 local Oklab = require(package.Colors.Oklab)
 
+local lerpFunctions = {
+	number = function(a: number, b: number, alpha: number)
+		return alpha * (b - a) + a
+	end,
+	Color3 = function(a: Color3, b: Color3, alpha: number)
+		local okFrom = Oklab.fromSRGB(a)
+		local okTarget = Oklab.fromSRGB(b)
+
+		return Oklab.toSRGB(okFrom:Lerp(okTarget, alpha))
+	end,
+	Vector3 = function(a: Vector3, b: Vector3, alpha: number)
+		return a:Lerp(b, alpha)
+	end,
+	Vector2 = function(a: Vector2, b: Vector2, alpha: number)
+		return a:Lerp(b, alpha)
+	end,
+	CFrame = function(a: CFrame, b: CFrame, alpha: number)
+		return a:Lerp(b, alpha)
+	end,
+	UDim = function(a: UDim, b: UDim, alpha: number)
+		return UDim.new(alpha * (b.Scale - a.Scale) + a.Scale, alpha * (b.Offset - a.Offset) + a.Offset)
+	end,
+	UDim2 = function(a: UDim2, b: UDim2, alpha: number)
+		return a:Lerp(b, alpha)
+	end,
+}
+
 local function lerp<V>(from: V, target: V, alpha: number): V
 	local dataType = typeof(from)
 
 	if typeof(target) == dataType then
-		if dataType == 'number' then
-			from, target = from :: number, target :: number
+		local lerpFunc = lerpFunctions[dataType]
 
-			return (target - from) * alpha + from
-		elseif dataType == 'Color3' then
-			from, target = from :: Color3, target :: Color3
-
-			local okFrom = Oklab.fromSRGB(from)
-			local okTarget = Oklab.fromSRGB(target)
-
-			return Oklab.toSRGB(okFrom:Lerp(okTarget, alpha))
-		elseif dataType == 'Vector3' then
-			from, target = from :: Vector3, target :: Vector3
-
-			return from:Lerp(target, alpha)
-		elseif dataType == 'Vector2' then
-			from, target = from :: Vector2, target :: Vector2
-
-			return from:Lerp(target, alpha)
-		elseif dataType == 'CFrame' then
-			from, target = from :: CFrame, target :: CFrame
-
-			return from:Lerp(target, alpha)
-		elseif dataType == 'UDim' then
-			from, target = from :: UDim, target :: UDim
-
-			return UDim.new(lerp(from.Scale, target.Scale, alpha), lerp(from.Offset, target.Scale, alpha))
-		elseif dataType == 'UDim2' then
-			from, target = from :: UDim2, target :: UDim2
-
-			return from:Lerp(target, alpha)
+		if lerpFunc then
+			return lerpFunc(from, target, alpha)
 		end
 	end
 
