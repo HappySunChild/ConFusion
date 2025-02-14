@@ -1,16 +1,16 @@
-local ContextActionService = game:GetService('ContextActionService')
-local Players = game:GetService('Players')
-local ReplicatedStorage = game:GetService('ReplicatedStorage')
-local StarterGui = game:GetService('StarterGui')
+local ContextActionService = game:GetService 'ContextActionService'
+local Players = game:GetService 'Players'
+local ReplicatedStorage = game:GetService 'ReplicatedStorage'
+local StarterGui = game:GetService 'StarterGui'
 
 local player = Players.LocalPlayer
 
 StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
-local HotbarComponent = require(script.Parent.HotbarComponent)
+local Hotbar = require(script.Parent.Hotbar)
 
-local Rusion = require(ReplicatedStorage.Libraries.ReactFusion)
-local Element = Rusion.createElement
+local Rusion = require(ReplicatedStorage.Libraries.ReFusion)
+local peek = Rusion.peek
 
 local keys = {
 	Enum.KeyCode.One,
@@ -25,10 +25,12 @@ local keys = {
 	Enum.KeyCode.Zero,
 }
 
-local items = {}
-local currentTool = nil
+local scope = Rusion:scoped {
+	Hotbar = Hotbar,
+}
 
-local updateSignal = Rusion.createSignal()
+local items = scope:Table {}
+local currentTool = nil
 
 -- utility functions
 
@@ -38,6 +40,8 @@ local function find(tab, value)
 			return k
 		end
 	end
+
+	return
 end
 
 local function getLowestAvailableIndex(tab)
@@ -53,7 +57,7 @@ end
 -- backpack functions
 
 local function equipTool(index: number)
-	local selectedTool = items[index]
+	local selectedTool = items:getKey(index)
 
 	if not selectedTool then
 		return
@@ -73,42 +77,38 @@ local function equipTool(index: number)
 end
 
 local function removeTool(tool: Tool)
-	local index = find(items, tool)
+	local index = find(peek(items), tool)
 
 	if index then
-		items[index] = nil
-
-		updateSignal:fire()
+		items:setKey(index, nil)
 	end
 end
 
-local function addTool(child: Instance)
-	if not child:IsA('Tool') then
+local function addTool(tool: Instance)
+	if not tool:IsA 'Tool' then
 		return
 	end
 
-	if find(items, child) then
+	if find(peek(items), tool) then
 		return
 	end
 
 	local connection
-	connection = child.AncestryChanged:Connect(function(_, parent)
+	connection = tool.AncestryChanged:Connect(function(_, parent)
 		if parent == nil or parent ~= player.Backpack and parent ~= player.Character then
 			connection:Disconnect()
 
-			removeTool(child)
+			removeTool(tool)
 		end
 	end)
 
-	items[getLowestAvailableIndex(items)] = child
-
-	updateSignal:fire()
+	items:setKey(getLowestAvailableIndex(peek(items)), tool)
 end
 
 -- event functions
 
 local function characterAdded(character: Model)
-	local backpack = player:WaitForChild('Backpack')
+	local backpack = player:WaitForChild 'Backpack'
 
 	backpack.ChildAdded:Connect(addTool)
 
@@ -119,7 +119,7 @@ local function characterAdded(character: Model)
 	character.ChildAdded:Connect(function(child)
 		addTool(child)
 
-		if child:IsA('Tool') then
+		if child:IsA 'Tool' then
 			currentTool = child
 		end
 	end)
@@ -130,21 +130,18 @@ local function characterAdded(character: Model)
 	end)
 end
 
-Rusion.mount(
-	Element('ScreenGui', nil, {
-		Hotbar = Element(HotbarComponent, {
-			UpdateSignal = updateSignal,
+scope:New('ScreenGui', {
+	Name = 'InventoryHotbar',
+	Parent = player.PlayerGui,
+}, {
+	Hotbar = scope:Hotbar {
+		Height = 50,
+		Padding = 5,
 
-			Height = 50,
-			Padding = 5,
-
-			Items = items,
-			EquipCallback = equipTool,
-		}),
-	}),
-	player.PlayerGui,
-	'InventoryHotbar'
-)
+		Items = items,
+		EquipCallback = equipTool,
+	},
+})
 
 ContextActionService:BindAction('Equip', function(_, state: Enum.UserInputState, input: InputObject)
 	if state ~= Enum.UserInputState.Begin then

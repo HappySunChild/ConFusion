@@ -1,0 +1,52 @@
+local ReplicatedStorage = game:GetService 'ReplicatedStorage'
+
+local HotbarSlot = require(script.Parent.HotbarSlot)
+local Rusion = require(ReplicatedStorage.Libraries.ReFusion)
+
+local function Hotbar(scope: Rusion.Scope, props)
+	local hotbarScope = scope:innerScope {
+		HotbarSlot = HotbarSlot,
+	}
+
+	local created = {}
+	local slots = hotbarScope:ForPairs(props.Items, function(_, index, tool: Tool)
+		local slot = created[tool]
+
+		if not slot then
+			slot = hotbarScope:HotbarSlot {
+				Item = tool,
+				Index = index,
+				Callback = props.EquipCallback,
+				Cleanup = function()
+					created[tool] = nil
+				end,
+			}
+			created[tool] = slot
+		end
+
+		return index, slot
+	end)
+
+	local height = props.Height
+	local padding = props.Padding
+
+	return hotbarScope:New('Frame', {
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -5),
+		Size = UDim2.fromOffset(0, height),
+
+		BackgroundTransparency = 1,
+	}, {
+		List = hotbarScope:New('UIListLayout', {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, padding),
+		}),
+
+		Slots = slots,
+	})
+end
+
+return Hotbar
