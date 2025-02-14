@@ -1,4 +1,4 @@
-local function merge(overwrite, into, ...)
+local function merge(overwrite: boolean, into: { [unknown]: unknown }, ...: unknown)
 	local sets = { ... }
 
 	for _, set in sets do
