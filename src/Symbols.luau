@@ -13,6 +13,7 @@ local Symbols = {
 	CreatedAt = named 'CreatedAt',
 	Users = named 'Users',
 	Using = named 'Using',
+	Observers = named 'Observers',
 }
 
 return Symbols

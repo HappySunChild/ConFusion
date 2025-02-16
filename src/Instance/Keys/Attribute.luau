@@ -2,8 +2,9 @@ local package = script.Parent.Parent.Parent
 
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
 local castToState = require(package.State.castToState)
+local observe = require(package.Graph.observe)
+local peek = require(package.State.peek)
 
 local keyCache = {}
 
@@ -15,16 +16,18 @@ local function Attribute(attribute: string): Types.SpecialKey
 			kind = 'key',
 			type = 'attribute',
 
-			apply = function(scope: Types.Scope, applyTo: Instance, value: Types.UsedAs<any>)
+			apply = function(
+				_: Types.Scope,
+				applyTo: Instance,
+				value: Types.UsedAs<any>
+			)
 				if castToState(value) then
-					Observer(scope, value):onBind(function(new)
+					observe(value, function(new)
 						applyTo:SetAttribute(attribute, new)
 					end)
-
-					return
 				end
 
-				applyTo:SetAttribute(attribute, value)
+				applyTo:SetAttribute(attribute, peek(value))
 			end,
 		}
 

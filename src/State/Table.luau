@@ -4,11 +4,11 @@ local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Computed = require(package.State.Computed)
-local Observer = require(package.Graph.Observer)
 
 local change = require(package.Graph.change)
 local destructor = require(package.Memory.destructor)
 local isSimilar = require(package.Utility.isSimilar)
+local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
 local class = {
@@ -40,9 +40,7 @@ function class:map(processor)
 end
 
 function class:onChange(callback)
-	local observer = Observer(self[Symbols.Scope], self)
-
-	return observer:onChange(callback), observer
+	return observe(self, callback)
 end
 
 function class:setKey(key: any, newValue: any)

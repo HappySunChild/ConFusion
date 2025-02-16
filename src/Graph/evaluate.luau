@@ -42,11 +42,17 @@ local function evaluate(target, forceComputation)
 			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
 		end
 
+		target[Symbols.Validity] = 'valid'
+
 		if targetMeaningfullyChanged then
+			if target[Symbols.Observers] then
+				for callback in target[Symbols.Observers] do
+					task.spawn(callback, target[Symbols.InternalValue])
+				end
+			end
+
 			target[Symbols.LastChange] = os.clock()
 		end
-
-		target[Symbols.Validity] = 'valid'
 
 		return targetMeaningfullyChanged
 	end

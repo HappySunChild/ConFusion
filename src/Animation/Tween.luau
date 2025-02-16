@@ -7,13 +7,13 @@ local getTweenAlpha = require(script.Parent.getTweenAlpha)
 local getTweenDuration = require(script.Parent.getTweenDuration)
 local lerp = require(script.Parent.lerp)
 
-local Observer = require(package.Graph.Observer)
 local Stopwatch = require(package.Animation.Stopwatch)
 
 local castToState = require(package.State.castToState)
 local depend = require(package.Graph.depend)
 local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
+local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
 local Info = Symbols.named 'Info'
@@ -63,9 +63,7 @@ local function Tween<V>(
 end
 
 function class:onChange(callback)
-	local observer = Observer(self._scope, self)
-
-	return observer:onChange(callback), observer
+	return observe(self, callback)
 end
 
 function class:_evaluate()

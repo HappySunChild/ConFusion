@@ -3,13 +3,12 @@ local package = script.Parent.Parent
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
-
 local castToState = require(package.State.castToState)
 local depend = require(package.Graph.depend)
 local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
 local isSimilar = require(package.Utility.isSimilar)
+local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
 local Processor = Symbols.named 'Processor'
@@ -44,9 +43,7 @@ local function Computed<V, VO>(
 end
 
 function class:onChange(callback)
-	local observer = Observer(self[Symbols.Scope], self)
-
-	return observer:onChange(callback), observer
+	return observe(self, callback)
 end
 
 function class:map(processor)

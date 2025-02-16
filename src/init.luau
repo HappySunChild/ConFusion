@@ -1,6 +1,5 @@
 local Types = require(script.Types)
 
-local Graph = script.Graph
 local State = script.State
 local Animation = script.Animation
 local Memory = script.Memory
@@ -22,8 +21,6 @@ local ReFusion = table.freeze {
 	Value = require(State.Value),
 	Table = require(State.Table),
 	peek = require(State.peek),
-
-	Observer = require(Graph.Observer),
 
 	New = require(Instance.New),
 	Hydrate = require(Instance.Hydrate),

@@ -2,10 +2,9 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
-
 local Parent = require(package.Instance.Keys._Parent)
 local castToState = require(package.State.castToState)
+local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 local sortKeys = require(package.Instance.Keys.sortKeys)
 
@@ -23,20 +22,17 @@ local function setProperty(instance: Instance, property: string, value: any)
 end
 
 local function applyProperty(
-	scope: Types.Scope,
 	instance: Instance,
 	property: string,
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		Observer(scope, value):onBind(function()
-			setProperty(instance, property, peek(value))
+		observe(value, function(new)
+			setProperty(instance, property, new)
 		end)
-
-		return
 	end
 
-	setProperty(instance, property, value)
+	setProperty(instance, property, peek(value))
 end
 
 local function applyProperties(
@@ -55,7 +51,7 @@ local function applyProperties(
 		local keyType = typeof(key)
 
 		if keyType == 'string' then
-			applyProperty(scope, instance, key, value)
+			applyProperty(instance, key, value)
 		elseif kindof(key) == 'key' then
 			table.insert(specialKeys, key)
 		end
@@ -68,7 +64,7 @@ local function applyProperties(
 	end
 
 	if props.Parent then
-		applyProperty(scope, instance, 'Parent', props.Parent)
+		applyProperty(instance, 'Parent', props.Parent)
 	end
 end
 
