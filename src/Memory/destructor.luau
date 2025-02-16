@@ -4,6 +4,7 @@ local Symbols = require(package.Symbols)
 
 local function destroy(target)
 	target[Symbols.Scope] = nil
+	target[Symbols.Observers] = nil
 
 	local using = target[Symbols.Using]
 
