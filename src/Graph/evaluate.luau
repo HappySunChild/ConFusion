@@ -4,7 +4,10 @@ local Symbols = require(package.Symbols)
 
 local function evaluate(target, forceComputation)
 	if target[Symbols.Validity] == 'busy' then
-		return error('Evaluate target is already being evaluated, possible infinite loop!', 2)
+		return error(
+			'Evaluate target is already being evaluated, possible infinite loop!',
+			2
+		)
 	end
 
 	local firstEvaluation = target[Symbols.LastChange] == nil
@@ -17,7 +20,9 @@ local function evaluate(target, forceComputation)
 			for dependency in target[Symbols.Using] do
 				evaluate(dependency, false)
 
-				if dependency[Symbols.LastChange] > target[Symbols.LastChange] then
+				if
+					dependency[Symbols.LastChange] > target[Symbols.LastChange]
+				then
 					needsComputation = true
 
 					break

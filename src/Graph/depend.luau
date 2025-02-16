@@ -1,7 +1,8 @@
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
-local evaluate = require(script.Parent.evaluate)
+
+local evaluate = require(package.Graph.evaluate)
 
 local function depend(user, dependency)
 	evaluate(dependency)

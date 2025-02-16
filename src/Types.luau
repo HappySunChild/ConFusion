@@ -23,16 +23,23 @@ export type Observer<V> = {
 
 export type UsedAs<V> = StateObject<V> | V
 export type StateObject<V> = {
+	kind: 'state',
+	type: string,
+	
 	onChange: (StateObject<V>, callback: (new: V) -> nil) -> (Disconnect, Observer<V>),
 }
 
 export type Use = <V>(target: StateObject<V>) -> V
 export type ComputedProcessor<T> = (Use) -> T
 export type Computed<IV, OV> = StateObject<OV> & {
+	type: 'computed',
+	
 	map: <T>(Computed<IV, OV>, processor: (IV) -> T) -> Computed<T, T>,
 }
 
 export type Value<V> = StateObject<V> & {
+	type: 'value',
+	
 	set: (Value<V>, newValue: V) -> V,
 	update: (Value<V>, predicate: (V) -> V) -> V,
 	map: <T>(Value<V>, processor: (V) -> T) -> Computed<T, T>,
@@ -41,6 +48,8 @@ export type Value<V> = StateObject<V> & {
 }
 
 export type Table<K, V> = StateObject<GenericTable<K, V>> & {
+	type: 'table',
+	
 	setKey: (Table<K, V>, key: K, value: V) -> V,
 	getKey: (Table<K, V>, key: K) -> V,
 	
@@ -50,8 +59,18 @@ export type Table<K, V> = StateObject<GenericTable<K, V>> & {
 	map: <T>(Table<K, V>, processor: (GenericTable<K, V>) -> T) -> Computed<GenericTable<K, V>, T>,
 }
 
-export type ForPairs<IK, IV, OK, OV> = StateObject<GenericTable<OK, OV>>
-export type Tween<V> = StateObject<V>
+export type ForPairs<IK, IV, OK, OV> = StateObject<GenericTable<OK, OV>> & {
+	type: 'for'
+}
+
+export type Tween<V> = StateObject<V> & {
+	type: 'tween'
+}
+
+export type Spring<V> = StateObject<V> & {
+	type: 'spring',
+	animating: boolean
+}
 
 export type SpecialKey = {
 	apply: (scope: Scope, instance: Instance, value: any) -> ()

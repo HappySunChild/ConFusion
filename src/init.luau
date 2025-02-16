@@ -15,6 +15,7 @@ local ReFusion = table.freeze {
 	innerScope = require(Memory.innerScope),
 	doCleanup = require(Memory.doCleanup),
 
+	Spring = require(Animation.Spring),
 	Tween = require(Animation.Tween),
 	Computed = require(State.Computed),
 	ForPairs = require(State.ForPairs),
@@ -36,6 +37,8 @@ local ReFusion = table.freeze {
 	Ref = require(Keys.Ref),
 	Apply = require(Keys.Apply),
 	Attribute = require(Keys.Attribute),
+	AttributeChange = require(Keys.AttributeChange),
+	AttributeOut = require(Keys.AttributeOut),
 	Tag = require(Keys.Tag),
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
