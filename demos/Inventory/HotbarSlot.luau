@@ -22,6 +22,8 @@ local function HotbarSlot(
 )
 	local slotScope = scope:innerScope()
 
+	local currentBackpack = Players.LocalPlayer.Backpack
+
 	local tool = props.Item :: Tool
 	local index = props.Index
 	local callback = props.Callback
@@ -36,7 +38,12 @@ local function HotbarSlot(
 	toolTip:bindToInstanceProperty(tool, 'ToolTip')
 	toolIcon:bindToInstanceProperty(tool, 'TextureId')
 
+	local isStartup = slotScope:Value(true)
 	local isHovering = slotScope:Value(false)
+	local isActive = toolParent:map(function(parent)
+		return parent ~= currentBackpack
+	end)
+
 	local toolTipWidth = slotScope:Computed(function(use)
 		if not use(isHovering) then
 			return 0
@@ -52,17 +59,25 @@ local function HotbarSlot(
 		return bounds.X + 4
 	end)
 
-	local slotSize = slotScope:Value(0.5)
+	local slotSize = slotScope:Computed(function(use)
+		if use(isStartup) then
+			return 0.5
+		end
 
-	local currentBackpack = Players.LocalPlayer.Backpack
+		if use(isHovering) or use(isActive) then
+			return 1.1
+		end
+
+		return 1
+	end)
 
 	return slotScope:New('TextButton', {
 		Size = slotScope:Spring(
 			slotSize:map(function(size)
 				return UDim2.fromScale(size, size)
 			end),
-			50,
-			2
+			30,
+			0.7
 		),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
@@ -89,7 +104,7 @@ local function HotbarSlot(
 			props.Cleanup,
 		},
 		[Fusion.Startup] = function()
-			slotSize:set(1)
+			isStartup:set(false)
 		end,
 
 		[OnEvent 'InputBegan'] = function(input: InputObject)
@@ -100,23 +115,17 @@ local function HotbarSlot(
 			end
 		end,
 		[OnEvent 'MouseEnter'] = function()
-			slotSize:set(1.1)
 			isHovering:set(true)
 		end,
 		[OnEvent 'MouseLeave'] = function()
-			slotSize:set(1)
 			isHovering:set(false)
 		end,
 	}, {
 		Stroke = slotScope:New('UIStroke', {
 			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 			Thickness = 1,
-			Color = toolParent:map(function(parent)
-				if parent == currentBackpack then
-					return Foreground
-				end
-
-				return ActiveForeground
+			Color = isActive:map(function(active)
+				return if active then ActiveForeground else Foreground
 			end),
 		}),
 		Round = slotScope:New('UICorner', {
