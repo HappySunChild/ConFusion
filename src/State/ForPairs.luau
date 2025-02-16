@@ -3,6 +3,7 @@ local package = script.Parent.Parent
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
+local Computed = require(package.State.Computed)
 local Observer = require(package.Graph.Observer)
 
 local castToState = require(package.State.castToState)
@@ -15,8 +16,8 @@ local Input = Symbols.named 'Input'
 local Processor = Symbols.named 'Processor'
 
 local class = {
-	[Symbols.Type] = 'for',
-	[Symbols.Kind] = 'state',
+	type = 'for',
+	kind = 'state',
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -43,6 +44,12 @@ local function ForPairs<IK, IV, OK, OV>(
 	evaluate(newPairs, true)
 
 	return newPairs
+end
+
+function class:map(processor)
+	return Computed(self[Symbols.Scope], function(use)
+		return processor(use(self))
+	end)
 end
 
 function class:onChange(callback)
