@@ -1,13 +1,9 @@
-local package = script.Parent.Parent
-
-local Symbols = require(package.Symbols)
-
 local function kindOf(value: any): string
 	local vType = typeof(value)
 
 	if vType == 'table' then
-		if value[Symbols.Kind] then
-			return value[Symbols.Kind]
+		if value.kind then
+			return value.kind
 		end
 	end
 

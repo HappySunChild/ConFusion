@@ -1,15 +1,12 @@
-local package = script.Parent
-
-local named = require(package.Utility.named)
+local function named(name: string)
+	return `_{name:lower()}_`
+end
 
 local Symbols = {
 	named = named,
-	DebugId = named 'DebugId',
-	Scope = named 'Scope',
 
-	Type = named 'Type',
-	Kind = named 'Kind',
 	InternalValue = named 'InternalValue',
+	Scope = named 'Scope',
 
 	Validity = named 'Validity',
 	LastChange = named 'LastChange',
