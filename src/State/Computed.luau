@@ -15,18 +15,20 @@ local peek = require(package.State.peek)
 local Processor = Symbols.named 'Processor'
 
 local class = {
-	[Symbols.Kind] = 'state',
-	[Symbols.Type] = 'computed',
+	kind = 'state',
+	type = 'computed',
 }
 
 local METATABLE = table.freeze { __index = class }
 
-local function Computed<V, T>(scope, processor: Types.ComputedProcessor<T>, debugId): Types.Computed<V, T>
+local function Computed<V, VO>(
+	scope: Types.Scope,
+	processor: Types.ComputedProcessor<VO>
+): Types.Computed<V, VO>
 	local newComputed = setmetatable({
 		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
 		[Symbols.InternalValue] = nil,
-		[Symbols.DebugId] = debugId,
 
 		[Symbols.Using] = {},
 		[Symbols.Users] = {},
@@ -50,7 +52,7 @@ end
 function class:map(processor)
 	return Computed(self[Symbols.Scope], function(use)
 		return processor(use(self))
-	end, `Computed({self[Symbols.DebugId]})`)
+	end)
 end
 
 function class:_evaluate()

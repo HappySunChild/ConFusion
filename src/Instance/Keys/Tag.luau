@@ -1,6 +1,5 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
@@ -14,8 +13,8 @@ local function Tag(tag: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
-			[Symbols.Kind] = 'key',
-			[Symbols.Type] = 'tag',
+			kind = 'key',
+			type = 'tag',
 
 			apply = function(scope: Types.Scope, instance: Instance, enabled: Types.UsedAs<boolean>)
 				if castToState(enabled) then

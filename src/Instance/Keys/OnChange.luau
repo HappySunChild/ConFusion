@@ -1,6 +1,5 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local keyCache = {}
@@ -10,16 +9,16 @@ local function OnChange(property: string)
 
 	if not key then
 		key = table.freeze {
-			[Symbols.Type] = 'onChange',
-			[Symbols.Kind] = 'key',
+			type = 'onChange',
+			kind = 'key',
 
-			apply = function(scope: Types.Scope, instance: Instance, callback: (value: any) -> ())
-				local event = instance:GetPropertyChangedSignal(property)
+			apply = function(scope: Types.Scope, applyTo: Instance, callback: (any) -> ())
+				local event = applyTo:GetPropertyChangedSignal(property)
 
 				table.insert(
 					scope,
 					event:Connect(function()
-						callback(instance[property])
+						callback(applyTo[property])
 					end)
 				)
 			end,

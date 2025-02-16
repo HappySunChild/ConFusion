@@ -9,17 +9,21 @@ local destructor = require(package.Memory.destructor)
 local evaluate = require(script.Parent.evaluate)
 local peek = require(package.State.peek)
 
-local Observing = Symbols.named 'Observing'
 local Listeners = Symbols.named 'Listeners'
+local Observing = Symbols.named 'Observing'
 
 local ObserverClass = {
-	[Symbols.Type] = 'observer',
+	type = 'observer',
+	kind = 'graph',
 	[Symbols.Users] = table.freeze {},
 }
 
 local METATABLE = table.freeze { __index = ObserverClass }
 
-local function Observer<V>(scope: Types.Scope, target: Types.UsedAs<V>): Types.Observer<V>
+local function Observer<V>(
+	scope: Types.Scope,
+	target: Types.UsedAs<V>
+): Types.Observer<V>
 	local newObserver = setmetatable({
 		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
@@ -60,12 +64,6 @@ function ObserverClass:_evaluate()
 	end
 
 	local newValue = peek(target)
-
-	local count = 0
-
-	for _ in self[Symbols.Using] do
-		count += 1
-	end
 
 	for callback in self[Listeners] do
 		task.spawn(callback, newValue)

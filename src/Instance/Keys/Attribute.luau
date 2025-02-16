@@ -1,6 +1,5 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
@@ -13,19 +12,19 @@ local function Attribute(attribute: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
-			[Symbols.Kind] = 'key',
-			[Symbols.Type] = 'attribute',
+			kind = 'key',
+			type = 'attribute',
 
-			apply = function(scope: Types.Scope, instance: Instance, value: Types.UsedAs<any>)
+			apply = function(scope: Types.Scope, applyTo: Instance, value: Types.UsedAs<any>)
 				if castToState(value) then
 					Observer(scope, value):onBind(function(new)
-						instance:SetAttribute(attribute, new)
+						applyTo:SetAttribute(attribute, new)
 					end)
 
 					return
 				end
 
-				instance:SetAttribute(attribute, value)
+				applyTo:SetAttribute(attribute, value)
 			end,
 		}
 

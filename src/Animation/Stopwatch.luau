@@ -3,7 +3,7 @@ local package = script.Parent.Parent
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local change = require(package.State.change)
+local change = require(package.Graph.change)
 local depend = require(package.Graph.depend)
 local destructor = require(package.Memory.destructor)
 local peek = require(package.State.peek)
@@ -20,8 +20,8 @@ export type Stopwatch = Types.StateObject<number> & {
 }
 
 local StopwatchClass = {
-	[Symbols.Kind] = 'state',
-	[Symbols.Type] = 'stopwatch',
+	kind = 'state',
+	type = 'stopwatch',
 }
 
 local METATABLE = table.freeze { __index = StopwatchClass }

@@ -1,6 +1,5 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
@@ -10,10 +9,10 @@ local doCleanup = require(package.Memory.doCleanup)
 local peek = require(package.State.peek)
 
 local Children: Types.SpecialKey = table.freeze {
-	[Symbols.Kind] = 'key',
-	[Symbols.Type] = 'children',
+	kind = 'key',
+	type = 'children',
 
-	apply = function(scope: Types.Scope, parent: Instance, children: Types.Child)
+	apply = function(scope: Types.Scope, applyTo: Instance, children: Types.Child)
 		local newChildren, oldChildren = {}, {}
 		local newScopes, oldScopes = {}, {}
 
@@ -28,7 +27,7 @@ local Children: Types.SpecialKey = table.freeze {
 					newChildren[child] = true
 
 					if not oldChildren[child] then
-						child.Parent = parent
+						child.Parent = applyTo
 					else
 						oldChildren[child] = nil
 					end

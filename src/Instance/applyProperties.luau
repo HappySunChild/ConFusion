@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
@@ -19,11 +18,16 @@ local function setProperty(instance: Instance, property: string, value: any)
 	end)
 
 	if not success then
-		warn(err)
+		warn(err, value)
 	end
 end
 
-local function applyProperty(scope: Types.Scope, instance: Instance, property: string, value: Types.UsedAs<any>)
+local function applyProperty(
+	scope: Types.Scope,
+	instance: Instance,
+	property: string,
+	value: Types.UsedAs<any>
+)
 	if castToState(value) then
 		Observer(scope, value):onBind(function()
 			setProperty(instance, property, peek(value))
@@ -35,7 +39,11 @@ local function applyProperty(scope: Types.Scope, instance: Instance, property: s
 	setProperty(instance, property, value)
 end
 
-local function applyProperties(scope: Types.Scope, instance: Instance, props: Types.Properties)
+local function applyProperties(
+	scope: Types.Scope,
+	instance: Instance,
+	props: Types.Properties
+)
 	props = table.clone(props)
 
 	local specialKeys: { Types.SpecialKey } = {}
@@ -56,8 +64,6 @@ local function applyProperties(scope: Types.Scope, instance: Instance, props: Ty
 	table.sort(specialKeys, sortKeys)
 
 	for _, key in specialKeys do
-		print(key[Symbols.Type])
-
 		key.apply(scope, instance, props[key])
 	end
 

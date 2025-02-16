@@ -1,20 +1,21 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local castToState = require(package.State.castToState)
+local typeof = require(package.Utility.typeOf)
 
 local Ref: Types.SpecialKey = table.freeze {
-	[Symbols.Kind] = 'key',
-	[Symbols.Type] = 'ref',
+	kind = 'key',
+	type = 'ref',
 
-	apply = function(_: Types.Scope, parent: Instance, ref: Types.Value<Instance>)
-		if not castToState(ref) then
-			return
+	apply = function(_: Types.Scope, applyTo: Instance, ref: Types.Value<Instance>)
+		if typeof(ref) ~= 'value' then
+			return error(`Invalid Ref type.`, 2)
 		end
 
-		ref:set(parent)
+		ref:set(applyTo)
+
+		return
 	end,
 }
 

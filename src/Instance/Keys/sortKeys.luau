@@ -12,7 +12,6 @@ local keyOrder = table.freeze {
 	'onChange',
 
 	'children',
-
 	'parent',
 
 	'cleanup',

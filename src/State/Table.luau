@@ -6,25 +6,24 @@ local Types = require(package.Types)
 local Computed = require(package.State.Computed)
 local Observer = require(package.Graph.Observer)
 
-local change = require(package.State.change)
+local change = require(package.Graph.change)
 local destructor = require(package.Memory.destructor)
 local isSimilar = require(package.Utility.isSimilar)
 local peek = require(package.State.peek)
 
 local class = {
-	[Symbols.Kind] = 'state',
-	[Symbols.Type] = 'table',
+	kind = 'state',
+	type = 'table',
 	[Symbols.Using] = table.freeze {},
 }
 
 local METATABLE = table.freeze { __index = class }
 
-local function Table<K, V>(scope: Types.Scope, value: { [K]: V }, debugId): Types.Table<K, V>
+local function Table<K, V>(scope: Types.Scope, value: { [K]: V }): Types.Table<K, V>
 	local newTable = setmetatable({
 		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
 		[Symbols.InternalValue] = value,
-		[Symbols.DebugId] = debugId,
 
 		[Symbols.Users] = {},
 	}, METATABLE)
@@ -34,16 +33,16 @@ local function Table<K, V>(scope: Types.Scope, value: { [K]: V }, debugId): Type
 	return newTable
 end
 
+function class:map(processor)
+	return Computed(self[Symbols.Scope], function(use)
+		return processor(use(self))
+	end)
+end
+
 function class:onChange(callback)
 	local observer = Observer(self[Symbols.Scope], self)
 
 	return observer:onChange(callback), observer
-end
-
-function class:map(processor)
-	return Computed(self[Symbols.Scope], function(use)
-		return processor(use(self))
-	end, `Computed({self[Symbols.DebugId]})`)
 end
 
 function class:setKey(key: any, newValue: any)

@@ -4,11 +4,11 @@ local Symbols = require(package.Symbols)
 
 local Subscriptions = Symbols.named 'Subscriptions'
 
-local SignalClass = {
-	[Symbols.Type] = 'signal',
+local class = {
+	type = 'signal',
 }
 
-local METATABLE = table.freeze { __index = SignalClass }
+local METATABLE = table.freeze { __index = class }
 
 local function Signal()
 	local newSignal = setmetatable({
@@ -18,13 +18,13 @@ local function Signal()
 	return newSignal
 end
 
-function SignalClass:fire(...)
+function class:fire(...)
 	for callback in self[Subscriptions] do
 		callback(...)
 	end
 end
 
-function SignalClass:connect(callback)
+function class:connect(callback)
 	self[Subscriptions][callback] = true
 
 	return function()

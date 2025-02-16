@@ -18,22 +18,24 @@ local peek = require(package.State.peek)
 
 local Info = Symbols.named 'Info'
 local Goal = Symbols.named 'Goal'
-local _Stopwatch = Symbols.named 'Stopwatch'
-
-local TweenFinish = Symbols.named 'TweenFinish'
+local Timer = Symbols.named 'Timer'
 local TweenStart = Symbols.named 'TweenStart'
+local TweenFinish = Symbols.named 'TweenFinish'
 local TweenDuration = Symbols.named 'TweenDuration'
-
 local Elapsed = Symbols.named 'Elapsed'
 
 local class = {
-	[Symbols.Type] = 'tween',
-	[Symbols.Kind] = 'state',
+	type = 'tween',
+	kind = 'state',
 }
 
 local METATABLE = table.freeze { __index = class }
 
-local function Tween<V>(scope: Types.Scope, goal: Types.UsedAs<V>, info: Types.UsedAs<TweenInfo>)
+local function Tween<V>(
+	scope: Types.Scope,
+	goal: Types.UsedAs<V>,
+	info: Types.UsedAs<TweenInfo>
+)
 	local newTween = setmetatable({
 		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
@@ -44,7 +46,7 @@ local function Tween<V>(scope: Types.Scope, goal: Types.UsedAs<V>, info: Types.U
 
 		[Info] = info,
 		[Goal] = goal,
-		[_Stopwatch] = Stopwatch(scope),
+		[Timer] = Stopwatch(scope),
 
 		[TweenStart] = nil,
 		[TweenFinish] = nil,
@@ -61,7 +63,7 @@ local function Tween<V>(scope: Types.Scope, goal: Types.UsedAs<V>, info: Types.U
 end
 
 function class:onChange(callback)
-	local observer = Observer(self[Symbols.Scope], self)
+	local observer = Observer(self._scope, self)
 
 	return observer:onChange(callback), observer
 end
@@ -80,7 +82,7 @@ function class:_evaluate()
 	local finish = peek(goal)
 	local info = peek(self[Info])
 
-	local stopwatch = self[_Stopwatch]
+	local stopwatch = self[Timer]
 
 	if finish ~= self[TweenFinish] then
 		self[TweenDuration] = getTweenDuration(info)
@@ -95,7 +97,10 @@ function class:_evaluate()
 
 	self[Elapsed] = peek(stopwatch)
 
-	if self[TweenStart] == self[TweenFinish] or self[Elapsed] > self[TweenDuration] then
+	if
+		self[TweenStart] == self[TweenFinish]
+		or self[Elapsed] > self[TweenDuration]
+	then
 		self[TweenStart] = self[TweenFinish]
 		self[Elapsed] = self[TweenDuration]
 

@@ -1,6 +1,5 @@
 local package = script.Parent.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Observer = require(package.Graph.Observer)
@@ -17,21 +16,23 @@ local function setParent(instance: Instance, parent: Instance?)
 end
 
 local Parent = table.freeze {
-	[Symbols.Type] = 'parent',
-	[Symbols.Kind] = 'key',
+	type = 'parent',
+	kind = 'key',
 
-	apply = function(scope: Types.Scope, instance: Instance, parent: Types.UsedAs<Instance?>)
-		print('set parent', instance, parent)
-
+	apply = function(
+		scope: Types.Scope,
+		applyTo: Instance,
+		parent: Types.UsedAs<Instance?>
+	)
 		if castToState(parent) then
 			Observer(scope, parent):onBind(function(new)
-				setParent(instance, new)
+				setParent(applyTo, new)
 			end)
 
 			return
 		end
 
-		setParent(instance, parent)
+		setParent(applyTo, parent)
 	end,
 }
 
