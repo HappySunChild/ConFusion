@@ -9,8 +9,8 @@ StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
 local Hotbar = require(script.Parent.Hotbar)
 
-local Rusion = require(ReplicatedStorage.Libraries.ReFusion)
-local peek = Rusion.peek
+local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
+local peek = Fusion.peek
 
 local keys = {
 	Enum.KeyCode.One,
@@ -25,7 +25,7 @@ local keys = {
 	Enum.KeyCode.Zero,
 }
 
-local scope = Rusion:scoped {
+local scope = Fusion:scoped {
 	Hotbar = Hotbar,
 }
 
@@ -95,7 +95,10 @@ local function addTool(tool: Instance)
 
 	local connection
 	connection = tool.AncestryChanged:Connect(function(_, parent)
-		if parent == nil or parent ~= player.Backpack and parent ~= player.Character then
+		if
+			parent == nil
+			or parent ~= player.Backpack and parent ~= player.Character
+		then
 			connection:Disconnect()
 
 			removeTool(tool)
@@ -143,15 +146,20 @@ scope:New('ScreenGui', {
 	},
 })
 
-ContextActionService:BindAction('Equip', function(_, state: Enum.UserInputState, input: InputObject)
-	if state ~= Enum.UserInputState.Begin then
-		return
-	end
+ContextActionService:BindAction(
+	'Equip',
+	function(_, state: Enum.UserInputState, input: InputObject)
+		if state ~= Enum.UserInputState.Begin then
+			return
+		end
 
-	local index = table.find(keys, input.KeyCode)
+		local index = table.find(keys, input.KeyCode)
 
-	equipTool(index)
-end, false, unpack(keys))
+		equipTool(index)
+	end,
+	false,
+	unpack(keys)
+)
 
 characterAdded(player.Character or player.CharacterAdded:Wait())
 player.CharacterAdded:Connect(characterAdded)

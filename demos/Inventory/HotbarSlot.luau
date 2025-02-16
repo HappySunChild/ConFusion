@@ -2,19 +2,23 @@ local Players = game:GetService 'Players'
 local ReplicatedStorage = game:GetService 'ReplicatedStorage'
 local TextService = game:GetService 'TextService'
 
-local Rusion = require(ReplicatedStorage.Libraries.ReFusion)
-local OnEvent = Rusion.OnEvent
+local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
+local OnEvent = Fusion.OnEvent
 
 local Foreground = Color3.fromRGB(245, 247, 234)
 local ActiveForeground = Color3.fromRGB(225, 86, 63)
 local Background = Color3.fromRGB(45, 48, 50)
 
-local HoverInfo = TweenInfo.new(0.4, Enum.EasingStyle.Circular)
 local TooltipInfo = TweenInfo.new(0.2, Enum.EasingStyle.Exponential)
 
 local function HotbarSlot(
-	scope: Rusion.Scope,
-	props: { Item: Tool, Index: number, Callback: () -> (), Cleanup: () -> () }
+	scope: Fusion.Scope,
+	props: {
+		Item: Tool,
+		Index: number,
+		Callback: () -> (),
+		Cleanup: () -> (),
+	}
 )
 	local slotScope = scope:innerScope()
 
@@ -38,7 +42,12 @@ local function HotbarSlot(
 			return 0
 		end
 
-		local bounds = TextService:GetTextSize(use(toolTip), 14, Enum.Font.SourceSans, Vector2.new(math.huge, 16))
+		local bounds = TextService:GetTextSize(
+			use(toolTip),
+			14,
+			Enum.Font.SourceSans,
+			Vector2.new(math.huge, 16)
+		)
 
 		return bounds.X + 4
 	end)
@@ -48,11 +57,12 @@ local function HotbarSlot(
 	local currentBackpack = Players.LocalPlayer.Backpack
 
 	return slotScope:New('TextButton', {
-		Size = slotScope:Tween(
+		Size = slotScope:Spring(
 			slotSize:map(function(size)
 				return UDim2.fromScale(size, size)
 			end),
-			HoverInfo
+			50,
+			2
 		),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
@@ -74,11 +84,11 @@ local function HotbarSlot(
 		TextTruncate = Enum.TextTruncate.AtEnd,
 		TextColor3 = Foreground,
 
-		[Rusion.Cleanup] = {
+		[Fusion.Cleanup] = {
 			slotScope,
 			props.Cleanup,
 		},
-		[Rusion.Startup] = function()
+		[Fusion.Startup] = function()
 			slotSize:set(1)
 		end,
 

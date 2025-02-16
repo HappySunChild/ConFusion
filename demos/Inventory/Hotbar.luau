@@ -1,31 +1,34 @@
 local ReplicatedStorage = game:GetService 'ReplicatedStorage'
 
+local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local HotbarSlot = require(script.Parent.HotbarSlot)
-local Rusion = require(ReplicatedStorage.Libraries.ReFusion)
 
-local function Hotbar(scope: Rusion.Scope, props)
+local function Hotbar(scope: Fusion.Scope, props)
 	local hotbarScope = scope:innerScope {
 		HotbarSlot = HotbarSlot,
 	}
 
 	local created = {}
-	local slots = hotbarScope:ForPairs(props.Items, function(_, index, tool: Tool)
-		local slot = created[tool]
+	local slots = hotbarScope:ForPairs(
+		props.Items,
+		function(_, index, tool: Tool)
+			local slot = created[tool]
 
-		if not slot then
-			slot = hotbarScope:HotbarSlot {
-				Item = tool,
-				Index = index,
-				Callback = props.EquipCallback,
-				Cleanup = function()
-					created[tool] = nil
-				end,
-			}
-			created[tool] = slot
+			if not slot then
+				slot = hotbarScope:HotbarSlot {
+					Item = tool,
+					Index = index,
+					Callback = props.EquipCallback,
+					Cleanup = function()
+						created[tool] = nil
+					end,
+				}
+				created[tool] = slot
+			end
+
+			return index, slot
 		end
-
-		return index, slot
-	end)
+	)
 
 	local height = props.Height
 	local padding = props.Padding
