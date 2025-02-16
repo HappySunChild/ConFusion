@@ -1,7 +1,8 @@
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
-local castToState = require(script.Parent.castToState)
+
+local castToState = require(package.State.castToState)
 local evaluate = require(package.Graph.evaluate)
 
 local function change(target)
