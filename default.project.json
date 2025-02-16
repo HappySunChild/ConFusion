@@ -8,7 +8,7 @@
 			"Libraries": {
 				"$className": "Folder",
 				"$ignoreUnknownInstances": true,
-				"ReFusion": {
+				"ConFusion": {
 					"$path": "src"
 				}
 			}
