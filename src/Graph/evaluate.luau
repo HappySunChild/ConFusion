@@ -1,13 +1,11 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Symbols = require(package.Symbols)
 
 local function evaluate(target, forceComputation)
 	if target[Symbols.Validity] == 'busy' then
-		return error(
-			'Evaluate target is already being evaluated, possible infinite loop!',
-			2
-		)
+		return External.logError 'infiniteLoop'
 	end
 
 	local firstEvaluation = target[Symbols.LastChange] == nil
@@ -47,7 +45,10 @@ local function evaluate(target, forceComputation)
 		if targetMeaningfullyChanged then
 			if target[Symbols.Observers] then
 				for callback in target[Symbols.Observers] do
-					task.spawn(callback, target[Symbols.InternalValue])
+					External.doTaskImmediate(
+						callback,
+						target[Symbols.InternalValue]
+					)
 				end
 			end
 

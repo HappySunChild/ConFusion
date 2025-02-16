@@ -1,5 +1,6 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -9,6 +10,7 @@ local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
 local isSimilar = require(package.Utility.isSimilar)
 local observe = require(package.Graph.observe)
+local parseError = require(package.Logging.parseError)
 local peek = require(package.State.peek)
 
 local Processor = Symbols.named 'Processor'
@@ -61,13 +63,16 @@ function class:_evaluate()
 		return peek(target)
 	end
 
-	local newValue = self[Processor](use)
-	local oldValue = self[Symbols.InternalValue]
+	local success, newValue = xpcall(self[Processor], parseError, use)
 
-	self[Symbols.InternalValue] = newValue
+	if success then
+		local oldValue = self[Symbols.InternalValue]
 
-	if not isSimilar(newValue, oldValue) then
-		return true
+		self[Symbols.InternalValue] = newValue
+
+		return not isSimilar(newValue, oldValue)
+	else
+		External.logErrorNonFatal('callbackError', newValue)
 	end
 
 	return false

@@ -5,7 +5,7 @@ local Value = require(package.State.Value)
 
 local Clock = Value({}, os.clock())
 
-External.bind(function(now)
+External.bindToUpdate(function(now)
 	Clock:set(now)
 end)
 

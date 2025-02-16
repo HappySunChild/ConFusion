@@ -76,4 +76,22 @@ export type SpecialKey = {
 	apply: (scope: Scope, instance: Instance, value: any) -> ()
 }
 
+export type ExternalProvider = {
+	startScheduler: () -> (),
+	stopScheduler: () -> (),
+	
+	logErrorNonFatal: (message: string) -> (),
+	logWarn: (message: string) -> (),
+	
+	doTaskImmediate: (resume: (...any) -> (), ...any) -> (),
+	doTaskDeferred: (resume: (...any) -> (), ...any) -> (),
+}
+
+export type Error = {
+	type: 'Error',
+	raw: string,
+	message: string,
+	trace: string
+}
+
 return nil

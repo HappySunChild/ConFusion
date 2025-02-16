@@ -1,5 +1,7 @@
+local External = require(script.External)
 local Types = require(script.Types)
 
+local Graph = script.Graph
 local State = script.State
 local Animation = script.Animation
 local Memory = script.Memory
@@ -21,6 +23,7 @@ local ReFusion = table.freeze {
 	Value = require(State.Value),
 	Table = require(State.Table),
 	peek = require(State.peek),
+	observe = require(Graph.observe),
 
 	New = require(Instance.New),
 	Hydrate = require(Instance.Hydrate),
@@ -41,6 +44,11 @@ local ReFusion = table.freeze {
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
 }
+
+if game ~= nil then
+	local RobloxProvider = require(script.RobloxProvider)
+	External.setProvider(RobloxProvider)
+end
 
 type ReFusion = typeof(ReFusion)
 export type Scope<Constructors = ReFusion> = Types.Scope<Constructors>

@@ -1,37 +1,93 @@
-local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
+local package = script.Parent
+
+local Types = require(package.Types)
+
+local formatError = require(package.Logging.formatError)
 
 local External = {}
 local boundCallbacks = {}
+local activeProvider: Types.ExternalProvider? = nil
+
+function External.setProvider(newProvider: Types.ExternalProvider?)
+	local oldProvider = activeProvider
+
+	if oldProvider ~= nil then
+		oldProvider.stopScheduler()
+	end
+
+	activeProvider = newProvider
+
+	if newProvider then
+		newProvider.startScheduler()
+	end
+
+	return oldProvider
+end
 
 function External.unbindAll()
 	table.clear(boundCallbacks)
 end
 
-function External.bind(callback: (now: number, () -> nil) -> nil)
+function External.bindToUpdate(callback: (now: number, () -> nil) -> nil)
 	local function disconnect()
 		boundCallbacks[callback] = nil
 	end
-	
+
 	boundCallbacks[callback] = disconnect
-	
+
 	return disconnect
 end
 
-function External.step()
+function External.performUpdate()
 	local now = os.clock()
-	
+
 	for callback, disconnect in boundCallbacks do
 		callback(now, disconnect)
 	end
 end
 
-if RunService:IsClient() then
-	local id = 'ReactFusionStep-' .. HttpService:GenerateGUID(false)
-	
-	RunService:BindToRenderStep(id, Enum.RenderPriority.First.Value, External.step)
-else
-	RunService.Heartbeat:Connect(External.step)
+function External.doTaskImmediate(resume: () -> (), ...)
+	if activeProvider then
+		activeProvider.doTaskImmediate(resume, ...)
+	end
+end
+
+function External.doTaskDeffered(resume: () -> (), ...)
+	if activeProvider then
+		activeProvider.doTaskDeferred(resume, ...)
+	end
+end
+
+function External.logError(
+	messageId: string,
+	err: Types.Error?,
+	...: unknown
+): never
+	error(formatError(messageId, err, ...), 0)
+end
+
+function External.logErrorNonFatal(
+	messageId: string,
+	err: Types.Error?,
+	...: unknown
+)
+	local message = formatError(messageId, err, ...)
+
+	if activeProvider then
+		activeProvider.logWarn(message)
+	else
+		print(message)
+	end
+end
+
+function External.logWarn(messageId: string, ...: unknown)
+	local message = formatError(messageId, debug.traceback(nil, 2), ...)
+
+	if activeProvider then
+		activeProvider.logWarn(message)
+	else
+		print(message)
+	end
 end
 
 return External

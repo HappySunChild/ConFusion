@@ -1,5 +1,6 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -10,6 +11,7 @@ local depend = require(package.Graph.depend)
 local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
 local observe = require(package.Graph.observe)
+local parseError = require(package.Logging.parseError)
 local peek = require(package.State.peek)
 
 local Input = Symbols.named 'Input'
@@ -65,13 +67,20 @@ function class:_evaluate()
 		return peek(target)
 	end
 
+	-- TODO: optimize this for instances
+
 	local output = self[Symbols.InternalValue] :: {}
 	table.clear(output)
 
 	for key, value in use(self[Input]) do
-		local newKey, newValue = self[Processor](use, key, value)
+		local success, newKey, newValue =
+			xpcall(self[Processor], parseError, use, key, value)
 
-		output[newKey] = newValue
+		if success then
+			output[newKey] = newValue
+		else
+			External.logErrorNonFatal('callbackError', newKey)
+		end
 	end
 
 	return true
