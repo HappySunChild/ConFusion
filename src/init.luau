@@ -26,7 +26,6 @@ local ReFusion = table.freeze {
 	observe = require(Graph.observe),
 
 	New = require(Instance.New),
-	Hydrate = require(Instance.Hydrate),
 
 	Signal = require(Utility.Signal),
 	Clock = require(Utility.Clock),
