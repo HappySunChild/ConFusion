@@ -42,6 +42,7 @@ local ReFusion = table.freeze {
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
+	WithChild = require(Keys.WithChild),
 }
 
 if game ~= nil then

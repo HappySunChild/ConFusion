@@ -1,5 +1,6 @@
 local package = script.Parent.Parent.Parent
 
+local External = require(package.External)
 local Types = require(package.Types)
 
 local castToState = require(package.State.castToState)
@@ -11,11 +12,7 @@ local Children: Types.SpecialKey = table.freeze {
 	kind = 'key',
 	type = 'children',
 
-	apply = function(
-		scope: Types.Scope,
-		applyTo: Instance,
-		children: Types.Child
-	)
+	apply = function(scope: Types.Scope, applyTo: Instance, children: Types.Child?)
 		local newChildren, oldChildren = {}, {}
 		local newScopes, oldScopes = {}, {}
 
@@ -38,6 +35,52 @@ local Children: Types.SpecialKey = table.freeze {
 					if name then
 						child.Name = name
 					end
+				--[[
+				This is something I'm still considering.
+				I thought about how you could technically have "unresolved children" by using a function that passes the parent and returns the child/children.
+				Maybe this could be used during Hydrate to apply properties to existing children?
+				(got the idea from this issue: https://github.com/dphfox/Fusion/issues/206)
+				
+				An example of what this could possibly look like in use:
+				```
+				local function ExistingChild(scope, childName)
+					return function(props)
+						-- this function gets called when updating the children.
+						return function(parent)
+							local child = parent:FindFirstChild(childName)
+							
+							applyProperties(scope, child, props)
+							
+							return child
+						end
+					end
+				end
+				```
+				
+				This function could then be used like this:
+				```
+				scope:Hydrate(screenGui) {
+					[Children] = {
+						-- this returns a function which sort of functions as a "unresolved" child.
+						-- you could write variations of this function to work with `:WaitForChild`, `:FindFirstAncestor`, `:FindFirstChildOfClass`, etc.
+						scope:ExistingChild "Label" {
+							BackgroundColor3 = Color3.fromRGB(184, 85, 85),
+							Text = "Hello world!"
+							...etc
+						}
+					}
+				}
+				```
+				
+				I haven't thoroughly tested this, but just from this brief example I think it'd work pretty well.
+				I could be wrong though!
+				]]
+				elseif childType == 'function' then
+					local childInstance = child(applyTo)
+
+					if childInstance then
+						processChild(childInstance)
+					end
 				elseif castToState(child) then
 					local value = peek(child)
 
@@ -49,6 +92,7 @@ local Children: Types.SpecialKey = table.freeze {
 
 					if not childScope then
 						childScope = {}
+
 						observe(child, updateChildren)
 					else
 						oldScopes[child] = nil
@@ -60,7 +104,11 @@ local Children: Types.SpecialKey = table.freeze {
 						processChild(subChild, key)
 					end
 				else
-					error(`Unknown child type, '{childType}'`, 2)
+					External.logErrorNonFatal(
+						'invalidChildType',
+						debug.traceback(nil, 2),
+						childType
+					)
 				end
 			end
 
@@ -83,6 +131,7 @@ local Children: Types.SpecialKey = table.freeze {
 
 		table.insert(scope, function()
 			children = nil
+
 			updateChildren()
 		end)
 
