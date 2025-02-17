@@ -1,5 +1,3 @@
-local package = script.Parent.Parent
-
 local function nameOf(value: unknown, default: string)
 	if typeof(value) == 'table' then
 		if value.name then
