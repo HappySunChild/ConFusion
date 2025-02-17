@@ -2,16 +2,10 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Children = require(package.Instance.Keys.Children)
 local applyProperties = require(package.Instance.applyProperties)
 local defaultProperties = require(package.Instance.defaultProperties)
 
-local function New(
-	scope: Types.Scope,
-	classNameOrTemplate: string | Instance,
-	props: Types.Properties,
-	children: Types.Child
-)
+local function New(scope: Types.Scope, classNameOrTemplate: string | Instance)
 	local instance
 
 	if typeof(classNameOrTemplate) == 'Instance' then
@@ -36,16 +30,13 @@ local function New(
 		instance = newInstance
 	end
 
-	props = props or {}
+	return function(props: Types.Properties)
+		table.insert(scope, instance)
 
-	if children then
-		props[Children] = children
+		applyProperties(scope, instance, props)
+
+		return instance
 	end
-
-	table.insert(scope, instance)
-	applyProperties(scope, instance, props)
-
-	return instance
 end
 
 return New
