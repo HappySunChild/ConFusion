@@ -1,7 +1,9 @@
 return {
 	infiniteLoop = 'Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.',
 	callbackError = 'Error in callback:\nERROR_MESSAGE',
+	missingChild = "Could not find child '%s' in '%s'.",
 
+	invalidChildType = "Invalid child type '%s'.",
 	invalidObserveType = "Can't observe non-state value, got '%s'.",
 
 	propertyInvalidType = "'%s.%s' expected a '%s' type, but got a '%s' type.",
