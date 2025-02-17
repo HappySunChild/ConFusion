@@ -7,7 +7,6 @@ local Parent = require(package.Instance.Keys._Parent)
 local castToState = require(package.State.castToState)
 local observe = require(package.Graph.observe)
 local parseError = require(package.Logging.parseError)
-local peek = require(package.State.peek)
 local sortKeys = require(package.Instance.Keys.sortKeys)
 
 local kindof = require(package.Utility.kindOf)
@@ -60,10 +59,12 @@ local function applyProperty(
 	if castToState(value) then
 		observe(value, function(new)
 			setProperty(instance, property, new)
-		end)
+		end, true)
+
+		return
 	end
 
-	setProperty(instance, property, peek(value))
+	setProperty(instance, property, value)
 end
 
 local function applyProperties(
