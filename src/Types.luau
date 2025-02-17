@@ -14,7 +14,14 @@ export type Task =
 	| { Destroy: (any) -> () }
 	| { Task }
 export type Scope<Constructors = any> = { Task } & Constructors
-export type Child = Instance | { Child } | UsedAs<Child>
+export type Child = Instance | (Instance) -> Instance? | { Child } | UsedAs<Child>
+
+export type Error = {
+	type: 'Error',
+	raw: string,
+	message: string,
+	trace: string
+}
 
 export type Observer<V> = {
 	onChange: (Observer<V>, callback: (new: V) -> nil) -> Disconnect,
@@ -73,6 +80,8 @@ export type Spring<V> = StateObject<V> & {
 }
 
 export type SpecialKey = {
+	type: string,
+	kind: 'key',
 	apply: (scope: Scope, instance: Instance, value: any) -> ()
 }
 
@@ -85,13 +94,6 @@ export type ExternalProvider = {
 	
 	doTaskImmediate: (resume: (...any) -> (), ...any) -> (),
 	doTaskDeferred: (resume: (...any) -> (), ...any) -> (),
-}
-
-export type Error = {
-	type: 'Error',
-	raw: string,
-	message: string,
-	trace: string
 }
 
 return nil
