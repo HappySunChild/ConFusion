@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService 'ReplicatedStorage'
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
+local Children = Fusion.Children
 local HotbarSlot = require(script.Parent.HotbarSlot)
 
 local function Hotbar(scope: Fusion.Scope, props)
@@ -9,47 +10,46 @@ local function Hotbar(scope: Fusion.Scope, props)
 	}
 
 	local created = {}
-	local slots = hotbarScope:ForPairs(
-		props.Items,
-		function(_, index, tool: Tool)
-			local slot = created[tool]
+	local slots = hotbarScope:ForPairs(props.Items, function(_, index, tool: Tool)
+		local slot = created[tool]
 
-			if not slot then
-				slot = hotbarScope:HotbarSlot {
-					Item = tool,
-					Index = index,
-					Callback = props.EquipCallback,
-					Cleanup = function()
-						created[tool] = nil
-					end,
-				}
-				created[tool] = slot
-			end
-
-			return index, slot
+		if not slot then
+			slot = hotbarScope:HotbarSlot {
+				Item = tool,
+				Index = index,
+				Callback = props.EquipCallback,
+				Cleanup = function()
+					created[tool] = nil
+				end,
+			}
+			created[tool] = slot
 		end
-	)
+
+		return index, slot
+	end)
 
 	local height = props.Height
 	local padding = props.Padding
 
-	return hotbarScope:New('Frame', {
+	return hotbarScope:New 'Frame' {
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -5),
 		Size = UDim2.fromOffset(0, height),
 
 		BackgroundTransparency = 1,
-	}, {
-		List = hotbarScope:New('UIListLayout', {
-			FillDirection = Enum.FillDirection.Horizontal,
-			HorizontalAlignment = Enum.HorizontalAlignment.Center,
-			VerticalAlignment = Enum.VerticalAlignment.Center,
-			SortOrder = Enum.SortOrder.LayoutOrder,
-			Padding = UDim.new(0, padding),
-		}),
 
-		Slots = slots,
-	})
+		[Children] = {
+			List = hotbarScope:New 'UIListLayout' {
+				FillDirection = Enum.FillDirection.Horizontal,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
+				VerticalAlignment = Enum.VerticalAlignment.Center,
+				SortOrder = Enum.SortOrder.LayoutOrder,
+				Padding = UDim.new(0, padding),
+			},
+
+			Slots = slots,
+		},
+	}
 end
 
 return Hotbar

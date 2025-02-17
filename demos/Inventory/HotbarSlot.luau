@@ -3,7 +3,7 @@ local ReplicatedStorage = game:GetService 'ReplicatedStorage'
 local TextService = game:GetService 'TextService'
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local OnEvent = Fusion.OnEvent
+local OnEvent, Children = Fusion.OnEvent, Fusion.Children
 
 local Foreground = Color3.fromRGB(245, 247, 234)
 local ActiveForeground = Color3.fromRGB(225, 86, 63)
@@ -71,7 +71,7 @@ local function HotbarSlot(
 		return 1
 	end)
 
-	return slotScope:New('TextButton', {
+	return slotScope:New 'TextButton' {
 		Size = slotScope:Spring(
 			slotSize:map(function(size)
 				return UDim2.fromScale(size, size)
@@ -99,14 +99,6 @@ local function HotbarSlot(
 		TextTruncate = Enum.TextTruncate.AtEnd,
 		TextColor3 = Foreground,
 
-		[Fusion.Cleanup] = {
-			slotScope,
-			props.Cleanup,
-		},
-		[Fusion.Startup] = function()
-			isStartup:set(false)
-		end,
-
 		[OnEvent 'InputBegan'] = function(input: InputObject)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				if callback then
@@ -120,61 +112,71 @@ local function HotbarSlot(
 		[OnEvent 'MouseLeave'] = function()
 			isHovering:set(false)
 		end,
-	}, {
-		Stroke = slotScope:New('UIStroke', {
-			ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-			Thickness = 1,
-			Color = isActive:map(function(active)
-				return if active then ActiveForeground else Foreground
-			end),
-		}),
-		Round = slotScope:New('UICorner', {
-			CornerRadius = UDim.new(0, 2),
-		}),
 
-		IconImage = toolIcon:map(function(value)
-			if value ~= '' then
-				return slotScope:New('ImageLabel', {
-					AnchorPoint = Vector2.new(0.5, 0.5),
-					Position = UDim2.fromScale(0.5, 0.5),
-					Size = UDim2.fromScale(0.8, 0.8),
+		[Fusion.Cleanup] = {
+			slotScope,
+			props.Cleanup,
+		},
+		[Fusion.Startup] = function()
+			isStartup:set(false)
+		end,
 
-					BackgroundTransparency = 1,
-					Image = toolIcon,
-				})
-			end
-
-			return
-		end),
-		ToolTip = slotScope:New('TextLabel', {
-			AnchorPoint = Vector2.new(0.5, 1),
-			Position = UDim2.new(0.5, 0, 0, -5),
-			Size = slotScope:Tween(
-				toolTipWidth:map(function(width)
-					return UDim2.fromOffset(width, 16)
+		[Children] = {
+			Stroke = slotScope:New 'UIStroke' {
+				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+				Thickness = 1,
+				Color = isActive:map(function(active)
+					return if active then ActiveForeground else Foreground
 				end),
-				TooltipInfo
-			),
+			},
+			Round = slotScope:New 'UICorner' {
+				CornerRadius = UDim.new(0, 2),
+			},
 
-			Text = toolTip,
-			TextXAlignment = Enum.TextXAlignment.Center,
-			TextYAlignment = Enum.TextYAlignment.Center,
-			TextColor3 = Foreground,
+			IconImage = toolIcon:map(function(value)
+				if value ~= '' then
+					return slotScope:New 'ImageLabel' {
+						AnchorPoint = Vector2.new(0.5, 0.5),
+						Position = UDim2.fromScale(0.5, 0.5),
+						Size = UDim2.fromScale(0.8, 0.8),
 
-			ClipsDescendants = true,
+						BackgroundTransparency = 1,
+						Image = toolIcon,
+					}
+				end
 
-			BackgroundTransparency = 0.5,
-			BackgroundColor3 = Background,
-		}),
-		IndexLabel = slotScope:New('TextLabel', {
-			Size = UDim2.fromOffset(10, 10),
-			BackgroundTransparency = 1,
+				return
+			end),
+			ToolTip = slotScope:New 'TextLabel' {
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.new(0.5, 0, 0, -5),
+				Size = slotScope:Tween(
+					toolTipWidth:map(function(width)
+						return UDim2.fromOffset(width, 16)
+					end),
+					TooltipInfo
+				),
 
-			Text = tostring(index % 10),
-			TextColor3 = Foreground,
-			ZIndex = 10,
-		}),
-	})
+				Text = toolTip,
+				TextXAlignment = Enum.TextXAlignment.Center,
+				TextYAlignment = Enum.TextYAlignment.Center,
+				TextColor3 = Foreground,
+
+				ClipsDescendants = true,
+
+				BackgroundTransparency = 0.5,
+				BackgroundColor3 = Background,
+			},
+			IndexLabel = slotScope:New 'TextLabel' {
+				Size = UDim2.fromOffset(10, 10),
+				BackgroundTransparency = 1,
+
+				Text = tostring(index % 10),
+				TextColor3 = Foreground,
+				ZIndex = 10,
+			},
+		},
+	}
 end
 
 return HotbarSlot

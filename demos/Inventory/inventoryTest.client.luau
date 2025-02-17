@@ -10,7 +10,7 @@ StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 local Hotbar = require(script.Parent.Hotbar)
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local peek = Fusion.peek
+local peek, Children = Fusion.peek, Fusion.Children
 
 local keys = {
 	Enum.KeyCode.One,
@@ -95,10 +95,7 @@ local function addTool(tool: Instance)
 
 	local connection
 	connection = tool.AncestryChanged:Connect(function(_, parent)
-		if
-			parent == nil
-			or parent ~= player.Backpack and parent ~= player.Character
-		then
+		if parent == nil or parent ~= player.Backpack and parent ~= player.Character then
 			connection:Disconnect()
 
 			removeTool(tool)
@@ -133,18 +130,20 @@ local function characterAdded(character: Model)
 	end)
 end
 
-scope:New('ScreenGui', {
+scope:New 'ScreenGui' {
 	Name = 'InventoryHotbar',
 	Parent = player.PlayerGui,
-}, {
-	Hotbar = scope:Hotbar {
-		Height = 50,
-		Padding = 5,
 
-		Items = items,
-		EquipCallback = equipTool,
+	[Children] = {
+		Hotbar = scope:Hotbar {
+			Height = 50,
+			Padding = 5,
+
+			Items = items,
+			EquipCallback = equipTool,
+		},
 	},
-})
+}
 
 ContextActionService:BindAction(
 	'Equip',
