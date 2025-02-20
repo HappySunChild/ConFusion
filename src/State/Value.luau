@@ -1,5 +1,6 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
@@ -11,14 +12,14 @@ local isSimilar = require(package.Utility.isSimilar)
 local observe = require(package.Graph.observe)
 
 local class = {
-	kind = 'state',
-	type = 'value',
+	kind = "state",
+	type = "value",
 	[Symbols.Using] = table.freeze {},
 }
 
 local METATABLE = table.freeze { __index = class }
 
-local function Value<V>(scope, initialValue: V): Types.Value<V>
+local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
 	local newValue = setmetatable({
 		[Symbols.Scope] = scope,
 		[Symbols.CreatedAt] = os.clock(),
@@ -55,37 +56,32 @@ function class:set(newValue: any)
 	return newValue
 end
 
-function class:update(predicate)
-	local currentValue = self[Symbols.InternalValue]
-
-	return self:set(predicate(currentValue))
-end
-
 function class:bindToInstanceProperty(instance: Instance, property: string)
-	local success = pcall(function()
-		return instance[property]
-	end)
+	local ok, event: RBXScriptSignal =
+		pcall(instance.GetStyledPropertyChangedSignal, instance, property)
 
-	if not success then
-		error(
-			`'{property}' is not a valid property of instance '{instance}'`,
-			2
-		)
+	if not ok or typeof(event) ~= "RBXScriptSignal" then
+		External.logError("cannotConnectChange", nil, instance.ClassName, property)
 	end
 
 	self:set(instance[property])
 
-	local connection = instance
-		:GetPropertyChangedSignal(property)
-		:Connect(function()
-			self:set(instance[property])
-		end)
+	local scope = self[Symbols.Scope]
+	local connection = event:Connect(function()
+		self:set(instance[property])
+	end)
 
-	table.insert(self[Symbols.Scope], connection)
+	table.insert(scope, connection)
 
 	return function()
 		connection:Disconnect()
-	end, connection
+	end
+end
+
+function class:update(predicate)
+	local currentValue = self[Symbols.InternalValue]
+
+	return self:set(predicate(currentValue))
 end
 
 function class:_evaluate()

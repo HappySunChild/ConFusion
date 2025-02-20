@@ -1,3 +1,4 @@
+--!strict
 local External = require(script.External)
 local Types = require(script.Types)
 
@@ -45,7 +46,7 @@ local ReFusion = table.freeze {
 	WithChild = require(Keys.WithChild),
 }
 
-if game ~= nil then
+if game then
 	local RobloxProvider = require(script.RobloxProvider)
 	External.setProvider(RobloxProvider)
 end
