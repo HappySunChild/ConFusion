@@ -1,5 +1,7 @@
+--!strict
+
 local function named(name: string)
-	return `_{name:lower()}_`
+	return `_{name:lower()}`
 end
 
 local Symbols = {
