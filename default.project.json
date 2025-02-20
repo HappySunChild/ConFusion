@@ -13,6 +13,13 @@
 				}
 			}
 		},
+		
+		"ServerScriptService": {
+			"$ignoreUnknownInstances": true,
+			"tests": {
+				"$path": "tests"
+			}
+		},
 
 		"StarterPlayer": {
 			"StarterPlayerScripts": {
