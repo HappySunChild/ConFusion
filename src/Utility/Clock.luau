@@ -1,3 +1,4 @@
+--!strict
 local package = script.Parent.Parent
 
 local External = require(package.External)

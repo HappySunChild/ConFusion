@@ -1,5 +1,6 @@
 local package = script.Parent.Parent.Parent
 
+local External = require(package.External)
 local Types = require(package.Types)
 
 local keyCache = {}
@@ -9,11 +10,25 @@ local function OnChange(property: string)
 
 	if not key then
 		key = table.freeze {
-			type = 'onChange',
-			kind = 'key',
+			type = "onChange",
+			kind = "key",
 
-			apply = function(scope: Types.Scope, applyTo: Instance, callback: (any) -> ())
-				local event = applyTo:GetPropertyChangedSignal(property)
+			apply = function(
+				scope: Types.Scope,
+				applyTo: Instance,
+				callback: (any) -> ()
+			)
+				local ok, event =
+					pcall(applyTo.GetPropertyChangedSignal, applyTo, property)
+
+				if not ok then
+					External.logError(
+						"cannotConnectChange",
+						nil,
+						applyTo.ClassName,
+						property
+					)
+				end
 
 				table.insert(
 					scope,

@@ -1,3 +1,5 @@
+--!strict
+
 local package = script.Parent.Parent
 
 local kindof = require(package.Utility.kindOf)

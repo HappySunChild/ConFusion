@@ -1,8 +1,9 @@
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
+local Types = require(package.Types)
 
-local function destroy(target)
+local function destroy<V>(target: Types.StateObject<V>)
 	target[Symbols.Scope] = nil
 	target[Symbols.Observers] = nil
 
@@ -11,7 +12,7 @@ local function destroy(target)
 	if using then
 		for dependency in using do
 			dependency[Symbols.Users][target] = nil
-			target[Symbols.Using][dependency] = nil
+			using[dependency] = nil
 		end
 	end
 
@@ -20,7 +21,7 @@ local function destroy(target)
 	if users then
 		for user in users do
 			user[Symbols.Using][target] = nil
-			target[Symbols.Users][user] = nil
+			users[user] = nil
 		end
 	end
 end

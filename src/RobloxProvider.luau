@@ -4,12 +4,13 @@ local RunService = game:GetService 'RunService'
 local package = script.Parent
 
 local External = require(package.External)
+local Types = require(package.Types)
 
 local function performUpdateStep()
 	External.performUpdate(os.clock())
 end
 
-local RobloxProvider = {}
+local RobloxProvider: Types.ExternalProvider = {}
 
 function RobloxProvider.doTaskImmediate(resume: (...any) -> (), ...)
 	task.spawn(resume, ...)

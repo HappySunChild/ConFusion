@@ -19,12 +19,12 @@ export type Stopwatch = Types.StateObject<number> & {
 	unpause: (Stopwatch) -> (),
 }
 
-local StopwatchClass = {
+local class = {
 	kind = 'state',
 	type = 'stopwatch',
 }
 
-local METATABLE = table.freeze { __index = StopwatchClass }
+local METATABLE = table.freeze { __index = class }
 
 local function Stopwatch(scope: Types.Scope): Stopwatch
 	local newStopwatch = setmetatable({
@@ -37,18 +37,16 @@ local function Stopwatch(scope: Types.Scope): Stopwatch
 
 		[Start] = peek(Clock),
 		[Paused] = true,
-	}, METATABLE)
+	}, METATABLE) :: Stopwatch
 
 	table.insert(scope, destructor(newStopwatch))
 
 	depend(newStopwatch, Clock)
 
-	return newStopwatch
+	return newStopwatch :: Stopwatch
 end
 
-function StopwatchClass:reset()
-	self = self :: Stopwatch
-
+function class:reset()
 	local now = peek(Clock)
 
 	if now == self[Start] then
@@ -61,9 +59,7 @@ function StopwatchClass:reset()
 	change(self)
 end
 
-function StopwatchClass:pause()
-	self = self :: Stopwatch
-
+function class:pause()
 	if self[Paused] then
 		return
 	end
@@ -73,9 +69,7 @@ function StopwatchClass:pause()
 	change(self)
 end
 
-function StopwatchClass:unpause()
-	self = self :: Stopwatch
-
+function class:unpause()
 	if not self[Paused] then
 		return
 	end
@@ -86,14 +80,12 @@ function StopwatchClass:unpause()
 	change(self)
 end
 
-function StopwatchClass:_evaluate()
-	self = self :: Stopwatch
-
+function class:_evaluate()
 	if self[Paused] then
 		return false
 	end
 
-	depend(self, Clock)
+	depend(self :: Stopwatch, Clock)
 
 	local currentTime = peek(Clock)
 	local oldValue = self[Symbols.InternalValue]
@@ -104,6 +96,6 @@ function StopwatchClass:_evaluate()
 	return newValue ~= oldValue
 end
 
-table.freeze(StopwatchClass)
+table.freeze(class)
 
 return Stopwatch

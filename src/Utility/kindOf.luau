@@ -1,3 +1,5 @@
+--!strict
+
 local function kindOf(value: any): string
 	local vType = typeof(value)
 

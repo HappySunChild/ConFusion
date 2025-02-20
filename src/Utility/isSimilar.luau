@@ -1,3 +1,5 @@
+--!strict
+
 local function isSimilar(a: any, b: any)
 	if a ~= b then
 		return false
@@ -11,7 +13,7 @@ local function isSimilar(a: any, b: any)
 		end
 
 		for key, value in b do
-			if not isSimilar(a[key], value) then
+			if not isSimilar((a :: { [any]: any })[key], value) then
 				return false
 			end
 		end

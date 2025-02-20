@@ -4,7 +4,7 @@ type NilFunc = () -> ()
 type Disconnect = NilFunc
 type GenericTable<K = any, V = any> = { [K]: V }
 
-export type Properties = GenericTable<SpecialKey|string, any>
+export type Properties = GenericTable<SpecialKey<any>|string, any>
 
 export type Task =
 	Instance
@@ -14,7 +14,7 @@ export type Task =
 	| { Destroy: (any) -> () }
 	| { Task }
 export type Scope<Constructors = any> = { Task } & Constructors
-export type Child = Instance | (Instance) -> Instance? | { Child } | UsedAs<Child>
+export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
 
 export type Error = {
 	type: 'Error',
@@ -29,9 +29,18 @@ export type Observer<V> = {
 }
 
 export type UsedAs<V> = StateObject<V> | V
-export type StateObject<V> = {
+
+export type GraphObject = {
+	_lastchange: number?,
+	_validity: string?,
+	_users: {[GraphObject]: unknown},
+	_using: {[GraphObject]: unknown}
+}
+
+export type StateObject<V> = GraphObject & {
 	kind: 'state',
 	type: string,
+	_internalvalue: V,
 	
 	onChange: (StateObject<V>, callback: (new: V) -> nil) -> (Disconnect, Observer<V>),
 }
@@ -40,6 +49,7 @@ export type Use = <V>(target: StateObject<V>) -> V
 export type ComputedProcessor<T> = (Use) -> T
 export type Computed<IV, OV> = StateObject<OV> & {
 	type: 'computed',
+	_processor: ComputedProcessor<OV>,
 	
 	map: <T>(Computed<IV, OV>, processor: (IV) -> T) -> Computed<T, T>,
 }
@@ -79,10 +89,10 @@ export type Spring<V> = StateObject<V> & {
 	animating: boolean
 }
 
-export type SpecialKey = {
+export type SpecialKey<T> = {
 	type: string,
 	kind: 'key',
-	apply: (scope: Scope, instance: Instance, value: any) -> ()
+	apply: (scope: Scope<T>, instance: Instance, value: any) -> ()
 }
 
 export type ExternalProvider = {
@@ -92,8 +102,8 @@ export type ExternalProvider = {
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
 	
-	doTaskImmediate: (resume: (...any) -> (), ...any) -> (),
-	doTaskDeferred: (resume: (...any) -> (), ...any) -> (),
+	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
+	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
 }
 
 return nil

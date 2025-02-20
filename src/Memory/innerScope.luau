@@ -1,9 +1,14 @@
+--!strict
+
 local package = script.Parent.Parent
 
 local Types = require(package.Types)
 local deriveScope = require(package.Memory.deriveScope)
 
-local function innerScope(existing: Types.Scope, methods: { [unknown]: unknown }): unknown
+local function innerScope<T>(
+	existing: Types.Scope<T>,
+	methods: { [unknown]: unknown }
+): unknown
 	local inner = deriveScope(existing, methods)
 
 	table.insert(existing, inner)

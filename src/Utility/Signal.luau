@@ -1,7 +1,8 @@
+--!strict
+
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
-
 local Subscriptions = Symbols.named 'Subscriptions'
 
 local class = {
@@ -19,16 +20,18 @@ local function Signal()
 end
 
 function class:fire(...)
-	for callback in self[Subscriptions] do
+	for _, callback in self[Subscriptions] do
 		callback(...)
 	end
 end
 
 function class:connect(callback)
-	self[Subscriptions][callback] = true
+	local uniqueIdentifier = {}
+
+	self[Subscriptions][uniqueIdentifier] = callback
 
 	return function()
-		self[Subscriptions][callback] = nil
+		self[Subscriptions][uniqueIdentifier] = callback
 	end
 end
 

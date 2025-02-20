@@ -1,3 +1,5 @@
+--!strict
+
 local package = script.Parent
 
 local Types = require(package.Types)
@@ -28,49 +30,40 @@ function External.unbindAll()
 	table.clear(boundCallbacks)
 end
 
-function External.bindToUpdate(callback: (now: number, () -> nil) -> nil)
-	local function disconnect()
-		boundCallbacks[callback] = nil
+function External.bindToUpdate(callback: (now: number) -> ())
+	local uniqueIdentifier = {}
+	boundCallbacks[uniqueIdentifier] = callback
+
+	return function()
+		boundCallbacks[uniqueIdentifier] = nil
 	end
-
-	boundCallbacks[callback] = disconnect
-
-	return disconnect
 end
 
 function External.performUpdate()
 	local now = os.clock()
 
-	for callback, disconnect in boundCallbacks do
-		callback(now, disconnect)
+	for _, callback in boundCallbacks do
+		callback(now)
 	end
 end
 
-function External.doTaskImmediate(resume: () -> (), ...)
+function External.doTaskImmediate(resume: (...unknown) -> (), ...: unknown)
 	if activeProvider then
 		activeProvider.doTaskImmediate(resume, ...)
 	end
 end
 
-function External.doTaskDeffered(resume: () -> (), ...)
+function External.doTaskDeffered(resume: (...unknown) -> (), ...: unknown)
 	if activeProvider then
 		activeProvider.doTaskDeferred(resume, ...)
 	end
 end
 
-function External.logError(
-	messageId: string,
-	err: Types.Error?,
-	...: unknown
-): never
+function External.logError(messageId: string, err: Types.Error?, ...: unknown): never
 	error(formatError(messageId, err, ...), 0)
 end
 
-function External.logErrorNonFatal(
-	messageId: string,
-	err: Types.Error?,
-	...: unknown
-)
+function External.logErrorNonFatal(messageId: string, err: Types.Error?, ...: unknown)
 	local message = formatError(messageId, err, ...)
 
 	if activeProvider then

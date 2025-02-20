@@ -2,8 +2,9 @@ local package = script.Parent.Parent
 
 local External = require(package.External)
 local Symbols = require(package.Symbols)
+local Types = require(package.Types)
 
-local function evaluate(target, forceComputation)
+local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 	if target[Symbols.Validity] == 'busy' then
 		return External.logError 'infiniteLoop'
 	end
@@ -18,9 +19,7 @@ local function evaluate(target, forceComputation)
 			for dependency in target[Symbols.Using] do
 				evaluate(dependency, false)
 
-				if
-					dependency[Symbols.LastChange] > target[Symbols.LastChange]
-				then
+				if dependency[Symbols.LastChange] > target[Symbols.LastChange] then
 					needsComputation = true
 
 					break
@@ -45,10 +44,7 @@ local function evaluate(target, forceComputation)
 		if targetMeaningfullyChanged then
 			if target[Symbols.Observers] then
 				for callback in target[Symbols.Observers] do
-					External.doTaskImmediate(
-						callback,
-						target[Symbols.InternalValue]
-					)
+					External.doTaskImmediate(callback, target[Symbols.InternalValue])
 				end
 			end
 

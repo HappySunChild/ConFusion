@@ -1,3 +1,5 @@
+--!strict
+
 local package = script.Parent.Parent
 
 local Types = require(package.Types)
@@ -6,7 +8,7 @@ local active = {}
 
 local function doCleanup(task: Types.Task)
 	if active[task] then
-		return error(`doCleanup has already been called on '{task}'`)
+		error(`doCleanup has already been called on '{task}'`)
 	end
 
 	active[task] = true
@@ -14,15 +16,15 @@ local function doCleanup(task: Types.Task)
 	local taskType = typeof(task)
 
 	if taskType == 'Instance' then
-		task:Destroy()
+		(task :: Instance):Destroy()
 	elseif taskType == 'RBXScriptConnection' then
-		task:Disconnect()
+		(task :: RBXScriptConnection):Disconnect()
 	elseif taskType == 'function' then
-		task()
+		(task :: () -> ())()
 	elseif taskType == 'table' then
-		if task.destroy then
+		if (task :: { destroy: () -> () }).destroy then
 			task.destroy()
-		elseif task.Destroy then
+		elseif (task :: { Destroy: () -> () }).Destroy then
 			task.Destroy()
 		elseif task[1] ~= nil then
 			for i = #task, 1, -1 do
@@ -33,8 +35,6 @@ local function doCleanup(task: Types.Task)
 	end
 
 	active[task] = nil
-
-	return
 end
 
 return doCleanup

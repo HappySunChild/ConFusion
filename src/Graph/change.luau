@@ -1,11 +1,12 @@
 local package = script.Parent.Parent
 
 local Symbols = require(package.Symbols)
+local Types = require(package.Types)
 
 local castToState = require(package.State.castToState)
 local evaluate = require(package.Graph.evaluate)
 
-local function change(target)
+local function change(target: Types.GraphObject)
 	if not castToState(target) then
 		return
 	end

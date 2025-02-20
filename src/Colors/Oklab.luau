@@ -1,3 +1,4 @@
+--!strict
 local sRGB = require(script.Parent.sRGB)
 
 local Oklab = {}
@@ -7,9 +8,9 @@ function Oklab.fromLinear(rgb: Color3): Vector3
 	local m = rgb.R * 0.2119034982 + rgb.G * 0.6806995451 + rgb.B * 0.1073969566
 	local s = rgb.R * 0.0883024619 + rgb.G * 0.2817188376 + rgb.B * 0.6299787005
 
-	local lRoot = l ^ (1/3)
-	local mRoot = m ^ (1/3)
-	local sRoot = s ^ (1/3)
+	local lRoot = l ^ (1 / 3)
+	local mRoot = m ^ (1 / 3)
+	local sRoot = s ^ (1 / 3)
 
 	return Vector3.new(
 		lRoot * 0.2104542553 + mRoot * 0.7936177850 - sRoot * 0.0040720468,
@@ -43,7 +44,6 @@ function Oklab.toLinear(lab: Vector3, unclamped: boolean?): Color3
 
 	return Color3.new(red, green, blue)
 end
-
 
 function Oklab.toSRGB(lab: Vector3, unclamped: boolean?): Color3
 	return sRGB.fromLinear(Oklab.toLinear(lab, unclamped))

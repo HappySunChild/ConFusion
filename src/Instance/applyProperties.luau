@@ -26,7 +26,7 @@ local function setProperty(instance: Instance, property: string, value: any)
 	if not success then
 		if not pcall(testProperty, instance, property) then
 			External.logErrorNonFatal(
-				'propertyCannotAssign',
+				"propertyCannotAssign",
 				nil,
 				instance.ClassName,
 				property
@@ -36,10 +36,10 @@ local function setProperty(instance: Instance, property: string, value: any)
 			local expectedType = typeof(instance[property])
 
 			if givenType == expectedType then
-				External.logErrorNonFatal('propertyAssignError', err)
+				External.logErrorNonFatal("propertyAssignError", err)
 			else
 				External.logErrorNonFatal(
-					'propertyInvalidType',
+					"propertyInvalidType",
 					nil,
 					instance.ClassName,
 					property,
@@ -67,14 +67,14 @@ local function applyProperty(
 	setProperty(instance, property, value)
 end
 
-local function applyProperties(
-	scope: Types.Scope,
+local function applyProperties<T>(
+	scope: Types.Scope<T>,
 	instance: Instance,
 	props: Types.Properties
 )
 	props = table.clone(props)
 
-	local specialKeys: { Types.SpecialKey } = {}
+	local specialKeys: { Types.SpecialKey<any> } = {}
 
 	props[Parent] = props.Parent
 	props.Parent = nil
@@ -82,9 +82,9 @@ local function applyProperties(
 	for key, value in props do
 		local keyType = typeof(key)
 
-		if keyType == 'string' then
+		if keyType == "string" then
 			applyProperty(instance, key, value)
-		elseif kindof(key) == 'key' then
+		elseif kindof(key) == "key" then
 			table.insert(specialKeys, key)
 		end
 	end
@@ -96,7 +96,7 @@ local function applyProperties(
 	end
 
 	if props.Parent then
-		applyProperty(instance, 'Parent', props.Parent)
+		applyProperty(instance, "Parent", props.Parent)
 	end
 end
 
