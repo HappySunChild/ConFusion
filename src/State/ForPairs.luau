@@ -14,12 +14,14 @@ local observe = require(package.Graph.observe)
 local parseError = require(package.Logging.parseError)
 local peek = require(package.State.peek)
 
-local Input = Symbols.named 'Input'
-local Processor = Symbols.named 'Processor'
+local Input = Symbols.named "Input"
+local OldInput = Symbols.named "OldInput"
+local Objects = Symbols.named "Objects"
+local Processor = Symbols.named "Processor"
 
 local class = {
-	type = 'for',
-	kind = 'state',
+	type = "for",
+	kind = "state",
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -37,8 +39,10 @@ local function ForPairs<IK, IV, OK, OV>(
 		[Symbols.Users] = {},
 		[Symbols.Using] = {},
 
+		[OldInput] = nil,
 		[Input] = input,
 		[Processor] = processor,
+		[Objects] = {},
 	}, METATABLE)
 
 	table.insert(scope, destructor(newPairs))
@@ -67,21 +71,52 @@ function class:_evaluate()
 		return peek(target)
 	end
 
-	-- TODO: optimize this for instances
+	local scope = self[Symbols.Scope]
+	local objects = self[Objects]
+
+	local oldInput = self[OldInput]
+	local newInput = use(self[Input])
+
+	local processor = self[Processor] :: (Types.Use, any, any) -> (any, any)
+
+	if oldInput then
+		for key, value in newInput do
+			if oldInput[key] ~= value then
+				local pair = Computed(scope, function(use)
+					local ok, newKey, newValue =
+						xpcall(processor, parseError, use, key, value)
+
+					if ok then
+						return { key = newKey, value = newValue }
+					end
+
+					External.logErrorNonFatal("callbackError", newKey :: Types.Error)
+
+					return { key = key, value = value }
+				end)
+
+				objects[key] = pair
+			end
+		end
+
+		for key in oldInput do
+			if newInput[key] == nil then
+				objects[key] = nil
+			end
+		end
+	end
 
 	local output = self[Symbols.InternalValue] :: {}
 	table.clear(output)
 
-	for key, value in use(self[Input]) do
-		local success, newKey, newValue =
-			xpcall(self[Processor], parseError, use, key, value)
+	for _, pairObject in objects do
+		local pair = use(pairObject)
+		local key, value = pair.key, pair.value
 
-		if success then
-			output[newKey] = newValue
-		else
-			External.logErrorNonFatal('callbackError', newKey)
-		end
+		output[key] = value
 	end
+
+	self[OldInput] = table.clone(newInput)
 
 	return true
 end
