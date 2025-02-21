@@ -1,31 +1,34 @@
 local package = script.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Computed = require(package.State.Computed)
-
-local change = require(package.Graph.change)
-local destructor = require(package.Memory.destructor)
-local isSimilar = require(package.Utility.isSimilar)
-local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
+local change = require(package.Graph.change)
+local observe = require(package.Graph.observe)
+
+local destructor = require(package.Memory.destructor)
+
+local isSimilar = require(package.Utility.isSimilar)
+
+type Self<K, V> = Types.Table<K, V>
+
 local class = {
-	kind = 'state',
-	type = 'table',
-	[Symbols.Using] = table.freeze {},
+	kind = "state",
+	type = "table",
+	_using = table.freeze {},
 }
 
 local METATABLE = table.freeze { __index = class }
 
 local function Table<K, V>(scope: Types.Scope, value: { [K]: V }): Types.Table<K, V>
 	local newTable = setmetatable({
-		[Symbols.Scope] = scope,
-		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.InternalValue] = value,
+		scope = scope,
+		_createdAt = os.clock(),
+		_internalValue = value,
 
-		[Symbols.Users] = {},
+		_users = {},
 	}, METATABLE)
 
 	table.insert(scope, destructor(newTable))
@@ -33,18 +36,18 @@ local function Table<K, V>(scope: Types.Scope, value: { [K]: V }): Types.Table<K
 	return newTable
 end
 
-function class:map(processor)
-	return Computed(self[Symbols.Scope], function(use)
+function class.map<V>(self: Self<V>, processor)
+	return Computed(self.scope, function(use)
 		return processor(use(self))
 	end)
 end
 
-function class:onChange(callback)
+function class.onChange<V>(self: Self<V>, callback)
 	return observe(self, callback)
 end
 
-function class:setKey(key: any, newValue: any)
-	local list = self[Symbols.InternalValue]
+function class.setKey<V>(self: Self<V>, key: any, newValue: any)
+	local list = self._internalValue
 	local oldValue = list[key]
 
 	list[key] = newValue
@@ -56,14 +59,14 @@ function class:setKey(key: any, newValue: any)
 	return list
 end
 
-function class:getKey(key: any)
+function class.getKey<V>(self: Self<V>, key: any)
 	local list = peek(self)
 
 	return list[key]
 end
 
-function class:remove(index: number)
-	local list = self[Symbols.InternalValue]
+function class.remove<V>(self: Self<V>, index: number)
+	local list = self._internalValue
 
 	local removedValue = table.remove(list, index)
 
@@ -72,8 +75,8 @@ function class:remove(index: number)
 	return removedValue
 end
 
-function class:insert(index: number, value: any)
-	local list = self[Symbols.InternalValue]
+function class.insert<V>(self: Self<V>, index: number, value: any)
+	local list = self._internalValue
 
 	table.insert(list, index, value)
 
@@ -82,7 +85,7 @@ function class:insert(index: number, value: any)
 	return value
 end
 
-function class:_evaluate()
+function class._evaluate()
 	return true
 end
 

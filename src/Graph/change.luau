@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local castToState = require(package.State.castToState)
@@ -15,7 +14,7 @@ local function change(target: Types.GraphObject)
 		return
 	end
 
-	target[Symbols.LastChange] = os.clock()
+	target._lastChange = os.clock()
 
 	local searchInNow = { target }
 	local searchInNext = {}
@@ -25,8 +24,8 @@ local function change(target: Types.GraphObject)
 		local done = true
 
 		for _, searchTarget in searchInNow do
-			for user in searchTarget[Symbols.Users] do
-				if user[Symbols.Validity] == 'valid' then
+			for user in searchTarget._users do
+				if user._validity == 'valid' then
 					done = false
 
 					table.insert(userList, user)
@@ -41,11 +40,11 @@ local function change(target: Types.GraphObject)
 	until done
 
 	table.sort(userList, function(a, b)
-		return a[Symbols.CreatedAt] < b[Symbols.CreatedAt]
+		return a._createdAt < b._createdAt
 	end)
 
 	for _, user in userList do
-		user[Symbols.Validity] = 'invalid'
+		user._validity = 'invalid'
 
 		evaluate(user, false)
 	end

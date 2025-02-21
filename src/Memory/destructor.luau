@@ -1,26 +1,25 @@
 local package = script.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local function destroy<V>(target: Types.StateObject<V>)
-	target[Symbols.Scope] = nil
-	target[Symbols.Observers] = nil
+local function destroy<V>(target: Types.GraphObject)
+	target.scope = nil
+	target._observers = nil
 
-	local using = target[Symbols.Using]
+	local using = target._using
 
 	if using then
 		for dependency in using do
-			dependency[Symbols.Users][target] = nil
+			dependency._users[target] = nil
 			using[dependency] = nil
 		end
 	end
 
-	local users = target[Symbols.Users]
+	local users = target._users
 
 	if users then
 		for user in users do
-			user[Symbols.Using][target] = nil
+			user._using[target] = nil
 			users[user] = nil
 		end
 	end

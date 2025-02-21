@@ -2,9 +2,8 @@
 
 type NilFunc = () -> ()
 type Disconnect = NilFunc
-type GenericTable<K = any, V = any> = { [K]: V }
 
-export type Properties = GenericTable<SpecialKey<any>|string, any>
+export type Properties = { [SpecialKey | string]: any }
 
 export type Task =
 	Instance
@@ -13,95 +12,99 @@ export type Task =
 	| { destroy: (any) -> () }
 	| { Destroy: (any) -> () }
 	| { Task }
-export type Scope<Constructors = any> = { Task } & Constructors
+export type Scope<T = unknown> = { Task } & T
 export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
 
 export type Error = {
-	type: 'Error',
+	type: "Error",
 	raw: string,
 	message: string,
-	trace: string
-}
-
-export type Observer<V> = {
-	onChange: (Observer<V>, callback: (new: V) -> nil) -> Disconnect,
-	onBind: (Observer<V>, callback: (new: V) -> nil) -> Disconnect,
+	trace: string,
 }
 
 export type UsedAs<V> = StateObject<V> | V
 
-export type GraphObject = {
-	_lastchange: number?,
+export type ScopedObject = {
+	scope: Scope<unknown>,
+}
+
+export type GraphObject = ScopedObject & {
+	_createdAt: number?,
+	_lastChange: number?,
 	_validity: string?,
-	_users: {[GraphObject]: unknown},
-	_using: {[GraphObject]: unknown}
+	_users: { [GraphObject]: unknown },
+	_using: { [GraphObject]: unknown },
 }
 
 export type StateObject<V> = GraphObject & {
-	kind: 'state',
+	_internalValue: V,
+	kind: "state",
 	type: string,
-	_internalvalue: V,
-	
-	onChange: (StateObject<V>, callback: (new: V) -> nil) -> (Disconnect, Observer<V>),
+
+	onChange: (StateObject<V>, callback: (new: V) -> nil) -> Disconnect,
 }
 
 export type Use = <V>(target: StateObject<V>) -> V
-export type ComputedProcessor<T> = (Use) -> T
+
 export type Computed<IV, OV> = StateObject<OV> & {
-	type: 'computed',
-	_processor: ComputedProcessor<OV>,
-	
+	type: "computed",
+	_processor: (Use) -> OV,
+
 	map: <T>(Computed<IV, OV>, processor: (IV) -> T) -> Computed<T, T>,
 }
 
 export type Value<V> = StateObject<V> & {
-	type: 'value',
-	
+	type: "value",
+
 	set: (Value<V>, newValue: V) -> V,
 	update: (Value<V>, predicate: (V) -> V) -> V,
 	map: <T>(Value<V>, processor: (V) -> T) -> Computed<T, T>,
 
-	bindToInstanceProperty: (Value<V>, instance: Instance, property: string) -> (Disconnect, RBXScriptConnection),
+	bindToInstanceProperty: (
+		Value<V>,
+		instance: Instance,
+		property: string
+	) -> (Disconnect, RBXScriptConnection),
 }
 
-export type Table<K, V> = StateObject<GenericTable<K, V>> & {
-	type: 'table',
-	
+export type Table<K, V> = StateObject<{ [K]: V }> & {
+	type: "table",
+
 	setKey: (Table<K, V>, key: K, value: V) -> V,
 	getKey: (Table<K, V>, key: K) -> V,
-	
+
 	insert: (Table<K, V>, index: number, value: V) -> V,
 	remove: (Table<K, V>, index: number) -> V,
-	
-	map: <T>(Table<K, V>, processor: (GenericTable<K, V>) -> T) -> Computed<GenericTable<K, V>, T>,
+
+	map: <T>(Table<K, V>, processor: ({ [K]: V }) -> T) -> Computed<{ [K]: V }, T>,
 }
 
-export type ForPairs<IK, IV, OK, OV> = StateObject<GenericTable<OK, OV>> & {
-	type: 'for'
+export type ForPairs<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
+	type: "for",
 }
 
 export type Tween<V> = StateObject<V> & {
-	type: 'tween'
+	type: "tween",
 }
 
 export type Spring<V> = StateObject<V> & {
-	type: 'spring',
-	animating: boolean
+	type: "spring",
+	animating: boolean,
 }
 
-export type SpecialKey<T> = {
+export type SpecialKey = {
 	type: string,
-	kind: 'key',
-	apply: (scope: Scope<T>, instance: Instance, value: any) -> ()
+	kind: "key",
+	apply: (scope: Scope, instance: Instance, value: any) -> (),
 }
 
 export type ExternalProvider = {
 	startScheduler: () -> (),
 	stopScheduler: () -> (),
-	
+
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
-	
+
 	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
 	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
 }

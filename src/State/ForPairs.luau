@@ -1,23 +1,26 @@
 local package = script.Parent.Parent
 
 local External = require(package.External)
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Computed = require(package.State.Computed)
-
 local castToState = require(package.State.castToState)
-local depend = require(package.Graph.depend)
-local destructor = require(package.Memory.destructor)
-local evaluate = require(package.Graph.evaluate)
-local observe = require(package.Graph.observe)
-local parseError = require(package.Logging.parseError)
 local peek = require(package.State.peek)
 
-local Input = Symbols.named "Input"
-local OldInput = Symbols.named "OldInput"
-local Objects = Symbols.named "Objects"
-local Processor = Symbols.named "Processor"
+local depend = require(package.Graph.depend)
+local evaluate = require(package.Graph.evaluate)
+local observe = require(package.Graph.observe)
+
+local destructor = require(package.Memory.destructor)
+
+local parseError = require(package.Logging.parseError)
+
+type Self<IK, IV, OK, OV> = Types.ForPairs<IK, IV, OK, OV> & {
+	_objects: { [IK]: Types.Computed<unknown, { key: OK, value: OV }> },
+	_oldInput: { [IK]: IV },
+	_input: { [IK]: IV },
+	_processor: (Types.Use, IK, IV) -> (OK, OV),
+}
 
 local class = {
 	type = "for",
@@ -32,18 +35,18 @@ local function ForPairs<IK, IV, OK, OV>(
 	processor: (Types.Use, IK, IV) -> (OK, OV?)
 ): Types.ForPairs<IK, IV, OK, OV>
 	local newPairs = setmetatable({
-		[Symbols.Scope] = scope,
-		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.InternalValue] = {},
+		scope = scope,
+		_createdAt = os.clock(),
+		_internalValue = {},
 
-		[Symbols.Users] = {},
-		[Symbols.Using] = {},
+		_users = {},
+		_using = {},
 
-		[OldInput] = nil,
-		[Input] = input,
-		[Processor] = processor,
-		[Objects] = {},
-	}, METATABLE)
+		_objects = {},
+		_oldInput = {},
+		_input = input,
+		_processor = processor,
+	}, METATABLE) :: Self<IK, IV, OK, OV>
 
 	table.insert(scope, destructor(newPairs))
 
@@ -52,17 +55,17 @@ local function ForPairs<IK, IV, OK, OV>(
 	return newPairs
 end
 
-function class:map(processor)
-	return Computed(self[Symbols.Scope], function(use)
+function class.map<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>, processor)
+	return Computed(self.scope, function(use)
 		return processor(use(self))
 	end)
 end
 
-function class:onChange(callback)
+function class.onChange<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>, callback)
 	return observe(self, callback)
 end
 
-function class:_evaluate()
+function class._evaluate<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>)
 	local function use(target)
 		if castToState(target) then
 			depend(self, target)
@@ -71,42 +74,40 @@ function class:_evaluate()
 		return peek(target)
 	end
 
-	local scope = self[Symbols.Scope]
-	local objects = self[Objects]
+	local scope = self.scope
+	local objects = self._objects
 
-	local oldInput = self[OldInput]
-	local newInput = use(self[Input])
+	local oldInput = self._oldInput
+	local newInput = use(self._input)
 
-	local processor = self[Processor] :: (Types.Use, any, any) -> (any, any)
+	local processor = self._processor
 
-	if oldInput then
-		for key, value in newInput do
-			if oldInput[key] ~= value then
-				local pair = Computed(scope, function(use)
-					local ok, newKey, newValue =
-						xpcall(processor, parseError, use, key, value)
+	for key, value in newInput do
+		if oldInput[key] ~= value then
+			local pair = Computed(scope, function(use)
+				local ok, newKey, newValue =
+					xpcall(processor, parseError, use, key, value)
 
-					if ok then
-						return { key = newKey, value = newValue }
-					end
+				if ok then
+					return { key = newKey, value = newValue }
+				end
 
-					External.logErrorNonFatal("callbackError", newKey :: Types.Error)
+				External.logErrorNonFatal("callbackError", newKey :: Types.Error)
 
-					return { key = key, value = value }
-				end)
+				return { key = key, value = value }
+			end)
 
-				objects[key] = pair
-			end
-		end
-
-		for key in oldInput do
-			if newInput[key] == nil then
-				objects[key] = nil
-			end
+			objects[key] = pair
 		end
 	end
 
-	local output = self[Symbols.InternalValue] :: {}
+	for key in oldInput do
+		if newInput[key] == nil then
+			objects[key] = nil
+		end
+	end
+
+	local output = self._internalValue :: {}
 	table.clear(output)
 
 	for _, pairObject in objects do
@@ -116,7 +117,7 @@ function class:_evaluate()
 		output[key] = value
 	end
 
-	self[OldInput] = table.clone(newInput)
+	self._oldInput = table.clone(newInput)
 
 	return true
 end

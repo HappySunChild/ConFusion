@@ -1,25 +1,24 @@
 local package = script.Parent.Parent
 
 local External = require(package.External)
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
-	if target[Symbols.Validity] == 'busy' then
+	if target._validity == 'busy' then
 		return External.logError 'infiniteLoop'
 	end
 
-	local firstEvaluation = target[Symbols.LastChange] == nil
-	local isInvalid = target[Symbols.Validity] == 'invalid'
+	local firstEvaluation = target._lastChange == nil
+	local isInvalid = target._validity == 'invalid'
 
 	if firstEvaluation or isInvalid or forceComputation then
 		local needsComputation = firstEvaluation or forceComputation
 
 		if not needsComputation then
-			for dependency in target[Symbols.Using] do
+			for dependency in target._using do
 				evaluate(dependency, false)
 
-				if dependency[Symbols.LastChange] > target[Symbols.LastChange] then
+				if dependency._lastChange > target._lastChange then
 					needsComputation = true
 
 					break
@@ -30,25 +29,25 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 		local targetMeaningfullyChanged = false
 
 		if needsComputation then
-			for dependency in target[Symbols.Using] do
-				dependency[Symbols.Users][target] = nil
-				target[Symbols.Using][dependency] = nil
+			for dependency in target._using do
+				dependency._users[target] = nil
+				target._using[dependency] = nil
 			end
 
-			target[Symbols.Validity] = 'busy'
+			target._validity = 'busy'
 			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
 		end
 
-		target[Symbols.Validity] = 'valid'
+		target._validity = 'valid'
 
 		if targetMeaningfullyChanged then
-			if target[Symbols.Observers] then
-				for callback in target[Symbols.Observers] do
-					External.doTaskImmediate(callback, target[Symbols.InternalValue])
+			if target._observers then
+				for callback in target._observers do
+					External.doTaskImmediate(callback, target._internalValue)
 				end
 			end
 
-			target[Symbols.LastChange] = os.clock()
+			target._lastChange = os.clock()
 		end
 
 		return targetMeaningfullyChanged

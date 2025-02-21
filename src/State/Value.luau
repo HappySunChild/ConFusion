@@ -1,53 +1,56 @@
 local package = script.Parent.Parent
 
 local External = require(package.External)
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Computed = require(package.State.Computed)
 
 local change = require(package.Graph.change)
-local destructor = require(package.Memory.destructor)
-local isSimilar = require(package.Utility.isSimilar)
 local observe = require(package.Graph.observe)
+
+local destructor = require(package.Memory.destructor)
+
+local isSimilar = require(package.Utility.isSimilar)
+
+type Self<V> = Types.Value<V>
 
 local class = {
 	kind = "state",
 	type = "value",
-	[Symbols.Using] = table.freeze {},
+	_using = table.freeze {},
 }
 
 local METATABLE = table.freeze { __index = class }
 
 local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
 	local newValue = setmetatable({
-		[Symbols.Scope] = scope,
-		[Symbols.CreatedAt] = os.clock(),
+		scope = scope,
+		_createdAt = os.clock(),
 
-		[Symbols.InternalValue] = initialValue,
+		_internalValue = initialValue,
 
-		[Symbols.Users] = {},
-	}, METATABLE)
+		_users = {},
+	}, METATABLE) :: Self<V>
 
 	table.insert(scope, destructor(newValue))
 
 	return newValue
 end
 
-function class:map(processor)
-	return Computed(self[Symbols.Scope], function(use)
+function class.map<V>(self: Self<V>, processor: (V) -> any)
+	return Computed(self.scope, function(use)
 		return processor(use(self))
 	end)
 end
 
-function class:onChange(callback)
+function class.onChange<V>(self: Self<V>, callback)
 	return observe(self, callback)
 end
 
-function class:set(newValue: any)
-	local currentValue = self[Symbols.InternalValue]
+function class.set<V>(self: Self<V>, newValue: any)
+	local currentValue = self._internalValue
 
-	self[Symbols.InternalValue] = newValue
+	self._internalValue = newValue
 
 	if not isSimilar(newValue, currentValue) then
 		change(self)
@@ -56,7 +59,7 @@ function class:set(newValue: any)
 	return newValue
 end
 
-function class:bindToInstanceProperty(instance: Instance, property: string)
+function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
 	local ok, event: RBXScriptSignal =
 		pcall(instance.GetStyledPropertyChangedSignal, instance, property)
 
@@ -64,27 +67,26 @@ function class:bindToInstanceProperty(instance: Instance, property: string)
 		External.logError("cannotConnectChange", nil, instance.ClassName, property)
 	end
 
-	self:set(instance[property])
+	self:set((instance :: any)[property])
 
-	local scope = self[Symbols.Scope]
 	local connection = event:Connect(function()
-		self:set(instance[property])
+		self:set((instance :: any)[property])
 	end)
 
-	table.insert(scope, connection)
+	table.insert(self.scope, connection)
 
 	return function()
 		connection:Disconnect()
 	end
 end
 
-function class:update(predicate)
-	local currentValue = self[Symbols.InternalValue]
+function class.update<V>(self: Self<V>, predicate)
+	local currentValue = self._internalValue
 
 	return self:set(predicate(currentValue))
 end
 
-function class:_evaluate()
+function class._evaluate()
 	return true
 end
 

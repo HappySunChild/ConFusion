@@ -1,7 +1,6 @@
 local package = script.Parent.Parent
 
 local External = require(package.External)
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local evaluate = require(package.Graph.evaluate)
@@ -11,7 +10,7 @@ local function depend(user: Types.GraphObject, dependency: Types.GraphObject)
 	evaluate(dependency)
 
 	if
-		table.isfrozen(user[Symbols.Using]) or table.isfrozen(dependency[Symbols.Users])
+		table.isfrozen(user._using) or table.isfrozen(dependency._using)
 	then
 		return External.logError(
 			'cannotDepend',
@@ -21,8 +20,8 @@ local function depend(user: Types.GraphObject, dependency: Types.GraphObject)
 		)
 	end
 
-	user[Symbols.Using][dependency] = true
-	dependency[Symbols.Users][user] = true
+	user._using[dependency] = true
+	dependency._users[user] = true
 
 	return true
 end

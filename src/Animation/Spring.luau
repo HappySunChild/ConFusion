@@ -1,39 +1,26 @@
 local package = script.Parent.Parent
 
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
 local Stopwatch = require(package.Animation.Stopwatch)
-local castToState = require(package.State.castToState)
-local depend = require(package.Graph.depend)
-local destructor = require(package.Memory.destructor)
-local evaluate = require(package.Graph.evaluate)
 local packType = require(package.Animation.packType)
-local peek = require(package.State.peek)
 local springCoefficients = require(package.Animation.springCoefficients)
 local unpackType = require(package.Animation.unpackType)
 
-local Timer = Symbols.named 'Timer'
-local Goal = Symbols.named 'Goal'
-local Speed = Symbols.named 'Speed'
-local Damping = Symbols.named 'Damping'
+local depend = require(package.Graph.depend)
+local evaluate = require(package.Graph.evaluate)
+local observe = require(package.Graph.observe)
 
-local ActiveDamping = Symbols.named 'ActiveDamping'
-local ActiveGoal = Symbols.named 'ActiveGoal'
-local ActiveLatestP = Symbols.named 'ActiveLatestPosition'
-local ActiveLatestV = Symbols.named 'ActiveLatestVelocity'
-local ActiveStartP = Symbols.named 'ActiveStartPosition'
-local ActiveStartV = Symbols.named 'ActiveStartVelocity'
-local ActiveTargetP = Symbols.named 'ActiveTargetPosition'
-local ActiveNumSprings = Symbols.named 'ActiveNumberSprings'
-local ActiveSpeed = Symbols.named 'ActiveSpeed'
-local ActiveType = Symbols.named 'ActiveType'
+local castToState = require(package.State.castToState)
+local peek = require(package.State.peek)
+
+local destructor = require(package.Memory.destructor)
 
 local EPSILON = 0.00001
 
 local class = {
-	type = 'spring',
-	kind = 'state',
+	type = "spring",
+	kind = "state",
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -48,28 +35,28 @@ local function Spring<V>(
 	damping = damping or 1
 
 	local newSpring = setmetatable({
-		[Symbols.Scope] = scope,
-		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.InternalValue] = peek(goal),
+		scope = scope,
+		_createdAt = os.clock(),
+		_internalValue = peek(goal),
 
-		[Symbols.Using] = {},
-		[Symbols.Users] = {},
+		_using = {},
+		_users = {},
 
-		[Timer] = Stopwatch(scope),
-		[Goal] = goal,
-		[Speed] = speed,
-		[Damping] = damping,
+		_timer = Stopwatch(scope),
+		_goal = goal,
+		_speed = speed,
+		_damping = damping,
 
-		[ActiveDamping] = -1,
-		[ActiveGoal] = nil,
-		[ActiveNumSprings] = 0,
-		[ActiveSpeed] = -1,
-		[ActiveLatestP] = {},
-		[ActiveLatestV] = {},
-		[ActiveStartP] = {},
-		[ActiveStartV] = {},
-		[ActiveTargetP] = {},
-		[ActiveType] = '',
+		_activeDamping = -1,
+		_activeGoal = nil,
+		_activeNumSprings = 0,
+		_activeSpeed = -1,
+		_activeLatestP = {},
+		_activeLatestV = {},
+		_activeStartP = {},
+		_activeStartV = {},
+		_activeTargetP = {},
+		_activeType = "",
 
 		animating = false,
 	}, METATABLE)
@@ -81,11 +68,15 @@ local function Spring<V>(
 	return newSpring
 end
 
+function class:onChange(callback)
+	return observe(self, callback)
+end
+
 function class:_evaluate()
-	local goal = self[Goal]
+	local goal = self._goal
 
 	if not castToState(goal) then
-		self[Symbols.InternalValue] = goal
+		self._internalValue = goal
 
 		return false
 	end
@@ -94,14 +85,14 @@ function class:_evaluate()
 
 	local nextGoal = peek(goal)
 	local nextType = typeof(nextGoal)
-	local discontinuous = nextType ~= self[ActiveType]
+	local discontinuous = nextType ~= self._activeType
 
-	local stopwatch = self[Timer] :: Stopwatch.Stopwatch
+	local stopwatch = self._timer :: Stopwatch.Stopwatch
 	local elapsed = peek(stopwatch)
 
 	depend(self, stopwatch)
 
-	local oldValue = self[Symbols.InternalValue]
+	local oldValue = self._internalValue
 	local newValue
 
 	if discontinuous then
@@ -110,15 +101,15 @@ function class:_evaluate()
 		newValue = oldValue
 	else
 		local posPos, posVel, velPos, velVel =
-			springCoefficients(elapsed, self[ActiveDamping], self[ActiveSpeed])
+			springCoefficients(elapsed, self._activeDamping, self._activeSpeed)
 
 		local isMoving = false
 
-		for index = 1, self[ActiveNumSprings] do
-			local startP = self[ActiveStartP][index] :: number
-			local targetP = self[ActiveTargetP][index] :: number
+		for index = 1, self._activeNumSprings do
+			local startP = self._activeStartP[index] :: number
+			local targetP = self._activeTargetP[index] :: number
 
-			local startV = self[ActiveStartV][index] :: number
+			local startV = self._activeStartV[index] :: number
 			local startD = startP - targetP
 
 			local latestD = startD * posPos + startV * posVel
@@ -130,13 +121,13 @@ function class:_evaluate()
 
 			local latestP = latestD + targetP
 
-			self[ActiveLatestP][index] = latestP
-			self[ActiveLatestV][index] = latestV
+			self._activeLatestP[index] = latestP
+			self._activeLatestV[index] = latestV
 		end
 
 		if not isMoving then
-			for index = 1, self[ActiveNumSprings] do
-				self[ActiveLatestP][index] = self[ActiveTargetP][index]
+			for index = 1, self._activeNumSprings do
+				self._activeLatestP[index] = self._activeTargetP[index]
 			end
 
 			stopwatch:pause()
@@ -145,41 +136,41 @@ function class:_evaluate()
 
 		self.animating = isMoving
 
-		newValue = packType(self[ActiveType], self[ActiveLatestP])
+		newValue = packType(self._activeType, self._activeLatestP)
 	end
 
-	local nextSpeed = peek(self[Speed])
-	local nextDamping = peek(self[Damping])
+	local nextSpeed = peek(self._speed)
+	local nextDamping = peek(self._damping)
 
 	if
 		discontinuous
-		or nextGoal ~= self[ActiveGoal]
-		or nextSpeed ~= self[ActiveSpeed]
-		or nextDamping ~= self[ActiveDamping]
+		or nextGoal ~= self._activeGoal
+		or nextSpeed ~= self._activeSpeed
+		or nextDamping ~= self._activeDamping
 	then
-		self[ActiveTargetP] = unpackType(nextGoal)
-		self[ActiveNumSprings] = #self[ActiveTargetP]
+		self._activeTargetP = unpackType(nextGoal)
+		self._activeNumSprings = #self._activeTargetP
 
 		if discontinuous then
-			self[ActiveStartP] = table.clone(self[ActiveTargetP])
-			self[ActiveLatestP] = table.clone(self[ActiveTargetP])
-			self[ActiveStartV] = table.create(self[ActiveNumSprings], 0)
-			self[ActiveLatestV] = table.create(self[ActiveNumSprings], 0)
+			self._activeStartP = table.clone(self._activeTargetP)
+			self._activeLatestP = table.clone(self._activeTargetP)
+			self._activeStartV = table.create(self._activeNumSprings, 0)
+			self._activeLatestV = table.create(self._activeNumSprings, 0)
 		else
-			self[ActiveStartP] = table.clone(self[ActiveLatestP])
-			self[ActiveStartV] = table.clone(self[ActiveLatestV])
+			self._activeStartP = table.clone(self._activeLatestP)
+			self._activeStartV = table.clone(self._activeLatestV)
 		end
 
-		self[ActiveType] = typeof(nextGoal)
-		self[ActiveGoal] = nextGoal
-		self[ActiveDamping] = nextDamping
-		self[ActiveSpeed] = nextSpeed
+		self._activeType = typeof(nextGoal)
+		self._activeGoal = nextGoal
+		self._activeDamping = nextDamping
+		self._activeSpeed = nextSpeed
 
 		stopwatch:reset()
 		stopwatch:unpause()
 	end
 
-	self[Symbols.InternalValue] = newValue
+	self._internalValue = newValue
 
 	return oldValue ~= newValue
 end

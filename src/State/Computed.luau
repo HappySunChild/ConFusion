@@ -1,40 +1,43 @@
 local package = script.Parent.Parent
 
 local External = require(package.External)
-local Symbols = require(package.Symbols)
 local Types = require(package.Types)
 
-local castToState = require(package.State.castToState)
 local depend = require(package.Graph.depend)
-local destructor = require(package.Memory.destructor)
 local evaluate = require(package.Graph.evaluate)
-local isSimilar = require(package.Utility.isSimilar)
 local observe = require(package.Graph.observe)
-local parseError = require(package.Logging.parseError)
+
+local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
 
-local Processor = Symbols.named 'Processor'
+local destructor = require(package.Memory.destructor)
+
+local isSimilar = require(package.Utility.isSimilar)
+
+local parseError = require(package.Logging.parseError)
+
+type Self<VI, VO> = Types.Computed<VI, VO>
 
 local class = {
-	kind = 'state',
-	type = 'computed',
+	kind = "state",
+	type = "computed",
 }
 
 local METATABLE = table.freeze { __index = class }
 
-local function Computed<V, VO>(
+local function Computed<VI, VO>(
 	scope: Types.Scope,
 	processor: Types.ComputedProcessor<VO>
-): Types.Computed<V, VO>
+): Types.Computed<VI, VO>
 	local newComputed = setmetatable({
-		[Symbols.Scope] = scope,
-		[Symbols.CreatedAt] = os.clock(),
-		[Symbols.InternalValue] = nil,
+		scope = scope,
+		_createdAt = os.clock(),
+		_internalValue = nil,
 
-		[Symbols.Using] = {},
-		[Symbols.Users] = {},
+		_using = {},
+		_users = {},
 
-		[Processor] = processor,
+		_processor = processor,
 	}, METATABLE)
 
 	table.insert(scope, destructor(newComputed))
@@ -44,17 +47,17 @@ local function Computed<V, VO>(
 	return newComputed
 end
 
-function class:onChange(callback)
+function class.onChange<V>(self: Self<V>, callback)
 	return observe(self, callback)
 end
 
-function class:map(processor)
-	return Computed(self[Symbols.Scope], function(use)
+function class.map<V>(self: Self<V>, processor)
+	return Computed(self.scope, function(use)
 		return processor(use(self))
 	end)
 end
 
-function class:_evaluate()
+function class._evaluate<V>(self: Self<V>)
 	local function use(target)
 		if castToState(target) then
 			depend(self, target)
@@ -63,16 +66,16 @@ function class:_evaluate()
 		return peek(target)
 	end
 
-	local success, newValue = xpcall(self[Processor], parseError, use)
+	local success, newValue = xpcall(self._processor, parseError, use)
 
 	if success then
-		local oldValue = self[Symbols.InternalValue]
+		local oldValue = self._internalValue
 
-		self[Symbols.InternalValue] = newValue
+		self._internalValue = newValue
 
 		return not isSimilar(newValue, oldValue)
 	else
-		External.logErrorNonFatal('callbackError', newValue)
+		External.logErrorNonFatal("callbackError", newValue)
 	end
 
 	return false
