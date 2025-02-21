@@ -21,6 +21,7 @@ export type Stopwatch = Types.StateObject<number> & {
 }
 
 type Self = Stopwatch & {
+	_timer: Types.StateObject<number>,
 	_paused: boolean,
 	_start: number,
 }
@@ -33,6 +34,7 @@ local class = {
 local METATABLE = table.freeze { __index = class }
 
 local function Stopwatch(scope: Types.Scope): Stopwatch
+	local timer = Clock(scope)
 	local newStopwatch = setmetatable({
 		scope = scope,
 		_createdAt = os.clock(),
@@ -41,13 +43,14 @@ local function Stopwatch(scope: Types.Scope): Stopwatch
 		_users = {},
 		_using = {},
 
+		_timer = timer,
 		_start = peek(Clock),
 		_paused = true,
 	}, METATABLE) :: Self
 
 	table.insert(scope, destructor(newStopwatch))
 
-	depend(newStopwatch, Clock)
+	depend(newStopwatch, timer)
 
 	return newStopwatch
 end
@@ -57,13 +60,13 @@ function class.onChange(self: Self, callback)
 end
 
 function class.reset(self: Self)
-	local now = peek(Clock)
+	local now = peek(self._timer)
 
 	if now == self._start then
 		return
 	end
 
-	self._start = peek(Clock) :: number
+	self._start = peek(self._timer) :: number
 	self._internalValue = 0
 
 	change(self)
@@ -85,7 +88,7 @@ function class.unpause(self: Self)
 	end
 
 	self._paused = false
-	self._start = (peek(Clock) :: number) - self._internalValue
+	self._start = (peek(self._timer) :: number) - self._internalValue
 
 	change(self)
 end
@@ -95,9 +98,9 @@ function class._evaluate(self: Self)
 		return false
 	end
 
-	depend(self, Clock)
+	depend(self, self._timer)
 
-	local currentTime = peek(Clock) :: number
+	local currentTime = peek(self._timer) :: number
 	local oldValue = self._internalValue :: number
 	local newValue = (currentTime - self._start) :: number
 

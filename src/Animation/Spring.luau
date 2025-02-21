@@ -175,4 +175,6 @@ function class:_evaluate()
 	return oldValue ~= newValue
 end
 
+table.freeze(class)
+
 return Spring
