@@ -34,6 +34,7 @@ export type GraphObject = ScopedObject & {
 	_validity: string?,
 	_users: { [GraphObject]: unknown },
 	_using: { [GraphObject]: unknown },
+	_evaluate: (GraphObject) -> boolean,
 }
 
 export type StateObject<V> = GraphObject & {
