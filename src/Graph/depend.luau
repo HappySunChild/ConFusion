@@ -9,14 +9,13 @@ local nameOf = require(package.Utility.nameOf)
 local function depend(user: Types.GraphObject, dependency: Types.GraphObject)
 	evaluate(dependency)
 
-	if
-		table.isfrozen(user._using) or table.isfrozen(dependency._using)
-	then
+	if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
 		return External.logError(
-			'cannotDepend',
+			"cannotDepend",
 			nil,
-			nameOf(user, 'User'),
-			nameOf(dependency, 'Dependency')
+			nameOf(user, "User") .. (table.isfrozen(user._using) and " (FROZEN)" or ""),
+			nameOf(dependency, "Dependency")
+				.. (table.isfrozen(dependency._users) and " (FROZEN)" or "")
 		)
 	end
 
