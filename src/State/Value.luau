@@ -61,7 +61,7 @@ end
 
 function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
 	local ok, event: RBXScriptSignal =
-		pcall(instance.GetStyledPropertyChangedSignal, instance, property)
+		pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok or typeof(event) ~= "RBXScriptSignal" then
 		External.logError("cannotConnectChange", nil, instance.ClassName, property)
