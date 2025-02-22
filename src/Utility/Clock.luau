@@ -33,12 +33,15 @@ local function Clock(scope: Types.Scope)
 	}, METATABLE) :: Clock
 
 	local unbind = External.bindToUpdate(function(now)
-		class._internalValue = now
+		newClock._internalValue = now
 
 		change(newClock)
 	end)
 
-	table.insert(scope, { unbind, destructor(newClock) })
+	table.insert(scope, {
+		unbind,
+		destructor(newClock),
+	})
 
 	return newClock
 end
