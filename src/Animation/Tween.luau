@@ -2,7 +2,7 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Stopwatch = require(package.Animation.Stopwatch)
+local Timer = require(package.Animation.Timer)
 local getTweenAlpha = require(package.Animation.getTweenAlpha)
 local getTweenDuration = require(package.Animation.getTweenDuration)
 local lerp = require(package.Animation.lerp)
@@ -19,7 +19,7 @@ local destructor = require(package.Memory.destructor)
 type Self<V> = Types.Tween<V> & {
 	_info: Types.UsedAs<TweenInfo>,
 	_goal: Types.UsedAs<V>,
-	_timer: Stopwatch.Stopwatch,
+	_timer: Timer.Timer,
 
 	_tweenStart: unknown,
 	_tweenFinish: unknown,
@@ -49,7 +49,7 @@ local function Tween<V>(
 
 		_info = info,
 		_goal = goal,
-		_timer = Stopwatch(scope),
+		_timer = Timer(scope),
 
 		_tweenStart = nil,
 		_tweenFinish = nil,

@@ -2,7 +2,7 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Stopwatch = require(package.Animation.Stopwatch)
+local Timer = require(package.Animation.Timer)
 local packType = require(package.Animation.packType)
 local springCoefficients = require(package.Animation.springCoefficients)
 local unpackType = require(package.Animation.unpackType)
@@ -42,7 +42,7 @@ local function Spring<V>(
 		_using = {},
 		_users = {},
 
-		_timer = Stopwatch(scope),
+		_timer = Timer(scope),
 		_goal = goal,
 		_speed = speed,
 		_damping = damping,
@@ -87,7 +87,7 @@ function class:_evaluate()
 	local nextType = typeof(nextGoal)
 	local discontinuous = nextType ~= self._activeType
 
-	local stopwatch = self._timer :: Stopwatch.Stopwatch
+	local stopwatch = self._timer :: Timer.Stopwatch
 	local elapsed = peek(stopwatch)
 
 	depend(self, stopwatch)

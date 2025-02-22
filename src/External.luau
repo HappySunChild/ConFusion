@@ -7,6 +7,7 @@ local Types = require(package.Types)
 local formatError = require(package.Logging.formatError)
 
 local External = {}
+
 local boundCallbacks = {}
 local activeProvider: Types.ExternalProvider? = nil
 
@@ -39,12 +40,20 @@ function External.bindToUpdate(callback: (now: number) -> ())
 	end
 end
 
+local lastUpdateStep = os.clock()
+
 function External.performUpdate()
 	local now = os.clock()
+
+	lastUpdateStep = now
 
 	for _, callback in boundCallbacks do
 		callback(now)
 	end
+end
+
+function External.lastUpdateStep(): number
+	return lastUpdateStep
 end
 
 function External.doTaskImmediate(resume: (...unknown) -> (), ...: unknown)

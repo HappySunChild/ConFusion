@@ -17,8 +17,6 @@ local ReFusion = table.freeze {
 	innerScope = require(Memory.innerScope),
 	doCleanup = require(Memory.doCleanup),
 
-	Spring = require(Animation.Spring),
-	Tween = require(Animation.Tween),
 	Computed = require(State.Computed),
 	Value = require(State.Value),
 	Table = require(State.Table),
@@ -28,11 +26,21 @@ local ReFusion = table.freeze {
 	peek = require(State.peek),
 	observe = require(Graph.observe),
 
-	New = require(Instance.New),
+	-- Animation
+	Timer = require(Animation.Timer),
+	Spring = require(Animation.Spring),
+	Tween = require(Animation.Tween),
 
 	Signal = require(Utility.Signal),
-	Clock = require(Utility.Clock),
 
+	-- Instance
+	New = require(Instance.New),
+	Child = require(Instance.Child),
+	ChildOfClass = require(Instance.ChildOfClass),
+	Descendant = require(Instance.Descendant),
+	DescendantOfClass = require(Instance.DescendantOfClass),
+
+	-- Instance Keys
 	Children = require(Keys.Children),
 	Startup = require(Keys.Startup),
 	Cleanup = require(Keys.Cleanup),
@@ -45,7 +53,6 @@ local ReFusion = table.freeze {
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
-	WithChild = require(Keys.WithChild),
 }
 
 if game then
