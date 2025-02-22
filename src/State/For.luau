@@ -103,7 +103,6 @@ function class._evaluate<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>)
 
 	for key in lastInput do
 		if input[key] == nil then
-			print("remove key", key)
 			objects[key] = nil
 		end
 	end
