@@ -80,7 +80,7 @@ export type Table<K, V> = StateObject<{ [K]: V }> & {
 	map: <T>(Table<K, V>, processor: ({ [K]: V }) -> T) -> Computed<{ [K]: V }, T>,
 }
 
-export type ForPairs<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
+export type For<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
 	type: "for",
 }
 

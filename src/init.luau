@@ -20,9 +20,11 @@ local ReFusion = table.freeze {
 	Spring = require(Animation.Spring),
 	Tween = require(Animation.Tween),
 	Computed = require(State.Computed),
-	ForPairs = require(State.ForPairs),
 	Value = require(State.Value),
 	Table = require(State.Table),
+	ForPairs = require(State.ForPairs),
+	ForKeys = require(State.ForKeys),
+	ForValues = require(State.ForValues),
 	peek = require(State.peek),
 	observe = require(Graph.observe),
 
