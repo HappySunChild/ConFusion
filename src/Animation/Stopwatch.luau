@@ -44,7 +44,7 @@ local function Stopwatch(scope: Types.Scope): Stopwatch
 		_using = {},
 
 		_timer = timer,
-		_start = peek(Clock),
+		_start = peek(timer),
 		_paused = true,
 	}, METATABLE) :: Self
 
