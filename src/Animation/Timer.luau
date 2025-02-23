@@ -15,6 +15,10 @@ local ExternalTime = require(package.Animation.ExternalTime)
 
 export type Timer = Types.StateObject<number> & {
 	type: "timer",
+
+	pause: (Timer) -> (),
+	unpause: (Timer) -> (),
+	reset: (Timer) -> (),
 }
 
 type Self = Timer & {
