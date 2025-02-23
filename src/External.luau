@@ -76,7 +76,7 @@ function External.logErrorNonFatal(messageId: string, err: Types.Error?, ...: un
 	local message = formatError(messageId, err, ...)
 
 	if activeProvider then
-		activeProvider.logWarn(message)
+		activeProvider.logErrorNonFatal(message)
 	else
 		print(message)
 	end
