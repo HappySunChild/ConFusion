@@ -1,7 +1,6 @@
 --!strict
 
-type NilFunc = () -> ()
-type Disconnect = NilFunc
+type Disconnect = () -> ()
 
 export type Properties = { [SpecialKey | string]: any }
 
@@ -65,7 +64,7 @@ export type Value<V> = StateObject<V> & {
 		Value<V>,
 		instance: Instance,
 		property: string
-	) -> (Disconnect, RBXScriptConnection),
+	) -> Disconnect,
 }
 
 export type Table<K, V> = StateObject<{ [K]: V }> & {
@@ -84,13 +83,11 @@ export type For<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
 	type: "for",
 }
 
-export type Tween<V> = StateObject<V> & {
-	type: "tween",
-}
+export type Animated<V> = StateObject<V> & {
+	type: "animated",
+	status: boolean,
 
-export type Spring<V> = StateObject<V> & {
-	type: "spring",
-	animating: boolean,
+	bindStatusChange: (Animated<V>, callback: (active: boolean) -> ()) -> Disconnect,
 }
 
 export type SpecialKey = {

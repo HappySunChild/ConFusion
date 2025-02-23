@@ -1,16 +1,18 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Types = require(package.Types)
 
 local Timer = require(package.Animation.Timer)
 
 local depend = require(package.Graph.depend)
 local evaluate = require(package.Graph.evaluate)
+local observe = require(package.Graph.observe)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
 
-type Self<V> = Types.StateObject<V> & {
+type Self<V> = Types.Animated<V> & {
 	_goal: Types.UsedAs<V>,
 	_activeStart: V?,
 	_activeFinish: V?,
@@ -19,6 +21,7 @@ type Self<V> = Types.StateObject<V> & {
 	_activeMover: ((elapsed: number) -> V)?,
 
 	_timer: Timer.Timer,
+	_statusListeners: { [{}]: (boolean) -> () },
 }
 
 local class = {
@@ -28,7 +31,11 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Animated<V>(scope: Types.Scope, goal: Types.UsedAs<V>, mover: () -> ())
+local function Animated<V>(
+	scope: Types.Scope,
+	goal: Types.UsedAs<V>,
+	mover: () -> ()
+): Types.Animated<V>
 	local timer = Timer(scope)
 	local newAnimated = setmetatable({
 		scope = scope,
@@ -46,11 +53,28 @@ local function Animated<V>(scope: Types.Scope, goal: Types.UsedAs<V>, mover: () 
 		_activeMover = nil,
 
 		_timer = timer,
+		_statusListeners = {},
+
+		status = false,
 	}, METATABLE)
 
 	evaluate(newAnimated, true)
 
 	return newAnimated
+end
+
+function class.onChange<V>(self: Self<V>, callback: (V) -> ())
+	return observe(self, callback)
+end
+
+function class.bindStatusChange<V>(self: Self<V>, callback: (boolean) -> ())
+	local uniqueIdentifier = {}
+
+	self._statusListeners[uniqueIdentifier] = callback
+
+	return function()
+		self._statusListeners[uniqueIdentifier] = nil
+	end
 end
 
 function class._evaluate<V>(self: Self<V>)
@@ -74,6 +98,14 @@ function class._evaluate<V>(self: Self<V>)
 
 		timer:reset()
 		timer:unpause()
+
+		if not self.status then
+			self.status = true
+
+			for _, callback in self._statusListeners do
+				External.doTaskImmediate(callback, true)
+			end
+		end
 	end
 
 	local mover = self._activeMover
@@ -83,6 +115,14 @@ function class._evaluate<V>(self: Self<V>)
 
 	if shouldSleep or self._activeStart == finish then
 		timer:pause()
+
+		if self.status then
+			self.status = false
+
+			for _, callback in self._statusListeners do
+				External.doTaskImmediate(callback, false)
+			end
+		end
 	end
 
 	local oldValue = self._internalValue :: any

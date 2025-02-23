@@ -9,8 +9,7 @@ local scope = Fusion:scoped()
 
 local target = scope:Value(0)
 
-local animatedSpring = scope:Animated(target, Fusion.Movers.Spring(10, 0.5))
-local spring = scope:Spring(target, 10, 0.5)
+local animatedSpring = scope:Spring(target)
 
 scope:New "ScreenGui" {
 	Parent = Players.LocalPlayer.PlayerGui,
@@ -21,23 +20,13 @@ scope:New "ScreenGui" {
 				return `AnimatedSpring: {use(animatedSpring)}`
 			end),
 			Size = scope:Computed(function(use)
-				return UDim2.fromOffset(100 + use(animatedSpring) * 100, 100)
-			end),
-		},
-
-		SpringFrame = scope:New "TextLabel" {
-			Text = scope:Computed(function(use)
-				return `RegularSpring: {use(spring)}`
-			end),
-			Position = UDim2.fromOffset(0, 110),
-			Size = scope:Computed(function(use)
-				return UDim2.fromOffset(100 + use(spring) * 100, 100)
+				return UDim2.fromOffset(100 + use(animatedSpring), 100)
 			end),
 		},
 	},
 }
 
 while true do
-	target:set(mouse.X / mouse.ViewSizeX * 5)
+	target:set(mouse.X - 100)
 	task.wait()
 end

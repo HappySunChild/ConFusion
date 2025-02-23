@@ -28,14 +28,9 @@ local ReFusion = table.freeze {
 
 	-- Animation
 	Timer = require(Animation.Timer),
-	Spring = require(Animation.Spring),
-	Tween = require(Animation.Tween),
 	Animated = require(Animation.Animated),
-
-	Movers = {
-		Tween = require(Animation.Movers.Tween),
-		Spring = require(Animation.Movers.Spring),
-	},
+	Tween = require(Animation.Tween),
+	Spring = require(Animation.Spring),
 
 	Signal = require(Utility.Signal),
 
