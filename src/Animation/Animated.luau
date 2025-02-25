@@ -1,6 +1,5 @@
 local package = script.Parent.Parent
 
-local External = require(package.External)
 local Types = require(package.Types)
 
 local Timer = require(package.Animation.Timer)
@@ -14,14 +13,13 @@ local peek = require(package.State.peek)
 
 type Self<V> = Types.Animated<V> & {
 	_goal: Types.UsedAs<V>,
-	_activeStart: V?,
-	_activeFinish: V?,
+	_activeStart: V,
+	_activeFinish: V,
 
-	_mover: (V) -> (),
-	_activeMover: ((elapsed: number) -> V)?,
+	_mover: (start: V, finish: V) -> (elapsed: number) -> (boolean, V),
+	_activeMover: (elapsed: number) -> (boolean, V),
 
 	_timer: Timer.Timer,
-	_statusListeners: { [{}]: (boolean) -> () },
 }
 
 local class = {
@@ -39,6 +37,7 @@ local function Animated<V>(
 	local timer = Timer(scope)
 	local newAnimated = setmetatable({
 		scope = scope,
+		status = false,
 		_createdAt = os.clock(),
 		_internalValue = peek(goal),
 
@@ -53,10 +52,7 @@ local function Animated<V>(
 		_activeMover = nil,
 
 		_timer = timer,
-		_statusListeners = {},
-
-		status = false,
-	}, METATABLE)
+	}, METATABLE) :: Types.Animated<V>
 
 	evaluate(newAnimated, true)
 
@@ -65,16 +61,6 @@ end
 
 function class.onChange<V>(self: Self<V>, callback: (V) -> ())
 	return observe(self, callback)
-end
-
-function class.bindStatusChange<V>(self: Self<V>, callback: (boolean) -> ())
-	local uniqueIdentifier = {}
-
-	self._statusListeners[uniqueIdentifier] = callback
-
-	return function()
-		self._statusListeners[uniqueIdentifier] = nil
-	end
 end
 
 function class._evaluate<V>(self: Self<V>)
@@ -91,45 +77,33 @@ function class._evaluate<V>(self: Self<V>)
 
 	depend(self, timer)
 
-	if finish ~= self._activeFinish then
+	if finish ~= (self._activeFinish :: any) then
 		self._activeStart = self._internalValue
 		self._activeFinish = finish
 		self._activeMover = self._mover(self._activeStart, self._activeFinish)
 
+		self.status = true
+
 		timer:reset()
 		timer:unpause()
-
-		if not self.status then
-			self.status = true
-
-			for _, callback in self._statusListeners do
-				External.doTaskImmediate(callback, true)
-			end
-		end
 	end
 
-	local mover = self._activeMover
-	local elapsed = peek(timer)
+	local activeMover = self._activeMover
+	local elapsed = peek(timer) :: number
 
-	local shouldSleep, newValue = mover(elapsed)
+	local shouldSleep, newValue = activeMover(elapsed)
 
-	if shouldSleep or self._activeStart == finish then
+	if shouldSleep or (self._activeStart :: any) == finish then
+		self.status = false
+
 		timer:pause()
-
-		if self.status then
-			self.status = false
-
-			for _, callback in self._statusListeners do
-				External.doTaskImmediate(callback, false)
-			end
-		end
 	end
 
 	local oldValue = self._internalValue :: any
 
 	self._internalValue = newValue
 
-	return oldValue ~= newValue
+	return (oldValue :: any) ~= (newValue :: any)
 end
 
 return Animated

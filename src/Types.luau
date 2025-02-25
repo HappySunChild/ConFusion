@@ -86,8 +86,6 @@ export type For<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
 export type Animated<V> = StateObject<V> & {
 	type: "animated",
 	status: boolean,
-
-	bindStatusChange: (Animated<V>, callback: (active: boolean) -> ()) -> Disconnect,
 }
 
 export type SpecialKey = {

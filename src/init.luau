@@ -2,9 +2,9 @@
 local External = require(script.External)
 local Types = require(script.Types)
 
+local Animation = script.Animation
 local Graph = script.Graph
 local State = script.State
-local Animation = script.Animation
 local Memory = script.Memory
 local Utility = script.Utility
 
@@ -31,8 +31,7 @@ local ReFusion = table.freeze {
 	Animated = require(Animation.Animated),
 	Tween = require(Animation.Tween),
 	Spring = require(Animation.Spring),
-
-	Signal = require(Utility.Signal),
+	Delay = require(Animation.Delay),
 
 	-- Instance
 	New = require(Instance.New),
@@ -54,6 +53,9 @@ local ReFusion = table.freeze {
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
+
+	-- Utility
+	Signal = require(Utility.Signal),
 }
 
 if game then
