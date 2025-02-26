@@ -14,16 +14,23 @@ local function delayMover<V>(delay: Types.UsedAs<number>)
 	local function update()
 		local now = External.lastUpdateStep()
 
+		local timestepValues = {}
+
 		for index = #activeDelayed, 1, -1 do
 			local data = activeDelayed[index]
 
 			if data.timestamp <= now then
-				current = data.goal
-
+				table.insert(timestepValues, data)
 				table.remove(activeDelayed, index)
-
-				break
 			end
+		end
+
+		if #timestepValues > 0 then
+			table.sort(timestepValues, function(a, b)
+				return a.timestamp > b.timestamp
+			end)
+
+			current = timestepValues[1].goal
 		end
 
 		return #activeDelayed == 0, current
