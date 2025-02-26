@@ -2,11 +2,9 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Computed = require(package.State.Computed)
 local peek = require(package.State.peek)
 
 local change = require(package.Graph.change)
-local observe = require(package.Graph.observe)
 
 local destructor = require(package.Memory.destructor)
 
@@ -22,11 +20,11 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Table<K, V>(scope: Types.Scope, value: { [K]: V }): Types.Table<K, V>
+local function Table<K, V>(scope: Types.Scope, initialValue: { [K]: V }): Types.Table<K, V>
 	local newTable = setmetatable({
 		scope = scope,
 		_createdAt = os.clock(),
-		_internalValue = value,
+		_internalValue = initialValue,
 
 		_users = {},
 	}, METATABLE)
@@ -34,16 +32,6 @@ local function Table<K, V>(scope: Types.Scope, value: { [K]: V }): Types.Table<K
 	table.insert(scope, destructor(newTable))
 
 	return newTable
-end
-
-function class.map<V>(self: Self<V>, processor)
-	return Computed(self.scope, function(use)
-		return processor(use(self))
-	end)
-end
-
-function class.onChange<V>(self: Self<V>, callback)
-	return observe(self, callback)
 end
 
 function class.setKey<V>(self: Self<V>, key: any, newValue: any)

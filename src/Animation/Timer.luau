@@ -2,26 +2,17 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local Computed = require(package.State.Computed)
 local peek = require(package.State.peek)
 
 local change = require(package.Graph.change)
 local depend = require(package.Graph.depend)
-local observe = require(package.Graph.observe)
 
 local destructor = require(package.Memory.destructor)
 
 local ExternalTime = require(package.Animation.ExternalTime)
 
-export type Timer = Types.StateObject<number> & {
-	type: "timer",
 
-	pause: (Timer) -> (),
-	unpause: (Timer) -> (),
-	reset: (Timer) -> (),
-}
-
-type Self = Timer & {
+type Self = Types.Timer & {
 	_paused: boolean,
 	_start: number,
 	_timer: Types.StateObject<number>,
@@ -34,7 +25,7 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Timer(scope: Types.Scope): Timer
+local function Timer(scope: Types.Scope): Types.Timer
 	local externalTime = ExternalTime(scope)
 
 	local newTimer = setmetatable({
@@ -55,16 +46,6 @@ local function Timer(scope: Types.Scope): Timer
 	depend(newTimer, externalTime)
 
 	return newTimer
-end
-
-function class.map(self: Self, callback: (number) -> unknown)
-	return Computed(self.scope, function(use)
-		return callback(use(self))
-	end)
-end
-
-function class.onChange(self: Self, callback)
-	return observe(self, callback)
 end
 
 function class.unpause(self: Self)

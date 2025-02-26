@@ -6,7 +6,6 @@ local Timer = require(package.Animation.Timer)
 
 local depend = require(package.Graph.depend)
 local evaluate = require(package.Graph.evaluate)
-local observe = require(package.Graph.observe)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
@@ -16,8 +15,8 @@ type Self<V> = Types.Animated<V> & {
 	_activeStart: V,
 	_activeFinish: V,
 
-	_mover: (start: V, finish: V) -> (elapsed: number) -> (boolean, V),
-	_activeMover: (elapsed: number) -> (boolean, V),
+	_mover: Types.AnimatedMover<V>,
+	_activeMover: Types.ActiveMover<V>,
 
 	_timer: Timer.Timer,
 }
@@ -57,10 +56,6 @@ local function Animated<V>(
 	evaluate(newAnimated, true)
 
 	return newAnimated
-end
-
-function class.onChange<V>(self: Self<V>, callback: (V) -> ())
-	return observe(self, callback)
 end
 
 function class._evaluate<V>(self: Self<V>)

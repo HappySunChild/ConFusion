@@ -11,12 +11,14 @@ local Utility = script.Utility
 local Instance = script.Instance
 local Keys = Instance.Keys
 
-local ReFusion = table.freeze {
+local Fusion = table.freeze {
+	-- Memory
 	scoped = require(Memory.scoped),
 	deriveScope = require(Memory.deriveScope),
 	innerScope = require(Memory.innerScope),
 	doCleanup = require(Memory.doCleanup),
 
+	-- State
 	Computed = require(State.Computed),
 	Value = require(State.Value),
 	Table = require(State.Table),
@@ -63,8 +65,8 @@ if game then
 	External.setProvider(RobloxProvider)
 end
 
-type ReFusion = typeof(ReFusion)
-export type Scope<Constructors = ReFusion> = Types.Scope<Constructors>
+type Fusion = Types.Fusion
+export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
 
-return ReFusion :: ReFusion
+return Fusion :: Fusion

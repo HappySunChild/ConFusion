@@ -5,7 +5,6 @@ local Types = require(package.Types)
 
 local depend = require(package.Graph.depend)
 local evaluate = require(package.Graph.evaluate)
-local observe = require(package.Graph.observe)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
@@ -16,7 +15,7 @@ local isSimilar = require(package.Utility.isSimilar)
 
 local parseError = require(package.Logging.parseError)
 
-type Self<VI, VO> = Types.Computed<VI, VO>
+type Self<V> = Types.Computed<V>
 
 local class = {
 	kind = "state",
@@ -25,10 +24,10 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Computed<VI, VO>(
+local function Computed<VO>(
 	scope: Types.Scope,
-	processor: Types.ComputedProcessor<VO>
-): Types.Computed<VI, VO>
+	processor: (Types.Use) -> VO
+): Types.Computed<VO>
 	local newComputed = setmetatable({
 		scope = scope,
 		_createdAt = os.clock(),
@@ -45,16 +44,6 @@ local function Computed<VI, VO>(
 	evaluate(newComputed, true)
 
 	return newComputed
-end
-
-function class.onChange<V>(self: Self<V>, callback)
-	return observe(self, callback)
-end
-
-function class.map<V>(self: Self<V>, processor)
-	return Computed(self.scope, function(use)
-		return processor(use(self))
-	end)
 end
 
 function class._evaluate<V>(self: Self<V>)

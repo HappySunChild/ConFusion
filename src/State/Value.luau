@@ -3,10 +3,7 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local Computed = require(package.State.Computed)
-
 local change = require(package.Graph.change)
-local observe = require(package.Graph.observe)
 
 local destructor = require(package.Memory.destructor)
 
@@ -35,16 +32,6 @@ local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
 	table.insert(scope, destructor(newValue))
 
 	return newValue
-end
-
-function class.map<V>(self: Self<V>, processor: (V) -> any)
-	return Computed(self.scope, function(use)
-		return processor(use(self))
-	end)
-end
-
-function class.onChange<V>(self: Self<V>, callback)
-	return observe(self, callback)
 end
 
 function class.set<V>(self: Self<V>, newValue: any)

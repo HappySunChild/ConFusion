@@ -12,7 +12,13 @@ export type Task =
 	| { Destroy: (any) -> () }
 	| { Task }
 export type Scope<T = unknown> = { Task } & T
+
 export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
+export type UsedAs<V> = StateObject<V> | V
+export type Use = <V>(target: StateObject<V>) -> V
+
+export type ActiveMover<V> = (elapsed: number) -> (boolean, V)
+export type AnimatedMover<V> = (start: V, goal: V) -> ActiveMover<V>
 
 export type Error = {
 	type: "Error",
@@ -20,8 +26,6 @@ export type Error = {
 	message: string,
 	trace: string,
 }
-
-export type UsedAs<V> = StateObject<V> | V
 
 export type ScopedObject = {
 	scope: Scope<unknown>,
@@ -40,17 +44,10 @@ export type StateObject<V> = GraphObject & {
 	_internalValue: V,
 	kind: "state",
 	type: string,
-
-	onChange: (StateObject<V>, callback: (new: V) -> nil) -> Disconnect,
 }
 
-export type Use = <V>(target: StateObject<V>) -> V
-
-export type Computed<IV, OV> = StateObject<OV> & {
+export type Computed<V> = StateObject<V> & {
 	type: "computed",
-	_processor: (Use) -> OV,
-
-	map: <T>(Computed<IV, OV>, processor: (IV) -> T) -> Computed<T, T>,
 }
 
 export type Value<V> = StateObject<V> & {
@@ -58,7 +55,6 @@ export type Value<V> = StateObject<V> & {
 
 	set: (Value<V>, newValue: V) -> V,
 	update: (Value<V>, predicate: (V) -> V) -> V,
-	map: <T>(Value<V>, processor: (V) -> T) -> Computed<T, T>,
 
 	bindToInstanceProperty: (
 		Value<V>,
@@ -75,12 +71,18 @@ export type Table<K, V> = StateObject<{ [K]: V }> & {
 
 	insert: (Table<K, V>, index: number, value: V) -> V,
 	remove: (Table<K, V>, index: number) -> V,
-
-	map: <T>(Table<K, V>, processor: ({ [K]: V }) -> T) -> Computed<{ [K]: V }, T>,
 }
 
-export type For<IK, IV, OK, OV> = StateObject<{ [OK]: OV }> & {
+export type For<OK, OV> = StateObject<{ [OK]: OV }> & {
 	type: "for",
+}
+
+export type Timer = StateObject<number> & {
+	type: "timer",
+
+	pause: (Timer) -> (),
+	unpause: (Timer) -> (),
+	reset: (Timer) -> (),
 }
 
 export type Animated<V> = StateObject<V> & {
@@ -88,8 +90,8 @@ export type Animated<V> = StateObject<V> & {
 	status: boolean,
 }
 
-export type SpecialKey = {
-	type: string,
+export type SpecialKey<T = string> = {
+	type: T,
 	kind: "key",
 	apply: (scope: Scope, instance: Instance, value: any) -> (),
 }
@@ -103,6 +105,81 @@ export type ExternalProvider = {
 
 	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
 	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
+}
+
+export type Fusion = {
+	scoped: <B, M>(base: B, methods: M) -> Scope<B> & M,
+	deriveScope: <T, M>(existing: T, methods: M) -> T & M,
+	innerScope: <T, M>(existing: T, methods: M) -> T & M,
+	doCleanup: (Task) -> (),
+
+	peek: <V>(value: UsedAs<V> | V) -> V,
+	observe: <V>(value: StateObject<V>, callback: (V) -> ()) -> Disconnect,
+
+	Computed: <V>(scope: Scope, processor: (Use) -> V) -> Computed<V>,
+	Value: <V>(scope: Scope, initialValue: V) -> Value<V>,
+	Table: <K, V>(scope: Scope, initialValue: { [K]: V }) -> Table<K, V>,
+
+	ForPairs: <IK, IV, OK, OV>(
+		scope: Scope,
+		inputTable: UsedAs<{ [IK]: IV }>,
+		processor: (Use, key: IK, value: IV) -> (OK, OV)
+	) -> For<OK, OV>,
+	ForKeys: <IK, IV, OK>(
+		scope: Scope,
+		inputTable: UsedAs<{ [IK]: IV }>,
+		processor: (Use, key: IK) -> OK
+	) -> For<OK, IV>,
+	ForValues: <IK, IV, OV>(
+		scope: Scope,
+		inputTable: UsedAs<{ [IK]: IV }>,
+		processor: (Use, value: IV) -> OV
+	) -> For<IK, OV>,
+
+	Timer: (scope: Scope) -> Timer,
+	Animated: <V>(scope: Scope, goal: UsedAs<V>, mover: AnimatedMover<V>) -> Animated<V>,
+	Tween: <V>(scope: Scope, goal: UsedAs<V>, info: UsedAs<TweenInfo>) -> Animated<V>,
+	Spring: <V>(
+		scope: Scope,
+		goal: UsedAs<V>,
+		speed: UsedAs<number>,
+		damping: UsedAs<number>
+	) -> Animated<V>,
+	Delay: <V>(scope: Scope, goal: UsedAs<V>, delay: UsedAs<number>) -> Animated<V>,
+
+	New: (
+		scope: Scope,
+		classNameOrTemplate: Instance | string
+	) -> (props: Properties) -> Instance,
+	Child: (
+		scope: Scope,
+		name: string
+	) -> (props: Properties) -> (parent: Instance) -> Instance?,
+	ChildOfClass: (
+		scope: Scope,
+		className: string
+	) -> (props: Properties) -> (parent: Instance) -> Instance?,
+	Descendant: (
+		scope: Scope,
+		name: string
+	) -> (props: Properties) -> (parent: Instance) -> Instance?,
+	DescendantOfClass: (
+		scope: Scope,
+		className: string
+	) -> (props: Properties) -> (parent: Instance) -> Instance?,
+
+	Children: SpecialKey<"Children">,
+	Startup: SpecialKey<"Startup">,
+	Cleanup: SpecialKey<"Cleanup">,
+	Ref: SpecialKey<"Ref">,
+	Apply: SpecialKey<"Apply">,
+	Attribute: (attribute: string) -> SpecialKey<"Attribute">,
+	AttributeChange: (attribute: string) -> SpecialKey<"AttributeChange">,
+	AttributeOut: (attribute: string) -> SpecialKey<"AttributeOut">,
+	Tag: (tag: string) -> SpecialKey<"Tag">,
+	Out: (property: string) -> SpecialKey<"Out">,
+	OnChange: (property: string) -> SpecialKey<"OnChange">,
+	OnEvent: (event: string) -> SpecialKey<"OnEvent">,
 }
 
 return nil

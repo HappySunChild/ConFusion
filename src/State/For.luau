@@ -9,13 +9,12 @@ local peek = require(package.State.peek)
 
 local depend = require(package.Graph.depend)
 local evaluate = require(package.Graph.evaluate)
-local observe = require(package.Graph.observe)
 
 local destructor = require(package.Memory.destructor)
 
 local parseError = require(package.Logging.parseError)
 
-type Self<IK, IV, OK, OV> = Types.For<IK, IV, OK, OV> & {
+type Self<IK, IV, OK, OV> = Types.For<OK, OV> & {
 	_objects: { [IK]: Types.Computed<unknown, { key: OK, value: OV }> },
 	_lastInput: { [IK]: IV },
 	_input: { [IK]: IV },
@@ -33,7 +32,7 @@ local function For<IK, IV, OK, OV>(
 	scope: Types.Scope,
 	input: Types.UsedAs<{ [IK]: IV }>,
 	processor: (Types.Use, IK, IV) -> (OK, OV?)
-): Types.For<IK, IV, OK, OV>
+): Types.For<OK, OV>
 	local newFor = setmetatable({
 		scope = scope,
 		_createdAt = os.clock(),
@@ -53,16 +52,6 @@ local function For<IK, IV, OK, OV>(
 	evaluate(newFor, true)
 
 	return newFor
-end
-
-function class.map<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>, processor)
-	return Computed(self.scope, function(use)
-		return processor(use(self))
-	end)
-end
-
-function class.onChange<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>, callback)
-	return observe(self, callback)
 end
 
 function class._evaluate<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>)
