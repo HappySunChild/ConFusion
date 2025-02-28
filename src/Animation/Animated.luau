@@ -13,12 +13,12 @@ local peek = require(package.State.peek)
 type Self<V> = Types.Animated<V> & {
 	_goal: Types.UsedAs<V>,
 	_activeStart: V,
-	_activeFinish: V,
+	_activeGoal: V,
 
 	_mover: Types.AnimatedMover<V>,
 	_activeMover: Types.ActiveMover<V>,
 
-	_timer: Timer.Timer,
+	_timer: Types.Timer,
 }
 
 local class = {
@@ -36,7 +36,6 @@ local function Animated<V>(
 	local timer = Timer(scope)
 	local newAnimated = setmetatable({
 		scope = scope,
-		status = false,
 		_createdAt = os.clock(),
 		_internalValue = peek(goal),
 
@@ -45,13 +44,13 @@ local function Animated<V>(
 
 		_goal = goal,
 		_activeStart = nil,
-		_activeFinish = nil,
+		_activeGoal = nil,
 
 		_mover = mover,
 		_activeMover = nil,
 
 		_timer = timer,
-	}, METATABLE) :: Types.Animated<V>
+	}, METATABLE)
 
 	evaluate(newAnimated, true)
 
@@ -65,19 +64,39 @@ function class._evaluate<V>(self: Self<V>)
 		return false
 	end
 
-	depend(self, goal)
-
 	local timer = self._timer
 	local finish = peek(goal)
 
 	depend(self, timer)
+	depend(self, goal)
 
-	if finish ~= (self._activeFinish :: any) then
+	if finish ~= (self._activeGoal :: any) then
 		self._activeStart = self._internalValue
-		self._activeFinish = finish
-		self._activeMover = self._mover(self._activeStart, self._activeFinish)
+		self._activeGoal = finish
+		self._activeMover = self._mover(self._activeStart, self._activeGoal)
 
-		self.status = true
+		--[[
+			The Animated *needs* to be dependant on the timer AND the goal,
+			so that when the goal updates we can wake the Animated and change
+			course if the goal changes while awake, but this has some problems;
+			
+			Whenever the goal changes, the timer gets reset to 0. Which means that any Animated
+			following another awake Animated (or rapidly changing value) would appear to be "frozen".
+			
+			This issue is also prevelant in base Fusion, which makes me think that nobody
+			has tried to make a spring/tween follow another spring/tween, or possibly this is actively discouraged (*)
+			in the docs and I just haven't noticed.
+			
+			Either way I believe this behavior is unacceptable, but I seriously can not think of a way to
+			fix this without having to make some radical changes.
+			
+			Maybe deferring the resetting to after the mover runs could work (?), so that there could be atleast *some*
+			progress made in the animated, instead of it just freezing.
+			
+			(*) After taking a look at the docs it seems that this is actually *actively* encouraged. On the springs page (https://elttob.uk/Fusion/0.3/tutorials/animation/springs/#interruption)
+			it mentions how springs are, "suitable for following rapidly changing values." Maybe it doesn't mean Springs/Tweens as "rapidly changing values", but it also doesn't explicitly state
+			that using Springs/Tweens as goals causes freezing to occur.
+		--]]
 
 		timer:reset()
 		timer:unpause()
@@ -89,9 +108,8 @@ function class._evaluate<V>(self: Self<V>)
 	local shouldSleep, newValue = activeMover(elapsed)
 
 	if shouldSleep or (self._activeStart :: any) == finish then
-		self.status = false
-
 		timer:pause()
+		--timer:reset()
 	end
 
 	local oldValue = self._internalValue :: any
