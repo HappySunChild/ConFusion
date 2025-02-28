@@ -9,6 +9,7 @@ return {
 
 	invalidChildType = "Invalid child type '%s'.",
 	invalidObserveType = "Can't observe non-state value, got '%s'.",
+	invalidMapType = "Can't map non-state value, got '%s'.",
 	invalidChangeType = "Can't change non-state value, got '%s'.",
 
 	propertyInvalidType = "'%s.%s' expected a '%s' type, but got a '%s' type.",
