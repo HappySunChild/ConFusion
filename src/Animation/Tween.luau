@@ -27,7 +27,10 @@ local function Tween<V>(
 	goal: Types.UsedAs<V>,
 	info: Types.UsedAs<TweenInfo>
 ): Types.Animated<V>
-	return Animated(scope, goal, tweenMover(info))
+	local tween = Animated(scope, goal, tweenMover(info))
+	tween.name = "Tween"
+
+	return tween
 end
 
 return Tween

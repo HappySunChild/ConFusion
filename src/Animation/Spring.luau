@@ -98,7 +98,10 @@ local function Spring<V>(
 	speed = speed or 10
 	damping = damping or 1
 
-	return Animated(scope, goal, springMover(speed, damping))
+	local spring = Animated(scope, goal, springMover(speed, damping))
+	spring.name = "Spring"
+
+	return spring
 end
 
 return Spring
