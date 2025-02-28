@@ -11,7 +11,6 @@ local destructor = require(package.Memory.destructor)
 
 local ExternalTime = require(package.Animation.ExternalTime)
 
-
 type Self = Types.Timer & {
 	_paused: boolean,
 	_start: number,
@@ -34,7 +33,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 		_internalValue = 0,
 
 		_paused = false,
-		_start = 0,
+		_start = peek(externalTime),
 
 		_using = {},
 		_users = {},
