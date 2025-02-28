@@ -87,7 +87,6 @@ export type Timer = StateObject<number> & {
 
 export type Animated<V> = StateObject<V> & {
 	type: "animated",
-	status: boolean,
 }
 
 export type SpecialKey<T = string> = {
@@ -115,25 +114,29 @@ export type Fusion = {
 
 	peek: <V>(value: UsedAs<V> | V) -> V,
 	observe: <V>(value: StateObject<V>, callback: (V) -> ()) -> Disconnect,
+	map: <V>(value: StateObject<V>, callback: (V) -> any?) -> Computed<V>,
 
-	Computed: <V>(scope: Scope, processor: (Use) -> V) -> Computed<V>,
+	Computed: <S, V>(
+		scope: Scope<S>,
+		processor: (use: Use, scope: Scope<S>) -> V
+	) -> Computed<V>,
 	Value: <V>(scope: Scope, initialValue: V) -> Value<V>,
 	Table: <K, V>(scope: Scope, initialValue: { [K]: V }) -> Table<K, V>,
 
-	ForPairs: <IK, IV, OK, OV>(
-		scope: Scope,
+	ForPairs: <S, IK, IV, OK, OV>(
+		scope: Scope<S>,
 		inputTable: UsedAs<{ [IK]: IV }>,
-		processor: (Use, key: IK, value: IV) -> (OK, OV)
+		processor: (use: Use, scope: Scope<S>, key: IK, value: IV) -> (OK, OV)
 	) -> For<OK, OV>,
-	ForKeys: <IK, IV, OK>(
-		scope: Scope,
+	ForKeys: <S, IK, IV, OK>(
+		scope: Scope<S>,
 		inputTable: UsedAs<{ [IK]: IV }>,
-		processor: (Use, key: IK) -> OK
+		processor: (use: Use, scope: Scope<S>, key: IK) -> OK
 	) -> For<OK, IV>,
-	ForValues: <IK, IV, OV>(
-		scope: Scope,
+	ForValues: <S, IK, IV, OV>(
+		scope: Scope<S>,
 		inputTable: UsedAs<{ [IK]: IV }>,
-		processor: (Use, value: IV) -> OV
+		processor: (use: Use, scope: Scope<S>, value: IV) -> OV
 	) -> For<IK, OV>,
 
 	Timer: (scope: Scope) -> Timer,
