@@ -9,13 +9,18 @@ local evaluate = require(package.Graph.evaluate)
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
 
+local deriveScope = require(package.Memory.deriveScope)
 local destructor = require(package.Memory.destructor)
+local doCleanup = require(package.Memory.doCleanup)
 
 local isSimilar = require(package.Utility.isSimilar)
 
 local parseError = require(package.Logging.parseError)
 
-type Self<V> = Types.Computed<V>
+type Self<S, V> = Types.Computed<V> & {
+	_innerScope: Types.Scope<S>?,
+	_processor: (use: Types.Use, scope: Types.Scope<S>) -> V,
+}
 
 local class = {
 	kind = "state",
@@ -24,9 +29,9 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Computed<VO>(
+local function Computed<S, VO>(
 	scope: Types.Scope,
-	processor: (Types.Use) -> VO
+	processor: (Types.Use, Types.Scope<S>) -> VO
 ): Types.Computed<VO>
 	local newComputed = setmetatable({
 		scope = scope,
@@ -47,6 +52,13 @@ local function Computed<VO>(
 end
 
 function class._evaluate<V>(self: Self<V>)
+	if self.scope == nil then
+		return false
+	end
+
+	local outerScope = self.scope
+	local innerScope = deriveScope(outerScope)
+
 	local function use(target)
 		if castToState(target) then
 			depend(self, target)
@@ -55,15 +67,24 @@ function class._evaluate<V>(self: Self<V>)
 		return peek(target)
 	end
 
-	local success, newValue = xpcall(self._processor, parseError, use)
+	local success, newValue = xpcall(self._processor, parseError, use, innerScope)
 
 	if success then
 		local oldValue = self._internalValue
+
+		if self._innerScope ~= nil then
+			doCleanup(self._innerScope)
+			self._innerScope = nil
+		end
+
+		self._innerScope = innerScope
 
 		self._internalValue = newValue
 
 		return not isSimilar(newValue, oldValue)
 	else
+		doCleanup(self._innerScope)
+
 		External.logErrorNonFatal("callbackError", newValue)
 	end
 

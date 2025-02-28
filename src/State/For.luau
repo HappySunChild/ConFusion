@@ -55,6 +55,10 @@ local function For<IK, IV, OK, OV>(
 end
 
 function class._evaluate<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>)
+	if self.scope == nil then
+		return false
+	end
+
 	local function use(target)
 		if castToState(target) then
 			depend(self, target)
@@ -73,9 +77,9 @@ function class._evaluate<IK, IV, OK, OV>(self: Self<IK, IV, OK, OV>)
 
 	for key, value in input do
 		if lastInput[key] ~= value then
-			local pair = Computed(scope, function(use)
+			local pair = Computed(scope, function(use, scope)
 				local ok, newKey, newValue =
-					xpcall(processor, parseError, use, use(key), use(value))
+					xpcall(processor, parseError, use, scope, use(key), use(value))
 
 				if ok then
 					return { key = newKey, value = newValue }
