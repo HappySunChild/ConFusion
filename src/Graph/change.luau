@@ -3,11 +3,11 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local castToState = require(package.State.castToState)
+local castToGraph = require(package.Graph.castToGraph)
 local evaluate = require(package.Graph.evaluate)
 
 local function change(target: Types.GraphObject)
-	if not castToState(target) then
+	if not castToGraph(target) then
 		return External.logError("invalidChangeType", nil, typeof(target))
 	end
 
