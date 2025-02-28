@@ -21,8 +21,8 @@ local function debugValueDisplay(target)
 	)
 end
 
-local singleSpring = scope:Spring(target, 20, 1)
-local doubleSpring = scope:Tween(singleSpring, TweenInfo.new(0.1))
+local singleSpring = scope:Spring(target, 10, 0.4)
+local doubleSpring = scope:Tween(singleSpring, TweenInfo.new(0.3))
 
 debugValueDisplay(target)
 debugValueDisplay(singleSpring)

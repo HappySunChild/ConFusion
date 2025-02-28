@@ -1,5 +1,6 @@
 local package = script.Parent.Parent
 
+local External = require(package.External)
 local Types = require(package.Types)
 
 local Timer = require(package.Animation.Timer)
@@ -103,7 +104,7 @@ function class._evaluate<V>(self: Self<V>)
 	end
 
 	local activeMover = self._activeMover
-	local elapsed = peek(timer) :: number
+	local elapsed = math.max(peek(timer), External.deltaTime()) :: number
 
 	local shouldSleep, newValue = activeMover(elapsed)
 

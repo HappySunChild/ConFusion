@@ -41,15 +41,21 @@ function External.bindToUpdate(callback: (now: number) -> ())
 end
 
 local lastUpdateStep = os.clock()
+local deltaTime = 0
 
 function External.performUpdate()
 	local now = os.clock()
 
+	deltaTime = now - lastUpdateStep
 	lastUpdateStep = now
 
 	for _, callback in boundCallbacks do
 		callback(now)
 	end
+end
+
+function External.deltaTime(): number
+	return deltaTime
 end
 
 function External.lastUpdateStep(): number
