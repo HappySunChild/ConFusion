@@ -1,38 +1,40 @@
 local Players = game:GetService "Players"
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
-
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
+local map = Fusion.map
 local scope = Fusion:scoped()
 
 local target = scope:Value(0)
 
 local children = {}
 
-for i = 0, 20 do
-	local animated = scope:Delay(target, i / 20)
-
+local function debugValueDisplay(target)
 	table.insert(
 		children,
-		scope:New "TextLabel" {
-			Text = `Delay {i}`,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			Position = UDim2.fromOffset(0, i * 16),
-			Size = scope:Computed(function(use)
-				return UDim2.fromOffset(use(animated), 15)
+		scope:New "Frame" {
+			Position = UDim2.fromOffset(0, #children * 16),
+			Size = map(target, function(value)
+				return UDim2.fromOffset(value, 15)
 			end),
-			BackgroundColor3 = Color3.fromHSV(0, 0, 1 - (i / 20)),
 		}
 	)
 end
+
+local singleSpring = scope:Spring(target, 20, 1)
+local doubleSpring = scope:Tween(singleSpring, TweenInfo.new(0.1))
+
+debugValueDisplay(target)
+debugValueDisplay(singleSpring)
+debugValueDisplay(doubleSpring)
 
 scope:New "ScreenGui" {
 	Parent = Players.LocalPlayer.PlayerGui,
 
 	[Fusion.Children] = children,
 }
+
+local mouse = Players.LocalPlayer:GetMouse()
 
 while true do
 	target:set(mouse.X)
