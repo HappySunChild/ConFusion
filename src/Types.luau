@@ -17,8 +17,8 @@ export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Ch
 export type UsedAs<V> = StateObject<V> | V
 export type Use = <V>(target: StateObject<V>) -> V
 
-export type ActiveMover<V> = (elapsed: number) -> (boolean, V)
-export type AnimatedMover<V> = (start: V, goal: V) -> ActiveMover<V>
+export type MoverStepper<V> = (elapsed: number) -> (boolean, V)
+export type AnimatedMover<V> = (start: V, goal: V) -> MoverStepper<V>
 
 export type Error = {
 	type: "Error",
@@ -107,9 +107,9 @@ export type ExternalProvider = {
 }
 
 export type Fusion = {
-	scoped: <B, M>(base: B, methods: M) -> Scope<B> & M,
-	deriveScope: <T, M>(existing: T, methods: M) -> T & M,
-	innerScope: <T, M>(existing: T, methods: M) -> T & M,
+	scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
+	deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
+	innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	doCleanup: (Task) -> (),
 
 	peek: <V>(value: UsedAs<V> | V) -> V,

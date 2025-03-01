@@ -19,4 +19,4 @@ local function deriveScope<T>(
 	return setmetatable({}, metatable)
 end
 
-return deriveScope :: <T, M>(existing: T, methods: M) -> T & M
+return deriveScope :: <T, M>(existing: T, methods: M?) -> T & M
