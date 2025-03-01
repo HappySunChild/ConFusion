@@ -1,6 +1,6 @@
-local Players = game:GetService 'Players'
-local ReplicatedStorage = game:GetService 'ReplicatedStorage'
-local TextService = game:GetService 'TextService'
+local Players = game:GetService "Players"
+local ReplicatedStorage = game:GetService "ReplicatedStorage"
+local TextService = game:GetService "TextService"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local OnEvent, Children = Fusion.OnEvent, Fusion.Children
@@ -33,15 +33,16 @@ local function HotbarSlot(
 	local toolTip = slotScope:Value(tool.ToolTip)
 	local toolIcon = slotScope:Value(tool.TextureId)
 
-	toolName:bindToInstanceProperty(tool, 'Name')
-	toolParent:bindToInstanceProperty(tool, 'Parent')
-	toolTip:bindToInstanceProperty(tool, 'ToolTip')
-	toolIcon:bindToInstanceProperty(tool, 'TextureId')
+	toolName:bindToInstanceProperty(tool, "Name")
+	toolParent:bindToInstanceProperty(tool, "Parent")
+	toolTip:bindToInstanceProperty(tool, "ToolTip")
+	toolIcon:bindToInstanceProperty(tool, "TextureId")
 
 	local isStartup = slotScope:Value(true)
 	local isHovering = slotScope:Value(false)
-	local isActive = toolParent:map(function(parent)
-		return parent ~= currentBackpack
+
+	local isHeld = slotScope:Computed(function(use)
+		return use(toolParent) ~= currentBackpack
 	end)
 
 	local toolTipWidth = slotScope:Computed(function(use)
@@ -64,20 +65,22 @@ local function HotbarSlot(
 			return 0.5
 		end
 
-		if use(isHovering) or use(isActive) then
+		if use(isHovering) or use(isHeld) then
 			return 1.1
 		end
 
 		return 1
 	end)
 
-	return slotScope:New 'TextButton' {
+	return slotScope:New "TextButton" {
 		Size = slotScope:Spring(
-			slotSize:map(function(size)
+			slotScope:Computed(function(use)
+				local size = use(slotSize)
+
 				return UDim2.fromScale(size, size)
 			end),
 			30,
-			0.7
+			1
 		),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 
@@ -87,8 +90,8 @@ local function HotbarSlot(
 		BackgroundTransparency = 0.4,
 
 		Text = slotScope:Computed(function(use)
-			if use(toolIcon) ~= '' then
-				return ''
+			if use(toolIcon) ~= "" then
+				return ""
 			end
 
 			local text = use(toolName)
@@ -99,17 +102,17 @@ local function HotbarSlot(
 		TextTruncate = Enum.TextTruncate.AtEnd,
 		TextColor3 = Foreground,
 
-		[OnEvent 'InputBegan'] = function(input: InputObject)
+		[OnEvent "InputBegan"] = function(input: InputObject)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				if callback then
 					callback(index)
 				end
 			end
 		end,
-		[OnEvent 'MouseEnter'] = function()
+		[OnEvent "MouseEnter"] = function()
 			isHovering:set(true)
 		end,
-		[OnEvent 'MouseLeave'] = function()
+		[OnEvent "MouseLeave"] = function()
 			isHovering:set(false)
 		end,
 
@@ -122,37 +125,39 @@ local function HotbarSlot(
 		end,
 
 		[Children] = {
-			Stroke = slotScope:New 'UIStroke' {
+			Stroke = slotScope:New "UIStroke" {
 				ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
 				Thickness = 1,
-				Color = isActive:map(function(active)
-					return if active then ActiveForeground else Foreground
+				Color = scope:Computed(function(use)
+					return if use(isHeld) then ActiveForeground else Foreground
 				end),
 			},
-			Round = slotScope:New 'UICorner' {
+			Round = slotScope:New "UICorner" {
 				CornerRadius = UDim.new(0, 2),
 			},
 
-			IconImage = toolIcon:map(function(value)
-				if value ~= '' then
-					return slotScope:New 'ImageLabel' {
+			IconImage = slotScope:Computed(function(use)
+				local icon = use(toolIcon)
+
+				if icon ~= "" then
+					return slotScope:New "ImageLabel" {
 						AnchorPoint = Vector2.new(0.5, 0.5),
 						Position = UDim2.fromScale(0.5, 0.5),
 						Size = UDim2.fromScale(0.8, 0.8),
 
 						BackgroundTransparency = 1,
-						Image = toolIcon,
+						Image = icon,
 					}
 				end
 
 				return
 			end),
-			ToolTip = slotScope:New 'TextLabel' {
+			ToolTip = slotScope:New "TextLabel" {
 				AnchorPoint = Vector2.new(0.5, 1),
 				Position = UDim2.new(0.5, 0, 0, -5),
 				Size = slotScope:Tween(
-					toolTipWidth:map(function(width)
-						return UDim2.fromOffset(width, 16)
+					slotScope:Computed(function(use)
+						return UDim2.fromOffset(use(toolTipWidth), 16)
 					end),
 					TooltipInfo
 				),
@@ -167,7 +172,7 @@ local function HotbarSlot(
 				BackgroundTransparency = 0.5,
 				BackgroundColor3 = Background,
 			},
-			IndexLabel = slotScope:New 'TextLabel' {
+			IndexLabel = slotScope:New "TextLabel" {
 				Size = UDim2.fromOffset(10, 10),
 				BackgroundTransparency = 1,
 

@@ -9,8 +9,8 @@ local function Hotbar(scope: Fusion.Scope, props)
 		HotbarSlot = HotbarSlot,
 	}
 
-	local slots = hotbarScope:ForPairs(props.Items, function(_, index, tool: Tool)
-		local slot = hotbarScope:HotbarSlot {
+	local slots = hotbarScope:ForPairs(props.Items, function(_, inner, index, tool: Tool)
+		local slot = inner:HotbarSlot {
 			Item = tool,
 			Index = index,
 			Callback = props.EquipCallback,
