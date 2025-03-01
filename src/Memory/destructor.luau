@@ -33,7 +33,7 @@ local function destructor(target: Types.GraphObject)
 		destroy(target)
 	end
 
-	nicknames[destruct] = nameOf(target, "unknown") .. " destructor"
+	nicknames[destruct] = nameOf(target, "unknown") .. "-destructor"
 
 	return destruct
 end

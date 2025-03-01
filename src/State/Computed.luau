@@ -41,17 +41,24 @@ local function Computed<S, VO>(
 		_using = {},
 		_users = {},
 
+		_innerScope = nil,
 		_processor = processor,
 	}, METATABLE)
 
 	table.insert(scope, destructor(newComputed))
+	table.insert(scope, function()
+		if newComputed._innerScope then
+			doCleanup(newComputed._innerScope)
+			newComputed._innerScope = nil
+		end
+	end)
 
 	evaluate(newComputed, true)
 
 	return newComputed
 end
 
-function class._evaluate<V>(self: Self<V>)
+function class._evaluate<S, V>(self: Self<S, V>)
 	if self.scope == nil then
 		return false
 	end
@@ -59,7 +66,7 @@ function class._evaluate<V>(self: Self<V>)
 	local outerScope = self.scope
 	local innerScope = deriveScope(outerScope)
 
-	local function use(target)
+	local function use<T>(target: Types.UsedAs<T>): T
 		if castToState(target) then
 			depend(self, target)
 		end
@@ -83,7 +90,7 @@ function class._evaluate<V>(self: Self<V>)
 
 		return not isSimilar(newValue, oldValue)
 	else
-		doCleanup(self._innerScope)
+		doCleanup(innerScope)
 
 		External.logErrorNonFatal("callbackError", newValue)
 	end
