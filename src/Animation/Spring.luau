@@ -42,6 +42,7 @@ local function springMover(speed: Types.UsedAs<number>, damping: Types.UsedAs<nu
 
 		activeType = typeof(target)
 
+		-- spring stepper
 		return function(elapsed: number)
 			local shouldSleep = false
 			local newValue
