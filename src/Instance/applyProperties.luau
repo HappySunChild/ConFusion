@@ -94,10 +94,6 @@ local function applyProperties<T>(
 	for _, key in specialKeys do
 		key.apply(scope, instance, props[key])
 	end
-
-	if props.Parent then
-		applyProperty(instance, "Parent", props.Parent)
-	end
 end
 
 return applyProperties

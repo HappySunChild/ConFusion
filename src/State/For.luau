@@ -18,7 +18,7 @@ type Self<IK, IV, OK, OV> = Types.For<OK, OV> & {
 	_objects: { [IK]: Types.Computed<unknown, { key: OK, value: OV }> },
 	_lastInput: { [IK]: IV },
 	_input: { [IK]: IV },
-	_processor: (Types.Use, IK, IV) -> (OK, OV),
+	_processor: (Types.Use, Types.Scope, IK, IV) -> (OK, OV),
 }
 
 local class = {

@@ -74,9 +74,9 @@ function class._evaluate<S, V>(self: Self<S, V>)
 		return peek(target)
 	end
 
-	local success, newValue = xpcall(self._processor, parseError, use, innerScope)
+	local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
 
-	if success then
+	if ok then
 		local oldValue = self._internalValue
 
 		if self._innerScope ~= nil then

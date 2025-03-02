@@ -33,7 +33,7 @@ local METATABLE = table.freeze { __index = class }
 local function Animated<V>(
 	scope: Types.Scope,
 	goal: Types.UsedAs<V>,
-	mover: Types.UsedAs<Types.AnimatedMover>
+	mover: Types.UsedAs<Types.AnimatedMover<V>>
 ): Types.Animated<V>
 	local timer = Timer(scope)
 	local newAnimated = setmetatable({
