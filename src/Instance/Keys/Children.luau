@@ -34,7 +34,7 @@ local Children: Types.SpecialKey = table.freeze {
 						oldChildren[child] = nil
 					end
 
-					if name then
+					if name and tonumber(name) == nil then
 						child.Name = name
 					end
 				elseif childType == "function" then
