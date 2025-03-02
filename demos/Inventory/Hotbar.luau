@@ -4,7 +4,10 @@ local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children = Fusion.Children
 local HotbarSlot = require(script.Parent.HotbarSlot)
 
-local function Hotbar(scope: Fusion.Scope, props)
+local function Hotbar(
+	scope: Fusion.Scope,
+	props: { Items: { [number]: Tool }, Height: number, Padding: number }
+)
 	local hotbarScope = scope:innerScope {
 		HotbarSlot = HotbarSlot,
 	}
