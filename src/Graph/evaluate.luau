@@ -3,6 +3,8 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
+local notify = require(package.Graph.notify)
+
 local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 	if target._validity == "busy" then
 		return External.logError "infiniteLoop"
@@ -30,7 +32,6 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 
 		if shouldCompute then
 			-- remove dependencies
-			
 			for dependency in target._using do
 				dependency._users[target] = nil
 				target._using[dependency] = nil
@@ -44,11 +45,7 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 		target._validity = "valid"
 
 		if targetMeaningfullyChanged then
-			if target._observers then
-				for callback in target._observers do
-					External.doTaskImmediate(callback, target._internalValue)
-				end
-			end
+			notify(target, target._internalValue)
 
 			target._lastChange = os.clock()
 		end
