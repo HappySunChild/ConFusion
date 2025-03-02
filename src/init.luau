@@ -19,6 +19,7 @@ local Fusion = table.freeze {
 	doCleanup = require(Memory.doCleanup),
 
 	-- State
+	Eventual = require(State.Eventual),
 	Computed = require(State.Computed),
 	Value = require(State.Value),
 	Table = require(State.Table),
@@ -68,7 +69,19 @@ if game then
 end
 
 type Fusion = Types.Fusion
+
 export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
+
+export type ScopedObject = Types.ScopedObject
+export type GraphObject = Types.GraphObject
+export type StateObject<V> = Types.StateObject<V>
+
+export type Animated<V> = Types.Animated<V>
+export type Value<V> = Types.Value<V>
+export type Computed<V> = Types.Computed<V>
+export type For<K, V> = Types.For<K, V>
+
+export type Child = Types.Child
 
 return Fusion :: Fusion

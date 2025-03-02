@@ -37,6 +37,7 @@ export type GraphObject = ScopedObject & {
 	_validity: string?,
 	_users: { [GraphObject]: unknown },
 	_using: { [GraphObject]: unknown },
+	_observers: { [(any) -> ()]: true }?,
 	_evaluate: (GraphObject) -> boolean,
 }
 
@@ -61,6 +62,10 @@ export type Value<V> = StateObject<V> & {
 		instance: Instance,
 		property: string
 	) -> Disconnect,
+}
+
+export type Eventual<V> = StateObject<V> & {
+	type: "eventual",
 }
 
 export type Table<K, V> = StateObject<{ [K]: V }> & {
@@ -116,6 +121,11 @@ export type Fusion = {
 	observe: <V>(value: StateObject<V>, callback: (V) -> ()) -> Disconnect,
 	map: <V>(value: StateObject<V>, callback: (V) -> any?) -> Computed<V>,
 
+	Eventual: <S, V>(
+		scope: Scope<S>,
+		processor: (use: Use, become: (V) -> ()) -> (),
+		default: V
+	) -> Eventual<V>,
 	Computed: <S, V>(
 		scope: Scope<S>,
 		processor: (use: Use, scope: Scope<S>) -> V
