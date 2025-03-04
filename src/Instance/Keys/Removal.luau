@@ -4,9 +4,9 @@ local Types = require(package.Types)
 
 local doCleanup = require(package.Memory.doCleanup)
 
-local Cleanup: Types.SpecialKey = table.freeze {
-	kind = 'key',
-	type = 'cleanup',
+local Removal: Types.SpecialKey = table.freeze {
+	kind = "key",
+	type = "cleanup",
 
 	apply = function(scope: Types.Scope, applyTo: Instance, task: Types.Task)
 		table.insert(
@@ -20,4 +20,4 @@ local Cleanup: Types.SpecialKey = table.freeze {
 	end,
 }
 
-return Cleanup
+return Removal

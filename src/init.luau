@@ -48,7 +48,7 @@ local Fusion = table.freeze {
 	-- Instance Keys
 	Children = require(Keys.Children),
 	Startup = require(Keys.Startup),
-	Cleanup = require(Keys.Cleanup),
+	Removal = require(Keys.Removal),
 	Ref = require(Keys.Ref),
 	Apply = require(Keys.Apply),
 	Attribute = require(Keys.Attribute),
