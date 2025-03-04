@@ -52,7 +52,7 @@ local Children: Types.SpecialKey = table.freeze {
 
 					local childScope = oldScopes[child]
 
-					if not childScope then
+					if childScope == nil then
 						childScope = {}
 
 						observe(child, updateChildren)
