@@ -4,7 +4,6 @@ local External = require(package.External)
 local Types = require(package.Types)
 
 local depend = require(package.Graph.depend)
-local evaluate = require(package.Graph.evaluate)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
@@ -25,6 +24,7 @@ type Self<S, V> = Types.Computed<V> & {
 local class = {
 	kind = "state",
 	type = "computed",
+	timeliness = "lazy",
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -35,7 +35,7 @@ local function Computed<S, VO>(
 ): Types.Computed<VO>
 	local newComputed = setmetatable({
 		scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 		_internalValue = nil,
 
 		_using = {},
@@ -45,15 +45,16 @@ local function Computed<S, VO>(
 		_processor = processor,
 	}, METATABLE)
 
-	table.insert(scope, destructor(newComputed))
-	table.insert(scope, function()
-		if newComputed._innerScope then
-			doCleanup(newComputed._innerScope)
-			newComputed._innerScope = nil
-		end
-	end)
+	table.insert(scope, {
+		destructor(newComputed),
+		function()
+			if newComputed._innerScope then
+				doCleanup(newComputed._innerScope)
 
-	evaluate(newComputed, true)
+				newComputed._innerScope = nil
+			end
+		end,
+	})
 
 	return newComputed
 end
@@ -77,18 +78,18 @@ function class._evaluate<S, V>(self: Self<S, V>)
 	local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
 
 	if ok then
-		local oldValue = self._internalValue
+		local similar = isSimilar(self._internalValue, newValue)
 
 		if self._innerScope ~= nil then
 			doCleanup(self._innerScope)
+
 			self._innerScope = nil
 		end
 
 		self._innerScope = innerScope
-
 		self._internalValue = newValue
 
-		return not isSimilar(newValue, oldValue)
+		return not similar
 	else
 		doCleanup(innerScope)
 

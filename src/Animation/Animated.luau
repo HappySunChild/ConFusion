@@ -26,6 +26,7 @@ type Self<V> = Types.Animated<V> & {
 local class = {
 	kind = "state",
 	type = "animated",
+	timeliness = "eager",
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -38,7 +39,7 @@ local function Animated<V>(
 	local timer = Timer(scope)
 	local newAnimated = setmetatable({
 		scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 		_internalValue = peek(goal),
 
 		_using = {},

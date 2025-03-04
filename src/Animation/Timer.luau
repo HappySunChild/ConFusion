@@ -20,6 +20,7 @@ type Self = Types.Timer & {
 local class = {
 	kind = "state",
 	type = "timer",
+	timeliness = "lazy",
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -29,7 +30,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 
 	local newTimer = setmetatable({
 		scope = {},
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 		_internalValue = 0,
 
 		_paused = false,

@@ -1,5 +1,5 @@
 return {
-	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
+	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency. (t: %s, k: %s)",
 	callbackError = "Error in callback:\nERROR_MESSAGE",
 
 	missingChild = "Could not find child '%s' in '%s'.",
@@ -21,4 +21,6 @@ return {
 	cannotCreateTemplate = "Unable to create template of instance '%s'.",
 	cannotConnectChange = "The %s class doesn't have a property called '%s'.",
 	cannotConnectEvent = "The %s class doesn't have a event called '%s'.",
+
+	forKeyCollision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
 }

@@ -6,16 +6,17 @@ local Types = require(package.Types)
 local notify = require(package.Graph.notify)
 
 local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
-	if target._validity == "busy" then
-		return External.logError "infiniteLoop"
+	if target.validity == "busy" then
+		return External.logError("infiniteLoop", nil, target.type, target.kind)
 	end
 
 	local firstEvaluation = target._lastChange == nil
-	local isInvalid = target._validity == "invalid"
+	local isInvalid = target.validity == "invalid"
 
 	if firstEvaluation or isInvalid or forceComputation then
 		local shouldCompute = firstEvaluation or forceComputation
 
+		-- check if computation is actually needed
 		if not shouldCompute then
 			for dependency in target._using do
 				evaluate(dependency, false)
@@ -37,12 +38,12 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 				target._using[dependency] = nil
 			end
 
-			target._validity = "busy"
+			target.validity = "busy"
 
 			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
 		end
 
-		target._validity = "valid"
+		target.validity = "valid"
 
 		if targetMeaningfullyChanged then
 			notify(target, target._internalValue)

@@ -14,6 +14,7 @@ type Self<V> = Types.Value<V>
 local class = {
 	kind = "state",
 	type = "value",
+	timeliness = "lazy",
 	_using = table.freeze {},
 }
 
@@ -22,7 +23,7 @@ local METATABLE = table.freeze { __index = class }
 local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
 	local newValue = setmetatable({
 		scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 
 		_internalValue = initialValue,
 

@@ -24,7 +24,7 @@ local function change(target: Types.GraphObject)
 
 		for _, searchTarget in searchInNow do
 			for user in searchTarget._users do
-				if user._validity == "valid" then
+				if user.validity == "valid" then
 					done = false
 
 					table.insert(userList, user)
@@ -38,12 +38,24 @@ local function change(target: Types.GraphObject)
 		table.clear(searchInNext)
 	until done
 
-	table.sort(userList, function(a, b)
-		return a._createdAt < b._createdAt
-	end)
+	local eagerList = {}
 
 	for _, user in userList do
-		user._validity = "invalid"
+		user.validity = "invalid"
+
+		if user.timeliness == "eager" then
+			table.insert(eagerList, user)
+		end
+	end
+
+	table.sort(eagerList, function(a, b)
+		return a.createdAt < b.createdAt
+	end)
+
+	for _, user in eagerList do
+		print(user)
+
+		user.validity = "invalid"
 
 		evaluate(user, false)
 	end

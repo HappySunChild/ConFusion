@@ -26,7 +26,9 @@ type Self<V> = Types.Eventual<V> & {
 local class = {
 	kind = "state",
 	type = "eventual",
+	timeliness = "lazy",
 }
+
 local METATABLE = table.freeze { __index = class }
 
 local function Eventual<V>(
@@ -36,7 +38,7 @@ local function Eventual<V>(
 ): Types.Eventual<V>
 	local newEventual = setmetatable({
 		scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 
 		_internalValue = pendingValue,
 		_pendingValue = pendingValue,
@@ -80,12 +82,12 @@ function class._evaluate<V>(self: Self<V>)
 	end
 
 	local function become(value: V)
-		self._isBecoming = true
-
 		self._becomeValue = self._internalValue
 		self._internalValue = value
 
-		if self._validity ~= "busy" then
+		if self.validity ~= "busy" then
+			self._isBecoming = true
+
 			change(self)
 		end
 	end
@@ -97,17 +99,10 @@ function class._evaluate<V>(self: Self<V>)
 	local oldValue = self._internalValue
 
 	External.doTaskImmediate(function()
-		local ok, finalValue = xpcall(self._processor, parseError, use, become)
+		local ok, err = xpcall(self._processor, parseError, use, become)
 
-		if ok then
-			-- again, not entirely sure about this. What if you wanted to return nil?
-			-- but I also don't want to make it mandatory to return the final value.
-			-- could introduce some sort of symbol that acts as nil, but that's a little extra.
-			if finalValue ~= nil then
-				become(finalValue)
-			end
-		else
-			External.logErrorNonFatal("callbackError", finalValue)
+		if not ok then
+			External.logErrorNonFatal("callbackError", err)
 		end
 	end)
 

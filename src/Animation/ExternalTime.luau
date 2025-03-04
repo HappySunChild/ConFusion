@@ -20,7 +20,7 @@ local activeTimers = {}
 local function ExternalTime(scope: Types.Scope): Types.StateObject<number>
 	local newExternalTime = setmetatable({
 		_scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 		_users = {},
 	}, METATABLE)
 

@@ -15,6 +15,7 @@ type Self<K, V> = Types.Table<K, V>
 local class = {
 	kind = "state",
 	type = "table",
+	timeliness = "lazy",
 	_using = table.freeze {},
 }
 
@@ -23,7 +24,7 @@ local METATABLE = table.freeze { __index = class }
 local function Table<K, V>(scope: Types.Scope, initialValue: { [K]: V }): Types.Table<K, V>
 	local newTable = setmetatable({
 		scope = scope,
-		_createdAt = os.clock(),
+		createdAt = os.clock(),
 		_internalValue = initialValue,
 
 		_users = {},

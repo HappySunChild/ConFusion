@@ -32,9 +32,10 @@ export type ScopedObject = {
 }
 
 export type GraphObject = ScopedObject & {
-	_createdAt: number?,
+	createdAt: number?,
+	validity: string?,
+	timeliness: "lazy" | "eager",
 	_lastChange: number?,
-	_validity: string?,
 	_users: { [GraphObject]: unknown },
 	_using: { [GraphObject]: unknown },
 	_observers: { [(any) -> ()]: true }?,
@@ -183,7 +184,7 @@ export type Fusion = {
 
 	Children: SpecialKey<"Children">,
 	Startup: SpecialKey<"Startup">,
-	Cleanup: SpecialKey<"Cleanup">,
+	Removal: SpecialKey<"Removal">,
 	Ref: SpecialKey<"Ref">,
 	Apply: SpecialKey<"Apply">,
 	Attribute: (attribute: string) -> SpecialKey<"Attribute">,
