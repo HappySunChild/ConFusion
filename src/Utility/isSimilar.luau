@@ -1,25 +1,17 @@
 --!strict
 
 local function isSimilar(a: any, b: any)
-	if a ~= b then
-		return false
-	end
+	local typeA = typeof(a)
+	local isTable = typeA == "table"
+	local isUserdata = typeA == "userdata"
 
-	if typeof(a) == 'table' then
-		for key, value in a do
-			if not isSimilar(value, b[key]) then
-				return false
-			end
-		end
-
-		for key, value in b do
-			if not isSimilar((a :: { [any]: any })[key], value) then
-				return false
-			end
-		end
-	end
-
-	return true
+	return if not (isTable or isUserdata)
+		then a == b or a ~= a and b ~= b
+		elseif
+			typeA == typeof(b)
+			and (isUserdata or table.isfrozen(a :: any) or getmetatable(a :: any) ~= nil)
+		then a == b
+		else false
 end
 
 return isSimilar
