@@ -52,12 +52,8 @@ local function change(target: Types.GraphObject)
 		return a.createdAt < b.createdAt
 	end)
 
-	for _, user in eagerList do
-		print(user)
-
-		user.validity = "invalid"
-
-		evaluate(user, false)
+	for _, eagerUser in eagerList do
+		evaluate(eagerUser, false)
 	end
 
 	return true
