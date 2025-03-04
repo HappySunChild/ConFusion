@@ -58,9 +58,6 @@ local Fusion = table.freeze {
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
-
-	-- Utility
-	Signal = require(Utility.Signal),
 }
 
 if game then
@@ -72,6 +69,8 @@ type Fusion = Types.Fusion
 
 export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
+
+export type SpecialKey<T> = Types.SpecialKey<T>
 
 export type ScopedObject = Types.ScopedObject
 export type GraphObject = Types.GraphObject
