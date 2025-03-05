@@ -4,16 +4,19 @@ local External = require(package.External)
 local Types = require(package.Types)
 
 local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+
+local evaluate = require(package.Graph.evaluate)
 
 local function observe<V>(
 	target: Types.StateObject<V>,
-	callback: (V) -> (),
+	callback: () -> (),
 	immediate: boolean?
 )
 	if not castToState(target) then
-		return External.logErrorNonFatal("invalidObserveType", nil, typeof(target))
+		return External.logError("invalidObserveType", nil, typeof(target))
 	end
+
+	evaluate(target, false)
 
 	local observers = target._observers
 
@@ -26,7 +29,7 @@ local function observe<V>(
 	observers[callback] = true
 
 	if immediate then
-		External.doTaskImmediate(callback, peek(target))
+		External.doTaskImmediate(callback)
 	end
 
 	return function()

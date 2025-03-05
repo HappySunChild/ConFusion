@@ -38,7 +38,7 @@ export type GraphObject = ScopedObject & {
 	_lastChange: number?,
 	_users: { [GraphObject]: unknown },
 	_using: { [GraphObject]: unknown },
-	_observers: { [(any) -> ()]: true }?,
+	_observers: { [() -> ()]: true }?,
 	_evaluate: (GraphObject) -> boolean,
 }
 
@@ -119,7 +119,7 @@ export type Fusion = {
 	doCleanup: (Task) -> (),
 
 	peek: <V>(value: UsedAs<V> | V) -> V,
-	observe: <V>(value: StateObject<V>, callback: (V) -> ()) -> Disconnect,
+	observe: <V>(value: StateObject<V>, callback: () -> ()) -> Disconnect,
 	map: <V>(value: StateObject<V>, callback: (V) -> any?) -> Computed<V>,
 
 	Eventual: <S, V>(

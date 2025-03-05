@@ -5,6 +5,7 @@ local Types = require(package.Types)
 
 local castToGraph = require(package.Graph.castToGraph)
 local evaluate = require(package.Graph.evaluate)
+local notify = require(package.Graph.notify)
 
 local function change(target: Types.GraphObject)
 	if not castToGraph(target) then
@@ -15,21 +16,36 @@ local function change(target: Types.GraphObject)
 		return
 	end
 
+	-- notify changed object's observers
+	notify(target)
+
 	local searchInNow = { target }
 	local searchInNext = {}
-	local userList = {}
+	local eagerList = {}
 
 	repeat
 		local done = true
 
 		for _, searchTarget in searchInNow do
 			for user in searchTarget._users do
+				if user.validity == "busy" then
+					return External.logError "infiniteLoop"
+				end
+
 				if user.validity == "valid" then
 					done = false
 
-					table.insert(userList, user)
 					table.insert(searchInNext, user)
+
+					if user.timeliness == "eager" then
+						table.insert(eagerList, user)
+					end
 				end
+
+				-- I don't think this is necessary but I still did it haha
+				user.validity = "invalid"
+
+				notify(user)
 			end
 		end
 
@@ -37,16 +53,6 @@ local function change(target: Types.GraphObject)
 
 		table.clear(searchInNext)
 	until done
-
-	local eagerList = {}
-
-	for _, user in userList do
-		user.validity = "invalid"
-
-		if user.timeliness == "eager" then
-			table.insert(eagerList, user)
-		end
-	end
 
 	table.sort(eagerList, function(a, b)
 		return a.createdAt < b.createdAt
