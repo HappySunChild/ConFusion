@@ -1,6 +1,6 @@
 --!strict
 
-local function isSimilar(a: any, b: any)
+local function isSimilar(a: unknown, b: unknown)
 	local typeA = typeof(a)
 	local isTable = typeA == "table"
 	local isUserdata = typeA == "userdata"
