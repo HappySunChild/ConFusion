@@ -33,6 +33,8 @@ local function change(target: Types.GraphObject)
 				end
 
 				if user.validity == "valid" then
+					user.validity = "invalid"
+
 					done = false
 
 					table.insert(searchInNext, user)
@@ -41,9 +43,6 @@ local function change(target: Types.GraphObject)
 						table.insert(eagerList, user)
 					end
 				end
-
-				-- I don't think this is necessary but I still did it haha
-				user.validity = "invalid"
 
 				notify(user)
 			end
