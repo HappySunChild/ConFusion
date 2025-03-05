@@ -4,10 +4,14 @@ local External = require(package.External)
 local Types = require(package.Types)
 
 local Parent = require(package.Instance.Keys._Parent)
-local castToState = require(package.State.castToState)
-local observe = require(package.Graph.observe)
-local parseError = require(package.Logging.parseError)
 local sortKeys = require(package.Instance.Keys.sortKeys)
+
+local castToState = require(package.State.castToState)
+local peek = require(package.State.peek)
+
+local observe = require(package.Graph.observe)
+
+local parseError = require(package.Logging.parseError)
 
 local kindof = require(package.Utility.kindOf)
 local typeof = require(package.Utility.typeOf)
@@ -57,8 +61,8 @@ local function applyProperty(
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		observe(value, function(new)
-			setProperty(instance, property, new)
+		observe(value, function()
+			setProperty(instance, property, peek(value))
 		end, true)
 
 		return
