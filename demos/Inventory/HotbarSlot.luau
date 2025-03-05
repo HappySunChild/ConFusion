@@ -116,7 +116,7 @@ local function HotbarSlot(
 			isHovering:set(false)
 		end,
 
-		[Fusion.Cleanup] = {
+		[Fusion.Removal] = {
 			slotScope,
 			props.Cleanup,
 		},

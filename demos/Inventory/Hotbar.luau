@@ -6,7 +6,12 @@ local HotbarSlot = require(script.Parent.HotbarSlot)
 
 local function Hotbar(
 	scope: Fusion.Scope,
-	props: { Items: { [number]: Tool }, Height: number, Padding: number }
+	props: {
+		Items: { [number]: Tool },
+		Height: number,
+		Padding: number,
+		EquipCallback: () -> (),
+	}
 )
 	local hotbarScope = scope:innerScope {
 		HotbarSlot = HotbarSlot,
