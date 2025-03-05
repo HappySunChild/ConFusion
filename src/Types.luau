@@ -32,18 +32,24 @@ export type ScopedObject = {
 }
 
 export type GraphObject = ScopedObject & {
+	type: string?,
+	kind: string?,
+
 	createdAt: number?,
 	validity: string?,
 	timeliness: "lazy" | "eager",
+
 	_lastChange: number?,
 	_users: { [GraphObject]: unknown },
 	_using: { [GraphObject]: unknown },
 	_observers: { [() -> ()]: true }?,
+
 	_evaluate: (GraphObject) -> boolean,
 }
 
 export type StateObject<V> = GraphObject & {
 	_internalValue: V,
+
 	kind: "state",
 	type: string,
 }
