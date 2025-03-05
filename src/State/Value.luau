@@ -28,7 +28,7 @@ local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
 		_internalValue = initialValue,
 
 		_users = {},
-	}, METATABLE) :: Self<V>
+	}, METATABLE)
 
 	table.insert(scope, destructor(newValue))
 
@@ -38,9 +38,9 @@ end
 function class.set<V>(self: Self<V>, newValue: any)
 	local currentValue = self._internalValue
 
-	self._internalValue = newValue
-
 	if not isSimilar(newValue, currentValue) then
+		self._internalValue = newValue
+
 		change(self)
 	end
 
