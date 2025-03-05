@@ -1,5 +1,5 @@
 return {
-	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency. (t: %s, k: %s)",
+	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
 	callbackError = "Error in callback:\nERROR_MESSAGE",
 
 	missingChild = "Could not find child '%s' in '%s'.",
