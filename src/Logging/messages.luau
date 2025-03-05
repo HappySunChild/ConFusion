@@ -16,7 +16,7 @@ return {
 	propertyCannotAssign = "The %s class has no assignable property '%s'.",
 	propertyAssignError = "Error while setting property:\nERROR_MESSAGE",
 
-	cannotDepend = "%s cannot depend on %s.",
+	cannotDepend = "%s (%s) cannot depend on %s (%s).",
 	cannotCreateClass = "Unable to create instance of type '%s'.",
 	cannotCreateTemplate = "Unable to create template of instance '%s'.",
 	cannotConnectChange = "The %s class doesn't have a property called '%s'.",
