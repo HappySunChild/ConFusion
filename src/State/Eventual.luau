@@ -73,9 +73,13 @@ function class._evaluate<V>(self: Self<V>)
 		return false
 	end
 
+	local used = {}
+
 	local function use<T>(target: Types.UsedAs<T>): T
 		if castToState(target) then
 			depend(self, target)
+
+			table.insert(used, target)
 		end
 
 		return peek(target)
@@ -89,6 +93,11 @@ function class._evaluate<V>(self: Self<V>)
 			self._isBecoming = true
 
 			change(self)
+		end
+
+		-- "re-depend" on used objects after becoming something.
+		for _, target in used do
+			depend(self, target)
 		end
 	end
 
