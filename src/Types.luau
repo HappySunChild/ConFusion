@@ -27,6 +27,8 @@ export type Error = {
 	trace: string,
 }
 
+-- Objects
+
 export type ScopedObject = {
 	scope: Scope<unknown>,
 }
@@ -46,6 +48,16 @@ export type GraphObject = ScopedObject & {
 
 	_evaluate: (GraphObject) -> boolean,
 }
+
+export type Observer = GraphObject & {
+	type: "observer",
+	kind: "graph",
+
+	onUpdate: (Observer, callback: () -> ()) -> Disconnect,
+	onBind: (Observer, callback: () -> ()) -> Disconnect,
+}
+
+-- State
 
 export type StateObject<V> = GraphObject & {
 	_internalValue: V,
@@ -89,6 +101,8 @@ export type For<OK, OV> = StateObject<{ [OK]: OV }> & {
 	type: "for",
 }
 
+-- Animation
+
 export type Timer = StateObject<number> & {
 	type: "timer",
 
@@ -100,6 +114,8 @@ export type Timer = StateObject<number> & {
 export type Animated<V> = StateObject<V> & {
 	type: "animated",
 }
+
+-- Extra
 
 export type SpecialKey<T = string> = {
 	type: T,

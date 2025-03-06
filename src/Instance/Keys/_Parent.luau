@@ -2,8 +2,9 @@ local package = script.Parent.Parent.Parent
 
 local Types = require(package.Types)
 
+local Observer = require(package.Graph.Observer)
+
 local castToState = require(package.State.castToState)
-local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
 local function setParent(instance: Instance, parent: Instance?)
@@ -17,16 +18,16 @@ local function setParent(instance: Instance, parent: Instance?)
 end
 
 local Parent = table.freeze {
-	type = 'parent',
-	kind = 'key',
+	type = "parent",
+	kind = "key",
 
 	apply = function(
-		_: Types.Scope,
+		scope: Types.Scope,
 		applyTo: Instance,
 		parent: Types.UsedAs<Instance?>
 	)
 		if castToState(parent) then
-			observe(parent, function(new)
+			Observer(scope, parent, function(new)
 				setParent(applyTo, new)
 			end)
 		end

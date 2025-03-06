@@ -9,7 +9,7 @@ local sortKeys = require(package.Instance.Keys.sortKeys)
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
 
-local observe = require(package.Graph.observe)
+local Observer = require(package.Graph.Observer)
 
 local parseError = require(package.Logging.parseError)
 
@@ -56,14 +56,15 @@ local function setProperty(instance: Instance, property: string, value: any)
 end
 
 local function applyProperty(
+	scope: Types.Scope,
 	instance: Instance,
 	property: string,
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		observe(value, function()
+		Observer(scope, value):onBind(function()
 			setProperty(instance, property, peek(value))
-		end, true)
+		end)
 
 		return
 	end
@@ -87,7 +88,7 @@ local function applyProperties<T>(
 		local keyType = typeof(key)
 
 		if keyType == "string" then
-			applyProperty(instance, key, value)
+			applyProperty(scope, instance, key, value)
 		elseif kindof(key) == "key" then
 			table.insert(specialKeys, key)
 		end

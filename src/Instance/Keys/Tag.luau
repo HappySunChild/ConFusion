@@ -2,8 +2,9 @@ local package = script.Parent.Parent.Parent
 
 local Types = require(package.Types)
 
+local Observer = require(package.Graph.Observer)
+
 local castToState = require(package.State.castToState)
-local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
 
 local keyCache = {}
@@ -13,17 +14,19 @@ local function Tag(tag: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
-			kind = 'key',
-			type = 'tag',
+			kind = "key",
+			type = "tag",
 
 			apply = function(
-				_: Types.Scope,
+				scope: Types.Scope,
 				instance: Instance,
 				enabled: Types.UsedAs<boolean>
 			)
 				if castToState(enabled) then
-					observe(enabled, function(new)
-						if new == true then
+					Observer(scope, enabled):onUpdate(function()
+						local value = peek(enabled)
+
+						if value == true then
 							instance:AddTag(tag)
 						elseif instance:HasTag(tag) then
 							instance:RemoveTag(tag)

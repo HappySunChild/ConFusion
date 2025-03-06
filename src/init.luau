@@ -28,8 +28,9 @@ local Fusion = table.freeze {
 	ForValues = require(State.ForValues),
 
 	peek = require(State.peek),
-	observe = require(Graph.observe),
 	map = require(Utility.map),
+
+	Observer = require(Graph.Observer),
 
 	-- Animation
 	Timer = require(Animation.Timer),

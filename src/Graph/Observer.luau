@@ -8,10 +8,7 @@ local destructor = require(package.Memory.destructor)
 local depend = require(package.Graph.depend)
 local evaluate = require(package.Graph.evaluate)
 
-type Observer = Types.GraphObject & {
-	type: "observer",
-	kind: "graph",
-
+type Self = Types.Observer & {
 	_watching: Types.GraphObject,
 	_listeners: { [() -> ()]: true },
 }
@@ -25,7 +22,7 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Observer(scope: Types.Scope, target: Types.GraphObject)
+local function Observer(scope: Types.Scope, target: Types.GraphObject): Types.Observer
 	local newObserver = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
@@ -43,7 +40,13 @@ local function Observer(scope: Types.Scope, target: Types.GraphObject)
 	return newObserver
 end
 
-function class.onUpdate(self: Observer, callback)
+function class.onBind(self: Self, callback)
+	External.doTaskImmediate(callback)
+
+	return self:onUpdate(callback)
+end
+
+function class.onUpdate(self: Self, callback)
 	self._listeners[callback] = true
 
 	return function()
@@ -51,7 +54,7 @@ function class.onUpdate(self: Observer, callback)
 	end
 end
 
-function class._evaluate(self: Observer)
+function class._evaluate(self: Self)
 	depend(self, self._watching)
 
 	for callback in self._listeners do

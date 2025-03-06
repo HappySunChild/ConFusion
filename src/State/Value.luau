@@ -48,6 +48,10 @@ function class.set<V>(self: Self<V>, newValue: any)
 end
 
 function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
+	if typeof(instance) ~= "Instance" then
+		return
+	end
+
 	local ok, event: RBXScriptSignal =
 		pcall(instance.GetPropertyChangedSignal, instance, property)
 

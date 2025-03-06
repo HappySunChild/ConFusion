@@ -3,10 +3,12 @@ local package = script.Parent.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
+local Observer = require(package.Graph.Observer)
+
 local castToState = require(package.State.castToState)
-local doCleanup = require(package.Memory.doCleanup)
-local observe = require(package.Graph.observe)
 local peek = require(package.State.peek)
+
+local doCleanup = require(package.Memory.doCleanup)
 
 local Children: Types.SpecialKey = table.freeze {
 	kind = "key",
@@ -55,7 +57,7 @@ local Children: Types.SpecialKey = table.freeze {
 					if childScope == nil then
 						childScope = {}
 
-						observe(child, updateChildren)
+						Observer(childScope, child):onUpdate(updateChildren)
 					else
 						oldScopes[child] = nil
 					end
