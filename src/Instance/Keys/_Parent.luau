@@ -20,6 +20,7 @@ end
 local Parent = table.freeze {
 	type = "Parent",
 	kind = "key",
+	stage = "ancestor",
 
 	apply = function(
 		scope: Types.Scope,

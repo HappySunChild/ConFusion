@@ -12,6 +12,7 @@ local function OnChange(property: string)
 		key = table.freeze {
 			type = "OnChange",
 			kind = "key",
+			stage = "observer",
 
 			apply = function(
 				scope: Types.Scope,

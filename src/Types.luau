@@ -120,6 +120,8 @@ export type Animated<V> = StateObject<V> & {
 export type SpecialKey<T = string> = {
 	type: T,
 	kind: "key",
+	stage: string,
+
 	apply: (scope: Scope, instance: Instance, value: any) -> (),
 }
 

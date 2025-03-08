@@ -13,6 +13,7 @@ local doCleanup = require(package.Memory.doCleanup)
 local Children: Types.SpecialKey = table.freeze {
 	type = "Children",
 	kind = "key",
+	stage = "descendants",
 
 	apply = function(scope: Types.Scope, applyTo: Instance, children: Types.Child?)
 		local newChildren, oldChildren = {}, {}

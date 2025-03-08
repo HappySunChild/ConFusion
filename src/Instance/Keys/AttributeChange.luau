@@ -11,6 +11,7 @@ local function AttributeChange(attribute: string): Types.SpecialKey
 		key = table.freeze {
 			type = "OnChanged",
 			kind = "key",
+			stage = "observer",
 
 			apply = function(
 				scope: Types.Scope,

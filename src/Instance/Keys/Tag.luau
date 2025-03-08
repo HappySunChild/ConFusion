@@ -16,6 +16,7 @@ local function Tag(tag: string): Types.SpecialKey
 		key = table.freeze {
 			type = "Tag",
 			kind = "key",
+			stage = "self",
 
 			apply = function(
 				scope: Types.Scope,

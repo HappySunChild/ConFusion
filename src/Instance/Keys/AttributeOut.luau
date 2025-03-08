@@ -13,6 +13,7 @@ local function AttributeOut(attribute: string): Types.SpecialKey
 		key = table.freeze {
 			type = "Out",
 			kind = "key",
+			stage = "observer",
 
 			apply = function(
 				scope: Types.Scope,

@@ -7,6 +7,7 @@ local xtypeof = require(package.Utility.xtypeof)
 local Ref: Types.SpecialKey = table.freeze {
 	type = "Ref",
 	kind = "key",
+	stage = "self",
 
 	apply = function(_: Types.Scope, applyTo: Instance, ref: Types.Value<Instance>)
 		if xtypeof(ref) ~= "Value" then

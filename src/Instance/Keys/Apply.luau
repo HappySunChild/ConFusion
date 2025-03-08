@@ -6,6 +6,7 @@ local applyProperties = require(package.Instance.applyProperties)
 local Apply: Types.SpecialKey = table.freeze {
 	type = "Apply",
 	kind = "key",
+	stage = "properties",
 
 	apply = applyProperties,
 }

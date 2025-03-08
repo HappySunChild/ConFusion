@@ -16,6 +16,7 @@ local function OnEvent(eventName: string): Types.SpecialKey
 		key = table.freeze {
 			type = "OnEvent",
 			kind = "key",
+			stage = "observer",
 
 			apply = function(scope: Types.Scope, applyTo: Instance, callback)
 				local ok, event = pcall(getProperty, applyTo, eventName)

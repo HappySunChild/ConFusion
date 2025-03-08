@@ -16,6 +16,7 @@ local function Attribute(attribute: string): Types.SpecialKey
 		key = table.freeze {
 			type = "Attribute",
 			kind = "key",
+			stage = "self",
 
 			apply = function(
 				scope: Types.Scope,
