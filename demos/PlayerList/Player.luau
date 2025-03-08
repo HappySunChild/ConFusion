@@ -4,9 +4,6 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, Startup, OnEvent = Fusion.Children, Fusion.Startup, Fusion.OnEvent
 
-local VERIFIED_BADGE = utf8.char(0xE000)
-local PREMIUM_BADGE = utf8.char(0xE001)
-
 local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
 
 local ICONS = {
@@ -20,19 +17,7 @@ local ICONS = {
 	},
 }
 
-local function getFormattedName(player: Player)
-	local formattedName = player.DisplayName
-
-	if player.HasVerifiedBadge then
-		formattedName = formattedName .. VERIFIED_BADGE
-	end
-
-	if player.MembershipType == Enum.MembershipType.Premium then
-		formattedName = PREMIUM_BADGE .. " " .. formattedName
-	end
-
-	return formattedName
-end
+local getDisplayName = require(script.Parent.getDisplayName)
 
 local function determineIcon(player: Player)
 	if player.UserId == game.CreatorId then
@@ -60,7 +45,12 @@ end
 
 local function Player(
 	scope: Fusion.Scope,
-	props: { Player: Player, Teams: { Team }, IsLast: boolean }
+	props: {
+		Player: Player,
+		Teams: Fusion.UsedAs<{ Team }>,
+		IsLast: boolean,
+		ClickedCallback: () -> ()?,
+	}
 )
 	local player = props.Player
 	local icon = determineIcon(player)
@@ -71,23 +61,36 @@ local function Player(
 	local currentTeam = scope:Value(player.Team)
 	currentTeam:bindToInstanceProperty(player, "Team")
 
+	local ref = scope:Value()
+
 	return scope:New "Frame" {
 		Name = `p_{player.UserId}`,
 		BackgroundTransparency = 1,
 
 		LayoutOrder = scope:Computed(function(use)
-			return getLayoutOrder(use(currentTeam), props.Teams)
+			return getLayoutOrder(use(currentTeam), use(props.Teams))
 		end),
 
 		ClipsDescendants = true,
 
 		Size = UDim2.new(1, 0, 0, 32),
 
+		[Fusion.Ref] = ref,
+
 		[OnEvent "MouseLeave"] = function()
 			hovering:set(false)
 		end,
 		[OnEvent "MouseEnter"] = function()
 			hovering:set(true)
+		end,
+		[OnEvent "InputBegan"] = function(input: InputObject)
+			if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+				return
+			end
+
+			if props.ClickedCallback then
+				props.ClickedCallback(Fusion.peek(ref))
+			end
 		end,
 
 		[Startup] = function()
@@ -113,7 +116,7 @@ local function Player(
 
 						[Children] = {
 							DisplayName = scope:New "TextLabel" {
-								Text = getFormattedName(player),
+								Text = getDisplayName(player),
 								TextSize = 14,
 								TextXAlignment = Enum.TextXAlignment.Left,
 								TextTruncate = Enum.TextTruncate.AtEnd,

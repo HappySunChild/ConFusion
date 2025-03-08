@@ -1,8 +1,10 @@
+local Players = game:GetService "Players"
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children = Fusion.Children
 local peek = Fusion.peek
+local Menu = require(script.Parent.Menu)
 local Player = require(script.Parent.Player)
 local Team = require(script.Parent.Team)
 
@@ -17,7 +19,11 @@ local function List(
 		IsVisible: Fusion.UsedAs<boolean>,
 	}
 )
-	local innerScope = scope:innerScope { Player = Player, Team = Team }
+	local innerScope = scope:innerScope { Player = Player, Team = Team, Menu = Menu }
+
+	local menuPlayer = scope:Value(Players.LocalPlayer)
+	local menuOpen = scope:Value(false)
+	local menuPosition = scope:Value(UDim2.fromOffset(-4, 0))
 
 	local offset = innerScope:Computed(function(use)
 		if use(props.IsVisible) then
@@ -29,13 +35,22 @@ local function List(
 
 	local playerLabels = innerScope:ForPairs(
 		props.Players,
-		function(use, scope: typeof(innerScope), index: number, player: Player)
-			local teams = use(props.Teams)
-
+		function(_, scope: typeof(innerScope), index: number, player: Player)
 			local newLabel = scope:Player {
 				Player = player,
-				Teams = teams,
+				Teams = props.Teams,
 				IsLast = index == #peek(props.Players),
+
+				ClickedCallback = function(frame: Frame)
+					if peek(menuPlayer) == player and peek(menuOpen) then
+						menuOpen:set(false)
+					else
+						menuOpen:set(true)
+					end
+
+					menuPosition:set(UDim2.fromOffset(-4, frame.AbsolutePosition.Y))
+					menuPlayer:set(player)
+				end,
 			}
 
 			return index, newLabel
@@ -88,24 +103,38 @@ local function List(
 		BackgroundTransparency = 0.5,
 
 		[Children] = {
-			innerScope:New "UIPadding" {
-				PaddingTop = UDim.new(0, 2),
-				PaddingBottom = UDim.new(0, 2),
+			Menu = innerScope:Menu {
+				Visible = innerScope:Computed(function(use)
+					return use(props.IsVisible) and use(menuOpen)
+				end),
+				Player = menuPlayer,
+				Position = menuPosition,
 			},
+			List = innerScope:New "Frame" {
+				Size = UDim2.fromScale(1, 1),
+				BackgroundTransparency = 1,
 
-			innerScope:New "UICorner" {
-				CornerRadius = UDim.new(0, 4),
+				[Children] = {
+					innerScope:New "UIPadding" {
+						PaddingTop = UDim.new(0, 2),
+						PaddingBottom = UDim.new(0, 2),
+					},
+
+					innerScope:New "UICorner" {
+						CornerRadius = UDim.new(0, 4),
+					},
+
+					innerScope:New "UIListLayout" {
+						SortOrder = Enum.SortOrder.LayoutOrder,
+						FillDirection = Enum.FillDirection.Vertical,
+
+						Padding = UDim.new(0, 0),
+					},
+
+					teamLabels,
+					playerLabels,
+				},
 			},
-
-			innerScope:New "UIListLayout" {
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				FillDirection = Enum.FillDirection.Vertical,
-
-				Padding = UDim.new(0, 0),
-			},
-
-			teamLabels,
-			playerLabels,
 		},
 	}
 end
