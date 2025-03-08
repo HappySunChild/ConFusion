@@ -14,8 +14,8 @@ local function OnEvent(eventName: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
+			type = "OnEvent",
 			kind = "key",
-			type = "onEvent",
 
 			apply = function(scope: Types.Scope, applyTo: Instance, callback)
 				local ok, event = pcall(getProperty, applyTo, eventName)

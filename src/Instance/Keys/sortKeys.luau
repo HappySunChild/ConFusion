@@ -1,29 +1,29 @@
 local package = script.Parent.Parent.Parent
 
-local typeof = require(package.Utility.typeOf)
+local xtypeof = require(package.Utility.xtypeof)
 
 local keyOrder = table.freeze {
-	'ref',
+	"Ref",
 
-	'attribute',
-	'tag',
+	"Attribute",
+	"Tag",
 
-	'onEvent',
-	'onChange',
+	"OnEvent",
+	"OnChange",
 
-	'children',
-	'parent',
+	"Children",
+	"Parent",
 
-	'cleanup',
-	'startup',
-	'out',
+	"Cleanup",
+	"Startup",
+	"Out",
 
-	'apply',
+	"Apply",
 }
 
 local function sortKeys(a, b)
-	local aIndex = table.find(keyOrder, typeof(a))
-	local bIndex = table.find(keyOrder, typeof(b))
+	local aIndex = table.find(keyOrder, xtypeof(a))
+	local bIndex = table.find(keyOrder, xtypeof(b))
 
 	return aIndex < bIndex
 end

@@ -10,7 +10,7 @@ local function OnChange(property: string)
 
 	if not key then
 		key = table.freeze {
-			type = "onChange",
+			type = "OnChange",
 			kind = "key",
 
 			apply = function(

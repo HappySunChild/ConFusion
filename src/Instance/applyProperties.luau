@@ -13,8 +13,8 @@ local Observer = require(package.Graph.Observer)
 
 local parseError = require(package.Logging.parseError)
 
-local kindof = require(package.Utility.kindOf)
-local typeof = require(package.Utility.typeOf)
+local xkindof = require(package.Utility.xkindof)
+local xtypeof = require(package.Utility.xtypeof)
 
 local function rawSetProperty(instance: Instance, property: string, value: any)
 	instance[property] = value
@@ -85,11 +85,11 @@ local function applyProperties<T>(
 	props.Parent = nil
 
 	for key, value in props do
-		local keyType = typeof(key)
+		local keyType = xtypeof(key)
 
 		if keyType == "string" then
 			applyProperty(scope, instance, key, value)
-		elseif kindof(key) == "key" then
+		elseif xkindof(key) == "key" then
 			table.insert(specialKeys, key)
 		end
 	end

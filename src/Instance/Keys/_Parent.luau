@@ -18,7 +18,7 @@ local function setParent(instance: Instance, parent: Instance?)
 end
 
 local Parent = table.freeze {
-	type = "parent",
+	type = "Parent",
 	kind = "key",
 
 	apply = function(
