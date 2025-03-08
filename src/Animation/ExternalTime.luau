@@ -6,9 +6,13 @@ local Types = require(package.Types)
 local change = require(package.Graph.change)
 local destructor = require(package.Memory.destructor)
 
+type ExternalTime = Types.StateObject<number>
+type Self = ExternalTime
+
 local class = {
 	type = "externaltime",
 	kind = "state",
+	timeliness = "lazy",
 	_using = table.freeze {},
 	_internalValue = External.lastUpdateStep(),
 }
@@ -17,10 +21,11 @@ local METATABLE = table.freeze { __index = class }
 
 local activeTimers = {}
 
-local function ExternalTime(scope: Types.Scope): Types.StateObject<number>
+local function ExternalTime(scope: Types.Scope): ExternalTime
 	local newExternalTime = setmetatable({
-		_scope = scope,
+		scope = scope,
 		createdAt = os.clock(),
+
 		_users = {},
 	}, METATABLE)
 
