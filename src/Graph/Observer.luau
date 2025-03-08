@@ -14,7 +14,7 @@ type Self = Types.Observer & {
 }
 
 local class = {
-	type = "observer",
+	type = "Observer",
 	kind = "graph",
 	timeliness = "eager",
 	_users = table.freeze {},

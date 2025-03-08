@@ -50,7 +50,7 @@ export type GraphObject = ScopedObject & {
 }
 
 export type Observer = GraphObject & {
-	type: "observer",
+	type: "Observer",
 	kind: "graph",
 
 	onUpdate: (Observer, callback: () -> ()) -> Disconnect,
@@ -67,11 +67,11 @@ export type StateObject<V> = GraphObject & {
 }
 
 export type Computed<V> = StateObject<V> & {
-	type: "computed",
+	type: "Computed",
 }
 
 export type Value<V> = StateObject<V> & {
-	type: "value",
+	type: "Value",
 
 	set: (Value<V>, newValue: V) -> V,
 	update: (Value<V>, predicate: (V) -> V) -> V,
@@ -84,11 +84,11 @@ export type Value<V> = StateObject<V> & {
 }
 
 export type Eventual<V> = StateObject<V> & {
-	type: "eventual",
+	type: "Eventual",
 }
 
 export type Table<K, V> = StateObject<{ [K]: V }> & {
-	type: "table",
+	type: "Table",
 
 	setKey: (Table<K, V>, key: K, value: V) -> V,
 	getKey: (Table<K, V>, key: K) -> V,
@@ -98,13 +98,13 @@ export type Table<K, V> = StateObject<{ [K]: V }> & {
 }
 
 export type For<OK, OV> = StateObject<{ [OK]: OV }> & {
-	type: "for",
+	type: "For",
 }
 
 -- Animation
 
 export type Timer = StateObject<number> & {
-	type: "timer",
+	type: "Timer",
 
 	pause: (Timer) -> (),
 	unpause: (Timer) -> (),
@@ -112,7 +112,7 @@ export type Timer = StateObject<number> & {
 }
 
 export type Animated<V> = StateObject<V> & {
-	type: "animated",
+	type: "Animated",
 }
 
 -- Extra

@@ -25,7 +25,7 @@ type Self<S, IK, IV, OK, OV> = ForTypes.Disassembly<S, IK, IV, OK, OV> & {
 }
 
 local class = {
-	type = "disassembly",
+	type = "Disassembly",
 	kind = "graph",
 	timeliness = "eager",
 }

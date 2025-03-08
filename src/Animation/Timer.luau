@@ -18,8 +18,8 @@ type Self = Types.Timer & {
 }
 
 local class = {
+	type = "Timer",
 	kind = "state",
-	type = "timer",
 	timeliness = "lazy",
 }
 

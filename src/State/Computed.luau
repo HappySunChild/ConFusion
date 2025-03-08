@@ -22,8 +22,8 @@ type Self<S, V> = Types.Computed<V> & {
 }
 
 local class = {
+	type = "Computed",
 	kind = "state",
-	type = "computed",
 	timeliness = "lazy",
 }
 

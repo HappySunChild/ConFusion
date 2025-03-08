@@ -6,11 +6,14 @@ local Types = require(package.Types)
 local change = require(package.Graph.change)
 local destructor = require(package.Memory.destructor)
 
-type ExternalTime = Types.StateObject<number>
+type ExternalTime = Types.StateObject<number> & {
+	type: "ExternalTime",
+}
+
 type Self = ExternalTime
 
 local class = {
-	type = "externaltime",
+	type = "ExternalTime",
 	kind = "state",
 	timeliness = "lazy",
 	_using = table.freeze {},

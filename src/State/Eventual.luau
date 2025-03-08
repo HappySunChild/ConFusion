@@ -24,8 +24,8 @@ type Self<V> = Types.Eventual<V> & {
 }
 
 local class = {
+	type = "Eventual",
 	kind = "state",
-	type = "eventual",
 	timeliness = "lazy",
 }
 

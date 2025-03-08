@@ -16,7 +16,7 @@ type Self<S, IK, IV, OK, OV> = Types.For<OK, OV> & {
 }
 
 local class = {
-	type = "for",
+	type = "For",
 	kind = "state",
 	timeliness = "lazy",
 }

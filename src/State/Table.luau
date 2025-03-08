@@ -13,8 +13,8 @@ local isSimilar = require(package.Utility.isSimilar)
 type Self<K, V> = Types.Table<K, V>
 
 local class = {
+	type = "Table",
 	kind = "state",
-	type = "table",
 	timeliness = "lazy",
 	_using = table.freeze {},
 }

@@ -24,8 +24,8 @@ type Self<V> = Types.Animated<V> & {
 }
 
 local class = {
+	type = "Animated",
 	kind = "state",
-	type = "animated",
 	timeliness = "eager",
 }
 

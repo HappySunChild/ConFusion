@@ -12,8 +12,8 @@ local isSimilar = require(package.Utility.isSimilar)
 type Self<V> = Types.Value<V>
 
 local class = {
+	type = "Value",
 	kind = "state",
-	type = "value",
 	timeliness = "lazy",
 	_using = table.freeze {},
 }
