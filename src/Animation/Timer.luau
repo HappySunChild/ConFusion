@@ -29,7 +29,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 	local externalTime = ExternalTime(scope)
 
 	local newTimer = setmetatable({
-		scope = {},
+		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = 0,
 
