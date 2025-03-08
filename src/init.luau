@@ -30,6 +30,7 @@ local Fusion = table.freeze {
 	peek = require(State.peek),
 	map = require(Utility.map),
 
+	observe = require(Graph.observe),
 	Observer = require(Graph.Observer),
 
 	-- Animation

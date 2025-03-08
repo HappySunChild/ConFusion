@@ -5,7 +5,7 @@ local Types = require(package.Types)
 
 local castToGraph = require(package.Graph.castToGraph)
 local evaluate = require(package.Graph.evaluate)
-local notify = require(package.Graph.notify)
+--local notify = require(package.Graph.notify)
 
 local function change(target: Types.GraphObject)
 	if not castToGraph(target) then
@@ -15,9 +15,6 @@ local function change(target: Types.GraphObject)
 	if not evaluate(target, true) then
 		return
 	end
-
-	-- notify changed object's observers
-	notify(target)
 
 	local searchInNow = { target }
 	local searchInNext = {}
@@ -43,8 +40,6 @@ local function change(target: Types.GraphObject)
 						table.insert(eagerList, user)
 					end
 				end
-
-				notify(user)
 			end
 		end
 
