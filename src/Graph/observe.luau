@@ -3,16 +3,24 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
-
 local function observe(target: Types.GraphObject, callback: () -> (), immediate: boolean?)
-	local newObserver = Observer(target.scope, target)
+	local observers = target._observers
+
+	if not observers then
+		observers = {}
+
+		target._observers = observers
+	end
+
+	observers[callback] = true
 
 	if immediate then
 		External.doTaskImmediate(callback)
 	end
 
-	return newObserver:onUpdate(callback)
+	return function()
+		observers[callback] = nil
+	end
 end
 
 return observe

@@ -42,19 +42,11 @@ export type GraphObject = ScopedObject & {
 	timeliness: "lazy" | "eager",
 
 	_lastChange: number?,
-	_users: { [GraphObject]: unknown },
-	_using: { [GraphObject]: unknown },
+	_users: { [GraphObject]: true },
+	_using: { [GraphObject]: true },
 	_observers: { [() -> ()]: true }?,
 
 	_evaluate: (GraphObject) -> boolean,
-}
-
-export type Observer = GraphObject & {
-	type: "Observer",
-	kind: "graph",
-
-	onUpdate: (Observer, callback: () -> ()) -> Disconnect,
-	onBind: (Observer, callback: () -> ()) -> Disconnect,
 }
 
 -- State

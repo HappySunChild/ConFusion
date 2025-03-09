@@ -9,7 +9,7 @@ local sortKeys = require(package.Instance.Keys.sortKeys)
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
 
-local Observer = require(package.Graph.Observer)
+local observe = require(package.Graph.observe)
 
 local parseError = require(package.Logging.parseError)
 
@@ -56,15 +56,15 @@ local function setProperty(instance: Instance, property: string, value: any)
 end
 
 local function applyProperty(
-	scope: Types.Scope,
+	_: Types.Scope,
 	instance: Instance,
 	property: string,
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		Observer(scope, value):onBind(function()
+		observe(value, function()
 			setProperty(instance, property, peek(value))
-		end)
+		end, true)
 
 		return
 	end
