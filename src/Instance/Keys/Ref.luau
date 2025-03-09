@@ -9,7 +9,7 @@ local Ref: Types.SpecialKey = table.freeze {
 	type = 'ref',
 
 	apply = function(_: Types.Scope, applyTo: Instance, ref: Types.Value<Instance>)
-		if typeof(ref) ~= 'value' then
+		if typeof(ref) ~= 'Value' then
 			return error(`Invalid Ref type.`, 2)
 		end
 
