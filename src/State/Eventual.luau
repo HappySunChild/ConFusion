@@ -54,9 +54,6 @@ local function Eventual<V>(
 
 	table.insert(scope, destructor(newEventual))
 
-	-- decided to keep this as lazily evaluated
-	-- evaluate(newEventual, true)
-
 	return newEventual
 end
 
@@ -92,6 +89,10 @@ function class._evaluate<V>(self: Self<V>)
 		if self.validity ~= "busy" then
 			self._isBecoming = true
 
+			-- i just realized how unsafe it is to call `change` on a object in a seperate thread.
+			-- this will lead to some very weird and confusing errors that will be impossible to debug.
+			-- maybe i could add a parameter to `change` that allows you to skip the busy checks, but that already
+			-- sounds like a very very bad idea and will probably lead to pain and suffering later on.
 			change(self)
 		end
 
