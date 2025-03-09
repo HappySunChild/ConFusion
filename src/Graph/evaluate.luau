@@ -3,7 +3,15 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
+local castToGraph = require(package.Graph.castToGraph)
+
+local xtypeof = require(package.Utility.xtypeof)
+
 local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
+	if not castToGraph(target) then
+		return External.logErrorNonFatal("invalidEvaluateType", nil, xtypeof(target))
+	end
+
 	if target.validity == "busy" then
 		return External.logError "infiniteLoop"
 	end

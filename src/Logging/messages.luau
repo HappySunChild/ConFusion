@@ -11,6 +11,7 @@ return {
 	invalidObserveType = "Can't observe non-state value, got '%s'.",
 	invalidMapType = "Can't map non-state value, got '%s'.",
 	invalidChangeType = "Can't change non-state value, got '%s'.",
+	invalidEvaluateType = "Invalid evaluate argument, got '%s'.",
 
 	propertyInvalidType = "'%s.%s' expected a '%s' type, but got a '%s' type.",
 	propertyCannotAssign = "The %s class has no assignable property '%s'.",
