@@ -2,7 +2,7 @@ local package = script.Parent.Parent.Parent
 
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
+local observe = require(package.Graph.observe)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
@@ -19,12 +19,12 @@ local function Tag(tag: string): Types.SpecialKey
 			stage = "self",
 
 			apply = function(
-				scope: Types.Scope,
+				_: Types.Scope,
 				instance: Instance,
 				enabled: Types.UsedAs<boolean>
 			)
 				if castToState(enabled) then
-					Observer(scope, enabled):onUpdate(function()
+					observe(enabled, function()
 						local value = peek(enabled)
 
 						if value == true then

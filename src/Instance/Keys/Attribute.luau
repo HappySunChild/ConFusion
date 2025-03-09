@@ -2,7 +2,7 @@ local package = script.Parent.Parent.Parent
 
 local Types = require(package.Types)
 
-local Observer = require(package.Graph.Observer)
+local observe = require(package.Graph.observe)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)
@@ -18,13 +18,9 @@ local function Attribute(attribute: string): Types.SpecialKey
 			kind = "key",
 			stage = "self",
 
-			apply = function(
-				scope: Types.Scope,
-				applyTo: Instance,
-				value: Types.UsedAs<any>
-			)
+			apply = function(_: Types.Scope, applyTo: Instance, value: Types.UsedAs<any>)
 				if castToState(value) then
-					Observer(scope, value):onUpdate(function()
+					observe(value, function()
 						applyTo:SetAttribute(attribute, peek(value))
 					end)
 				end

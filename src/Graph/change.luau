@@ -5,7 +5,16 @@ local Types = require(package.Types)
 
 local castToGraph = require(package.Graph.castToGraph)
 local evaluate = require(package.Graph.evaluate)
-local notify = require(package.Graph.notify)
+
+local function collectObservers(target: Types.GraphObject, output: {})
+	if target._observers ~= nil then
+		for callback in target._observers do
+			table.insert(output, callback)
+		end
+	end
+
+	return output
+end
 
 local function change(target: Types.GraphObject)
 	if not castToGraph(target) then
@@ -16,12 +25,9 @@ local function change(target: Types.GraphObject)
 		return
 	end
 
-	-- notify changed object's observers
-	notify(target)
-
 	local searchInNow = { target }
 	local searchInNext = {}
-	local eagerList = {}
+	local userList = {}
 
 	repeat
 		local done = true
@@ -38,13 +44,8 @@ local function change(target: Types.GraphObject)
 					done = false
 
 					table.insert(searchInNext, user)
-
-					if user.timeliness == "eager" then
-						table.insert(eagerList, user)
-					end
+					table.insert(userList, user)
 				end
-
-				notify(user)
 			end
 		end
 
@@ -53,12 +54,27 @@ local function change(target: Types.GraphObject)
 		table.clear(searchInNext)
 	until done
 
-	table.sort(eagerList, function(a, b)
+	table.sort(userList, function(a, b)
 		return a.createdAt < b.createdAt
 	end)
 
-	for _, eagerUser in eagerList do
+	local observers = collectObservers(target, {})
+	local eagerList = {}
+
+	for _, user: Types.GraphObject in userList do
+		collectObservers(user, observers)
+
+		if user.timeliness == "eager" then
+			table.insert(eagerList, user)
+		end
+	end
+
+	for _, eagerUser: Types.GraphObject in eagerList do
 		evaluate(eagerUser, false)
+	end
+
+	for _, callback in observers do
+		External.doTaskImmediate(callback)
 	end
 
 	return true
