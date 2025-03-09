@@ -29,6 +29,14 @@ export type Error = {
 
 -- Objects
 
+type Observer = {
+	type: "Observer",
+	kind: "observer",
+
+	createdAt: number,
+	callback: () -> (),
+}
+
 export type ScopedObject = {
 	scope: Scope<unknown>,
 }
@@ -44,7 +52,7 @@ export type GraphObject = ScopedObject & {
 	_lastChange: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
-	_observers: { [() -> ()]: true }?,
+	_observers: { [{}]: Observer }?,
 
 	_evaluate: (GraphObject) -> boolean,
 }
@@ -135,7 +143,11 @@ export type Fusion = {
 	doCleanup: (Task) -> (),
 
 	peek: <V>(value: UsedAs<V> | V) -> V,
-	observe: <V>(value: StateObject<V>, callback: () -> ()) -> Disconnect,
+	observe: <V>(
+		value: StateObject<V>,
+		callback: () -> (),
+		immediate: boolean?
+	) -> Disconnect,
 	map: <V>(value: StateObject<V>, callback: (V) -> any?) -> Computed<V>,
 
 	Eventual: <S, V>(
