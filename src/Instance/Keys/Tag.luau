@@ -14,8 +14,9 @@ local function Tag(tag: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
+			type = "Tag",
 			kind = "key",
-			type = "tag",
+			stage = "self",
 
 			apply = function(
 				_: Types.Scope,

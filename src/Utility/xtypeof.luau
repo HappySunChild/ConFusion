@@ -1,9 +1,9 @@
 --!strict
 
-local function typeOf(value: any): string
+local function xtypeof(value: any): string
 	local vType = typeof(value)
 
-	if vType == 'table' then
+	if vType == "table" then
 		if value.type ~= nil then
 			return value.type
 		end
@@ -12,4 +12,4 @@ local function typeOf(value: any): string
 	return vType
 end
 
-return typeOf
+return xtypeof

@@ -10,8 +10,9 @@ local function OnChange(property: string)
 
 	if not key then
 		key = table.freeze {
-			type = "onChange",
+			type = "OnChange",
 			kind = "key",
+			stage = "observer",
 
 			apply = function(
 				scope: Types.Scope,

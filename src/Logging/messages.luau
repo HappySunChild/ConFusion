@@ -23,4 +23,7 @@ return {
 	cannotConnectEvent = "The %s class doesn't have a event called '%s'.",
 
 	forKeyCollision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
+
+	missingSpecialKeyStage = "The SpecialKey '%s' is missing a stage property.",
+	invalidSpecialKeyStage = "The SpecialKey '%s' has an invalid stage '%s'.",
 }

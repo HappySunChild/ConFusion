@@ -1,6 +1,6 @@
 --!strict
 
-local function kindOf(value: any): string
+local function xkindof(value: any): string
 	local vType = typeof(value)
 
 	if vType == 'table' then
@@ -12,4 +12,4 @@ local function kindOf(value: any): string
 	return vType
 end
 
-return kindOf
+return xkindof

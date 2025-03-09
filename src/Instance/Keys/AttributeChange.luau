@@ -9,10 +9,15 @@ local function AttributeChange(attribute: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
-			type = 'onChanged',
-			kind = 'key',
+			type = "OnChanged",
+			kind = "key",
+			stage = "observer",
 
-			apply = function(scope: Types.Scope, applyTo: Instance, callback: (any) -> ())
+			apply = function(
+				scope: Types.Scope,
+				applyTo: Instance,
+				callback: (any) -> ()
+			)
 				local event = applyTo:GetAttributeChangedSignal(attribute)
 
 				table.insert(

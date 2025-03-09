@@ -14,8 +14,9 @@ local function Attribute(attribute: string): Types.SpecialKey
 
 	if not key then
 		key = table.freeze {
+			type = "Attribute",
 			kind = "key",
-			type = "attribute",
+			stage = "self",
 
 			apply = function(_: Types.Scope, applyTo: Instance, value: Types.UsedAs<any>)
 				if castToState(value) then

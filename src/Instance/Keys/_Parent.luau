@@ -18,8 +18,9 @@ local function setParent(instance: Instance, parent: Instance?)
 end
 
 local Parent = table.freeze {
-	type = "parent",
+	type = "Parent",
 	kind = "key",
+	stage = "ancestor",
 
 	apply = function(_: Types.Scope, applyTo: Instance, parent: Types.UsedAs<Instance?>)
 		if castToState(parent) then
