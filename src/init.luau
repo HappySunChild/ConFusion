@@ -67,12 +67,13 @@ local Fusion = table.freeze {
 	Out = require(Keys.Out),
 	OnEvent = require(Keys.OnEvent),
 	OnChange = require(Keys.OnChange),
+
+	-- External
+	setProvider = External.setProvider,
 }
 
-if game then
-	local RobloxProvider = require(script.RobloxProvider)
-	External.setProvider(RobloxProvider)
-end
+local RobloxProvider = require(script.RobloxProvider)
+External.setProvider(RobloxProvider)
 
 type Fusion = Types.Fusion
 

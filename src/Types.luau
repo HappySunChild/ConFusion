@@ -222,6 +222,8 @@ export type Fusion = {
 	Out: (property: string) -> SpecialKey<"Out">,
 	OnChange: (property: string) -> SpecialKey<"OnChange">,
 	OnEvent: (event: string) -> SpecialKey<"OnEvent">,
+
+	setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 }
 
 return nil
