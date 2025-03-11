@@ -6,7 +6,7 @@ local Computed = require(package.State.Computed)
 local castToState = require(package.State.castToState)
 
 local function map<V, O>(value: Types.UsedAs<V>, callback: (V) -> O?): Types.Computed<O> | O
-	if castToState(value) then
+	if not castToState(value) then
 		return callback(value)
 	end
 
