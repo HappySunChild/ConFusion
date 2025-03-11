@@ -1,9 +1,9 @@
 local function castToGraph(target)
 	if
 		typeof(target) == "table"
-		and target.createdAt
-		and target._users
-		and target._using
+		and target.createdAt ~= nil
+		and target._users ~= nil
+		and target._using ~= nil
 	then
 		return target
 	end

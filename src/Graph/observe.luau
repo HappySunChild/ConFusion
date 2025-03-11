@@ -33,12 +33,12 @@ local function observe(target: Types.GraphObject, callback: () -> (), immediate:
 	end
 
 	local uniqueIdentifier = {}
-
-	-- essentially converting them back into `Observer`s... oh well
-	observers[uniqueIdentifier] = table.freeze(setmetatable({
+	local newObserver = table.freeze(setmetatable({
 		callback = callback,
 		createdAt = os.clock(),
 	}, OBSERVER_META))
+
+	observers[uniqueIdentifier] = newObserver
 
 	return function()
 		observers[uniqueIdentifier] = nil
