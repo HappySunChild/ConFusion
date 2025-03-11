@@ -2,7 +2,7 @@ local Players = game:GetService "Players"
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local Children = Fusion.Children
+local Children, Out = Fusion.Children, Fusion.Out
 local peek = Fusion.peek
 local Menu = require(script.Parent.Menu)
 local Player = require(script.Parent.Player)
@@ -39,7 +39,6 @@ local function List(
 			local newLabel = scope:Player {
 				Player = player,
 				Teams = props.Teams,
-				IsLast = index == #peek(props.Players),
 
 				ClickedCallback = function(frame: Frame)
 					if peek(menuPlayer) == player and peek(menuOpen) then
@@ -93,11 +92,17 @@ local function List(
 		return labels
 	end)
 
+	local contentSize = innerScope:Value(Vector2.zero)
+	local height = innerScope:Computed(function(use)
+		return use(contentSize).Y
+	end)
+
 	return innerScope:New "Frame" {
 		AnchorPoint = Vector2.new(1, 0),
 		Position = innerScope:Tween(offset, LIST_TWEENINFO),
-		Size = UDim2.fromOffset(LIST_BASE_WIDTH, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
+		Size = innerScope:Computed(function(use)
+			return UDim2.fromOffset(LIST_BASE_WIDTH, math.min(use(height), 300) + 4)
+		end),
 
 		BackgroundColor3 = Color3.new(0, 0, 0),
 		BackgroundTransparency = 0.5,
@@ -110,9 +115,14 @@ local function List(
 				Player = menuPlayer,
 				Position = menuPosition,
 			},
-			List = innerScope:New "Frame" {
+			List = innerScope:New "ScrollingFrame" {
 				Size = UDim2.fromScale(1, 1),
+				CanvasSize = innerScope:Computed(function(use)
+					return UDim2.fromOffset(0, use(height) + 4)
+				end),
 				BackgroundTransparency = 1,
+
+				ScrollBarThickness = 0,
 
 				[Children] = {
 					innerScope:New "UIPadding" {
@@ -129,6 +139,8 @@ local function List(
 						FillDirection = Enum.FillDirection.Vertical,
 
 						Padding = UDim.new(0, 0),
+
+						[Out "AbsoluteContentSize"] = contentSize,
 					},
 
 					teamLabels,

@@ -14,16 +14,6 @@ local isVisible = scoped:Value(true)
 local playerList = scoped:Value(Players:GetPlayers())
 local teamList = scoped:Value(Teams:GetChildren())
 
-local function fakePlayer(name: string, displayName: string?)
-	return {
-		Name = name,
-		DisplayName = displayName or name,
-		UserId = Players:GetUserIdFromNameAsync(name),
-		HasVerifiedBadge = true,
-		Team = Teams:GetChildren()[math.random(#Teams:GetChildren())],
-	}
-end
-
 local function updateTeams()
 	teamList:set(Teams:GetChildren())
 end
@@ -46,13 +36,6 @@ ContextActionService:BindAction("TogglePlayerList", function(_, state)
 	end
 end, false, Enum.KeyCode.Tab)
 
-ContextActionService:BindAction("Debug", function(_, state)
-	if state == Enum.UserInputState.Begin then
-		updatePlayers()
-		updateTeams()
-	end
-end, false, Enum.KeyCode.B)
-
 scoped:New "ScreenGui" {
 	Name = "PlayerList",
 	Parent = Players.LocalPlayer.PlayerGui,
@@ -65,25 +48,3 @@ scoped:New "ScreenGui" {
 		},
 	},
 }
-
-task.wait(1)
-
-local createdPlayers = {}
-local possiblePlayers = {
-	fakePlayer "RL1te",
-	fakePlayer "Roblox",
-	fakePlayer "builderman",
-	fakePlayer "david.baszucki",
-	fakePlayer "EC_DN",
-	fakePlayer("HelloMan4500", "Tenthusiast"),
-	fakePlayer "Defaultio",
-	fakePlayer "EBOctoLuck",
-}
-
-for _, player in possiblePlayers do
-	table.insert(createdPlayers, player)
-
-	playerList:set { Players.LocalPlayer, unpack(createdPlayers) }
-
-	task.wait(0.1)
-end

@@ -66,7 +66,7 @@ local function Menu(
 									Enum.ThumbnailSize.Size180x180
 								)
 							)
-						end, "rbxthumb://type=AvatarHeadShot&id=1&w=48&h=48"),
+						end, ""),
 					},
 
 					TextContainer = scope:New "Frame" {

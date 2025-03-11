@@ -29,9 +29,7 @@ local function determineIcon(player: Player)
 	return nil
 end
 
-local function getLayoutOrder(team: Team, teams: { Team })
-	local currentTeam = team
-
+local function getLayoutOrder(currentTeam: Team, teams: { Team })
 	if currentTeam then
 		local index = table.find(teams, currentTeam)
 
@@ -48,7 +46,6 @@ local function Player(
 	props: {
 		Player: Player,
 		Teams: Fusion.UsedAs<{ Team }>,
-		IsLast: boolean,
 		ClickedCallback: () -> ()?,
 	}
 )
@@ -195,17 +192,6 @@ local function Player(
 					},
 				},
 			},
-
-			Divider = if props.IsLast == false
-				then scope:New "Frame" {
-					AnchorPoint = Vector2.new(0, 1),
-					Position = UDim2.fromScale(0, 1),
-					Size = UDim2.new(1, 0, 0, 1),
-
-					BackgroundColor3 = Color3.fromRGB(46, 46, 46),
-					BackgroundTransparency = 0.4,
-				}
-				else nil,
 		},
 	}
 end
