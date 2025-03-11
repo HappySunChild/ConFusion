@@ -49,6 +49,7 @@ end
 
 function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
 	if typeof(instance) ~= "Instance" then
+		-- maybe should error here
 		return
 	end
 
@@ -56,7 +57,12 @@ function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, prop
 		pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok or typeof(event) ~= "RBXScriptSignal" then
-		External.logError("cannotConnectChange", nil, instance.ClassName, property)
+		External.logError(
+			"cannotConnectChange",
+			nil,
+			instance.ClassName,
+			tostring(property)
+		)
 	end
 
 	self:set((instance :: any)[property])
