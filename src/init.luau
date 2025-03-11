@@ -1,4 +1,12 @@
 --!strict
+
+--[[
+ConFusion - A fork of Fusion
+
+GitHub Repository: https://github.com/HappySunChild/ConFusion
+Fusion: https://github.com/dphfox/Fusion
+--]]
+
 local External = require(script.External)
 local Types = require(script.Types)
 
