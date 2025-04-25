@@ -187,6 +187,7 @@ export type Fusion = {
 		scope: Scope,
 		classNameOrTemplate: Instance | string
 	) -> (props: Properties) -> Instance,
+	Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
 	Child: (
 		scope: Scope,
 		name: string
