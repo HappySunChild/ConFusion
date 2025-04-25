@@ -4,14 +4,8 @@ type Disconnect = () -> ()
 
 export type Properties = { [SpecialKey | string]: any }
 
-export type Task =
-	Instance
-	| RBXScriptConnection
-	| () -> ()
-	| { destroy: (any) -> () }
-	| { Destroy: (any) -> () }
-	| { Task }
-export type Scope<T = unknown> = { Task } & T
+export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupTask }
+export type Scope<T = unknown> = { CleanupTask? } & T
 
 export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
 export type UsedAs<V> = StateObject<V> | V
@@ -27,7 +21,7 @@ export type Error = {
 	trace: string,
 }
 
--- Objects
+-- Abstract Objects
 
 type Observer = {
 	type: "Observer",
@@ -140,7 +134,7 @@ export type Fusion = {
 	scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	innerScope: <T, M>(existing: T, methods: M?) -> T & M,
-	doCleanup: (Task) -> (),
+	doCleanup: (CleanupTask) -> (),
 
 	peek: <V>(value: UsedAs<V> | V) -> V,
 	observe: <V>(
