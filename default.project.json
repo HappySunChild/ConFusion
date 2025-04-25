@@ -2,7 +2,6 @@
 	"name": "Testing Place",
 	"tree": {
 		"$className": "DataModel",
-
 		"ReplicatedStorage": {
 			"$ignoreUnknownInstances": true,
 			"Libraries": {
@@ -13,18 +12,18 @@
 				}
 			}
 		},
-		
 		"ServerScriptService": {
 			"$ignoreUnknownInstances": true,
 			"tests": {
 				"$path": "tests"
 			}
 		},
-
 		"StarterPlayer": {
+			"$ignoreUnknownInstances": true,
+			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
 				"$ignoreUnknownInstances": true,
-				
 				"Demos": {
 					"$path": "demos"
 				}
