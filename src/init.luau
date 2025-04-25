@@ -10,6 +10,25 @@ Fusion: https://github.com/dphfox/Fusion
 local External = require(script.External)
 local Types = require(script.Types)
 
+type Fusion = Types.Fusion
+
+export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
+export type UsedAs<V> = Types.UsedAs<V>
+
+export type SpecialKey<T> = Types.SpecialKey<T>
+
+export type ScopedObject = Types.ScopedObject
+export type GraphObject = Types.GraphObject
+export type StateObject<V> = Types.StateObject<V>
+
+export type Animated<V> = Types.Animated<V>
+export type Value<V> = Types.Value<V>
+export type Computed<V> = Types.Computed<V>
+export type For<K, V> = Types.For<K, V>
+export type Observer = Types.Observer
+
+export type Child = Types.Child
+
 local Animation = script.Animation
 local Graph = script.Graph
 local State = script.State
@@ -75,23 +94,5 @@ local Fusion = table.freeze {
 
 local RobloxProvider = require(script.RobloxProvider)
 External.setProvider(RobloxProvider)
-
-type Fusion = Types.Fusion
-
-export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
-export type UsedAs<V> = Types.UsedAs<V>
-
-export type SpecialKey<T> = Types.SpecialKey<T>
-
-export type ScopedObject = Types.ScopedObject
-export type GraphObject = Types.GraphObject
-export type StateObject<V> = Types.StateObject<V>
-
-export type Animated<V> = Types.Animated<V>
-export type Value<V> = Types.Value<V>
-export type Computed<V> = Types.Computed<V>
-export type For<K, V> = Types.For<K, V>
-
-export type Child = Types.Child
 
 return Fusion :: Fusion
