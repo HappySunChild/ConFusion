@@ -96,10 +96,10 @@ function class.populate<S, IK, IV, OK, OV>(
 		-- why did I have to explicity say that outputKey shouldn't be nil to make this type error go away?
 		-- even with this completely unnecessary check it still gets resolved as 'never'.
 		-- i'm already checking this at line 85, which skips over this if it is nil.
-		
+
 		-- i would really like to know why the type solver believes that this specific variable is still nil, even after multiple checks
 		-- and then it has the AUDACITY to give me a 'never'...
-		
+
 		-- when i replaced the continue with a break/return it worked fine, and no type error was shown.
 		-- now i don't mean to put down the Luau engineers, most of the time the type solver is amazing,
 		-- but simple problems like these actually make me want to throw my monitor out the window
