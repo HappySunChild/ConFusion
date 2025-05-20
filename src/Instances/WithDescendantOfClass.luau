@@ -5,7 +5,7 @@ local Types = require(package.Types)
 
 local applyProperties = require(package.Instances.applyProperties)
 
-local function DescendantOfClass(scope: Types.Scope, className: string)
+local function WithDescendantOfClass(scope: Types.Scope, className: string)
 	return function(props: Types.Properties)
 		return function(parent: Instance)
 			local child = parent:FindFirstChildWhichIsA(className, true)
@@ -28,4 +28,4 @@ local function DescendantOfClass(scope: Types.Scope, className: string)
 	end
 end
 
-return DescendantOfClass
+return WithDescendantOfClass
