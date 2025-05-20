@@ -1,6 +1,6 @@
 local package = script.Parent.Parent
 
-local Oklab = require(package.Colors.Oklab)
+local Oklab = require(package.Colour.Oklab)
 
 local lerpFunctions = {
 	number = function(a: number, b: number, alpha: number)
