@@ -69,10 +69,10 @@ local Fusion = table.freeze {
 	-- Instance
 	New = require(Instance.New),
 	Hydrate = require(Instance.Hydrate),
-	Child = require(Instance.Child),
-	ChildOfClass = require(Instance.ChildOfClass),
-	Descendant = require(Instance.Descendant),
-	DescendantOfClass = require(Instance.DescendantOfClass),
+	WithChild = require(Instance.WithChild),
+	WithChildOfClass = require(Instance.WithChildOfClass),
+	WithDescendant = require(Instance.WithDescendant),
+	WithDescendantOfClass = require(Instance.WithDescendantOfClass),
 
 	-- Instance Keys
 	Children = require(Keys.Children),
