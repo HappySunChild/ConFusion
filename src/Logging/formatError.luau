@@ -4,7 +4,7 @@ local Types = require(package.Types)
 
 local messages = require(package.Logging.messages)
 
-export type MessageId = string | string | keyof<typeof(messages)>
+export type MessageId = string | keyof<typeof(messages)>
 
 local function formatError(
 	messageId: MessageId,
