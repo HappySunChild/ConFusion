@@ -14,6 +14,7 @@ type Fusion = Types.Fusion
 
 export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
+export type Use = Types.Use
 
 export type SpecialKey<T> = Types.SpecialKey<T>
 
@@ -76,10 +77,10 @@ local Fusion = table.freeze {
 
 	-- Instance Keys
 	Children = require(Keys.Children),
-	Startup = require(Keys.Startup),
-	Removal = require(Keys.Removal),
+	OnStartup = require(Keys.OnStartup),
+	OnRemoval = require(Keys.OnRemoval),
 	Ref = require(Keys.Ref),
-	Apply = require(Keys.Apply),
+	Passthrough = require(Keys.Passthrough),
 	Attribute = require(Keys.Attribute),
 	AttributeChange = require(Keys.AttributeChange),
 	AttributeOut = require(Keys.AttributeOut),

@@ -31,6 +31,6 @@ local Parent = table.freeze {
 
 		setParent(applyTo, peek(parent))
 	end,
-}
+} :: Types.SpecialKey<"Parent">
 
 return Parent

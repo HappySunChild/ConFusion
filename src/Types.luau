@@ -13,7 +13,7 @@ export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Ch
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
 
-export type Properties = { [SpecialKey | string]: any }
+export type Properties = { [SpecialKey<string> | string]: any }
 
 export type Scope<T = unknown> = T & { CleanupTask? }
 
@@ -180,10 +180,18 @@ type DelayConstructor = <V>(
 	amount: UsedAs<number>
 ) -> Animated<V>
 
+type SpecialKeyStage =
+	"self"
+	| "descendants"
+	| "properties"
+	| "ancestor"
+	| "observer"
+	| "last"
+
 export type SpecialKey<T = string> = {
 	type: T,
 	kind: "key",
-	stage: string,
+	stage: SpecialKeyStage,
 
 	apply: (scope: Scope, instance: Instance, value: any) -> (),
 }
@@ -231,34 +239,34 @@ export type Fusion = {
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
-	New: (
+	read New: (
 		scope: Scope,
 		classNameOrTemplate: Instance | string
 	) -> (props: Properties) -> Instance,
 	read Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
-	read Child: (
+	read WithChild: (
 		scope: Scope,
 		name: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
-	read ChildOfClass: (
+	read WithChildOfClass: (
 		scope: Scope,
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
-	read Descendant: (
+	read WithDescendant: (
 		scope: Scope,
 		name: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
-	read DescendantOfClass: (
+	read WithDescendantOfClass: (
 		scope: Scope,
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
 	-- Keys
 	read Children: SpecialKey<"Children">,
-	read Startup: SpecialKey<"Startup">,
-	read Removal: SpecialKey<"Removal">,
+	read OnStartup: SpecialKey<"OnStartup">,
+	read OnRemoval: SpecialKey<"OnRemoval">,
 	read Ref: SpecialKey<"Ref">,
-	read Apply: SpecialKey<"Apply">,
+	read Passthrough: SpecialKey<"Passthrough">,
 	read Attribute: (attribute: string) -> SpecialKey<"Attribute">,
 	read AttributeChange: (attribute: string) -> SpecialKey<"AttributeChange">,
 	read AttributeOut: (attribute: string) -> SpecialKey<"AttributeOut">,

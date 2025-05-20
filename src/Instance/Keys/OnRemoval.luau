@@ -4,8 +4,8 @@ local Types = require(package.Types)
 
 local doCleanup = require(package.Memory.doCleanup)
 
-local Removal: Types.SpecialKey = table.freeze {
-	type = "Removal",
+local OnRemoval = table.freeze {
+	type = "OnRemoval",
 	kind = "key",
 	stage = "observer",
 
@@ -19,6 +19,6 @@ local Removal: Types.SpecialKey = table.freeze {
 			end)
 		)
 	end,
-}
+} :: Types.SpecialKey<"OnRemoval">
 
-return Removal
+return OnRemoval
