@@ -3,12 +3,12 @@ local package = script.Parent.Parent.Parent
 local Types = require(package.Types)
 local applyProperties = require(package.Instance.applyProperties)
 
-local Apply: Types.SpecialKey = table.freeze {
-	type = "Apply",
+local Passthrough = table.freeze {
+	type = "Passthrough",
 	kind = "key",
 	stage = "properties",
 
 	apply = applyProperties,
-}
+} :: Types.SpecialKey<"Passthrough">
 
-return Apply
+return Passthrough
