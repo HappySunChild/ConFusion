@@ -3,15 +3,15 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local applyProperties = require(package.Instance.applyProperties)
+local applyProperties = require(package.Instances.applyProperties)
 
-local function Descendant(scope: Types.Scope, name: string)
+local function Child(scope: Types.Scope, name: string)
 	return function(props: Types.Properties)
 		return function(parent: Instance)
-			local child = parent:FindFirstChild(name, true)
+			local child = parent:FindFirstChild(name)
 
 			if not child then
-				External.logErrorNonFatal("missingDescendant", nil, name, parent.Name)
+				External.logErrorNonFatal("missingChild", nil, name, parent.Name)
 
 				return
 			end
@@ -23,4 +23,4 @@ local function Descendant(scope: Types.Scope, name: string)
 	end
 end
 
-return Descendant
+return Child

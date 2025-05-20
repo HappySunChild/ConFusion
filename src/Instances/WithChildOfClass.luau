@@ -3,7 +3,7 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local applyProperties = require(package.Instance.applyProperties)
+local applyProperties = require(package.Instances.applyProperties)
 
 local function ChildOfClass(scope: Types.Scope, className: string)
 	return function(props: Types.Properties)

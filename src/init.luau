@@ -36,8 +36,8 @@ local State = script.State
 local Memory = script.Memory
 local Utility = script.Utility
 
-local Instance = script.Instance
-local Keys = Instance.Keys
+local Instances = script.Instances
+local Keys = Instances.Keys
 
 local Fusion = table.freeze {
 	-- Memory
@@ -68,12 +68,12 @@ local Fusion = table.freeze {
 	Delay = require(Animation.Delay),
 
 	-- Instance
-	New = require(Instance.New),
-	Hydrate = require(Instance.Hydrate),
-	WithChild = require(Instance.WithChild),
-	WithChildOfClass = require(Instance.WithChildOfClass),
-	WithDescendant = require(Instance.WithDescendant),
-	WithDescendantOfClass = require(Instance.WithDescendantOfClass),
+	New = require(Instances.New),
+	Hydrate = require(Instances.Hydrate),
+	WithChild = require(Instances.WithChild),
+	WithChildOfClass = require(Instances.WithChildOfClass),
+	WithDescendant = require(Instances.WithDescendant),
+	WithDescendantOfClass = require(Instances.WithDescendantOfClass),
 
 	-- Instance Keys
 	Children = require(Keys.Children),

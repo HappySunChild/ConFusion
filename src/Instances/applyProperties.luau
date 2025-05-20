@@ -3,8 +3,8 @@ local package = script.Parent.Parent
 local External = require(package.External)
 local Types = require(package.Types)
 
-local Parent = require(package.Instance.Keys._Parent)
-local sortKeys = require(package.Instance.Keys.sortKeys)
+local Parent = require(package.Instances.Keys._Parent)
+local sortKeys = require(package.Instances.Keys.sortKeys)
 
 local castToState = require(package.State.castToState)
 local peek = require(package.State.peek)

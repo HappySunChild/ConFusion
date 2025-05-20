@@ -2,7 +2,7 @@ local package = script.Parent.Parent
 
 local Types = require(package.Types)
 
-local applyProperties = require(package.Instance.applyProperties)
+local applyProperties = require(package.Instances.applyProperties)
 
 local function Hydrate(scope: Types.Scope, instance: Instance)
 	return function(props: Types.Properties)
