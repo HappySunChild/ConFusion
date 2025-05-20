@@ -10,7 +10,7 @@ local peek = require(package.State.peek)
 
 local doCleanup = require(package.Memory.doCleanup)
 
-local Children: Types.SpecialKey = table.freeze {
+local Children = table.freeze {
 	type = "Children",
 	kind = "key",
 	stage = "descendants",
@@ -100,6 +100,6 @@ local Children: Types.SpecialKey = table.freeze {
 
 		updateChildren()
 	end,
-}
+} :: Types.SpecialKey<"Children">
 
 return Children

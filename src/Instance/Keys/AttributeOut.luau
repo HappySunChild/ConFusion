@@ -6,7 +6,7 @@ local xtypeof = require(package.Utility.xtypeof)
 
 local keyCache = {}
 
-local function AttributeOut(attribute: string): Types.SpecialKey
+local function AttributeOut(attribute: string): Types.SpecialKey<"AttributeOut">
 	local key = keyCache[attribute]
 
 	if not key then

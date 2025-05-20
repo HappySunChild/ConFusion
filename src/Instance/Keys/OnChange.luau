@@ -5,7 +5,7 @@ local Types = require(package.Types)
 
 local keyCache = {}
 
-local function OnChange(property: string)
+local function OnChange(property: string): Types.SpecialKey<"OnChange">
 	local key = keyCache[property]
 
 	if not key then

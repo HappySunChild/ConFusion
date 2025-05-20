@@ -4,7 +4,7 @@ local Types = require(package.Types)
 
 local xtypeof = require(package.Utility.xtypeof)
 
-local Ref: Types.SpecialKey = table.freeze {
+local Ref = table.freeze {
 	type = "Ref",
 	kind = "key",
 	stage = "self",
@@ -18,6 +18,6 @@ local Ref: Types.SpecialKey = table.freeze {
 
 		return
 	end,
-}
+} :: Types.SpecialKey<"Ref">
 
 return Ref

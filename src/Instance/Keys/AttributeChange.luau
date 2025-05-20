@@ -4,7 +4,7 @@ local Types = require(package.Types)
 
 local keyCache = {}
 
-local function AttributeChange(attribute: string): Types.SpecialKey
+local function AttributeChange(attribute: string): Types.SpecialKey<"AttributeChange">
 	local key = keyCache[attribute]
 
 	if not key then

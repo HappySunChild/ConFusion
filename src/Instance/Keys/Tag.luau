@@ -9,7 +9,7 @@ local peek = require(package.State.peek)
 
 local keyCache = {}
 
-local function Tag(tag: string): Types.SpecialKey
+local function Tag(tag: string): Types.SpecialKey<"Tag">
 	local key = keyCache[tag]
 
 	if not key then

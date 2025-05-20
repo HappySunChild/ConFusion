@@ -9,7 +9,7 @@ end
 
 local keyCache = {}
 
-local function OnEvent(eventName: string): Types.SpecialKey
+local function OnEvent(eventName: string): Types.SpecialKey<"OnEvent">
 	local key = keyCache[eventName]
 
 	if not key then
