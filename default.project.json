@@ -1,5 +1,5 @@
 {
-	"name": "Testing Place",
+	"name": "ConFusion",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
@@ -13,10 +13,7 @@
 			}
 		},
 		"ServerScriptService": {
-			"$ignoreUnknownInstances": true,
-			"tests": {
-				"$path": "tests"
-			}
+			"$ignoreUnknownInstances": true
 		},
 		"StarterPlayer": {
 			"$ignoreUnknownInstances": true,
