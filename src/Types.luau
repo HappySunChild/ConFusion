@@ -180,7 +180,7 @@ type DelayConstructor = <V>(
 	amount: UsedAs<number>
 ) -> Animated<V>
 
-type SpecialKeyStage =
+export type SpecialKeyStage =
 	"self"
 	| "descendants"
 	| "properties"
