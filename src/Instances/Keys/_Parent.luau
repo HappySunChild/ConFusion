@@ -1,11 +1,11 @@
-local package = script.Parent.Parent.Parent
+local Types = require "../../Types"
 
-local Types = require(package.Types)
+local observe = require "../../Graph/observe"
 
-local observe = require(package.Graph.observe)
+local castToState = require "../../State/castToState"
+local peek = require "../../State/peek"
 
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local SpecialKey = require "./SpecialKey"
 
 local function setParent(instance: Instance, parent: Instance?)
 	local success, err = pcall(function()
@@ -17,12 +17,9 @@ local function setParent(instance: Instance, parent: Instance?)
 	end
 end
 
-local Parent = table.freeze {
-	type = "Parent",
-	kind = "key",
+local Parent = SpecialKey "Parent" {
 	stage = "ancestor",
-
-	apply = function(_: Types.Scope, applyTo: Instance, parent: Types.UsedAs<Instance?>)
+	apply = function(_, applyTo: Instance, parent: Types.UsedAs<Instance?>)
 		if castToState(parent) then
 			observe(parent, function(new)
 				setParent(applyTo, new)

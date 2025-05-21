@@ -1,24 +1,23 @@
-local package = script.Parent.Parent.Parent
+local Types = require "../../Types"
 
-local Types = require(package.Types)
+local doCleanup = require "../../Memory/doCleanup"
 
-local doCleanup = require(package.Memory.doCleanup)
+local SpecialKey = require "./SpecialKey"
 
-local OnRemoval = table.freeze {
-	type = "OnRemoval",
-	kind = "key",
+return SpecialKey "OnRemoval" {
 	stage = "observer",
-
-	apply = function(scope: Types.Scope, applyTo: Instance, task: Types.CleanupTask)
+	apply = function(
+		scope: Types.Scope,
+		applyTo: Instance,
+		removalTask: Types.CleanupTask
+	)
 		table.insert(
 			scope,
 			applyTo.AncestryChanged:Connect(function(_, parent)
 				if parent == nil then
-					doCleanup(task)
+					doCleanup(removalTask)
 				end
 			end)
 		)
 	end,
-} :: Types.SpecialKey<"OnRemoval">
-
-return OnRemoval
+}

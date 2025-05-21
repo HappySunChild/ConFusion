@@ -1,11 +1,11 @@
-local package = script.Parent.Parent.Parent
+local Types = require "../../Types"
 
-local Types = require(package.Types)
+local observe = require "../../Graph/observe"
 
-local observe = require(package.Graph.observe)
+local castToState = require "../../State/castToState"
+local peek = require "../../State/peek"
 
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local SpecialKey = require "./SpecialKey"
 
 local keyCache = {}
 
@@ -13,11 +13,8 @@ local function Tag(tag: string): Types.SpecialKey<"Tag">
 	local key = keyCache[tag]
 
 	if not key then
-		key = table.freeze {
-			type = "Tag",
-			kind = "key",
+		key = SpecialKey "Tag" {
 			stage = "self",
-
 			apply = function(
 				_: Types.Scope,
 				instance: Instance,

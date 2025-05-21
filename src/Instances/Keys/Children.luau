@@ -1,20 +1,17 @@
-local package = script.Parent.Parent.Parent
+local External = require "../../External"
+local Types = require "../../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local observe = require "../../Graph/observe"
 
-local observe = require(package.Graph.observe)
+local castToState = require "../../State/castToState"
+local peek = require "../../State/peek"
 
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local doCleanup = require "../../Memory/doCleanup"
 
-local doCleanup = require(package.Memory.doCleanup)
+local SpecialKey = require "./SpecialKey"
 
-local Children = table.freeze {
-	type = "Children",
-	kind = "key",
+local Children = SpecialKey "Children" {
 	stage = "descendants",
-
 	apply = function(scope: Types.Scope, applyTo: Instance, children: Types.Child?)
 		local newChildren, oldChildren = {}, {}
 		local newScopes, oldScopes = {}, {}
@@ -100,6 +97,6 @@ local Children = table.freeze {
 
 		updateChildren()
 	end,
-} :: Types.SpecialKey<"Children">
+}
 
 return Children

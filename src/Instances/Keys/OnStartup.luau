@@ -1,15 +1,8 @@
-local package = script.Parent.Parent.Parent
+local SpecialKey = require "./SpecialKey"
 
-local Types = require(package.Types)
-
-local OnStartup = table.freeze {
-	type = "OnStartup",
-	kind = "key",
+return SpecialKey "OnStartup" {
 	stage = "last",
-
-	apply = function(_: Types.Scope, parent: Instance, callback: (Instance) -> ())
+	apply = function(_, parent: Instance, callback: (Instance) -> ())
 		callback(parent)
 	end,
-} :: Types.SpecialKey<"OnStartup">
-
-return OnStartup
+}

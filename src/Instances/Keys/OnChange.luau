@@ -1,7 +1,7 @@
-local package = script.Parent.Parent.Parent
+local External = require "../../External"
+local Types = require "../../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local SpecialKey = require "./SpecialKey"
 
 local keyCache = {}
 
@@ -9,11 +9,8 @@ local function OnChange(property: string): Types.SpecialKey<"OnChange">
 	local key = keyCache[property]
 
 	if not key then
-		key = table.freeze {
-			type = "OnChange",
-			kind = "key",
+		key = SpecialKey "OnChange" {
 			stage = "observer",
-
 			apply = function(
 				scope: Types.Scope,
 				applyTo: Instance,

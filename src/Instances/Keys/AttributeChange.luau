@@ -1,6 +1,6 @@
-local package = script.Parent.Parent.Parent
+local Types = require "../../Types"
 
-local Types = require(package.Types)
+local SpecialKey = require "./SpecialKey"
 
 local keyCache = {}
 
@@ -8,11 +8,8 @@ local function AttributeChange(attribute: string): Types.SpecialKey<"AttributeCh
 	local key = keyCache[attribute]
 
 	if not key then
-		key = table.freeze {
-			type = "OnChanged",
-			kind = "key",
+		key = SpecialKey "AttributeChanged" {
 			stage = "observer",
-
 			apply = function(
 				scope: Types.Scope,
 				applyTo: Instance,

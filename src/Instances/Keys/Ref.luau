@@ -1,15 +1,12 @@
-local package = script.Parent.Parent.Parent
+local Types = require "../../Types"
 
-local Types = require(package.Types)
+local xtypeof = require "../../Utility/xtypeof"
 
-local xtypeof = require(package.Utility.xtypeof)
+local SpecialKey = require "./SpecialKey"
 
-local Ref = table.freeze {
-	type = "Ref",
-	kind = "key",
+local Ref = SpecialKey "Ref" {
 	stage = "self",
-
-	apply = function(_: Types.Scope, applyTo: Instance, ref: Types.Value<Instance>)
+	apply = function(_, applyTo: Instance, ref: Types.Value<Instance>)
 		if xtypeof(ref) ~= "Value" then
 			return error(`Invalid Ref type.`, 2)
 		end
@@ -18,6 +15,6 @@ local Ref = table.freeze {
 
 		return
 	end,
-} :: Types.SpecialKey<"Ref">
+}
 
 return Ref
