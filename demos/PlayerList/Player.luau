@@ -2,7 +2,7 @@ local Players = game:GetService "Players"
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local Children, Startup, OnEvent = Fusion.Children, Fusion.Startup, Fusion.OnEvent
+local Children, OnStartup, OnEvent = Fusion.Children, Fusion.OnStartup, Fusion.OnEvent
 
 local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
 
@@ -90,7 +90,7 @@ local function Player(
 			end
 		end,
 
-		[Startup] = function()
+		[OnStartup] = function()
 			offset:set(UDim2.fromScale(0, 0))
 		end,
 
