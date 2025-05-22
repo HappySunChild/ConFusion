@@ -1,11 +1,9 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local castToGraph = require "./castToGraph"
 
-local castToGraph = require(package.Graph.castToGraph)
-
-local xtypeof = require(package.Utility.xtypeof)
+local xtypeof = require "../Utility/xtypeof"
 
 local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 	if not castToGraph(target) then

@@ -1,7 +1,5 @@
 --!strict
-local package = script.Parent.Parent
-
-local nicknames = require(package.Utility.nicknames)
+local nicknames = require "./nicknames"
 
 local function nameOf(x: unknown, default: string)
 	local nickname = nicknames[x]

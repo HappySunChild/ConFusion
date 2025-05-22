@@ -1,10 +1,9 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local change = require "../Graph/change"
 
-local change = require(package.Graph.change)
-local destructor = require(package.Memory.destructor)
+local destructor = require "../Memory/destructor"
 
 type ExternalTime = Types.StateObject<number> & {
 	type: "ExternalTime",

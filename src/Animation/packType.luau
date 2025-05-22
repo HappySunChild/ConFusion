@@ -1,6 +1,4 @@
-local package = script.Parent.Parent
-
-local Oklab = require(package.Colour.Oklab)
+local Oklab = require "../Colour/Oklab"
 
 local packMethods = {
 	number = function(numbers: { number })
@@ -31,10 +29,7 @@ local packMethods = {
 			)
 	end,
 	Color3 = function(numbers: { number })
-		return Oklab.toSRGB(
-			Vector3.new(numbers[1], numbers[2], numbers[3]),
-			false
-		)
+		return Oklab.toSRGB(Vector3.new(numbers[1], numbers[2], numbers[3]), false)
 	end,
 }
 

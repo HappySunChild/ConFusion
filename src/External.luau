@@ -1,10 +1,7 @@
 --!strict
+local Types = require "./Types"
 
-local package = script.Parent
-
-local Types = require(package.Types)
-
-local formatError = require(package.Logging.formatError)
+local formatError = require "./Logging/formatError"
 
 local External = {}
 

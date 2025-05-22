@@ -1,19 +1,17 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local change = require "../Graph/change"
+local depend = require "../Graph/depend"
 
-local change = require(package.Graph.change)
-local depend = require(package.Graph.depend)
+local castToState = require "./castToState"
+local peek = require "./peek"
 
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local destructor = require "../Memory/destructor"
 
-local destructor = require(package.Memory.destructor)
+local isSimilar = require "../Utility/isSimilar"
 
-local isSimilar = require(package.Utility.isSimilar)
-
-local parseError = require(package.Logging.parseError)
+local parseError = require "../Logging/parseError"
 
 type processor<V> = (use: Types.Use, become: (V) -> nil) -> ()
 type Self<V> = Types.Eventual<V> & {

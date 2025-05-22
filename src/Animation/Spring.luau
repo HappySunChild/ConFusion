@@ -1,13 +1,11 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
+local Animated = require "./Animated"
+local packType = require "./packType"
+local springCoefficients = require "./springCoefficients"
+local unpackType = require "./unpackType"
 
-local Animated = require(package.Animation.Animated)
-local packType = require(package.Animation.packType)
-local springCoefficients = require(package.Animation.springCoefficients)
-local unpackType = require(package.Animation.unpackType)
-
-local peek = require(package.State.peek)
+local peek = require "../State/peek"
 
 local EPSILON = 0.0001
 

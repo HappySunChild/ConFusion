@@ -1,6 +1,4 @@
-local package = script.Parent.Parent
-
-local Oklab = require(package.Colour.Oklab)
+local Oklab = require "../Colour/Oklab"
 
 local unpackMethods = {
 	number = function(value: number)

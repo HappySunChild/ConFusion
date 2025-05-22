@@ -1,13 +1,11 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local change = require "../Graph/change"
 
-local change = require(package.Graph.change)
+local destructor = require "../Memory/destructor"
 
-local destructor = require(package.Memory.destructor)
-
-local isSimilar = require(package.Utility.isSimilar)
+local isSimilar = require "../Utility/isSimilar"
 
 type Self<V> = Types.Value<V>
 

@@ -1,9 +1,7 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
-
-local nameOf = require(package.Utility.nameOf)
-local nicknames = require(package.Utility.nicknames)
+local nameOf = require "../Utility/nameOf"
+local nicknames = require "../Utility/nicknames"
 
 local function destroy<V>(target: Types.GraphObject)
 	target.scope = nil

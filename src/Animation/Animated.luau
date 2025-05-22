@@ -1,15 +1,13 @@
-local package = script.Parent.Parent
+local External = require("../External")
+local Types = require("../Types")
 
-local External = require(package.External)
-local Types = require(package.Types)
+local Timer = require("./Timer")
 
-local Timer = require(package.Animation.Timer)
+local depend = require("../Graph/depend")
+local evaluate = require("../Graph/evaluate")
 
-local depend = require(package.Graph.depend)
-local evaluate = require(package.Graph.evaluate)
-
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local castToState = require("../State/castToState")
+local peek = require("../State/peek")
 
 type Self<V> = Types.Animated<V> & {
 	_goal: Types.UsedAs<V>,

@@ -1,10 +1,8 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
-
-local castToGraph = require(package.Graph.castToGraph)
-local evaluate = require(package.Graph.evaluate)
+local castToGraph = require "./castToGraph"
+local evaluate = require "./evaluate"
 
 local OBSERVER_META = table.freeze {
 	__index = table.freeze {

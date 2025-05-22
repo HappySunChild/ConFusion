@@ -1,6 +1,4 @@
-local package = script.Parent.Parent
-
-local Oklab = require(package.Colour.Oklab)
+local Oklab = require "../Colour/Oklab"
 
 local lerpFunctions = {
 	number = function(a: number, b: number, alpha: number)
@@ -22,7 +20,10 @@ local lerpFunctions = {
 		return a:Lerp(b, alpha)
 	end,
 	UDim = function(a: UDim, b: UDim, alpha: number)
-		return UDim.new(alpha * (b.Scale - a.Scale) + a.Scale, alpha * (b.Offset - a.Offset) + a.Offset)
+		return UDim.new(
+			alpha * (b.Scale - a.Scale) + a.Scale,
+			alpha * (b.Offset - a.Offset) + a.Offset
+		)
 	end,
 	UDim2 = function(a: UDim2, b: UDim2, alpha: number)
 		return a:Lerp(b, alpha)

@@ -1,10 +1,8 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
-
-local applyProperties = require(package.Instances.applyProperties)
-local defaultProperties = require(package.Instances.defaultProperties)
+local applyProperties = require "./applyProperties"
+local defaultProperties = require "./defaultProperties"
 
 local function New<T>(scope: Types.Scope<T>, classNameOrTemplate: string | Instance)
 	local instance

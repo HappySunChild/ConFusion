@@ -1,14 +1,12 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
+local peek = require "./peek"
 
-local peek = require(package.State.peek)
+local change = require "../Graph/change"
 
-local change = require(package.Graph.change)
+local destructor = require "../Memory/destructor"
 
-local destructor = require(package.Memory.destructor)
-
-local isSimilar = require(package.Utility.isSimilar)
+local isSimilar = require "../Utility/isSimilar"
 
 type Self<K, V> = Types.Table<K, V>
 

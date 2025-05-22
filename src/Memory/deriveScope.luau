@@ -1,9 +1,7 @@
 --!strict
 
-local package = script.Parent.Parent
-
-local Types = require(package.Types)
-local merge = require(package.Utility.merge)
+local Types = require "../Types"
+local merge = require "../Utility/merge"
 
 local function deriveScope<T>(
 	existing: Types.Scope<T>,

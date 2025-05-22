@@ -1,20 +1,18 @@
-local package = script.Parent.Parent
+local External = require "../External"
+local Types = require "../Types"
 
-local External = require(package.External)
-local Types = require(package.Types)
+local depend = require "../Graph/depend"
 
-local depend = require(package.Graph.depend)
+local castToState = require "./castToState"
+local peek = require "./peek"
 
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
+local deriveScope = require "../Memory/deriveScope"
+local destructor = require "../Memory/destructor"
+local doCleanup = require "../Memory/doCleanup"
 
-local deriveScope = require(package.Memory.deriveScope)
-local destructor = require(package.Memory.destructor)
-local doCleanup = require(package.Memory.doCleanup)
+local isSimilar = require "../Utility/isSimilar"
 
-local isSimilar = require(package.Utility.isSimilar)
-
-local parseError = require(package.Logging.parseError)
+local parseError = require "../Logging/parseError"
 
 type Self<S, V> = Types.Computed<V> & {
 	_innerScope: Types.Scope<S>?,

@@ -1,9 +1,7 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
-
-local Computed = require(package.State.Computed)
-local castToState = require(package.State.castToState)
+local Computed = require "../State/Computed"
+local castToState = require "../State/castToState"
 
 -- TODO: maybe add support for mapping multiple values?
 

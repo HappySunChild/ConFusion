@@ -1,8 +1,6 @@
-local package = script.Parent.Parent
+local Types = require("../Types")
 
-local Types = require(package.Types)
-
-local messages = require(package.Logging.messages)
+local messages = require("./messages")
 
 export type MessageId = string | keyof<typeof(messages)>
 

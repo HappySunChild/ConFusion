@@ -1,6 +1,4 @@
-local package = script.Parent.Parent.Parent
-
-local Types = require(package.Types)
+local Types = require "../../Types"
 
 export type SubObject<S, IK, IV, OK, OV> = {
 	scope: Types.Scope<S>?,

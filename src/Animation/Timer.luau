@@ -1,15 +1,13 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
+local peek = require "../State/peek"
 
-local peek = require(package.State.peek)
+local change = require "../Graph/change"
+local depend = require "../Graph/depend"
 
-local change = require(package.Graph.change)
-local depend = require(package.Graph.depend)
+local destructor = require "../Memory/destructor"
 
-local destructor = require(package.Memory.destructor)
-
-local ExternalTime = require(package.Animation.ExternalTime)
+local ExternalTime = require "./ExternalTime"
 
 type Self = Types.Timer & {
 	_paused: boolean,

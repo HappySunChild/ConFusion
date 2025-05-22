@@ -1,15 +1,13 @@
-local package = script.Parent.Parent
+local Types = require "../Types"
 
-local Types = require(package.Types)
+local destructor = require "../Memory/destructor"
 
-local destructor = require(package.Memory.destructor)
+local Disassembly = require "@self/Disassembly"
+local ForTypes = require "@self/ForTypes"
+local castToState = require "./castToState"
+local peek = require "./peek"
 
-local Disassembly = require(package.State.For.Disassembly)
-local ForTypes = require(package.State.For.ForTypes)
-local castToState = require(package.State.castToState)
-local peek = require(package.State.peek)
-
-local depend = require(package.Graph.depend)
+local depend = require "../Graph/depend"
 
 type Self<S, IK, IV, OK, OV> = Types.For<OK, OV> & {
 	_disassembly: ForTypes.Disassembly<S, IK, IV, OK, OV>,
