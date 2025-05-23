@@ -116,11 +116,11 @@ local function HotbarSlot(
 			isHovering:set(false)
 		end,
 
-		[Fusion.Removal] = {
+		[Fusion.OnRemoval] = {
 			slotScope,
 			props.Cleanup,
 		},
-		[Fusion.Startup] = function()
+		[Fusion.OnStartup] = function()
 			isStartup:set(false)
 		end,
 
