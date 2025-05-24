@@ -1,6 +1,7 @@
+--!strict
 local Oklab = require "../Colour/Oklab"
 
-local lerpFunctions = {
+local LERP_FUNCTIONS = {
 	number = function(a: number, b: number, alpha: number)
 		return alpha * (b - a) + a
 	end,
@@ -34,18 +35,18 @@ local function lerp<V>(from: V, target: V, alpha: number): V
 	local dataType = typeof(from)
 
 	if typeof(target) == dataType then
-		local lerpFunc = lerpFunctions[dataType]
+		local interpolator = LERP_FUNCTIONS[dataType]
 
-		if lerpFunc then
-			return lerpFunc(from, target, alpha)
+		if type(interpolator) == "function" then
+			return interpolator(from, target, alpha)
 		end
 	end
 
 	if alpha < 0.5 then
 		return from
-	else
-		return target
 	end
+
+	return target
 end
 
 return lerp

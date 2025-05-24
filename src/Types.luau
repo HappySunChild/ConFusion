@@ -27,6 +27,7 @@ export type ScopedObject = {
 }
 
 export type GraphObject = ScopedObject & {
+export type GraphObject = {
 	type: string?,
 	kind: string?,
 
@@ -41,6 +42,7 @@ export type GraphObject = ScopedObject & {
 
 	_evaluate: (GraphObject) -> boolean,
 }
+} & ScopedObject
 
 export type StateObject<V> = {
 	_internalValue: V,
@@ -218,6 +220,7 @@ export type Fusion = {
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 	read observe: <V>(
 		value: StateObject<V>,
+		value: any,
 		callback: () -> (),
 		immediate: boolean?
 	) -> Disconnect,

@@ -1,6 +1,7 @@
+--!strict
 local Oklab = require "../Colour/Oklab"
 
-local packMethods = {
+local PACK_METHODS = {
 	number = function(numbers: { number })
 		return numbers[1]
 	end,
@@ -33,11 +34,11 @@ local packMethods = {
 	end,
 }
 
-local function packType(typeString: string, numbers: { number })
-	local packMethod = packMethods[typeString]
+local function packType(dataType: string, packed: { number })
+	local packer = PACK_METHODS[dataType]
 
-	if packMethod then
-		return packMethod(numbers)
+	if type(packer) == "function" then
+		return packer(packed)
 	end
 
 	return nil

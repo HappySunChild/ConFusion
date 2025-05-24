@@ -59,13 +59,13 @@ function External.lastUpdateStep(): number
 	return lastUpdateStep
 end
 
-function External.doTaskImmediate(resume: (...unknown) -> (), ...: unknown)
+function External.doTaskImmediate(resume: (...unknown?) -> (), ...: unknown?)
 	if activeProvider then
 		activeProvider.doTaskImmediate(resume, ...)
 	end
 end
 
-function External.doTaskDeffered(resume: (...unknown) -> (), ...: unknown)
+function External.doTaskDeffered(resume: (...unknown?) -> (), ...: unknown?)
 	if activeProvider then
 		activeProvider.doTaskDeferred(resume, ...)
 	end

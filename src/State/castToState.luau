@@ -1,9 +1,8 @@
 --!strict
 
-local Types = require "../Types"
 local xkindof = require "../Utility/xkindof"
 
-local function castToState<T>(target: Types.UsedAs<T>): Types.StateObject<T>?
+local function castToState(target: unknown)
 	if xkindof(target) == "state" then
 		return target
 	end

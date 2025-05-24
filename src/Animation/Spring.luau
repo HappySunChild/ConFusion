@@ -13,8 +13,8 @@ local function springMover(speed: Types.UsedAs<number>, damping: Types.UsedAs<nu
 	local startP = {}
 	local startV = {}
 
-	local latestP = {}
-	local latestV = {}
+	local currentP = {}
+	local currentV = {}
 
 	local targetP = {}
 	local numSprings = 0
@@ -29,13 +29,13 @@ local function springMover(speed: Types.UsedAs<number>, damping: Types.UsedAs<nu
 
 		if discontinuous then
 			startP = table.clone(targetP)
-			latestP = table.clone(targetP)
+			currentP = table.clone(targetP)
 
 			startV = table.create(numSprings, 0)
-			latestV = table.create(numSprings, 0)
+			currentV = table.create(numSprings, 0)
 		else
-			startP = table.clone(latestP)
-			startV = table.clone(latestV)
+			startP = table.clone(currentP)
+			startV = table.clone(currentV)
 		end
 
 		activeType = typeof(target)
@@ -69,18 +69,18 @@ local function springMover(speed: Types.UsedAs<number>, damping: Types.UsedAs<nu
 
 					local newP = latestD + targetP
 
-					latestP[index] = newP
-					latestV[index] = newV
+					currentP[index] = newP
+					currentV[index] = newV
 				end
 
 				if not isMoving then
 					for index = 1, numSprings do
-						latestP[index] = targetP[index]
+						currentP[index] = targetP[index]
 					end
 				end
 
 				shouldSleep = not isMoving
-				newValue = packType(activeType, latestP)
+				newValue = packType(activeType, currentP)
 			end
 
 			return shouldSleep, newValue
