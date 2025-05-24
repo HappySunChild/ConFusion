@@ -294,6 +294,9 @@ export type Fusion = {
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
+	read EasingStyles: EasingStyles,
+	read TweenInfo: TweenInfoConstructor,
+
 	read New: (
 		scope: Scope,
 		classNameOrTemplate: Instance | string
