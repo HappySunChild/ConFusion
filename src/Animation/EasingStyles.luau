@@ -64,8 +64,8 @@ local EasingStyles: Types.EasingStyles = table.freeze {
 		In = function()
 			return 0
 		end,
-		InOut = function()
-			return 0.5
+		InOut = function(x: number)
+			return if x < 0.5 then 0 else 1
 		end,
 	},
 	Linear = table.freeze {
