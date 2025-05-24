@@ -240,6 +240,28 @@ export type EasingStyles = {
 		read Overshoot: (amplitude: number) -> EasingStyle,
 	},
 }
+
+export type TweenInfo = {
+	type: "TweenInfo",
+	kind: "tweeninfo",
+
+	Time: number,
+	Easing: (number) -> number,
+	DelayTime: number,
+	RepeatCount: number,
+	Reverses: boolean,
+}
+
+type TweenInfoConstructor = (
+	info: {
+		Duration: number?,
+		EasingStyle: ((number) -> number)?,
+		RepeatCount: number?,
+		Reverses: boolean?,
+		DelayTime: number?,
+	}
+) -> TweenInfo
+
 export type Fusion = {
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
