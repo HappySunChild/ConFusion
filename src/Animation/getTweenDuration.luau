@@ -1,4 +1,7 @@
-local function getTweenDuration(tweenInfo: TweenInfo)
+--!strict
+local Types = require "../Types"
+
+local function getTweenDuration(tweenInfo: Types.TweenInfo | TweenInfo)
 	if tweenInfo.RepeatCount == -1 then
 		return math.huge
 	end
