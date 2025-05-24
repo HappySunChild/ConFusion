@@ -10,14 +10,13 @@ local C5 = TAU / 4.5
 
 local sin = math.sin
 local cos = math.cos
-local pow = math.pow
 local sqrt = math.sqrt
 
 local function _expInOut(exponent: number)
-	local b = pow(2, exponent - 1)
+	local b = 2 ^ (exponent - 1)
 
 	return function(x: number)
-		return if x < 0.5 then b * pow(x, exponent) else 1 - pow(-2 * x + 2, exponent) / 2
+		return if x < 0.5 then b * x ^ exponent else 1 - (-2 * x + 2) ^ exponent / 2
 	end
 end
 
@@ -25,30 +24,33 @@ local new = table.freeze {
 	Exponent = function(exponent: number)
 		return table.freeze {
 			Out = function(x: number)
-				return 1 - pow(1 - x, exponent)
+				return 1 - (1 - x) ^ exponent
 			end,
 			In = function(x: number)
-				return pow(x, exponent)
+				return x ^ exponent
 			end,
 			InOut = _expInOut(exponent),
 		}
 	end,
 	Overshoot = function(amplitude: number)
-		local P0 = amplitude
-		local P1 = amplitude + 1
-		local P2 = amplitude * 1.525
+		local V0 = amplitude
+		local V1 = amplitude + 1
+		local V2 = amplitude * 1.525
 
 		return table.freeze {
 			Out = function(x: number)
-				return 1 + P1 * pow(x - 1, 3) + P0 * pow(x - 1, 2)
+				return 1 + V1 * (x - 1) ^ 3 + V0 * (x - 1) ^ 2
 			end,
 			In = function(x: number)
-				return P1 * pow(x, 3) - P0 * pow(x, 2)
+				return V1 * x ^ 3 - V0 * x ^ 2
 			end,
 			InOut = function(x: number)
 				return if x < 0.5
-					then (pow(2 * x, 2) * ((P2 + 1) * 2 * x - P2)) / 2
-					else (pow(2 * x - 2, 2) * ((P2 + 1) * (x * 2 - 2) + P2) + 2) / 2
+					then ((2 * x) ^ 2) * ((V2 + 1) * 2 * x - V2) / 2
+					else ((2 * x - 2) ^ 2 * ((V2 + 1) * (x * 2 - 2) + V2) + 2) / 2
+			end,
+		}
+	end,
 			end,
 		}
 	end,
@@ -79,31 +81,31 @@ local EasingStyles: Types.EasingStyles = table.freeze {
 	},
 	Exponential = table.freeze {
 		Out = function(x: number)
-			return if x == 1 then 1 else 1 - pow(2, -10 * x)
+			return if x == 1 then 1 else 1 - 2 ^ (-10 * x)
 		end,
 		In = function(x: number)
-			return if x == 0 then 0 else pow(2, 10 * x - 10)
+			return if x == 0 then 0 else 2 ^ (10 * x - 10)
 		end,
 		InOut = function(x: number)
 			return if x == 0
 				then 0
 				elseif x == 1 then 1
 				else if x < 0.5
-					then pow(2, 20 * x - 10) / 2
-					else 2 - pow(2, -20 * x + 10) / 2
+					then 2 ^ (20 * x - 10) / 2
+					else 2 - 2 ^ (-20 * x + 10) / 2
 		end,
 	},
 	Circular = table.freeze {
 		Out = function(x: number)
-			return sqrt(1 - pow(x - 1, 2))
+			return sqrt(1 - (x - 1) ^ 2)
 		end,
 		In = function(x: number)
-			return 1 - sqrt(1 - pow(x, 2))
+			return 1 - sqrt(1 - x ^ 2)
 		end,
 		InOut = function(x: number)
 			return if x < 0.5
-				then 1 - sqrt(1 - pow(2 * x, 2)) / 2
-				else (sqrt(1 - pow(-2 * x + 2, 2)) + 1) / 2
+				then 1 - sqrt(1 - (2 * x) ^ 2) / 2
+				else (sqrt(1 - (-2 * x + 2) ^ 2) + 1) / 2
 		end,
 	},
 	Sine = table.freeze {
@@ -117,6 +119,7 @@ local EasingStyles: Types.EasingStyles = table.freeze {
 			return -(cos(x * PI) - 1) / 2
 		end,
 	},
+
 	Back = new.Overshoot(1),
 	Elastic = table.freeze {
 		Out = function(x: number)
