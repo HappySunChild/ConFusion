@@ -51,6 +51,15 @@ export type StateObject<V> = {
 	type: string,
 } & GraphObject
 
+-- legacy observer type
+-- export type Observer = {
+-- 	type: "Observer",
+-- 	kind: "graph",
+
+-- 	onBind: () -> () -> (),
+-- 	onChange: () -> () -> (),
+-- } & GraphObject
+
 -- A state object whose value can be set by the user at any time.
 export type Value<V> = {
 	type: "Value",
@@ -220,10 +229,12 @@ export type Fusion = {
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 	read observe: <V>(
 		value: StateObject<V>,
+	read observe: (
 		value: any,
 		callback: () -> (),
 		immediate: boolean?
 	) -> Disconnect,
+	) -> Disconnect?,
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 
 	read Eventual: EventualConstructor,

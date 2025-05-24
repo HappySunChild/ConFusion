@@ -11,35 +11,44 @@ local OBSERVER_META = table.freeze {
 	},
 }
 
-local function observe(target: Types.GraphObject, callback: () -> (), immediate: boolean?)
-	if not castToGraph(target) then
-		return
+-- after using this for a while, i'm starting to hate it.
+-- maybe I should just switch it back to the base Fusion Observer system
+-- not only is this messy, but it doesn't really give you much control over when they're cleaned up, outside the disconnect function.
+
+-- I was thinking of adding a scope parameter, but it's not that hard to just table.insert the returned disconnect function into an existing scope.
+-- these observers are already tied to their subjects but i feel like you should still be able to easily clean them up,
+-- so i may go through with the scope paramater.
+-- it'd be nice if observers could also be pooled aswell, instead of just creating a new observer each time.
+-- i don't know how'd that work though
+
+local function observe(
+	subject: Types.GraphObject,
+	callback: () -> (),
+	immediate: boolean?
+): (() -> ())?
+	if not castToGraph(subject) then
+		return nil
 	end
 
-	evaluate(target)
+	evaluate(subject)
 
-	local observers = target._observers
-
-	if not observers then
-		observers = {}
-
-		target._observers = observers
+	if type(subject._observers) ~= "table" then
+		subject._observers = {}
 	end
 
 	if immediate then
 		External.doTaskImmediate(callback)
 	end
 
-	local uniqueIdentifier = {}
-	local newObserver = table.freeze(setmetatable({
+	local uniqueIdentifier = table.freeze {}
+
+	subject._observers[uniqueIdentifier] = table.freeze(setmetatable({
 		callback = callback,
 		createdAt = os.clock(),
 	}, OBSERVER_META))
 
-	observers[uniqueIdentifier] = newObserver
-
 	return function()
-		observers[uniqueIdentifier] = nil
+		subject._observers[uniqueIdentifier] = nil
 	end
 end
 
