@@ -2,3 +2,4 @@ std = "reqfix"
 
 [lints]
 shadowing = "allow"
+multiple_statements = "allow"
