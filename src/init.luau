@@ -72,6 +72,7 @@ local Fusion = table.freeze {
 	OnRemoval = require "@self/Instances/Keys/OnRemoval",
 	Ref = require "@self/Instances/Keys/Ref",
 	Passthrough = require "@self/Instances/Keys/Passthrough",
+	StyleSheet = require "@self/Instances/Keys/StyleSheet",
 	Attribute = require "@self/Instances/Keys/Attribute",
 	AttributeChange = require "@self/Instances/Keys/AttributeChange",
 	AttributeOut = require "@self/Instances/Keys/AttributeOut",

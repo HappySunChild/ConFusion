@@ -276,6 +276,7 @@ export type Fusion = {
 	read OnRemoval: SpecialKey<"OnRemoval">,
 	read Ref: SpecialKey<"Ref">,
 	read Passthrough: SpecialKey<"Passthrough">,
+	read StyleSheet: SpecialKey<"StyleSheet">,
 	read Attribute: (attribute: string) -> SpecialKey<"Attribute">,
 	read AttributeChange: (attribute: string) -> SpecialKey<"AttributeChange">,
 	read AttributeOut: (attribute: string) -> SpecialKey<"AttributeOut">,
