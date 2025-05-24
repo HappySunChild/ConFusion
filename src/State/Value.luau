@@ -45,6 +45,7 @@ function class.set<V>(self: Self<V>, newValue: any)
 	return newValue
 end
 
+-- decouple this from Roblox, maybe move it into the Instance folder as a `bindToProperty` function
 function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
 	if typeof(instance) ~= "Instance" then
 		-- maybe should error here

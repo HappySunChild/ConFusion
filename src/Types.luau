@@ -26,7 +26,6 @@ export type ScopedObject = {
 	scope: Scope<unknown>,
 }
 
-export type GraphObject = ScopedObject & {
 export type GraphObject = {
 	type: string?,
 	kind: string?,
@@ -41,7 +40,6 @@ export type GraphObject = {
 	_observers: { [{}]: Observer }?,
 
 	_evaluate: (GraphObject) -> boolean,
-}
 } & ScopedObject
 
 export type StateObject<V> = {
@@ -227,13 +225,10 @@ export type Fusion = {
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
 	read peek: <V>(value: UsedAs<V> | V) -> V,
-	read observe: <V>(
-		value: StateObject<V>,
 	read observe: (
 		value: any,
 		callback: () -> (),
 		immediate: boolean?
-	) -> Disconnect,
 	) -> Disconnect?,
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 
