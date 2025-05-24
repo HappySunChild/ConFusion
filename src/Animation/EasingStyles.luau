@@ -1,13 +1,12 @@
 --!strict
+--!native
 local Types = require "../Types"
 
 local PI = math.pi
 local TAU = PI * 2
 local HALF_PI = PI / 2
 
-local C4 = TAU / 3
-local C5 = TAU / 4.5
-
+local abs = math.abs
 local sin = math.sin
 local cos = math.cos
 local sqrt = math.sqrt
@@ -51,6 +50,33 @@ local new = table.freeze {
 			end,
 		}
 	end,
+	Elastic = function(period: number) -- https://devforum.roblox.com/t/does-anyone-know-the-formulas-for-elastic-easing/2819110/2
+		local V0 = TAU / period
+
+		return table.freeze {
+			Out = function(x: number)
+				if x <= 0 then return 0 end
+				if x >= 1 then return 1 end
+
+				local shift = (3 - x) * period / 12
+				return 2 ^ (-10 * x) * sin((-x - shift) * V0) + 1
+			end,
+			In = function(x: number)
+				if x <= 0 then return 0 end
+				if x >= 1 then return 1 end
+
+				local shift = (2 + x) * period / 12
+				return -2 ^ (10 * (x - 1)) * sin((x - 1 - shift) * V0)
+			end,
+			InOut = function(x: number)
+				if x <= 0 then return 0 end
+				if x >= 1 then return 1 end
+
+				local shift = (1.5 - abs(x - 0.5)) * period / 6
+				return if x < 0.5
+					then -2 ^ (10 * (2 * x - 1)) * sin((2 * x - 1 - shift) * V0) * 0.5
+					else 2 ^ (-10 * (2 * x - 1)) * sin((2 * x - 1 + shift) * V0) * -0.5
+						+ 1
 			end,
 		}
 	end,
@@ -121,28 +147,7 @@ local EasingStyles: Types.EasingStyles = table.freeze {
 	},
 
 	Back = new.Overshoot(1),
-	Elastic = table.freeze {
-		Out = function(x: number)
-			return if x == 0
-				then 0
-				elseif x == 1 then 1
-				else pow(2, -10 * x) * sin((x * 10 - 10.75) * C4) + 1
-		end,
-		In = function(x: number)
-			return if x == 0
-				then 0
-				elseif x == 1 then 1
-				else -pow(2, 10 * x - 10) * sin((x * 10 - 10.75) * C4)
-		end,
-		InOut = function(x: number)
-			return if x == 0
-				then 0
-				elseif x == 1 then 1
-				else if x < 0.5
-					then -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * C5)) / 2
-					else (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * C5)) / 2 + 1
-		end,
-	},
+	Elastic = new.Elastic(0.3),
 
 	Quad = new.Exponent(2),
 	Cubic = new.Exponent(3),

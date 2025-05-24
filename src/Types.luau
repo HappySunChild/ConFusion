@@ -238,6 +238,7 @@ export type EasingStyles = {
 	read new: {
 		read Exponent: (exponent: number) -> EasingStyle,
 		read Overshoot: (amplitude: number) -> EasingStyle,
+		read Elastic: (period: number) -> EasingStyle,
 	},
 }
 
