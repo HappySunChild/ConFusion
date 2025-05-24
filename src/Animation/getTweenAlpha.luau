@@ -1,7 +1,7 @@
--- TODO: make this not reliant on tween service, eventually
-local TweenService = game:GetService "TweenService"
+--!strict
+local Types = require "../Types"
 
-local function getTweenAlpha(info: TweenInfo, currentTime: number)
+local function getTweenAlpha(info: Types.TweenInfo | TweenInfo, currentTime: number)
 	local cycleCount = info.RepeatCount + 1
 	local cycleDuration = info.DelayTime + info.Time
 
@@ -29,10 +29,17 @@ local function getTweenAlpha(info: TweenInfo, currentTime: number)
 		tweenProgress = 2 - tweenProgress
 	end
 
-	local alpha =
-		TweenService:GetValue(tweenProgress, info.EasingStyle, info.EasingDirection)
+	-- something about this feels wrong...
+	-- almost unstable...
+	-- probably nothing!
+	if typeof(info) == "TweenInfo" then
+		-- she's a hack, but it's sort of necessary
+		-- getting TweenService at the top of the file would crash if you tried to run this in a different runtime
+		return game:GetService("TweenService")
+			:GetValue(tweenProgress, info.EasingStyle, info.EasingDirection)
+	end
 
-	return alpha
+	return (info :: Types.TweenInfo).Easing(tweenProgress)
 end
 
 return getTweenAlpha
