@@ -216,6 +216,30 @@ export type ExternalProvider = {
 	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
 }
 
+type EasingStyle = {
+	read Out: (number) -> number,
+	read In: (number) -> number,
+	read InOut: (number) -> number,
+}
+
+export type EasingStyles = {
+	read Constant: EasingStyle,
+	read Linear: EasingStyle,
+	read Exponential: EasingStyle,
+	read Circular: EasingStyle,
+	read Back: EasingStyle,
+	read Elastic: EasingStyle,
+	read Sine: EasingStyle,
+	read Quad: EasingStyle,
+	read Cubic: EasingStyle,
+	read Quart: EasingStyle,
+	read Quint: EasingStyle,
+
+	read new: {
+		read Exponent: (exponent: number) -> EasingStyle,
+		read Overshoot: (amplitude: number) -> EasingStyle,
+	},
+}
 export type Fusion = {
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
