@@ -9,7 +9,8 @@ local Player = require(script.Parent.Player)
 local Team = require(script.Parent.Team)
 
 local LIST_BASE_WIDTH = 240
-local LIST_TWEENINFO = TweenInfo.new(0.3, Enum.EasingStyle.Exponential)
+local LIST_TWEENINFO =
+	Fusion.TweenInfo { Duration = 0.3, EasingStyle = Fusion.EasingStyles.Exponential.Out }
 
 local function List(
 	scope: Fusion.Scope,

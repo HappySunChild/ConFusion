@@ -4,7 +4,8 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, OnStartup, OnEvent = Fusion.Children, Fusion.OnStartup, Fusion.OnEvent
 
-local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
+local HOVER_TWEENINFO =
+	Fusion.TweenInfo { Duration = 0.2, EasingStyle = Fusion.EasingStyles.Cubic.Out }
 
 local ICONS = {
 	Developer = {

@@ -6,6 +6,11 @@ local Children = Fusion.Children
 
 local getDisplayName = require(script.Parent.getDisplayName)
 
+local CONTENT_TWEENINFO = Fusion.TweenInfo {
+	Duration = 0.3,
+	EasingStyle = Fusion.EasingStyles.Exponential.Out,
+}
+
 local function Menu(
 	scope: Fusion.Scope,
 	props: {
@@ -37,11 +42,7 @@ local function Menu(
 			Content = scope:New "Frame" {
 				Position = scope:Tween(
 					offset,
-					TweenInfo.new(
-						0.3,
-						Enum.EasingStyle.Exponential,
-						Enum.EasingDirection.Out
-					)
+					CONTENT_TWEENINFO
 				),
 				Size = UDim2.new(1, 0, 0, 65),
 

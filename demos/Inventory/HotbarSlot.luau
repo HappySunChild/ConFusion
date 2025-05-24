@@ -9,7 +9,12 @@ local Foreground = Color3.fromRGB(245, 247, 234)
 local ActiveForeground = Color3.fromRGB(225, 86, 63)
 local Background = Color3.fromRGB(45, 48, 50)
 
-local TooltipInfo = TweenInfo.new(0.2, Enum.EasingStyle.Exponential)
+local TooltipInfo = Fusion.TweenInfo {
+	Duration = 0.6,
+	EasingStyle = function(x: number)
+		return math.random() * x
+	end,
+}
 
 local function HotbarSlot(
 	scope: Fusion.Scope,

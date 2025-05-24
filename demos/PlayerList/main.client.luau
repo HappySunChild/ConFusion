@@ -8,11 +8,11 @@ local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local peek = Fusion.peek
 local PlayerList = require(script.Parent.List)
 
-local scoped = Fusion:scoped { PlayerList = PlayerList }
+local scope = Fusion:scoped { PlayerList = PlayerList }
 
-local isVisible = scoped:Value(true)
-local playerList = scoped:Value(Players:GetPlayers())
-local teamList = scoped:Value(Teams:GetChildren())
+local isVisible = scope:Value(true)
+local playerList = scope:Value(Players:GetPlayers())
+local teamList = scope:Value(Teams:GetChildren())
 
 local function updateTeams()
 	teamList:set(Teams:GetChildren())
@@ -36,12 +36,12 @@ ContextActionService:BindAction("TogglePlayerList", function(_, state)
 	end
 end, false, Enum.KeyCode.Tab)
 
-scoped:New "ScreenGui" {
+scope:New "ScreenGui" {
 	Name = "PlayerList",
 	Parent = Players.LocalPlayer.PlayerGui,
 
 	[Fusion.Children] = {
-		scoped:PlayerList {
+		scope:PlayerList {
 			IsVisible = isVisible,
 			Players = playerList,
 			Teams = teamList,
