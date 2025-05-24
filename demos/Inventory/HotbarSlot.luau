@@ -11,9 +11,7 @@ local Background = Color3.fromRGB(45, 48, 50)
 
 local TooltipInfo = Fusion.TweenInfo {
 	Duration = 0.6,
-	EasingStyle = function(x: number)
-		return math.random() * x
-	end,
+	EasingStyle = Fusion.EasingStyles.Elastic.Out,
 }
 
 local function HotbarSlot(
@@ -51,9 +49,7 @@ local function HotbarSlot(
 	end)
 
 	local toolTipWidth = slotScope:Computed(function(use)
-		if not use(isHovering) then
-			return 0
-		end
+		if not use(isHovering) then return 0 end
 
 		local bounds = TextService:GetTextSize(
 			use(toolTip),
@@ -66,13 +62,9 @@ local function HotbarSlot(
 	end)
 
 	local slotSize = slotScope:Computed(function(use)
-		if use(isStartup) then
-			return 0.5
-		end
+		if use(isStartup) then return 0.5 end
 
-		if use(isHovering) or use(isHeld) then
-			return 1.1
-		end
+		if use(isHovering) or use(isHeld) then return 1.1 end
 
 		return 1
 	end)
@@ -95,9 +87,7 @@ local function HotbarSlot(
 		BackgroundTransparency = 0.4,
 
 		Text = slotScope:Computed(function(use)
-			if use(toolIcon) ~= "" then
-				return ""
-			end
+			if use(toolIcon) ~= "" then return "" end
 
 			local text = use(toolName)
 
@@ -109,9 +99,7 @@ local function HotbarSlot(
 
 		[OnEvent "InputBegan"] = function(input: InputObject)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				if callback then
-					callback(index)
-				end
+				if callback then callback(index) end
 			end
 		end,
 		[OnEvent "MouseEnter"] = function()
