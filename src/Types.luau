@@ -66,12 +66,6 @@ export type Value<V> = {
 
 	set: (Value<V>, newValue: V) -> V,
 	update: (Value<V>, predicate: (V) -> V) -> V,
-
-	bindToInstanceProperty: (
-		Value<V>,
-		instance: Instance,
-		property: string
-	) -> Disconnect,
 } & StateObject<V>
 
 type ValueConstructor = <V>(scope: Scope<unknown>, initialValue: V?) -> Value<V>
