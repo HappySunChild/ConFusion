@@ -29,6 +29,8 @@ local function Out(property: string): Types.SpecialKey<"Out">
 					External.logError("cannotConnectChange", nil, property)
 				end
 
+				value:set(applyTo[property])
+
 				table.insert(
 					scope,
 					event:Connect(function()

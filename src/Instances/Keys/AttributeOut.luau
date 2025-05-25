@@ -24,6 +24,8 @@ local function AttributeOut(attribute: string): Types.SpecialKey<"AttributeOut">
 
 				local event = applyTo:GetAttributeChangedSignal(attribute)
 
+				value:set(applyTo:GetAttribute(attribute))
+
 				table.insert(
 					scope,
 					event:Connect(function()
