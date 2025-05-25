@@ -23,7 +23,7 @@ local function Out(property: string): Types.SpecialKey<"Out">
 				end
 
 				local ok, event =
-					pcall(applyTo.GetAttributeChangedSignal, applyTo, property)
+					pcall(applyTo.GetPropertyChangedSignal, applyTo, property)
 
 				if not ok then
 					External.logError("cannotConnectChange", nil, property)
