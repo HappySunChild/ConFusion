@@ -1,3 +1,4 @@
+local External = require "../../External"
 local Types = require "../../Types"
 
 local xtypeof = require "../../Utility/xtypeof"
@@ -18,7 +19,7 @@ local function AttributeOut(attribute: string): Types.SpecialKey<"AttributeOut">
 				value: Types.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
-					return error(`Invalid Out type.`, 2)
+					External.logError("expectedType", nil, "Value", typeof(value))
 				end
 
 				local event = applyTo:GetAttributeChangedSignal(attribute)
@@ -29,8 +30,6 @@ local function AttributeOut(attribute: string): Types.SpecialKey<"AttributeOut">
 						value:set(applyTo:GetAttribute(attribute))
 					end)
 				)
-
-				return
 			end,
 		}
 

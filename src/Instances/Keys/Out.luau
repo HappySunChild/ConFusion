@@ -1,3 +1,4 @@
+local External = require "../../External"
 local Types = require "../../Types"
 
 local xtypeof = require "../../Utility/xtypeof"
@@ -15,13 +16,18 @@ local function Out(property: string): Types.SpecialKey<"Out">
 			apply = function(
 				scope: Types.Scope,
 				applyTo: Instance,
-				value: Types.Value<any>
+				value: Types.Value<unknown>
 			)
 				if xtypeof(value) ~= "Value" then
-					return error(`Invalid Out type.`, 2)
+					External.logError("expectedType", nil, "Value", typeof(value))
 				end
 
-				local event = applyTo:GetPropertyChangedSignal(property)
+				local ok, event =
+					pcall(applyTo.GetAttributeChangedSignal, applyTo, property)
+
+				if not ok then
+					External.logError("cannotConnectChange", nil, property)
+				end
 
 				table.insert(
 					scope,
@@ -29,8 +35,6 @@ local function Out(property: string): Types.SpecialKey<"Out">
 						value:set(applyTo[property])
 					end)
 				)
-
-				return
 			end,
 		}
 
