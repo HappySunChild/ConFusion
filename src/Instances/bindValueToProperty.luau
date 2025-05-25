@@ -5,6 +5,7 @@ local Types = require "../Types"
 local xtypeof = require "../Utility/xtypeof"
 
 -- mainly functions as a utility function, so you don't have to hydrate an instance with an `Out` property
+-- again, i may add a scope parameter instead of a disconnect function, or maybe perhaps both
 local function bindValueToProperty(
 	value: Types.Value<unknown>,
 	instance: Instance,
