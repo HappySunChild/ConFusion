@@ -1,12 +1,12 @@
 --!strict
-
+local External = require "../External"
 local Types = require "../Types"
 
 local active = {}
 
 local function doCleanup(action: Types.CleanupTask)
 	if active[action] then
-		error(`doCleanup has already been called on '{action}'`)
+		External.logError "destroyedTwice"
 	end
 
 	active[action] = true
