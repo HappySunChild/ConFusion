@@ -265,6 +265,12 @@ export type Fusion = {
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
+	read bindValueToProperty: (
+		value: Value<unknown>,
+		instance: Instance,
+		property: string
+	) -> Disconnect,
+
 	-- Keys
 	read Children: SpecialKey<"Children">,
 	read OnStartup: SpecialKey<"OnStartup">,
