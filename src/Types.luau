@@ -15,6 +15,18 @@ export type Timeliness = "lazy" | "eager"
 
 export type Properties = { [SpecialKey<string> | string]: any }
 
+export type StyleProperties = {
+	Rules: { [number]: StyleRule }?,
+	[string]: any,
+}
+export type StyleSheetProperties = {
+	Parent: Instance?,
+	Name: string?,
+	Derives: { Instance }?,
+	Tokens: { [string]: any }?,
+	Rules: { [number]: StyleRule }?,
+}
+
 export type Scope<T = unknown> = T & { CleanupTask? }
 
 export type UsedAs<V> = StateObject<V> | V
@@ -217,37 +229,37 @@ export type ExternalProvider = {
 }
 
 export type Fusion = {
+	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
-	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
-
+	-- State
+	read Eventual: EventualConstructor,
+	read Computed: ComputedConstructor,
+	read Value: ValueConstructor,
+	read Table: TableConstructor,
+	read ForPairs: ForPairsConstructor,
+	read ForKeys: ForKeysConstructor,
+	read ForValues: ForValuesConstructor,
 	read peek: <V>(value: UsedAs<V> | V) -> V,
+
+	-- Graph
 	read observe: (
 		value: any,
 		callback: () -> (),
 		immediate: boolean?
 	) -> Disconnect?,
-	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 
-	read Eventual: EventualConstructor,
-	read Computed: ComputedConstructor,
-	read Value: ValueConstructor,
-	read Table: TableConstructor,
-
-	read ForPairs: ForPairsConstructor,
-	read ForKeys: ForKeysConstructor,
-	read ForValues: ForValuesConstructor,
-
+	-- Animation
 	read Timer: (scope: Scope) -> Timer,
-
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
+	-- Instances
 	read New: (
 		scope: Scope,
 		classNameOrTemplate: Instance | string
@@ -270,20 +282,31 @@ export type Fusion = {
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
-	-- Keys
+	-- Instance Keys
 	read Children: SpecialKey<"Children">,
 	read OnStartup: SpecialKey<"OnStartup">,
 	read OnRemoval: SpecialKey<"OnRemoval">,
 	read Ref: SpecialKey<"Ref">,
 	read Passthrough: SpecialKey<"Passthrough">,
 	read StyleLink: SpecialKey<"StyleLink">,
+	read Default: SpecialKey<"Default">,
 	read Attribute: (attribute: string) -> SpecialKey<"Attribute">,
-	read AttributeChange: (attribute: string) -> SpecialKey<"AttributeChange">,
 	read AttributeOut: (attribute: string) -> SpecialKey<"AttributeOut">,
 	read Tag: (tag: string) -> SpecialKey<"Tag">,
 	read Out: (property: string) -> SpecialKey<"Out">,
-	read OnChange: (property: string) -> SpecialKey<"OnChange">,
 	read OnEvent: (event: string) -> SpecialKey<"OnEvent">,
+	read OnChange: (property: string) -> SpecialKey<"OnChange">,
+	read OnAttributeChange: (attribute: string) -> SpecialKey<"OnAttributeChange">,
+
+	-- Styling
+	read StyleRule: (
+		scope: Scope,
+		selector: string
+	) -> (props: StyleProperties) -> StyleRule,
+	read StyleSheet: (scope: Scope, props: StyleSheetProperties) -> StyleSheet,
+
+	-- External
+	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 }
 
 return nil

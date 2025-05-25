@@ -47,8 +47,7 @@ local Fusion = table.freeze {
 	ForValues = require "@self/State/ForValues",
 	peek = require "@self/State/peek",
 
-	map = require "@self/Utility/map",
-
+	-- Graph
 	observe = require "@self/Graph/observe",
 
 	-- Animation
@@ -58,7 +57,7 @@ local Fusion = table.freeze {
 	Spring = require "@self/Animation/Spring",
 	Delay = require "@self/Animation/Delay",
 
-	-- Instance
+	-- Instances
 	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
 	WithChild = require "@self/Instances/WithChild",
@@ -72,7 +71,8 @@ local Fusion = table.freeze {
 	OnRemoval = require "@self/Instances/Keys/OnRemoval",
 	Ref = require "@self/Instances/Keys/Ref",
 	Passthrough = require "@self/Instances/Keys/Passthrough",
-	StyleSheet = require "@self/Instances/Keys/StyleSheet",
+	StyleLink = require "@self/Instances/Keys/StyleLink",
+	Default = require "@self/Instances/Keys/Default",
 	Attribute = require "@self/Instances/Keys/Attribute",
 	AttributeChange = require "@self/Instances/Keys/AttributeChange",
 	AttributeOut = require "@self/Instances/Keys/AttributeOut",
@@ -81,8 +81,15 @@ local Fusion = table.freeze {
 	OnEvent = require "@self/Instances/Keys/OnEvent",
 	OnChange = require "@self/Instances/Keys/OnChange",
 
+	-- Styling
+	StyleRule = require "@self/Instances/Styling/StyleRule",
+	StyleSheet = require "@self/Instances/Styling/StyleSheet",
+
 	-- External
 	setProvider = External.setProvider,
+
+	-- Utility
+	map = require "@self/Utility/map",
 }
 
 local RobloxProvider = require "@self/RobloxProvider"
