@@ -4,8 +4,9 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, OnStartup, OnEvent = Fusion.Children, Fusion.OnStartup, Fusion.OnEvent
 
-local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
+local bindValueToProperty = Fusion.bindValueToProperty
 
+local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
 local ICONS = {
 	Developer = {
 		Id = "rbxasset://LuaPackages/Packages/_Index/FoundationImages/FoundationImages/SpriteSheets/img_set_1x_8.png",
@@ -56,7 +57,7 @@ local function Player(
 	local hovering = scope:Value(false)
 
 	local currentTeam = scope:Value(player.Team)
-	currentTeam:bindToInstanceProperty(player, "Team")
+	bindValueToProperty(currentTeam, player, "Team")
 
 	local ref = scope:Value()
 

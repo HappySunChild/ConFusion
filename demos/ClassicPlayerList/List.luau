@@ -2,7 +2,9 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, Out = Fusion.Children, Fusion.Out
+
 local map = Fusion.map
+local bindValueToProperty = Fusion.bindValueToProperty
 
 -- Components
 local Player = require(script.Parent.Player)
@@ -38,8 +40,8 @@ local function List(
 			local name = scope:Value(team.Name)
 			local color = scope:Value(team.TeamColor)
 
-			name:bindToInstanceProperty(team, "Name")
-			color:bindToInstanceProperty(team, "TeamColor")
+			bindValueToProperty(name, team, "Name")
+			bindValueToProperty(color, team, "TeamColor")
 
 			table.insert(
 				labels,

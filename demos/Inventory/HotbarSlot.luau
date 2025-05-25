@@ -5,6 +5,8 @@ local TextService = game:GetService "TextService"
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local OnEvent, Children = Fusion.OnEvent, Fusion.Children
 
+local bindValueToProperty = Fusion.bindValueToProperty
+
 local Foreground = Color3.fromRGB(245, 247, 234)
 local ActiveForeground = Color3.fromRGB(225, 86, 63)
 local Background = Color3.fromRGB(45, 48, 50)
@@ -33,10 +35,10 @@ local function HotbarSlot(
 	local toolTip = slotScope:Value(tool.ToolTip)
 	local toolIcon = slotScope:Value(tool.TextureId)
 
-	toolName:bindToInstanceProperty(tool, "Name")
-	toolParent:bindToInstanceProperty(tool, "Parent")
-	toolTip:bindToInstanceProperty(tool, "ToolTip")
-	toolIcon:bindToInstanceProperty(tool, "TextureId")
+	bindValueToProperty(toolName, tool, "Name")
+	bindValueToProperty(toolParent, tool, "Parent")
+	bindValueToProperty(toolTip, tool, "ToolTip")
+	bindValueToProperty(toolIcon, tool, "TextureId")
 
 	local isStartup = slotScope:Value(true)
 	local isHovering = slotScope:Value(false)

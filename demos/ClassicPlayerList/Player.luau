@@ -3,7 +3,9 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children = Fusion.Children
+
 local map = Fusion.map
+local bindValueToProperty = Fusion.bindValueToProperty
 
 local ICONS = {
 	Developer = "rbxasset://textures/ui/icon_placeowner.png",
@@ -45,7 +47,7 @@ local function Player(
 	local icon = determineIcon(player)
 
 	local currentTeam = inner:Value(player.Team)
-	currentTeam:bindToInstanceProperty(player, "Team")
+	bindValueToProperty(currentTeam, player, "Team")
 
 	return inner:New "TextButton" {
 		Name = map(props.Player, function(v: Player)
