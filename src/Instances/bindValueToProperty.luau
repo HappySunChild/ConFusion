@@ -5,7 +5,14 @@ local Types = require "../Types"
 local xtypeof = require "../Utility/xtypeof"
 
 -- mainly functions as a utility function, so you don't have to hydrate an instance with an `Out` property
--- again, i may add a scope parameter instead of a disconnect function, or maybe perhaps both
+-- again, im thinking of adding a `scope` parameter instead of returning a disconnect function.
+
+-- it feels weird not also having a `bindValueToAttribute`, but i don't really want to make that aswell.. ughhh......
+-- so much reduplication. have i truly been damned to integration hell?? lord have mercy on my miserable existance
+-- maybe i should just give it up, remove this function and force the user to hydrate an instance so that they can bind some
+-- values to properties/attributes. alternatively i could try to figure out a way to make this not as awful, maybe using some sort of 
+-- shared function between `bindValueToProperty` and the `Out` key, so that i don't have to worry about inconsistent behavior between these 2 methods, which
+-- should be identical to eachother.
 local function bindValueToProperty(
 	value: Types.Value<unknown>,
 	instance: Instance,
