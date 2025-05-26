@@ -271,6 +271,12 @@ export type Fusion = {
 		instance: Instance,
 		property: string
 	) -> (),
+	read bindValueToAttribute: (
+		scope: Scope,
+		value: Value<unknown>,
+		instance: Instance,
+		attribute: string
+	) -> (),
 
 	-- Keys
 	read Children: SpecialKey<"Children">,
