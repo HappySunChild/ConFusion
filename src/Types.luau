@@ -228,14 +228,6 @@ export type Fusion = {
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
-	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
-
-	read peek: <V>(value: UsedAs<V> | V) -> V,
-	read observe: (
-		value: any,
-		callback: () -> (),
-		immediate: boolean?
-	) -> Disconnect?,
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 
 	read Eventual: EventualConstructor,
@@ -248,11 +240,7 @@ export type Fusion = {
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 
 	-- Graph
-	read observe: (
-		value: any,
-		callback: () -> (),
-		immediate: boolean?
-	) -> Disconnect?,
+	read Observer: ObserverConstructor,
 
 	-- Animation
 	read Timer: (scope: Scope) -> Timer,
