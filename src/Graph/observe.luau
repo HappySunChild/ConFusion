@@ -48,6 +48,10 @@ local function observe(
 	}, OBSERVER_META))
 
 	return function()
+		if not subject._observers then
+			return
+		end
+
 		subject._observers[uniqueIdentifier] = nil
 	end
 end
