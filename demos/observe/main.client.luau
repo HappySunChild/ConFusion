@@ -1,11 +1,8 @@
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local Observer = require(ReplicatedStorage.Libraries.ConFusion.Graph.Observer)
 
-local observe = Fusion.observe
-
-local scope = Fusion:scoped { Observer = Observer }
+local scope = Fusion:scoped {}
 local timer = scope:Timer()
 local color = scope:Computed(function(use: Fusion.Use)
 	local now = use(timer)

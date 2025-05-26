@@ -58,6 +58,8 @@ export type Observer = {
 	onChange: (Observer, callback: () -> ()) -> () -> (),
 } & GraphObject
 
+type ObserverConstructor = (scope: Scope<unknown>, subject: ObjectValue) -> Observer
+
 -- A state object whose value can be set by the user at any time.
 export type Value<T> = {
 	type: "Value",
@@ -216,12 +218,10 @@ export type Fusion = {
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
 	read peek: <V>(value: UsedAs<V> | V) -> V,
-	read observe: (
-		value: any,
-		callback: () -> (),
-		immediate: boolean?
-	) -> Disconnect?,
+
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+
+	read Observer: ObserverConstructor,
 
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
