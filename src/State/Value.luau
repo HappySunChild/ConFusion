@@ -19,14 +19,14 @@ local class = {
 local METATABLE = table.freeze { __index = class }
 
 local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
-	local newValue = setmetatable({
+	local newValue: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
 		_internalValue = initialValue,
 
 		_users = {},
-	}, METATABLE)
+	}, METATABLE) :: any
 
 	table.insert(scope, destructor(newValue))
 
@@ -46,10 +46,14 @@ function class.set<V>(self: Self<V>, newValue: any)
 end
 
 -- decouple this from Roblox, maybe move it into the Instance folder as a `bindToProperty` function
-function class.bindToInstanceProperty<V>(self: Self<V>, instance: Instance, property: string)
+function class.bindToInstanceProperty<V>(
+	self: Self<V>,
+	instance: Instance,
+	property: string
+): (() -> ())?
 	if typeof(instance) ~= "Instance" then
 		-- maybe should error here
-		return
+		return nil
 	end
 
 	local ok, event: RBXScriptSignal =

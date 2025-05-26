@@ -4,7 +4,10 @@ local Types = require "../Types"
 local applyProperties = require "./applyProperties"
 local defaultProperties = require "./defaultProperties"
 
-local function New<T>(scope: Types.Scope<T>, classNameOrTemplate: string | Instance)
+local function New<T>(
+	scope: Types.Scope<T>,
+	classNameOrTemplate: string | Instance
+): (props: Types.Properties) -> Instance
 	local instance
 
 	if typeof(classNameOrTemplate) == "Instance" then
@@ -16,16 +19,12 @@ local function New<T>(scope: Types.Scope<T>, classNameOrTemplate: string | Insta
 				nil,
 				classNameOrTemplate:GetFullName()
 			)
-
-			return
 		end
 	else
 		local success, newInstance = pcall(Instance.new, classNameOrTemplate)
 
 		if not success then
 			External.logError("cannotCreateClass", nil, classNameOrTemplate)
-
-			return
 		end
 
 		local classProps = defaultProperties[classNameOrTemplate]

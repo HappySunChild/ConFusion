@@ -48,7 +48,7 @@ local Fusion = table.freeze {
 	peek = require "@self/State/peek",
 
 	-- Graph
-	observe = require "@self/Graph/observe",
+	Observer = require "@self/Graph/Observer",
 
 	-- Animation
 	Timer = require "@self/Animation/Timer",

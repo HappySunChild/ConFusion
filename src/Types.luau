@@ -27,7 +27,7 @@ export type StyleSheetProperties = {
 	Rules: { [number]: StyleRule }?,
 }
 
-export type Scope<T = unknown> = T & { CleanupTask? }
+export type Scope<T = any> = { CleanupTask } & T
 
 export type UsedAs<V> = StateObject<V> | V
 export type Use = <V>(target: StateObject<V>) -> V
@@ -35,7 +35,7 @@ export type Use = <V>(target: StateObject<V>) -> V
 type Disconnect = () -> ()
 
 export type ScopedObject = {
-	scope: Scope<unknown>,
+	scope: Scope<unknown>?,
 }
 
 export type GraphObject = {
@@ -47,9 +47,9 @@ export type GraphObject = {
 	timeliness: Timeliness,
 
 	_lastChange: number?,
+	_lastCompute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
-	_observers: { [{}]: Observer }?,
 
 	_evaluate: (GraphObject) -> boolean,
 } & ScopedObject
@@ -61,29 +61,31 @@ export type StateObject<V> = {
 	type: string,
 } & GraphObject
 
--- legacy observer type
--- export type Observer = {
--- 	type: "Observer",
--- 	kind: "graph",
+-- An object which can listen for updates on another state object.
+export type Observer = {
+	type: "Observer",
+	kind: "graph",
 
--- 	onBind: () -> () -> (),
--- 	onChange: () -> () -> (),
--- } & GraphObject
+	onBind: (Observer, callback: () -> ()) -> () -> (),
+	onChange: (Observer, callback: () -> ()) -> () -> (),
+} & GraphObject
+
+type ObserverConstructor = (scope: Scope<unknown>, subject: ObjectValue) -> Observer
 
 -- A state object whose value can be set by the user at any time.
-export type Value<V> = {
+export type Value<T> = {
 	type: "Value",
 	timeliness: "lazy",
 
-	set: (Value<V>, newValue: V) -> V,
-	update: (Value<V>, predicate: (V) -> V) -> V,
+	set: (Value<T>, newValue: T) -> T,
+	update: (Value<T>, predicate: (T) -> T) -> T,
 
 	bindToInstanceProperty: (
-		Value<V>,
+		Value<T>,
 		instance: Instance,
 		property: string
 	) -> Disconnect,
-} & StateObject<V>
+} & StateObject<T>
 
 type ValueConstructor = <V>(scope: Scope<unknown>, initialValue: V?) -> Value<V>
 
@@ -105,15 +107,15 @@ type TableConstructor = <K, V>(
 ) -> Table<K, V>
 
 -- A state object whose value is derived from other objects using a callback.
-export type Computed<V> = {
+export type Computed<T> = {
 	type: "Computed",
 	timeliness: "eager",
-} & StateObject<V>
+} & StateObject<T>
 
-type ComputedConstructor = <V, S>(
+type ComputedConstructor = <T, S>(
 	scope: Scope<S>,
-	processor: (Use, S) -> V
-) -> Computed<V>
+	processor: (Use, S) -> T
+) -> Computed<T>
 
 -- A state object which maps over keys and/or values in another table.
 export type For<OK, OV> = {
@@ -150,15 +152,6 @@ type EventualConstructor = <V>(
 	processor: (Use, become: (V) -> ()) -> (),
 	default: V?
 ) -> Eventual<V>
-
--- An object which can listen for updates on another state object.
-export type Observer = {
-	type: "Observer",
-	kind: "observer",
-
-	createdAt: number,
-	callback: () -> (),
-}
 
 export type Timer = StateObject<number> & {
 	type: "Timer",
@@ -235,7 +228,16 @@ export type Fusion = {
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
-	-- State
+	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
+
+	read peek: <V>(value: UsedAs<V> | V) -> V,
+	read observe: (
+		value: any,
+		callback: () -> (),
+		immediate: boolean?
+	) -> Disconnect?,
+	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
 	read Value: ValueConstructor,

@@ -14,7 +14,7 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 		return External.logError "infiniteLoop"
 	end
 
-	local firstEvaluation = target._lastChange == nil
+	local firstEvaluation = target._lastChange == nil or target._lastCompute == nil
 	local isInvalid = target.validity == "invalid"
 
 	if firstEvaluation or isInvalid or forceComputation then
@@ -25,7 +25,7 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 			for dependency in target._using do
 				evaluate(dependency, false)
 
-				if dependency._lastChange > target._lastChange then
+				if dependency._lastChange > target._lastCompute then
 					needsComputation = true
 
 					break
@@ -45,6 +45,8 @@ local function evaluate(target: Types.GraphObject, forceComputation: boolean?)
 			target.validity = "busy"
 
 			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
+
+			target._lastCompute = os.clock()
 		end
 
 		if targetMeaningfullyChanged then

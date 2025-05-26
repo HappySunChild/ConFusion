@@ -1,5 +1,6 @@
 --!strict
 local Types = require "../Types"
+
 local merge = require "../Utility/merge"
 
 local function scoped(

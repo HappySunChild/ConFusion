@@ -1,3 +1,4 @@
+--!strict
 return {
 	ScreenGui = {
 		ResetOnSpawn = false,
