@@ -37,7 +37,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 		_using = {},
 		_users = {},
 		_timer = externalTime,
-	}, METATABLE) :: any
+	}, METATABLE) :: Self
 
 	table.insert(scope, destructor(newTimer))
 
