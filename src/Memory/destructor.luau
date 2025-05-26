@@ -1,3 +1,4 @@
+--!strict
 local Types = require "../Types"
 
 local nameOf = require "../Utility/nameOf"
@@ -5,7 +6,6 @@ local nicknames = require "../Utility/nicknames"
 
 local function destroy<V>(target: Types.GraphObject)
 	target.scope = nil
-	target._observers = nil
 
 	local using = target._using
 

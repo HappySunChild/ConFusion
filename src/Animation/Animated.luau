@@ -1,3 +1,4 @@
+--!strict
 local External = require("../External")
 local Types = require("../Types")
 
@@ -52,7 +53,7 @@ local function Animated<V>(
 		_activeStepper = nil,
 
 		_timer = timer,
-	}, METATABLE)
+	}, METATABLE) :: Self<V>
 
 	evaluate(newAnimated, true)
 
@@ -70,10 +71,10 @@ function class._evaluate<V>(self: Self<V>)
 	local timer = self._timer
 	
 	local nextGoal = peek(goal)
-	local nextMover = peek(mover)
+	local nextMover = peek(mover) :: Types.AnimatedMover<V>
 
 	if castToState(mover) then
-		depend(self, mover)
+		depend(self, mover :: any)
 	end
 
 	depend(self, timer)

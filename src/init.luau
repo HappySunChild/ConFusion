@@ -49,7 +49,7 @@ local Fusion = table.freeze {
 
 	map = require "@self/Utility/map",
 
-	observe = require "@self/Graph/observe",
+	Observer = require "@self/Graph/Observer",
 
 	-- Animation
 	Timer = require "@self/Animation/Timer",
