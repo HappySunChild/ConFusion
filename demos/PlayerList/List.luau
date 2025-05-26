@@ -5,7 +5,6 @@ local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, Out = Fusion.Children, Fusion.Out
 
 local peek = Fusion.peek
-local bindValueToProperty = Fusion.bindValueToProperty
 
 local Menu = require(script.Parent.Menu)
 local Player = require(script.Parent.Player)
@@ -66,8 +65,8 @@ local function List(
 			local name = scope:Value(team.Name)
 			local color = scope:Value(team.TeamColor)
 
-			bindValueToProperty(name, team, "Name")
-			bindValueToProperty(color, team, "TeamColor")
+			scope:bindValueToProperty(name, team, "Name")
+			scope:bindValueToProperty(color, team, "TeamColor")
 
 			table.insert(
 				labels,

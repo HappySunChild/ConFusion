@@ -4,8 +4,6 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 local Children, OnStartup, OnEvent = Fusion.Children, Fusion.OnStartup, Fusion.OnEvent
 
-local bindValueToProperty = Fusion.bindValueToProperty
-
 local HOVER_TWEENINFO = TweenInfo.new(0.2, Enum.EasingStyle.Cubic)
 local ICONS = {
 	Developer = {
@@ -57,7 +55,7 @@ local function Player(
 	local hovering = scope:Value(false)
 
 	local currentTeam = scope:Value(player.Team)
-	bindValueToProperty(currentTeam, player, "Team")
+	scope:bindValueToProperty(currentTeam, player, "Team")
 
 	local ref = scope:Value()
 
