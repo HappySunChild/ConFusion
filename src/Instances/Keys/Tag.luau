@@ -1,6 +1,6 @@
 local Types = require "../../Types"
 
-local observe = require "../../Graph/observe"
+local Observer = require "../../Graph/Observer"
 
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
@@ -16,12 +16,12 @@ local function Tag(tag: string): Types.SpecialKey<"Tag">
 		key = SpecialKey "Tag" {
 			stage = "self",
 			apply = function(
-				_: Types.Scope,
+				scope: Types.Scope,
 				instance: Instance,
 				enabled: Types.UsedAs<boolean>
 			)
 				if castToState(enabled) then
-					observe(enabled, function()
+					Observer(scope, enabled):onChange(function()
 						local value = peek(enabled)
 
 						if value == true then
