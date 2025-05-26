@@ -126,7 +126,7 @@ function class.populate<S, IK, IV, OK, OV>(
 end
 
 function class._evaluate<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-	local outerScope = self.scope
+	local outerScope = self.scope :: Types.Scope
 
 	if castToState(self._input) then
 		depend(self, self._input)

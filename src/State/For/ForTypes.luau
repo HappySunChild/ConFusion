@@ -1,3 +1,4 @@
+--!strict
 local Types = require "../../Types"
 
 export type SubObject<S, IK, IV, OK, OV> = {

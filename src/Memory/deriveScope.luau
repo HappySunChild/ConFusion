@@ -1,10 +1,10 @@
 --!strict
-
 local Types = require "../Types"
+
 local merge = require "../Utility/merge"
 
-local function deriveScope<T>(
-	existing: Types.Scope<T>,
+local function deriveScope<S>(
+	existing: Types.Scope<S>,
 	methods: { [unknown]: unknown }?
 ): unknown
 	local metatable = getmetatable(existing)

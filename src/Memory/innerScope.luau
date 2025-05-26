@@ -1,6 +1,6 @@
 --!strict
-
 local Types = require "../Types"
+
 local deriveScope = require "./deriveScope"
 
 local function innerScope<T>(

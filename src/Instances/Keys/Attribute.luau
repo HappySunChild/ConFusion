@@ -1,6 +1,6 @@
 local Types = require "../../Types"
 
-local observe = require "../../Graph/observe"
+local Observer = require "../../Graph/Observer"
 
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
@@ -15,9 +15,13 @@ local function Attribute(attribute: string): Types.SpecialKey<"Attribute">
 	if not key then
 		key = SpecialKey "Attribute" {
 			stage = "self",
-			apply = function(_, applyTo: Instance, value: Types.UsedAs<any>)
+			apply = function(
+				scope: Types.Scope,
+				applyTo: Instance,
+				value: Types.UsedAs<any>
+			)
 				if castToState(value) then
-					observe(value, function()
+					Observer(scope, value):onBind(function()
 						applyTo:SetAttribute(attribute, peek(value))
 					end)
 				end

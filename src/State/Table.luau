@@ -1,3 +1,4 @@
+--!strict
 local Types = require "../Types"
 
 local peek = require "./peek"
@@ -20,13 +21,13 @@ local class = {
 local METATABLE = table.freeze { __index = class }
 
 local function Table<K, V>(scope: Types.Scope, initialValue: { [K]: V }): Types.Table<K, V>
-	local newTable = setmetatable({
+	local newTable: Self<K, V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = initialValue,
 
 		_users = {},
-	}, METATABLE)
+	}, METATABLE) :: any
 
 	table.insert(scope, destructor(newTable))
 
@@ -47,7 +48,7 @@ function class.setKey<K, V>(self: Self<K, V>, key: any, newValue: any)
 end
 
 function class.getKey<K, V>(self: Self<K, V>, key: any)
-	local list = peek(self)
+	local list = peek(self) :: any
 
 	return list[key]
 end

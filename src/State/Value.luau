@@ -18,14 +18,14 @@ local class = {
 local METATABLE = table.freeze { __index = class }
 
 local function Value<V>(scope: Types.Scope, initialValue: V): Types.Value<V>
-	local newValue = setmetatable({
+	local newValue: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
 		_internalValue = initialValue,
 
 		_users = {},
-	}, METATABLE)
+	}, METATABLE) :: any
 
 	table.insert(scope, destructor(newValue))
 

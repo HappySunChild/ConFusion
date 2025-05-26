@@ -1,7 +1,7 @@
 local External = require "../../External"
 local Types = require "../../Types"
 
-local observe = require "../../Graph/observe"
+local Observer = require "../../Graph/Observer"
 
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
@@ -53,7 +53,8 @@ local Children = SpecialKey "Children" {
 					local childScope = oldScopes[child]
 
 					if childScope == nil then
-						childScope = { observe(child, updateChildren) }
+						childScope = {}
+						Observer(childScope, child):onChange(updateChildren)
 					else
 						oldScopes[child] = nil
 					end
