@@ -65,9 +65,9 @@ export type Value<T> = {
 	type: "Value",
 	timeliness: "lazy",
 
-	set: (Value<V>, newValue: V) -> V,
-	update: (Value<V>, predicate: (V) -> V) -> V,
-} & StateObject<V>
+	set: (Value<T>, newValue: T) -> T,
+	update: (Value<T>, predicate: (T) -> T) -> T,
+} & StateObject<T>
 
 type ValueConstructor = <V>(scope: Scope<unknown>, initialValue: V?) -> Value<V>
 
