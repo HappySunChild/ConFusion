@@ -27,8 +27,10 @@ local function destroy<V>(target: Types.GraphObject)
 end
 
 local function destructor(target: Types.GraphObject)
-	local destruct = function()
+	local function destruct()
 		destroy(target)
+
+		nicknames[destruct] = nil
 	end
 
 	nicknames[destruct] = nameOf(target, "unknown") .. "-destructor"

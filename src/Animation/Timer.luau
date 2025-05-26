@@ -39,7 +39,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 		_timer = externalTime,
 	}, METATABLE) :: any
 
-	table.insert(scope, { destructor(newTimer) })
+	table.insert(scope, destructor(newTimer))
 
 	depend(newTimer, externalTime)
 

@@ -35,6 +35,7 @@ export type GraphObject = {
 	timeliness: Timeliness,
 
 	_lastChange: number?,
+	_lastCompute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
 	_observers: { [{}]: Observer }?,
