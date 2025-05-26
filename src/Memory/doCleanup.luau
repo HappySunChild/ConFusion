@@ -1,5 +1,4 @@
 --!strict
-
 local Types = require "../Types"
 
 local active = {}

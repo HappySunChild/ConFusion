@@ -4,6 +4,7 @@ local destructor = require "../Memory/destructor"
 
 local Disassembly = require "@self/Disassembly"
 local ForTypes = require "@self/ForTypes"
+
 local castToState = require "./castToState"
 local peek = require "./peek"
 
@@ -39,7 +40,7 @@ local function For<S, IK, IV, OK, OV>(
 		_users = {},
 
 		_disassembly = Disassembly(scope, input, constructor),
-	}, METATABLE)
+	}, METATABLE) :: Self<S, IK, IV, OK, OV>
 
 	table.insert(scope, destructor(newFor))
 
