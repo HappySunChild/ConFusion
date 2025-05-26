@@ -38,7 +38,6 @@ export type GraphObject = {
 	_lastCompute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
-	_observers: { [{}]: Observer }?,
 
 	_evaluate: (GraphObject) -> boolean,
 } & ScopedObject
@@ -50,14 +49,14 @@ export type StateObject<V> = {
 	type: string,
 } & GraphObject
 
--- legacy observer type
--- export type Observer = {
--- 	type: "Observer",
--- 	kind: "graph",
+-- An object which can listen for updates on another state object.
+export type Observer = {
+	type: "Observer",
+	kind: "graph",
 
--- 	onBind: () -> () -> (),
--- 	onChange: () -> () -> (),
--- } & GraphObject
+	onBind: (Observer, callback: () -> ()) -> () -> (),
+	onChange: (Observer, callback: () -> ()) -> () -> (),
+} & GraphObject
 
 -- A state object whose value can be set by the user at any time.
 export type Value<T> = {
@@ -139,15 +138,6 @@ type EventualConstructor = <V>(
 	processor: (Use, become: (V) -> ()) -> (),
 	default: V?
 ) -> Eventual<V>
-
--- An object which can listen for updates on another state object.
-export type Observer = {
-	type: "Observer",
-	kind: "observer",
-
-	createdAt: number,
-	callback: () -> (),
-}
 
 export type Timer = StateObject<number> & {
 	type: "Timer",

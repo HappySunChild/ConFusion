@@ -7,12 +7,6 @@ local nicknames = require "../Utility/nicknames"
 local function destroy<V>(target: Types.GraphObject)
 	target.scope = nil
 
-	if target._observers ~= nil then
-		table.clear(target._observers)
-	end
-
-	target._observers = nil
-
 	local using = target._using
 
 	if using then
