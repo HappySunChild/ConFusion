@@ -266,10 +266,11 @@ export type Fusion = {
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
 	read bindValueToProperty: (
+		scope: Scope,
 		value: Value<unknown>,
 		instance: Instance,
 		property: string
-	) -> Disconnect,
+	) -> (),
 
 	-- Keys
 	read Children: SpecialKey<"Children">,
