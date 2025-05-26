@@ -27,7 +27,7 @@ local function Sheet(scope: Types.Scope, props: Types.StyleSheetProperties)
 	end
 
 	if tokens then
-		applyStyleTokens(newSheet, tokens)
+		applyStyleTokens(scope, newSheet, tokens)
 	end
 
 	newSheet.Parent = props.Parent

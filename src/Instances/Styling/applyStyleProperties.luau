@@ -3,21 +3,22 @@ local Types = require "../../Types"
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
 
-local observe = require "../../Graph/observe"
+local Observer = require "../../Graph/Observer"
 
 local function setStyleProperty(rule: StyleRule, property: string, value: any)
 	rule:SetProperty(property, value)
 end
 
 local function applyStyleProperty(
+	scope: Types.Scope,
 	rule: StyleRule,
 	property: string,
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		observe(value, function()
+		Observer(scope, value):onBind(function()
 			setStyleProperty(rule, property, peek(value))
-		end, true)
+		end)
 
 		return
 	end
@@ -25,12 +26,16 @@ local function applyStyleProperty(
 	setStyleProperty(rule, property, value)
 end
 
-local function applyStyleProperties(rule: StyleRule, props: Types.StyleProperties)
+local function applyStyleProperties(
+	scope: Types.Scope,
+	rule: StyleRule,
+	props: Types.StyleProperties
+)
 	props = table.clone(props)
 
 	for key, value in props do
 		if key ~= "Rules" then
-			applyStyleProperty(rule, key, value)
+			applyStyleProperty(scope, rule, key, value)
 		end
 	end
 

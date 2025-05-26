@@ -3,7 +3,7 @@ local Types = require "../../Types"
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
 
-local observe = require "../../Graph/observe"
+local Observer = require "../../Graph/Observer"
 
 local SpecialKey = require "./SpecialKey"
 
@@ -23,7 +23,7 @@ local StyleLink = SpecialKey "StyleLink" {
 		if castToState(styleSheet) then
 			table.insert(
 				scope,
-				observe(styleSheet, function()
+				Observer(scope, styleSheet):onChange(function()
 					link.StyleSheet = peek(styleSheet)
 				end)
 			)

@@ -11,7 +11,7 @@ local function Rule(scope: Types.Scope, selector: string)
 	return function(props: Types.StyleProperties)
 		table.insert(scope, newRule)
 
-		applyStyleProperties(newRule, props)
+		applyStyleProperties(scope, newRule, props)
 
 		return newRule
 	end
