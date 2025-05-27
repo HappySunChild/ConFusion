@@ -2,18 +2,14 @@ local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
 
-local scope = Fusion:scoped {}
-local timer = scope:Timer()
-local color = scope:Computed(function(use: Fusion.Use)
-	local now = use(timer)
+local scope = Fusion:scoped()
+local value1 = scope:Value()
+local value2 = scope:Value()
 
-	return Color3.fromHSV(now % 1, 1, 1)
+local observer = scope:Observer(value1, value2)
+observer:onChange(function()
+	print "value1 or value2 changed"
 end)
 
--- observe(color, function()
--- 	print "color updated"
--- end)
-
-scope:Observer(color):onChange(function()
-	print "color updated"
-end)
+value1:set(1)
+value2:set(2)
