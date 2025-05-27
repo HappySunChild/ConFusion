@@ -26,6 +26,7 @@ local function Observer(scope: Types.Scope, ...: Types.GraphObject)
 		createdAt = os.clock(),
 
 		_using = {},
+		
 		_listeners = {},
 		_subjects = { ... },
 	}, METATABLE)
@@ -63,7 +64,7 @@ function class._evaluate(self: Self)
 		-- it'd be nice if we could pass which subject was the one that changed,
 		-- but i don't think that's currently possible without having to do some major changes to how the graph works.
 		-- maybe it could be passed into _evaluate? again i'm not sure how this'd work.
-		External.doTaskImmediate(callback)
+		External.doTaskImmediate(callback, unpack(self._subjects))
 	end
 
 	return true
