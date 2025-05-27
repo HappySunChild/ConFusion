@@ -8,7 +8,7 @@ local evaluate = require "./evaluate"
 local destructor = require "../Memory/destructor"
 
 type Self = Types.Observer & {
-	_subject: Types.GraphObject?,
+	_subjects: { Types.GraphObject },
 	_listeners: { () -> () },
 }
 
@@ -20,14 +20,14 @@ local class = {
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Observer(scope: Types.Scope, subject: Types.GraphObject)
+local function Observer(scope: Types.Scope, ...: Types.GraphObject)
 	local newObserver = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
 		_using = {},
 		_listeners = {},
-		_subject = subject,
+		_subjects = { ... },
 	}, METATABLE)
 
 	table.insert(scope, destructor(newObserver))
@@ -53,13 +53,16 @@ function class.onChange(self: Self, callback: () -> ())
 end
 
 function class._evaluate(self: Self)
-	if not castToGraph(self._subject) then
-		return
+	for _, subject in self._subjects do
+		if castToGraph(subject) then
+			depend(self, subject)
+		end
 	end
 
-	depend(self, self._subject)
-
 	for _, callback in self._listeners do
+		-- it'd be nice if we could pass which subject was the one that changed,
+		-- but i don't think that's currently possible without having to do some major changes to how the graph works.
+		-- maybe it could be passed into _evaluate? again i'm not sure how this'd work.
 		External.doTaskImmediate(callback)
 	end
 
