@@ -4,6 +4,7 @@ local Types = require "../Types"
 local depend = require "../Graph/depend"
 
 local castToState = require "./castToState"
+local checkDissolvable = require "./checkDissolvable"
 local peek = require "./peek"
 
 local deriveScope = require "../Memory/deriveScope"
@@ -31,6 +32,12 @@ local function Computed<T, S>(
 	scope: Types.Scope,
 	processor: (Types.Use, Types.Scope<S>) -> T
 ): Types.Computed<T>
+	local dissolvable, value = checkDissolvable(deriveScope(scope), processor)
+
+	if dissolvable then
+		return value
+	end
+
 	local newComputed: Self<T, S> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
