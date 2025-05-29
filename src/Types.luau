@@ -220,6 +220,7 @@ export type Fusion = {
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
 	read Observer: ObserverConstructor,
 

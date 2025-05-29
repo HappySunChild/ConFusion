@@ -48,6 +48,7 @@ local Fusion = table.freeze {
 	peek = require "@self/State/peek",
 
 	map = require "@self/Utility/map",
+	flatten = require "@self/Utility/flatten",
 
 	Observer = require "@self/Graph/Observer",
 
