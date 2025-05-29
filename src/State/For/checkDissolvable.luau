@@ -41,8 +41,6 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 
 	table.insert(scope, innerScope)
 
-	print("dissolved for", output)
-
 	return true, output
 end
 
