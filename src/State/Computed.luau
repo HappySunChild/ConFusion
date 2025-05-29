@@ -4,7 +4,7 @@ local Types = require "../Types"
 local depend = require "../Graph/depend"
 
 local castToState = require "./castToState"
-local checkDissolvable = require "./checkDissolvable"
+local dissolvingUse = require "./dissolvingUse"
 local peek = require "./peek"
 
 local deriveScope = require "../Memory/deriveScope"
@@ -28,10 +28,24 @@ local class = {
 
 local METATABLE = table.freeze { __index = class }
 
-local function Computed<T, S>(
-	scope: Types.Scope,
+local function checkDissolvable<T, S>(
+	scope: Types.Scope<S>,
 	processor: (Types.Use, Types.Scope<S>) -> T
-): Types.Computed<T>
+): (boolean, T?)
+	local success, value = pcall(processor, dissolvingUse, scope)
+	if success then
+		return true, value
+	end
+
+	doCleanup(scope)
+
+	return false
+end
+
+local function Computed<T, S>(
+	scope: Types.Scope<S>,
+	processor: (Types.Use, Types.Scope<S>) -> T
+): Types.Computed<T> | T
 	local dissolvable, value = checkDissolvable(deriveScope(scope), processor)
 
 	if dissolvable then
