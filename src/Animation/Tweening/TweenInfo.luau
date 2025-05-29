@@ -1,5 +1,5 @@
 --!strict
-local Types = require "../Types"
+local Types = require "../../Types"
 
 local EasingStyles = require "./EasingStyles"
 

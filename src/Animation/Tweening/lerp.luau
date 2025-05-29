@@ -1,5 +1,5 @@
 --!strict
-local Oklab = require "../Colour/Oklab"
+local Oklab = require "../../Colour/Oklab"
 
 local LERP_FUNCTIONS = {
 	number = function(a: number, b: number, alpha: number)
@@ -42,9 +42,7 @@ local function lerp<V>(from: V, target: V, alpha: number): V
 		end
 	end
 
-	if alpha < 0.5 then
-		return from
-	end
+	if alpha < 0.5 then return from end
 
 	return target
 end

@@ -1,6 +1,6 @@
 --!strict
 --!native
-local Types = require "../Types"
+local Types = require "../../Types"
 
 local PI = math.pi
 local TAU = PI * 2

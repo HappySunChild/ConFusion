@@ -1,10 +1,8 @@
 --!strict
-local Types = require "../Types"
+local Types = require "../../Types"
 
-local function getTweenDuration(tweenInfo: Types.TweenInfo | TweenInfo)
-	if tweenInfo.RepeatCount == -1 then
-		return math.huge
-	end
+local function getTweenDuration(tweenInfo: Types.TweenInfo)
+	if tweenInfo.RepeatCount == -1 then return math.huge end
 
 	local duration = tweenInfo.DelayTime + tweenInfo.Time
 

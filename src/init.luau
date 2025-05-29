@@ -54,12 +54,12 @@ local Fusion = table.freeze {
 	-- Animation
 	Timer = require "@self/Animation/Timer",
 	Animated = require "@self/Animation/Animated",
-	Tween = require "@self/Animation/Tween",
 	Spring = require "@self/Animation/Spring",
 	Delay = require "@self/Animation/Delay",
+	Tween = require "@self/Animation/Tweening/Tween",
 
-	TweenInfo = require "@self/Animation/TweenInfo",
-	EasingStyles = require "@self/Animation/EasingStyles",
+	TweenInfo = require "@self/Animation/Tweening/TweenInfo",
+	EasingStyles = require "@self/Animation/Tweening/EasingStyles",
 
 	-- Instance
 	New = require "@self/Instances/New",
