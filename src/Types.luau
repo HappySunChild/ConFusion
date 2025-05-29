@@ -8,7 +8,7 @@ export type Error = {
 }
 
 export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupTask }
-export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
+export type Child = Instance | ((Instance) -> Instance?) | { Child } | StateObject<Child>
 
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
