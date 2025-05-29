@@ -61,10 +61,10 @@ local Fusion = table.freeze {
 	-- Instance
 	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
-	WithChild = require "@self/Instances/WithChild",
-	WithChildOfClass = require "@self/Instances/WithChildOfClass",
-	WithDescendant = require "@self/Instances/WithDescendant",
-	WithDescendantOfClass = require "@self/Instances/WithDescendantOfClass",
+	ChildOfName = require "@self/Instances/ChildOfName",
+	ChildOfClass = require "@self/Instances/ChildOfClass",
+	DescendantOfName = require "@self/Instances/DescendantOfName",
+	DescendantOfClass = require "@self/Instances/DescendantOfClass",
 
 	bindValueToProperty = require "@self/Instances/bindValueToProperty",
 	bindValueToAttribute = require "@self/Instances/bindValueToAttribute",
