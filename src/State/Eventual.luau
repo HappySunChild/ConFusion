@@ -16,9 +16,12 @@ local parseError = require "../Logging/parseError"
 type processor<V> = (use: Types.Use, become: (V) -> nil) -> ()
 type Self<V> = Types.Eventual<V> & {
 	_processor: processor<V>,
+
 	_pendingValue: V,
 	_becomeValue: V,
+
 	_isBecoming: boolean,
+	_active: thread?,
 }
 
 local class = {
@@ -34,7 +37,7 @@ local function Eventual<V>(
 	processor: processor<V>,
 	pendingValue: V
 ): Types.Eventual<V>
-	local newEventual = setmetatable({
+	local newEventual: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -48,24 +51,35 @@ local function Eventual<V>(
 		_users = {},
 
 		_processor = processor,
-	}, METATABLE)
+	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newEventual))
+	table.insert(scope, {
+		destructor(newEventual),
+		function()
+			if newEventual._active ~= nil then
+				External.cancelTask(newEventual._active)
+			end
+		end,
+	})
 
 	return newEventual
 end
 
-function class._evaluate<V>(self: Self<V>)
-	-- early return if we're becoming a value,
-	-- so that we don't retrigger the entire evaluation.
+function class._evaluate<V>(self: Self<V>): boolean
+	if self.scope == nil then
+		return false
+	end
+
 	if self._isBecoming == true then
 		self._isBecoming = false
 
 		return not isSimilar(self._becomeValue, self._internalValue)
 	end
 
-	if self.scope == nil then
-		return false
+	if self._active ~= nil then
+		External.cancelTask(self._active)
+
+		self._active = nil
 	end
 
 	local used = {}
@@ -101,24 +115,30 @@ function class._evaluate<V>(self: Self<V>)
 		end
 	end
 
-	-- still not entirely sure about reseting to the pending value assigned at Eventual construction,
-	-- but i guess its saving keystrokes for the user, and that's what matters!
 	self._internalValue = self._pendingValue
 
-	local oldValue = self._internalValue
+	local bCompleted = false
+	local originalValue = self._internalValue
 
-	External.doTaskImmediate(function()
+	local activeThread = External.doTaskImmediate(function()
 		local ok, err = xpcall(self._processor, parseError, use, become)
 
 		if not ok then
 			External.logErrorNonFatal("callbackError", err)
 		end
+
+		self._active = nil
+
+		bCompleted = true
 	end)
+
+	if not bCompleted then
+		self._active = activeThread
+	end
 
 	local currentValue = self._internalValue
 
-	-- immediate check in the case that the Eventual becomes something before yielding (if it does yield).
-	return not isSimilar(currentValue, oldValue)
+	return not isSimilar(currentValue, originalValue)
 end
 
 table.freeze(class)
