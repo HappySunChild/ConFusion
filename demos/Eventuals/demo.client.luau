@@ -1,17 +1,17 @@
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
 
 local Fusion = require(ReplicatedStorage.Libraries.ConFusion)
-local observe, peek = Fusion.observe, Fusion.peek
+local peek = Fusion.peek
 
 local scope = Fusion:scoped()
 
 local cooldownActive = scope:Value(false)
-local val = scope:Eventual(function(use, become: (V) -> ())
-	for i = 10, 1, -1 do
-		if not use(cooldownActive) then
-			return become "Inactive"
-		end
+local eventualValue = scope:Eventual(function(use, become: (V) -> ())
+	if not use(cooldownActive) then
+		return become "Inactive"
+	end
 
+	for i = 10, 1, -1 do
 		become(i)
 
 		task.wait(1)
@@ -20,14 +20,8 @@ local val = scope:Eventual(function(use, become: (V) -> ())
 	return become "Done"
 end)
 
-observe(val, function()
-	print("changed", peek(val))
-end, true)
-
-task.wait(1)
+scope:Observer(eventualValue):onBind(function()
+	print(peek(eventualValue), eventualValue:isPending())
+end)
 
 cooldownActive:set(true)
-
-task.wait(5)
-
-cooldownActive:set(false)
