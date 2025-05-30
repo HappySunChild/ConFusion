@@ -65,6 +65,10 @@ local function Eventual<V>(
 	return newEventual
 end
 
+function class.isPending<V>(self: Self<V>)
+	return self._active ~= nil
+end
+
 function class._evaluate<V>(self: Self<V>): boolean
 	if self.scope == nil then
 		return false

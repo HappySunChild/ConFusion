@@ -133,6 +133,8 @@ type ForValuesConstructor = <S, IK, IV, OV>(
 export type Eventual<V> = {
 	type: "Eventual",
 	timeliness: "lazy",
+
+	isPending: (Eventual<V>) -> boolean,
 } & StateObject<V>
 
 type EventualConstructor = <V>(
