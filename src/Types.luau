@@ -205,8 +205,9 @@ export type ExternalProvider = {
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
 
-	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
-	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
+	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	cancelTask: (thread) -> boolean,
 }
 
 export type Fusion = {

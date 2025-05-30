@@ -59,16 +59,28 @@ function External.lastUpdateStep(): number
 	return lastUpdateStep
 end
 
-function External.doTaskImmediate(resume: (...unknown?) -> (), ...: unknown?)
-	if activeProvider then
-		activeProvider.doTaskImmediate(resume, ...)
+function External.doTaskImmediate(resume: (...unknown?) -> (), ...: unknown?): thread?
+	if not activeProvider then
+		return nil
 	end
+
+	return activeProvider.doTaskImmediate(resume, ...)
 end
 
-function External.doTaskDeffered(resume: (...unknown?) -> (), ...: unknown?)
-	if activeProvider then
-		activeProvider.doTaskDeferred(resume, ...)
+function External.doTaskDeferred(resume: (...unknown?) -> (), ...: unknown?): thread?
+	if not activeProvider then
+		return nil
 	end
+
+	return activeProvider.doTaskDeferred(resume, ...)
+end
+
+function External.cancelTask(thread: thread): boolean
+	if not activeProvider then
+		return false
+	end
+
+	return activeProvider.cancelTask(thread)
 end
 
 function External.logError(
