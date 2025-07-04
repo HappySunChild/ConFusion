@@ -1,10 +1,8 @@
 local HttpService = game:GetService "HttpService"
 local RunService = game:GetService "RunService"
 
-local package = script.Parent
-
-local External = require(package.External)
-local Types = require(package.Types)
+local External = require "./External"
+local Types = require "./Types"
 
 local function performUpdateStep()
 	External.performUpdate(os.clock())
