@@ -36,7 +36,7 @@ local function Animated<V>(
 	mover: Types.UsedAs<Types.AnimatedMover<V>>
 ): Types.Animated<V>
 	local timer = Timer(scope)
-	local newAnimated = setmetatable({
+	local newAnimated: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = peek(goal),
@@ -53,7 +53,7 @@ local function Animated<V>(
 		_activeStepper = nil,
 
 		_timer = timer,
-	}, METATABLE) :: Self<V>
+	}, METATABLE) :: any
 
 	evaluate(newAnimated, true)
 
