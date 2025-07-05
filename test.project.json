@@ -1,0 +1,24 @@
+{
+	"name": "ConFusion-test",
+	"ReplicatedStorage": {
+		"$ignoreUnknownInstances": true,
+		"Libraries": {
+			"$className": "Folder",
+			"$ignoreUnknownInstances": true,
+			"ConFusion": {
+				"$path": "default.project.json"
+			}
+		}
+	},
+	"StarterPlayer": {
+		"$ignoreUnknownInstances": true,
+		"$className": "StarterPlayer",
+		"StarterPlayerScripts": {
+			"$className": "StarterPlayerScripts",
+			"$ignoreUnknownInstances": true,
+			"Demos": {
+				"$path": "demos"
+			}
+		}
+	}
+}
