@@ -9,7 +9,7 @@ local SpecialKey = require "./SpecialKey"
 
 -- this SpecialKey is kind of redundant, because you can just add a StyleLink as a child of a ScreenGui (or whatever)
 -- and it'd work the same. ugh why is coming up with cool and useful things so hard
-local StyleLink = SpecialKey "StyleLink" {
+local StyleLink = SpecialKey "Style" {
 	stage = "descendants",
 	apply = function(
 		scope: Types.Scope,

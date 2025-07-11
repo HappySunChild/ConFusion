@@ -288,8 +288,10 @@ export type ConFusion = {
 	read OnRemoval: SpecialKey<"OnRemoval">,
 	read Ref: SpecialKey<"Ref">,
 	read Passthrough: SpecialKey<"Passthrough">,
-	read StyleLink: SpecialKey<"StyleLink">,
+
+	read Style: SpecialKey<"Style">,
 	read Default: SpecialKey<"Default">,
+
 	read Attribute: (attribute: string) -> SpecialKey<"Attribute">,
 	read AttributeOut: (attribute: string) -> SpecialKey<"AttributeOut">,
 	read Tag: (tag: string) -> SpecialKey<"Tag">,
