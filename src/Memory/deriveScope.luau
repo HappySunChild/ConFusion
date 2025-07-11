@@ -7,7 +7,9 @@ local function deriveScope<S>(
 	existing: Types.Scope<S>,
 	methods: { [unknown]: unknown }?
 ): unknown
-	local metatable = getmetatable(existing)
+	-- the plague !strict has brought upon me
+	-- why? why must I bring unnecessary pain upon myself?
+	local metatable = getmetatable(existing :: any)
 
 	if methods ~= nil then
 		metatable = table.clone(metatable) :: { [unknown]: unknown }

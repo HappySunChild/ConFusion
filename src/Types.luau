@@ -8,7 +8,7 @@ export type Error = {
 }
 
 export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupTask }
-export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
+export type Child = Instance | ((Instance) -> Instance?) | { Child } | StateObject<Child>
 
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
@@ -127,6 +127,8 @@ type ForValuesConstructor = <S, IK, IV, OV>(
 export type Eventual<V> = {
 	type: "Eventual",
 	timeliness: "lazy",
+
+	isPending: (Eventual<V>) -> boolean,
 } & StateObject<V>
 
 type EventualConstructor = <V>(
@@ -199,8 +201,9 @@ export type ExternalProvider = {
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
 
-	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
-	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
+	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	cancelTask: (thread) -> boolean,
 }
 
 export type Fusion = {
@@ -214,6 +217,7 @@ export type Fusion = {
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
 	read Observer: ObserverConstructor,
 
