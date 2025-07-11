@@ -212,21 +212,25 @@ export type ExternalProvider = {
 	cancelTask: (thread) -> boolean,
 }
 
-export type Fusion = {
+export type ConFusion = {
+	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
+	-- External
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
+	-- Utility
 	read peek: <V>(value: UsedAs<V> | V) -> V,
-
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
+	-- Graph
 	read Observer: ObserverConstructor,
 
+	-- State
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
 	read Value: ValueConstructor,
@@ -238,11 +242,13 @@ export type Fusion = {
 
 	read Timer: (scope: Scope) -> Timer,
 
+	-- Animation
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
+	-- Instances
 	read New: (
 		scope: Scope,
 		classNameOrTemplate: Instance | string
@@ -265,7 +271,7 @@ export type Fusion = {
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
-	-- Keys
+	-- Instance Keys
 	read Children: SpecialKey<"Children">,
 	read OnStartup: SpecialKey<"OnStartup">,
 	read OnRemoval: SpecialKey<"OnRemoval">,
