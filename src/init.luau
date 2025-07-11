@@ -45,11 +45,13 @@ local Fusion = table.freeze {
 	ForPairs = require "@self/State/ForPairs",
 	ForKeys = require "@self/State/ForKeys",
 	ForValues = require "@self/State/ForValues",
-	peek = require "@self/State/peek",
 
+	-- Utility
+	peek = require "@self/State/peek",
 	map = require "@self/Utility/map",
 	flatten = require "@self/Utility/flatten",
 
+	-- Graph
 	Observer = require "@self/Graph/Observer",
 
 	-- Animation
@@ -60,8 +62,10 @@ local Fusion = table.freeze {
 	Delay = require "@self/Animation/Delay",
 
 	-- Instance
-	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
+	New = require "@self/Instances/New",
+	FromTemplate = require "@self/Instances/FromTemplate",
+
 	ChildOfName = require "@self/Instances/ChildOfName",
 	ChildOfClass = require "@self/Instances/ChildOfClass",
 	DescendantOfName = require "@self/Instances/DescendantOfName",

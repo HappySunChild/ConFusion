@@ -207,20 +207,24 @@ export type ExternalProvider = {
 }
 
 export type Fusion = {
+	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
+	-- External
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
+	-- Utility
 	read peek: <V>(value: UsedAs<V> | V) -> V,
-
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
+	-- Graph
 	read Observer: ObserverConstructor,
-
+	
+	-- State
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
 	read Value: ValueConstructor,
@@ -232,16 +236,23 @@ export type Fusion = {
 
 	read Timer: (scope: Scope) -> Timer,
 
+	-- Animated
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
+	-- Instances
+	read Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
 	read New: (
 		scope: Scope,
-		classNameOrTemplate: Instance | string
+		className: string
 	) -> (props: Properties) -> Instance,
-	read Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
+	read FromTemplate: (
+		scope: Scope,
+		template: Instance
+	) -> (props: Properties) -> Instance,
+
 	read WithChild: (
 		scope: Scope,
 		name: string
@@ -272,7 +283,7 @@ export type Fusion = {
 		attribute: string
 	) -> (),
 
-	-- Keys
+	-- Instance Keys
 	read Children: SpecialKey<"Children">,
 	read OnStartup: SpecialKey<"OnStartup">,
 	read OnRemoval: SpecialKey<"OnRemoval">,
