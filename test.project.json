@@ -1,23 +1,26 @@
 {
-	"name": "ConFusion-test",
-	"ReplicatedStorage": {
-		"$ignoreUnknownInstances": true,
-		"Libraries": {
-			"$className": "Folder",
+	"name": "ConFusion",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
 			"$ignoreUnknownInstances": true,
-			"ConFusion": {
-				"$path": "default.project.json"
+			"Libraries": {
+				"$className": "Folder",
+				"$ignoreUnknownInstances": true,
+				"ConFusion": {
+					"$path": "src"
+				}
 			}
-		}
-	},
-	"StarterPlayer": {
-		"$ignoreUnknownInstances": true,
-		"$className": "StarterPlayer",
-		"StarterPlayerScripts": {
-			"$className": "StarterPlayerScripts",
+		},
+		"StarterPlayer": {
 			"$ignoreUnknownInstances": true,
-			"Demos": {
-				"$path": "demos"
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$ignoreUnknownInstances": true,
+				"Demos": {
+					"$path": "tests"
+				}
 			}
 		}
 	}
