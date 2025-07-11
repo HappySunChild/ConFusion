@@ -136,7 +136,8 @@ function class._evaluate<V>(self: Self<V>): boolean
 		bCompleted = true
 	end)
 
-	if not bCompleted then
+	-- if we yielded then set the active thread
+	if bCompleted == false then
 		self._active = activeThread
 	end
 
