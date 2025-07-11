@@ -251,7 +251,6 @@ export type ConFusion = {
 	read ForKeys: ForKeysConstructor,
 	read ForValues: ForValuesConstructor,
 
-	-- Animation
 	read Timer: (scope: Scope) -> Timer,
 
 	-- Animation
