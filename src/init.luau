@@ -74,8 +74,6 @@ local Fusion = table.freeze {
 	DescendantOfName = require "@self/Instances/DescendantOfName",
 	DescendantOfClass = require "@self/Instances/DescendantOfClass",
 
-	bindValueToProperty = require "@self/Instances/bindValueToProperty",
-	bindValueToAttribute = require "@self/Instances/bindValueToAttribute",
 	PropertyOf = require "@self/Instances/PropertyOf",
 	AttributeOf = require "@self/Instances/AttributeOf",
 
