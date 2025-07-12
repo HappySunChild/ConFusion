@@ -76,6 +76,8 @@ local Fusion = table.freeze {
 
 	bindValueToProperty = require "@self/Instances/bindValueToProperty",
 	bindValueToAttribute = require "@self/Instances/bindValueToAttribute",
+	PropertyOf = require "@self/Instances/PropertyOf",
+	AttributeOf = require "@self/Instances/AttributeOf",
 
 	-- Instance Keys
 	Children = require "@self/Instances/Keys/Children",

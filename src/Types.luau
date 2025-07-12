@@ -271,17 +271,22 @@ export type ConFusion = {
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
 	read bindValueToProperty: (
+	-- Instance State
+	read PropertyOf: (
 		scope: Scope,
 		value: Value<unknown>,
 		instance: Instance,
 		property: string
 	) -> (),
 	read bindValueToAttribute: (
+	) -> StateObject<unknown>,
+	read AttributeOf: (
 		scope: Scope,
 		value: Value<unknown>,
 		instance: Instance,
 		attribute: string
 	) -> (),
+	) -> StateObject<unknown>,
 
 	-- Instance Keys
 	read Children: SpecialKey<"Children">,
