@@ -4,15 +4,15 @@
 ConFusion - A fork of Fusion
 
 GitHub Repository: https://github.com/HappySunChild/ConFusion
-Fusion: https://github.com/dphfox/Fusion
+Fusion on GitHub: https://github.com/dphfox/Fusion
 --]]
 
 local External = require "@self/External"
 local Types = require "@self/Types"
 
-type Fusion = Types.Fusion
+type ConFusion = Types.ConFusion
 
-export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
+export type Scope<Constructors = ConFusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
 export type Use = Types.Use
 
@@ -36,6 +36,9 @@ local Fusion = table.freeze {
 	deriveScope = require "@self/Memory/deriveScope",
 	innerScope = require "@self/Memory/innerScope",
 	doCleanup = require "@self/Memory/doCleanup",
+
+	-- External
+	setProvider = External.setProvider,
 
 	-- State
 	Eventual = require "@self/State/Eventual",
@@ -61,7 +64,7 @@ local Fusion = table.freeze {
 	Spring = require "@self/Animation/Spring",
 	Delay = require "@self/Animation/Delay",
 
-	-- Instance
+	-- Instances
 	Hydrate = require "@self/Instances/Hydrate",
 	New = require "@self/Instances/New",
 	FromTemplate = require "@self/Instances/FromTemplate",
@@ -87,12 +90,9 @@ local Fusion = table.freeze {
 	Out = require "@self/Instances/Keys/Out",
 	OnEvent = require "@self/Instances/Keys/OnEvent",
 	OnChange = require "@self/Instances/Keys/OnChange",
-
-	-- External
-	setProvider = External.setProvider,
 }
 
 local RobloxProvider = require "@self/RobloxProvider"
 External.setProvider(RobloxProvider)
 
-return Fusion :: Fusion
+return Fusion :: ConFusion

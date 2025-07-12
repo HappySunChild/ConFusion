@@ -14,12 +14,34 @@ type Self<S, IK, IV, OK, OV> = Types.For<OK, OV> & {
 	_disassembly: ForTypes.Disassembly<S, IK, IV, OK, OV>,
 }
 
-local class = {
+local class = table.freeze {
 	type = "For",
 	kind = "state",
 	timeliness = "lazy",
-}
 
+	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
+		if self.scope == nil then
+			return false
+		end
+
+		local output = self._internalValue
+		local disassembly = self._disassembly
+
+		depend(self, disassembly)
+
+		table.clear(output)
+
+		disassembly:populate(function(target)
+			if castToState(target) then
+				depend(self, target)
+			end
+
+			return peek(target)
+		end, output)
+
+		return true
+	end,
+}
 local METATABLE = table.freeze { __index = class }
 
 local function For<S, IK, IV, OK, OV>(
@@ -46,30 +68,5 @@ local function For<S, IK, IV, OK, OV>(
 
 	return newFor
 end
-
-function class._evaluate<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-	if self.scope == nil then
-		return false
-	end
-
-	local output = self._internalValue
-	local disassembly = self._disassembly
-
-	depend(self, disassembly)
-
-	table.clear(output)
-
-	disassembly:populate(function(target)
-		if castToState(target) then
-			depend(self, target)
-		end
-
-		return peek(target)
-	end, output)
-
-	return true
-end
-
-table.freeze(class)
 
 return For

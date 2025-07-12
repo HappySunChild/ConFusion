@@ -206,7 +206,7 @@ export type ExternalProvider = {
 	cancelTask: (thread) -> boolean,
 }
 
-export type Fusion = {
+export type ConFusion = {
 	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
@@ -223,7 +223,7 @@ export type Fusion = {
 
 	-- Graph
 	read Observer: ObserverConstructor,
-	
+
 	-- State
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
@@ -236,7 +236,7 @@ export type Fusion = {
 
 	read Timer: (scope: Scope) -> Timer,
 
-	-- Animated
+	-- Animation
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
