@@ -12,7 +12,7 @@ export type SubObject<S, IK, IV, OK, OV> = {
 	useOutputPair: (SubObject<S, IK, IV, OK, OV>, Types.Use) -> (OK?, OV?),
 }
 
-export type Disassembly<S, IK, IV, OK, OV> = Types.GraphObject & {
+export type Disassembly<S, IK, IV, OK, OV> = Types.StateObject<{ [OK]: OV }> & {
 	populate: (Disassembly<S, IK, IV, OK, OV>, Types.Use, output: { [OK]: OV }) -> (),
 }
 

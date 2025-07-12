@@ -4,15 +4,15 @@
 ConFusion - A fork of Fusion
 
 GitHub Repository: https://github.com/HappySunChild/ConFusion
-Fusion: https://github.com/dphfox/Fusion
+Fusion on GitHub: https://github.com/dphfox/Fusion
 --]]
 
 local External = require "@self/External"
 local Types = require "@self/Types"
 
-type Fusion = Types.Fusion
+type ConFusion = Types.ConFusion
 
-export type Scope<Constructors = Fusion> = Types.Scope<Constructors>
+export type Scope<Constructors = ConFusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
 export type Use = Types.Use
 
@@ -37,6 +37,9 @@ local Fusion = table.freeze {
 	innerScope = require "@self/Memory/innerScope",
 	doCleanup = require "@self/Memory/doCleanup",
 
+	-- External
+	setProvider = External.setProvider,
+
 	-- State
 	Eventual = require "@self/State/Eventual",
 	Computed = require "@self/State/Computed",
@@ -45,10 +48,13 @@ local Fusion = table.freeze {
 	ForPairs = require "@self/State/ForPairs",
 	ForKeys = require "@self/State/ForKeys",
 	ForValues = require "@self/State/ForValues",
+
+	-- Utility
 	peek = require "@self/State/peek",
-
 	map = require "@self/Utility/map",
+	flatten = require "@self/Utility/flatten",
 
+	-- Graph
 	Observer = require "@self/Graph/Observer",
 
 	-- Animation
@@ -58,7 +64,7 @@ local Fusion = table.freeze {
 	Spring = require "@self/Animation/Spring",
 	Delay = require "@self/Animation/Delay",
 
-	-- Instance
+	-- Instances
 	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
 	WithChild = require "@self/Instances/WithChild",
@@ -79,12 +85,9 @@ local Fusion = table.freeze {
 	Out = require "@self/Instances/Keys/Out",
 	OnEvent = require "@self/Instances/Keys/OnEvent",
 	OnChange = require "@self/Instances/Keys/OnChange",
-
-	-- External
-	setProvider = External.setProvider,
 }
 
 local RobloxProvider = require "@self/RobloxProvider"
 External.setProvider(RobloxProvider)
 
-return Fusion :: Fusion
+return Fusion :: ConFusion

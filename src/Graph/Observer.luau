@@ -12,11 +12,42 @@ type Self = Types.Observer & {
 	_listeners: { () -> () },
 }
 
-local class = {
+local class = table.freeze {
 	type = "Observer",
 	kind = "graph",
 	timeliness = "eager",
 	_users = table.freeze {},
+
+	onBind = function(self: Self, callback: () -> ())
+		External.doTaskImmediate(callback)
+
+		return self:onChange(callback)
+	end,
+	onChange = function(self: Self, callback: () -> ())
+		local uniqueId = table.freeze {}
+
+		self._listeners[uniqueId] = callback
+
+		return function()
+			self._listeners[uniqueId] = nil
+		end
+	end,
+	_evaluate = function(self: Self)
+		for _, subject in self._subjects do
+			if castToGraph(subject) then
+				depend(self, subject)
+			end
+		end
+
+		for _, callback in self._listeners do
+			-- it'd be nice if we could pass which subject was the one that changed,
+			-- but i don't think that's currently possible without having to do some major changes to how the graph works.
+			-- maybe it could be passed into _evaluate? again i'm not sure how this'd work.
+			External.doTaskImmediate(callback, unpack(self._subjects))
+		end
+
+		return true
+	end,
 }
 local METATABLE = table.freeze { __index = class }
 
@@ -36,38 +67,6 @@ local function Observer(scope: Types.Scope, ...: Types.GraphObject)
 	evaluate(newObserver)
 
 	return newObserver
-end
-
-function class.onBind(self: Self, callback: () -> ())
-	External.doTaskImmediate(callback)
-	return self:onChange(callback)
-end
-
-function class.onChange(self: Self, callback: () -> ())
-	local uniqueId = table.freeze {}
-
-	self._listeners[uniqueId] = callback
-
-	return function()
-		self._listeners[uniqueId] = nil
-	end
-end
-
-function class._evaluate(self: Self)
-	for _, subject in self._subjects do
-		if castToGraph(subject) then
-			depend(self, subject)
-		end
-	end
-
-	for _, callback in self._listeners do
-		-- it'd be nice if we could pass which subject was the one that changed,
-		-- but i don't think that's currently possible without having to do some major changes to how the graph works.
-		-- maybe it could be passed into _evaluate? again i'm not sure how this'd work.
-		External.doTaskImmediate(callback, unpack(self._subjects))
-	end
-
-	return true
 end
 
 return Observer

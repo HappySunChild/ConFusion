@@ -11,7 +11,7 @@ local ForTypes = require "./For/ForTypes"
 
 local parseError = require "../Logging/parseError"
 
-local SUB_OBJECT_META = {
+local SUB_OBJECT_META = table.freeze {
 	__index = {
 		roamKeys = false,
 		roamValues = false,
