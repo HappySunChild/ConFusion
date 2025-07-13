@@ -103,7 +103,7 @@ export type Computed<T> = {
 type ComputedConstructor = <T, S>(
 	scope: Scope<S>,
 	processor: (Use, S) -> T
-) -> Computed<T>
+) -> Computed<T> | T
 
 -- A state object which maps over keys and/or values in another table.
 export type For<OK, OV> = {
@@ -115,19 +115,19 @@ type ForPairsConstructor = <S, IK, IV, OK, OV>(
 	scope: Scope<S>,
 	input: UsedAs<{ [IK]: IV }>,
 	processor: (Use, S, key: IK, value: IV) -> (OK, OV)
-) -> For<OK, OV>
+) -> For<OK, OV> | { [OK]: OV }
 
 type ForKeysConstructor = <S, IK, IV, OK>(
 	scope: Scope<S>,
 	input: UsedAs<{ [IK]: IV }>,
 	processor: (Use, S, key: IK) -> OK
-) -> For<OK, IV>
+) -> For<OK, IV> | { [OK]: IV }
 
 type ForValuesConstructor = <S, IK, IV, OV>(
 	scope: Scope<S>,
 	input: UsedAs<{ [IK]: IV }>,
 	processor: (S, value: IV) -> OV
-) -> For<IK, OV>
+) -> For<IK, OV> | { [IK]: OV }
 
 -- A state object that's similar to Computed, but is asynchronous.
 export type Eventual<V> = {

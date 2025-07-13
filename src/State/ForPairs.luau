@@ -8,6 +8,7 @@ local Value = require "./Value"
 
 local For = require "./For"
 local ForTypes = require "./For/ForTypes"
+local checkDissolvable = require "./For/checkDissolvable"
 
 local parseError = require "../Logging/parseError"
 
@@ -79,7 +80,13 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		IK,
 		IV
 	) -> (OK, OV)
-): Types.For<OK, OV>
+): Types.For<OK, OV> | { [OK]: OV }
+	local dissolvable, values = checkDissolvable(scope, inputTable, processor)
+
+	if dissolvable then
+		return values
+	end
+
 	return For(scope, inputTable, function(scope, initialKey, initialValue)
 		return SubObject(scope, initialKey, initialValue, processor)
 	end)
