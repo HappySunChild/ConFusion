@@ -3,7 +3,7 @@ local Types = require "../Types"
 
 local applyProperties = require "./applyProperties"
 
-local function WithChild(scope: Types.Scope, name: string)
+local function ChildOfName(scope: Types.Scope, name: string)
 	return function(props: Types.Properties)
 		return function(parent: Instance)
 			local child = parent:FindFirstChild(name)
@@ -21,4 +21,4 @@ local function WithChild(scope: Types.Scope, name: string)
 	end
 end
 
-return WithChild
+return ChildOfName

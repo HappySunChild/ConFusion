@@ -67,12 +67,17 @@ local Fusion = table.freeze {
 	Delay = require "@self/Animation/Delay",
 
 	-- Instances
-	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
-	WithChild = require "@self/Instances/WithChild",
-	WithChildOfClass = require "@self/Instances/WithChildOfClass",
-	WithDescendant = require "@self/Instances/WithDescendant",
-	WithDescendantOfClass = require "@self/Instances/WithDescendantOfClass",
+	New = require "@self/Instances/New",
+	FromTemplate = require "@self/Instances/FromTemplate",
+
+	ChildOfName = require "@self/Instances/ChildOfName",
+	ChildOfClass = require "@self/Instances/ChildOfClass",
+	DescendantOfName = require "@self/Instances/DescendantOfName",
+	DescendantOfClass = require "@self/Instances/DescendantOfClass",
+
+	PropertyOf = require "@self/Instances/PropertyOf",
+	AttributeOf = require "@self/Instances/AttributeOf",
 
 	-- Instance Keys
 	Children = require "@self/Instances/Keys/Children",

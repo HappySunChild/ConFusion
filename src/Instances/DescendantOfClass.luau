@@ -3,14 +3,14 @@ local Types = require "../Types"
 
 local applyProperties = require "./applyProperties"
 
-local function WithChildOfClass(scope: Types.Scope, className: string)
+local function DescendantOfClass(scope: Types.Scope, className: string)
 	return function(props: Types.Properties)
 		return function(parent: Instance)
-			local child = parent:FindFirstChildWhichIsA(className)
+			local child = parent:FindFirstChildWhichIsA(className, true)
 
 			if not child then
 				External.logErrorNonFatal(
-					"missingChildClass",
+					"missingDescendantClass",
 					nil,
 					className,
 					parent.Name
@@ -26,4 +26,4 @@ local function WithChildOfClass(scope: Types.Scope, className: string)
 	end
 end
 
-return WithChildOfClass
+return DescendantOfClass

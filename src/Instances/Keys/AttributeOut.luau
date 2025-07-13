@@ -1,8 +1,33 @@
+local External = require "../../External"
 local Types = require "../../Types"
+
+local SpecialKey = require "./SpecialKey"
 
 local xtypeof = require "../../Utility/xtypeof"
 
-local SpecialKey = require "./SpecialKey"
+-- local bindValueToAttribute = require "../bindValueToAttribute"
+
+local function bindValueToAttribute(
+	scope: Types.Scope,
+	value: Types.Value<any>,
+	instance: Instance,
+	attribute: string
+)
+	if xtypeof(value) ~= "Value" then
+		External.logError("expectedType", nil, "Value", typeof(value))
+	end
+
+	local event = instance:GetAttributeChangedSignal(attribute)
+
+	value:set(instance:GetAttribute(attribute))
+
+	table.insert(
+		scope,
+		event:Connect(function()
+			value:set(instance:GetAttribute(attribute))
+		end)
+	)
+end
 
 local keyCache = {}
 
@@ -17,20 +42,7 @@ local function AttributeOut(attribute: string): Types.SpecialKey<"AttributeOut">
 				applyTo: Instance,
 				value: Types.Value<any>
 			)
-				if xtypeof(value) ~= "Value" then
-					return error(`Invalid Out type.`, 2)
-				end
-
-				local event = applyTo:GetAttributeChangedSignal(attribute)
-
-				table.insert(
-					scope,
-					event:Connect(function()
-						value:set(applyTo:GetAttribute(attribute))
-					end)
-				)
-
-				return
+				bindValueToAttribute(scope, value, applyTo, attribute)
 			end,
 		}
 
