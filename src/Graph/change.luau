@@ -77,6 +77,8 @@ local function change(target: Types.GraphObject)
 		return a.createdAt < b.createdAt
 	end)
 
+	_fireObservers(target)
+
 	for _, eagerUser in eagerList do
 		-- fire observers if there was a significant change
 		if evaluate(eagerUser) then
