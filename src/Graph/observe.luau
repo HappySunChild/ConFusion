@@ -4,8 +4,6 @@ local Types = require "../Types"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
--- this function serves as a most integrated system for Observers.
--- instead of being another node in the graph, they are built into each node, and are fired when there is a significant change
 local function observe(
 	scope: Types.Scope,
 	subject: Types.GraphObject,
@@ -24,14 +22,11 @@ local function observe(
 		subject._observers = {}
 	end
 
-	local uniqueId = {}
-
-	subject._observers[uniqueId] = callback
-
-	evaluate(subject)
+	local uniqueIdentifier = {}
+	subject._observers[uniqueIdentifier] = callback
 
 	local function disconnect()
-		subject._observers[uniqueId] = nil
+		subject._observers[uniqueIdentifier] = nil
 
 		local index = table.find(scope, disconnect)
 
@@ -41,6 +36,8 @@ local function observe(
 	end
 
 	table.insert(scope, disconnect)
+
+	evaluate(subject)
 
 	return disconnect
 end
