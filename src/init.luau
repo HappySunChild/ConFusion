@@ -26,7 +26,6 @@ export type Animated<V> = Types.Animated<V>
 export type Value<V> = Types.Value<V>
 export type Computed<V> = Types.Computed<V>
 export type For<K, V> = Types.For<K, V>
-export type Observer = Types.Observer
 
 export type Child = Types.Child
 
@@ -55,7 +54,7 @@ local Fusion = table.freeze {
 	flatten = require "@self/Utility/flatten",
 
 	-- Graph
-	Observer = require "@self/Graph/Observer",
+	observe = require "@self/Graph/observe",
 
 	-- Animation
 	Timer = require "@self/Animation/Timer",

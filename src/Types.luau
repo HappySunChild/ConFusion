@@ -39,6 +39,8 @@ export type GraphObject = {
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
 
+	_observers: { [{}]: (...unknown?) -> () }?,
+
 	_evaluate: (GraphObject) -> boolean,
 } & ScopedObject
 
@@ -48,17 +50,6 @@ export type StateObject<V> = {
 	kind: "state",
 	type: string,
 } & GraphObject
-
--- An object which can listen for updates on another state object.
-export type Observer = {
-	type: "Observer",
-	kind: "graph",
-
-	onBind: (Observer, callback: () -> ()) -> () -> (),
-	onChange: (Observer, callback: () -> ()) -> () -> (),
-} & GraphObject
-
-type ObserverConstructor = (scope: Scope<unknown>, subject: ObjectValue) -> Observer
 
 -- A state object whose value can be set by the user at any time.
 export type Value<T> = {
@@ -97,7 +88,7 @@ type TableConstructor = <K, V>(
 -- A state object whose value is derived from other objects using a callback.
 export type Computed<T> = {
 	type: "Computed",
-	timeliness: "eager",
+	timeliness: "lazy",
 } & StateObject<T>
 
 type ComputedConstructor = <T, S>(
@@ -228,7 +219,12 @@ export type ConFusion = {
 	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
 	-- Graph
-	read Observer: ObserverConstructor,
+	read observe: (
+		scope: Scope,
+		subject: GraphObject,
+		callback: () -> (),
+		immediate: boolean?
+	) -> () -> (),
 
 	-- State
 	read Eventual: EventualConstructor,

@@ -7,7 +7,7 @@ local sortKeys = require "./Keys/sortKeys"
 local castToState = require "../State/castToState"
 local peek = require "../State/peek"
 
-local Observer = require "../Graph/Observer"
+local observe = require "../Graph/observe"
 
 local parseError = require "../Logging/parseError"
 
@@ -60,14 +60,12 @@ local function applyProperty(
 	value: Types.UsedAs<any>
 )
 	if castToState(value) then
-		Observer(scope, value):onBind(function()
+		observe(scope, value, function()
 			setProperty(instance, property, peek(value))
 		end)
-
-		return
 	end
 
-	setProperty(instance, property, value)
+	setProperty(instance, property, peek(value))
 end
 
 local function applyProperties<T>(
