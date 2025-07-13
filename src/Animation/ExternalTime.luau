@@ -22,7 +22,7 @@ local class = {
 	kind = "state",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internalValue = External.lastUpdateStep(),
+	_internalValue = External.getLastUpdate(),
 
 	setActive = function(self: Self, active: boolean)
 		self._active = active

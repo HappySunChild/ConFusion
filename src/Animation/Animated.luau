@@ -84,7 +84,7 @@ local class = table.freeze {
 		local elapsed = peek(timer) :: number
 		
 		if elapsed == 0 then
-			elapsed = External.deltaTime()
+			elapsed = External.getDeltaTime()
 		end
 
 		local shouldSleep, newValue = self._activeStepper(elapsed)

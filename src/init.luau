@@ -12,6 +12,8 @@ local Types = require "@self/Types"
 
 type ConFusion = Types.ConFusion
 
+export type ExternalProvider = Types.ExternalProvider
+
 export type Scope<Constructors = ConFusion> = Types.Scope<Constructors>
 export type UsedAs<V> = Types.UsedAs<V>
 export type Use = Types.Use
