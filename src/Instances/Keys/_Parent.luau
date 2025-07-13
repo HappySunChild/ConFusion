@@ -1,6 +1,6 @@
 local Types = require "../../Types"
 
-local Observer = require "../../Graph/Observer"
+local observe = require "../../Graph/observe"
 
 local castToState = require "../../State/castToState"
 local peek = require "../../State/peek"
@@ -25,7 +25,7 @@ local Parent = SpecialKey "Parent" {
 		parent: Types.UsedAs<Instance?>
 	)
 		if castToState(parent) then
-			Observer(scope, parent):onBind(function()
+			observe(scope, parent, function()
 				setParent(applyTo, peek(parent))
 			end)
 		end
