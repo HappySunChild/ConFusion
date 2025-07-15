@@ -184,6 +184,15 @@ type DelayConstructor = <V>(
 	amount: UsedAs<number>
 ) -> Animated<V>
 
+type ContextualIsMethods = {
+	during: <R, A...>(ContextualIsMethods, (A...) -> R, A...) -> R,
+}
+export type Contextual<T> = {
+	now: (Contextual<T>) -> T,
+	is: (Contextual<T>, value: T) -> ContextualIsMethods,
+}
+type ContextualConstructor = <T>(default: T) -> Contextual<T>
+
 export type SpecialKeyStage =
 	"self"
 	| "descendants"
@@ -223,6 +232,7 @@ export type ConFusion = {
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
 	-- Utility
+	read Contextual: ContextualConstructor,
 	read peek: <V>(value: UsedAs<V> | V) -> V,
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
 	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
