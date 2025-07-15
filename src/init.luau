@@ -29,6 +29,7 @@ export type Value<V> = Types.Value<V>
 export type Computed<V> = Types.Computed<V>
 export type For<K, V> = Types.For<K, V>
 export type Observer = Types.Observer
+export type Contextual<T> = Types.Contextual<T>
 
 export type Child = Types.Child
 
@@ -52,6 +53,7 @@ local Fusion = table.freeze {
 	ForValues = require "@self/State/ForValues",
 
 	-- Utility
+	Contextual = require "@self/Utility/Contextual",
 	peek = require "@self/State/peek",
 	map = require "@self/Utility/map",
 	flatten = require "@self/Utility/flatten",
