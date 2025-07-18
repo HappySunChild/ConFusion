@@ -184,12 +184,9 @@ type DelayConstructor = <V>(
 	amount: UsedAs<number>
 ) -> Animated<V>
 
-type ContextualIsMethods = {
-	during: <R, A...>(ContextualIsMethods, (A...) -> R, A...) -> R,
-}
 export type Contextual<T> = {
 	now: (Contextual<T>) -> T,
-	is: (Contextual<T>, value: T) -> ContextualIsMethods,
+	executeAs: <T, R, A...>(Contextual<T>, (A...) -> R, A...) -> R,
 }
 type ContextualConstructor = <T>(default: T) -> Contextual<T>
 

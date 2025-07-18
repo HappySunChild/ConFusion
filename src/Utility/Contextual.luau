@@ -22,25 +22,21 @@ local class = table.freeze {
 
 		return value[1]
 	end,
-	is = function<T>(self: Self<T>, new: T)
-		return {
-			during = function<T, A...>(_, callback: (A...) -> T, ...: A...): T
-				local thread = coroutine.running()
-				local original = self._values[thread]
+	executeAs = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
+		local thread = coroutine.running()
+		local original = self._values[thread]
 
-				self._values[thread] = { new }
+		self._values[thread] = { new }
 
-				local ok, value = xpcall(callback, parseError, ...)
+		local ok, value = xpcall(callback, parseError, ...)
 
-				self._values[thread] = original
+		self._values[thread] = original
 
-				if not ok then
-					External.logError("callbackError", value)
-				end
+		if not ok then
+			External.logError("callbackError", value)
+		end
 
-				return value
-			end,
-		}
+		return value
 	end,
 }
 local METATABLE = table.freeze { __index = class }
