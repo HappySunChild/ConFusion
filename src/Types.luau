@@ -145,6 +145,7 @@ type EventualConstructor = <V>(
 
 export type Timer = StateObject<number> & {
 	type: "Timer",
+	isPaused: boolean,
 
 	pause: (Timer) -> (),
 	unpause: (Timer) -> (),
