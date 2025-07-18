@@ -1,14 +1,14 @@
 --!strict
-local External = require("../External")
-local Types = require("../Types")
+local External = require "../External"
+local Types = require "../Types"
 
-local Timer = require("./Timer")
+local Timer = require "./Timer"
 
-local depend = require("../Graph/depend")
-local evaluate = require("../Graph/evaluate")
+local depend = require "../Graph/depend"
+local evaluate = require "../Graph/evaluate"
 
-local castToState = require("../State/castToState")
-local peek = require("../State/peek")
+local castToState = require "../State/castToState"
+local peek = require "../State/peek"
 
 type Self<V> = Types.Animated<V> & {
 	_goal: Types.UsedAs<V>,
@@ -26,7 +26,10 @@ local class = table.freeze {
 	type = "Animated",
 	kind = "state",
 	timeliness = "eager",
-	
+
+	isSleeping = function<V>(self: Self<V>)
+		return self._timer.isPaused
+	end,
 	_evaluate = function<V>(self: Self<V>)
 		local goal = self._goal
 
@@ -36,7 +39,7 @@ local class = table.freeze {
 
 		local mover = self._mover
 		local timer = self._timer
-		
+
 		local nextGoal = peek(goal)
 		local nextMover = peek(mover) :: Types.AnimatedMover<V>
 
@@ -50,10 +53,10 @@ local class = table.freeze {
 		if nextGoal ~= (self._activeGoal :: any) or nextMover ~= self._activeMover then
 			self._activeStart = self._internalValue
 			self._activeGoal = nextGoal
-			
+
 			self._activeMover = nextMover
 			self._activeStepper = nextMover(self._activeStart, self._activeGoal)
-			
+
 			--[[
 				The Animated *needs* to be dependant on the timer AND the goal,
 				so that when the goal updates we can wake the Animated and change
@@ -82,7 +85,7 @@ local class = table.freeze {
 		end
 
 		local elapsed = peek(timer) :: number
-		
+
 		if elapsed == 0 then
 			elapsed = External.getDeltaTime()
 		end

@@ -158,6 +158,8 @@ export type AnimatedMover<V> = (start: V, goal: V) -> MoverStepper<V>
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {
 	type: "Animated",
+
+	isSleeping: (Animated<V>) -> boolean,
 } & StateObject<V>
 
 type AnimatedConstructor = <V>(
