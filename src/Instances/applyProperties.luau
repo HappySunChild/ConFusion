@@ -25,30 +25,32 @@ end
 local function setProperty(instance: Instance, property: string, value: any)
 	local success, err = xpcall(rawSetProperty, parseError, instance, property, value)
 
-	if not success then
-		if not pcall(testProperty, instance, property) then
+	if success then
+		return
+	end
+
+	if not pcall(testProperty, instance, property) then
+		External.logErrorNonFatal(
+			"propertyCannotAssign",
+			nil,
+			instance.ClassName,
+			property
+		)
+	else
+		local givenType = typeof(value)
+		local expectedType = typeof(instance[property])
+
+		if givenType == expectedType then
+			External.logErrorNonFatal("propertyAssignError", err)
+		else
 			External.logErrorNonFatal(
-				"propertyCannotAssign",
+				"propertyInvalidType",
 				nil,
 				instance.ClassName,
-				property
+				property,
+				expectedType,
+				givenType
 			)
-		else
-			local givenType = typeof(value)
-			local expectedType = typeof(instance[property])
-
-			if givenType == expectedType then
-				External.logErrorNonFatal("propertyAssignError", err)
-			else
-				External.logErrorNonFatal(
-					"propertyInvalidType",
-					nil,
-					instance.ClassName,
-					property,
-					expectedType,
-					givenType
-				)
-			end
 		end
 	end
 end
@@ -70,8 +72,8 @@ local function applyProperty(
 	setProperty(instance, property, value)
 end
 
-local function applyProperties<T>(
-	scope: Types.Scope<T>,
+local function applyProperties(
+	scope: Types.Scope,
 	instance: Instance,
 	props: Types.Properties
 )

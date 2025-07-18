@@ -82,6 +82,10 @@ local Fusion = table.freeze {
 	OnRemoval = require "@self/Instances/Keys/OnRemoval",
 	Ref = require "@self/Instances/Keys/Ref",
 	Passthrough = require "@self/Instances/Keys/Passthrough",
+
+	Style = require "@self/Instances/Keys/Style",
+	Default = require "@self/Instances/Keys/Default",
+
 	Attribute = require "@self/Instances/Keys/Attribute",
 	AttributeChange = require "@self/Instances/Keys/AttributeChange",
 	AttributeOut = require "@self/Instances/Keys/AttributeOut",
@@ -89,6 +93,10 @@ local Fusion = table.freeze {
 	Out = require "@self/Instances/Keys/Out",
 	OnEvent = require "@self/Instances/Keys/OnEvent",
 	OnChange = require "@self/Instances/Keys/OnChange",
+
+	-- Styling
+	StyleRule = require "@self/Instances/Styling/StyleRule",
+	StyleSheet = require "@self/Instances/Styling/StyleSheet",
 }
 
 local RobloxProvider = require "@self/RobloxProvider"
