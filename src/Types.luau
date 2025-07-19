@@ -169,7 +169,7 @@ type TweenConstructor = <V>(
 	scope: Scope<unknown>,
 	goal: UsedAs<V>,
 	info: UsedAs<TweenInfo>
-) -> Animated<V>
+) -> Animated<V> | V
 
 type SpringConstructor = <V>(
 	scope: Scope<unknown>,
