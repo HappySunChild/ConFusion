@@ -1,0 +1,31 @@
+{
+	"name": "ConFusion",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$ignoreUnknownInstances": true,
+			"Libraries": {
+				"$className": "Folder",
+				"$ignoreUnknownInstances": true,
+				"ConFusion": {
+					"$path": "src"
+				}
+			},
+			"Shared": {
+				"$ignoreUnknownInstances": true,
+				"$path": "tests/shared"
+			}
+		},
+		"StarterPlayer": {
+			"$ignoreUnknownInstances": true,
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"$ignoreUnknownInstances": true,
+				"Demos": {
+					"$path": "tests/demos"
+				}
+			}
+		}
+	}
+}

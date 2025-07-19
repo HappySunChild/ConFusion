@@ -3,104 +3,105 @@ local Types = require "./Types"
 
 local formatError = require "./Logging/formatError"
 
-local External = {}
-
 local boundCallbacks = {}
 local activeProvider: Types.ExternalProvider? = nil
 
-function External.setProvider(newProvider: Types.ExternalProvider?)
-	local oldProvider = activeProvider
-
-	if oldProvider ~= nil then
-		oldProvider.stopScheduler()
-	end
-
-	activeProvider = newProvider
-
-	if newProvider then
-		newProvider.startScheduler()
-	end
-
-	return oldProvider
-end
-
-function External.unbindAll()
-	table.clear(boundCallbacks)
-end
-
-function External.bindToUpdate(callback: (now: number) -> ())
-	local uniqueIdentifier = {}
-	boundCallbacks[uniqueIdentifier] = callback
-
-	return function()
-		boundCallbacks[uniqueIdentifier] = nil
-	end
-end
-
-local lastUpdateStep = os.clock()
+local lastUpdate = os.clock()
 local deltaTime = 0
 
-function External.performUpdate()
-	local now = os.clock()
+local External = table.freeze {
+	setProvider = function(newProvider: Types.ExternalProvider?)
+		local oldProvider = activeProvider
 
-	deltaTime = now - lastUpdateStep
-	lastUpdateStep = now
+		if oldProvider ~= nil then
+			oldProvider.stopScheduler()
+		end
 
-	for _, callback in boundCallbacks do
-		callback(now)
-	end
-end
+		activeProvider = newProvider
 
-function External.deltaTime(): number
-	return deltaTime
-end
+		if newProvider then
+			newProvider.startScheduler()
+		end
 
-function External.lastUpdateStep(): number
-	return lastUpdateStep
-end
+		return oldProvider
+	end,
+	bindToUpdate = function(callback: (now: number) -> ()): () -> ()
+		local uniqueIdentifier = {}
+		boundCallbacks[uniqueIdentifier] = callback
 
-function External.doTaskImmediate(resume: (...unknown?) -> (), ...: unknown?)
-	if activeProvider then
-		activeProvider.doTaskImmediate(resume, ...)
-	end
-end
+		return function()
+			boundCallbacks[uniqueIdentifier] = nil
+		end
+	end,
+	performUpdate = function(): ()
+		local now = os.clock()
 
-function External.doTaskDeffered(resume: (...unknown?) -> (), ...: unknown?)
-	if activeProvider then
-		activeProvider.doTaskDeferred(resume, ...)
-	end
-end
+		deltaTime = now - lastUpdate
+		lastUpdate = now
 
-function External.logError(
-	messageId: formatError.MessageId,
-	err: Types.Error?,
-	...: unknown
-): never
-	error(formatError(messageId, err, ...), 0)
-end
+		for _, callback in boundCallbacks do
+			callback(now)
+		end
+	end,
 
-function External.logErrorNonFatal(
-	messageId: formatError.MessageId,
-	err: Types.Error?,
-	...: unknown
-)
-	local message = formatError(messageId, err, ...)
+	getDeltaTime = function(): number
+		return deltaTime
+	end,
+	getLastUpdate = function(): number
+		return lastUpdate
+	end,
 
-	if activeProvider then
-		activeProvider.logErrorNonFatal(message)
-	else
-		print(message)
-	end
-end
+	doTaskImmediate = function(resume: (...any?) -> (), ...: any?): thread?
+		if not activeProvider then
+			return nil
+		end
 
-function External.logWarn(messageId: formatError.MessageId, ...: unknown)
-	local message = formatError(messageId, debug.traceback(nil, 2), ...)
+		return activeProvider.doTaskImmediate(resume, ...)
+	end,
+	doTaskDeferred = function(resume: (...any?) -> (), ...: any?): thread?
+		if not activeProvider then
+			return nil
+		end
 
-	if activeProvider then
-		activeProvider.logWarn(message)
-	else
-		print(message)
-	end
-end
+		return activeProvider.doTaskDeferred(resume, ...)
+	end,
+	cancelTask = function(task: thread): boolean
+		if not activeProvider then
+			return false
+		end
+
+		return activeProvider.cancelTask(task)
+	end,
+
+	logError = function(
+		messageId: formatError.MessageId,
+		err: Types.Error?,
+		...: any?
+	): never
+		error(formatError(messageId, err, ...), 0)
+	end,
+	logErrorNonFatal = function(
+		messageId: formatError.MessageId,
+		err: Types.Error?,
+		...: any?
+	)
+		local message = formatError(messageId, err, ...)
+
+		if activeProvider then
+			activeProvider.logErrorNonFatal(message)
+		else
+			print(message)
+		end
+	end,
+	logWarn = function(messageId: formatError.MessageId, err: Types.Error, ...: any?)
+		local message = formatError(messageId, err, ...)
+
+		if activeProvider then
+			activeProvider.logWarn(message)
+		else
+			print(message)
+		end
+	end,
+}
 
 return External

@@ -22,7 +22,17 @@ local class = {
 	kind = "state",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internalValue = External.lastUpdateStep(),
+	_internalValue = External.getLastUpdate(),
+
+	setActive = function(self: Self, active: boolean)
+		self._active = active
+	end,
+	isActive = function(self: Self)
+		return self._active
+	end,
+	_evaluate = function(self: Self)
+		return true
+	end,
 }
 
 local METATABLE = table.freeze { __index = class }
@@ -51,18 +61,6 @@ local function ExternalTime(scope: Types.Scope): ExternalTime
 	table.insert(allTimers, newExternalTime)
 
 	return newExternalTime
-end
-
-function class.setActive(self: Self, active: boolean)
-	self._active = active
-end
-
-function class.isActive(self: Self)
-	return self._active
-end
-
-function class._evaluate(): boolean
-	return true
 end
 
 External.bindToUpdate(function(now: number)

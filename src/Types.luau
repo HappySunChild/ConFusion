@@ -8,7 +8,7 @@ export type Error = {
 }
 
 export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupTask }
-export type Child = Instance | ((Instance) -> Instance?) | { Child } | UsedAs<Child>
+export type Child = Instance | ((Instance) -> Instance?) | { Child } | StateObject<Child>
 
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
@@ -133,6 +133,8 @@ type ForValuesConstructor = <S, IK, IV, OV>(
 export type Eventual<V> = {
 	type: "Eventual",
 	timeliness: "lazy",
+
+	isPending: (Eventual<V>) -> boolean,
 } & StateObject<V>
 
 type EventualConstructor = <V>(
@@ -182,6 +184,12 @@ type DelayConstructor = <V>(
 	amount: UsedAs<number>
 ) -> Animated<V>
 
+export type Contextual<T> = {
+	now: (Contextual<T>) -> T,
+	executeAs: <T, R, A...>(Contextual<T>, (A...) -> R, A...) -> R,
+}
+type ContextualConstructor = <T>(default: T) -> Contextual<T>
+
 export type SpecialKeyStage =
 	"self"
 	| "descendants"
@@ -205,24 +213,31 @@ export type ExternalProvider = {
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
 
-	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> (),
-	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> (),
+	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	cancelTask: (thread) -> boolean,
 }
 
-export type Fusion = {
+export type ConFusion = {
+	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (CleanupTask) -> (),
 
+	-- External
 	read setProvider: (newProvider: ExternalProvider?) -> ExternalProvider?,
 
+	-- Utility
+	read Contextual: ContextualConstructor,
 	read peek: <V>(value: UsedAs<V> | V) -> V,
-
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
+	-- Graph
 	read Observer: ObserverConstructor,
 
+	-- State
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
 	read Value: ValueConstructor,
@@ -234,11 +249,13 @@ export type Fusion = {
 
 	read Timer: (scope: Scope) -> Timer,
 
+	-- Animation
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
 	read Delay: DelayConstructor,
 
+	-- Instances
 	read New: (
 		scope: Scope,
 		classNameOrTemplate: Instance | string
@@ -261,7 +278,7 @@ export type Fusion = {
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
 
-	-- Keys
+	-- Instance Keys
 	read Children: SpecialKey<"Children">,
 	read OnStartup: SpecialKey<"OnStartup">,
 	read OnRemoval: SpecialKey<"OnRemoval">,

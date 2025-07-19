@@ -10,7 +10,7 @@ local function delayMover<V>(delay: Types.UsedAs<number>)
 	local activeDelayed = {}
 
 	local function update()
-		local now = External.lastUpdateStep()
+		local now = External.getLastUpdate()
 
 		local timestepValues = {}
 
@@ -35,7 +35,7 @@ local function delayMover<V>(delay: Types.UsedAs<number>)
 	end
 
 	return function(start: V, target: V)
-		local now = External.lastUpdateStep()
+		local now = External.getLastUpdate()
 		local later = now + peek(delay)
 
 		table.insert(activeDelayed, {

@@ -20,12 +20,51 @@ type Self<T, S> = Types.Computed<T> & {
 	_processor: (use: Types.Use, scope: Types.Scope<S>) -> T,
 }
 
-local class = {
+local class = table.freeze {
 	type = "Computed",
 	kind = "state",
 	timeliness = "lazy",
-}
 
+	_evaluate = function<T, S>(self: Self<T, S>): boolean
+		if self.scope == nil then
+			return false
+		end
+
+		local outerScope = self.scope
+		local innerScope = deriveScope(outerScope)
+
+		local function use<V>(target: Types.UsedAs<V>): V
+			if castToState(target) then
+				depend(self, target)
+			end
+
+			return peek(target)
+		end
+
+		local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
+
+		if ok then
+			local similar = isSimilar(self._internalValue, newValue)
+
+			if self._innerScope ~= nil then
+				doCleanup(self._innerScope)
+
+				self._innerScope = nil
+			end
+
+			self._innerScope = innerScope
+			self._internalValue = newValue
+
+			return not similar
+		else
+			doCleanup(innerScope)
+
+			External.logErrorNonFatal("callbackError", newValue)
+		end
+
+		return false
+	end,
+}
 local METATABLE = table.freeze { __index = class }
 
 local function checkDissolvable<T, S>(
@@ -77,47 +116,5 @@ local function Computed<T, S>(
 
 	return newComputed
 end
-
-function class._evaluate<T, S>(self: Self<T, S>): boolean
-	if self.scope == nil then
-		return false
-	end
-
-	local outerScope = self.scope
-	local innerScope = deriveScope(outerScope)
-
-	local function use<V>(target: Types.UsedAs<V>): V
-		if castToState(target) then
-			depend(self, target)
-		end
-
-		return peek(target)
-	end
-
-	local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
-
-	if ok then
-		local similar = isSimilar(self._internalValue, newValue)
-
-		if self._innerScope ~= nil then
-			doCleanup(self._innerScope)
-
-			self._innerScope = nil
-		end
-
-		self._innerScope = innerScope
-		self._internalValue = newValue
-
-		return not similar
-	else
-		doCleanup(innerScope)
-
-		External.logErrorNonFatal("callbackError", newValue)
-	end
-
-	return false
-end
-
-table.freeze(class)
 
 return Computed
