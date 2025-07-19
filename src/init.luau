@@ -47,7 +47,6 @@ local Fusion = table.freeze {
 	Eventual = require "@self/State/Eventual",
 	Computed = require "@self/State/Computed",
 	Value = require "@self/State/Value",
-	Table = require "@self/State/Table",
 	ForPairs = require "@self/State/ForPairs",
 	ForKeys = require "@self/State/ForKeys",
 	ForValues = require "@self/State/ForValues",

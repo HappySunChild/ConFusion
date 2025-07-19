@@ -77,23 +77,6 @@ export type Value<T> = {
 
 type ValueConstructor = <V>(scope: Scope<unknown>, initialValue: V?) -> Value<V>
 
--- A state object that's similar to Value, but specifically for tables. It contains methods for modifying and reading specific keys.
-export type Table<K, V> = {
-	type: "Table",
-	timeliness: "lazy",
-
-	setKey: (Table<K, V>, key: K, value: V) -> V,
-	getKey: (Table<K, V>, key: K) -> V,
-
-	insert: (Table<K, V>, index: number, value: V) -> V,
-	remove: (Table<K, V>, index: number) -> V,
-} & StateObject<{ [K]: V }>
-
-type TableConstructor = <K, V>(
-	scope: Scope<unknown>,
-	initialValue: { [K]: V }
-) -> Table<K, V>
-
 -- A state object whose value is derived from other objects using a callback.
 export type Computed<T> = {
 	type: "Computed",
@@ -235,7 +218,6 @@ export type ConFusion = {
 	read Eventual: EventualConstructor,
 	read Computed: ComputedConstructor,
 	read Value: ValueConstructor,
-	read Table: TableConstructor,
 
 	read ForPairs: ForPairsConstructor,
 	read ForKeys: ForKeysConstructor,
