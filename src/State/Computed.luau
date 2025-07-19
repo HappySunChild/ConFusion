@@ -10,6 +10,7 @@ local peek = require "./peek"
 local deriveScope = require "../Memory/deriveScope"
 local destructor = require "../Memory/destructor"
 local doCleanup = require "../Memory/doCleanup"
+local innerScope = require "../Memory/innerScope"
 
 local isSimilar = require "../Utility/isSimilar"
 
@@ -67,11 +68,12 @@ local class = table.freeze {
 }
 local METATABLE = table.freeze { __index = class }
 
-local function checkDissolvable<T, S>(
+local function _checkDissolvable<T, S>(
 	scope: Types.Scope<S>,
 	processor: (Types.Use, Types.Scope<S>) -> T
 ): (boolean, T?)
 	local success, value = pcall(processor, dissolvingUse, scope)
+
 	if success then
 		return true, value
 	end
@@ -85,7 +87,7 @@ local function Computed<T, S>(
 	scope: Types.Scope<S>,
 	processor: (Types.Use, Types.Scope<S>) -> T
 ): Types.Computed<T> | T
-	local dissolvable, value = checkDissolvable(deriveScope(scope), processor)
+	local dissolvable, value = _checkDissolvable(innerScope(scope), processor)
 
 	if dissolvable then
 		return value
