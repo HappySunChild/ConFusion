@@ -1,7 +1,7 @@
 local Types = require "../../Types"
 
-local deriveScope = require "../../Memory/deriveScope"
 local doCleanup = require "../../Memory/doCleanup"
+local innerScope = require "../../Memory/innerScope"
 
 local castToState = require "../castToState"
 local dissolvingUse = require "../dissolvingUse"
@@ -20,15 +20,15 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		return false
 	end
 
-	local innerScope = deriveScope(scope)
+	local dissolveScope = innerScope(scope)
 	local output = {}
 
 	for key, value in input do
 		local ok, newKey, newValue =
-			pcall(processor, dissolvingUse, innerScope, key, value)
+			pcall(processor, dissolvingUse, dissolveScope, key, value)
 
 		if not ok then
-			doCleanup(innerScope)
+			doCleanup(dissolveScope)
 
 			return false
 		end
@@ -38,8 +38,6 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 
 		output[newKey] = newValue
 	end
-
-	table.insert(scope, innerScope)
 
 	return true, output
 end
