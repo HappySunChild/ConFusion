@@ -20,6 +20,8 @@ type Self<V> = Types.Animated<V> & {
 	_activeStepper: Types.MoverStepper<V>,
 
 	_timer: Types.Timer,
+
+	_listeners: { [{}]: (V) -> () },
 }
 
 local class = table.freeze {
@@ -29,6 +31,15 @@ local class = table.freeze {
 
 	isSleeping = function<V>(self: Self<V>)
 		return self._timer.isPaused
+	end,
+	onSleep = function<V>(self: Self<V>, callback: (V) -> ())
+		local uniqueIdentifier = {}
+
+		self._listeners[uniqueIdentifier] = callback
+
+		return function()
+			self._listeners[uniqueIdentifier] = nil
+		end
 	end,
 	_evaluate = function<V>(self: Self<V>)
 		local goal = self._goal
@@ -95,6 +106,10 @@ local class = table.freeze {
 		if shouldSleep or (self._activeStart :: any) == nextGoal then
 			timer:pause()
 			timer:reset()
+
+			for _, callback in self._listeners do
+				External.doTaskImmediate(callback, newValue)
+			end
 		end
 
 		local oldValue = self._internalValue :: any
@@ -119,6 +134,7 @@ local function Animated<V>(
 
 		_using = {},
 		_users = {},
+		_listeners = {},
 
 		_mover = mover,
 		_goal = goal,

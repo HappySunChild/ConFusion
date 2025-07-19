@@ -160,6 +160,7 @@ export type Animated<V> = {
 	type: "Animated",
 
 	isSleeping: (Animated<V>) -> boolean,
+	onSleep: (Animated<V>, callback: (V) -> ()) -> () -> (),
 } & StateObject<V>
 
 type AnimatedConstructor = <V>(
