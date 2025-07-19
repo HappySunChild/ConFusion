@@ -178,12 +178,6 @@ type SpringConstructor = <V>(
 	damping: UsedAs<number>
 ) -> Animated<V>
 
-type DelayConstructor = <V>(
-	scope: Scope<unknown>,
-	goal: UsedAs<V>,
-	amount: UsedAs<number>
-) -> Animated<V>
-
 export type Contextual<T> = {
 	now: (Contextual<T>) -> T,
 	executeAs: <T, R, A...>(Contextual<T>, (A...) -> R, A...) -> R,
@@ -253,7 +247,6 @@ export type ConFusion = {
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
-	read Delay: DelayConstructor,
 
 	-- Instances
 	read New: (
