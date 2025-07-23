@@ -34,7 +34,7 @@ local PACK_METHODS = {
 	end,
 }
 
-local function packType(dataType: string, packed: { number })
+local function packType(dataType: string, packed: { number }): any
 	local packer = PACK_METHODS[dataType]
 
 	if type(packer) == "function" then
