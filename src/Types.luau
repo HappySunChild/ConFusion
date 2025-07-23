@@ -134,8 +134,8 @@ export type Timer = StateObject<number> & {
 	reset: (Timer) -> (),
 }
 
-export type MoverStepper<V> = (elapsed: number) -> (boolean, V)
-export type AnimatedMover<V> = (start: V, goal: V) -> MoverStepper<V>
+export type AnimationCurve<V> = (elapsed: number) -> (boolean, V)
+export type CurveGenerator<V> = (start: V, goal: V) -> AnimationCurve<V>
 
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {
@@ -145,7 +145,7 @@ export type Animated<V> = {
 type AnimatedConstructor = <V>(
 	scope: Scope<unknown>,
 	goal: UsedAs<V>,
-	mover: AnimatedMover<V>
+	mover: CurveGenerator<V>
 ) -> Animated<V>
 
 type TweenConstructor = <V>(
