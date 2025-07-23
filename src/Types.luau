@@ -196,6 +196,11 @@ export type ExternalProvider = {
 }
 
 export type ConFusion = {
+	version: {
+		major: number,
+		minor: number,
+	},
+
 	-- Memory
 	read scoped: <B, M>(base: B, methods: M?) -> Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,

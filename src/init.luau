@@ -34,6 +34,11 @@ export type Contextual<T> = Types.Contextual<T>
 export type Child = Types.Child
 
 local Fusion = table.freeze {
+	version = table.freeze {
+		major = 0,
+		minor = 4,
+	},
+
 	-- Memory
 	scoped = require "@self/Memory/scoped",
 	deriveScope = require "@self/Memory/deriveScope",
