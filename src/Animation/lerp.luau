@@ -35,9 +35,9 @@ local function lerp<V>(from: V, target: V, alpha: number): V
 	local dataType = typeof(from)
 
 	if typeof(target) == dataType then
-		local interpolator = LERP_FUNCTIONS[dataType]
+		local interpolator = LERP_FUNCTIONS[dataType] :: ((V, V, number) -> V)?
 
-		if type(interpolator) == "function" then
+		if interpolator ~= nil then
 			return interpolator(from, target, alpha)
 		end
 	end
