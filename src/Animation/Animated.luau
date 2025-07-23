@@ -15,8 +15,8 @@ type Self<V> = Types.Animated<V> & {
 	_activeStart: V,
 	_activeGoal: V,
 
-	_mover: Types.UsedAs<Types.CurveGenerator<V>>,
-	_activeMover: Types.CurveGenerator<V>,
+	_generator: Types.UsedAs<Types.CurveGenerator<V>>,
+	_activeGenerator: Types.CurveGenerator<V>,
 	_activeCurve: Types.AnimationCurve<V>,
 
 	_timer: Types.Timer,
@@ -34,25 +34,29 @@ local class = table.freeze {
 			return false
 		end
 
-		local mover = self._mover
+		local generator = self._generator
 		local timer = self._timer
 
 		local nextGoal = peek(goal)
-		local nextMover = peek(mover) :: Types.CurveGenerator<V>
+		local nextGenerator = peek(generator) :: Types.CurveGenerator<V>
 
-		if castToState(mover) then
-			depend(self, mover :: any)
+		if castToState(generator) then
+			depend(self, generator :: any)
 		end
 
 		depend(self, timer)
 		depend(self, goal)
 
-		if nextGoal ~= (self._activeGoal :: any) or nextMover ~= self._activeMover then
+		-- wake
+		if
+			nextGoal ~= self._activeGoal :: any
+			or nextGenerator ~= self._activeGenerator
+		then
 			self._activeStart = self._internalValue
 			self._activeGoal = nextGoal
 
-			self._activeMover = nextMover
-			self._activeCurve = nextMover(self._activeStart, self._activeGoal)
+			self._activeGenerator = nextGenerator
+			self._activeCurve = nextGenerator(self._activeStart, self._activeGoal)
 
 			timer:reset()
 			timer:unpause()
@@ -65,6 +69,7 @@ local class = table.freeze {
 		end
 
 		local shouldSleep, newValue = self._activeCurve(elapsed)
+		-- sleep
 
 		if shouldSleep or (self._activeStart :: any) == nextGoal then
 			timer:pause()
@@ -93,12 +98,12 @@ local function Animated<V>(
 		_using = {},
 		_users = {},
 
-		_mover = mover,
 		_goal = goal,
-
 		_activeStart = nil,
 		_activeGoal = nil,
-		_activeMover = nil,
+
+		_generator = mover,
+		_activeGenerator = nil,
 		_activeCurve = nil,
 
 		_timer = timer,
