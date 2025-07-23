@@ -10,7 +10,6 @@ local destructor = require "../Memory/destructor"
 local ExternalTime = require "./ExternalTime"
 
 type Self = Types.Timer & {
-	_paused: boolean,
 	_start: number,
 	_timer: ExternalTime.ExternalTime,
 }
@@ -21,22 +20,22 @@ local class = table.freeze {
 	timeliness = "lazy",
 
 	unpause = function(self: Self)
-		if not self._paused then
+		if not self.isPaused then
 			return
 		end
 
 		self._timer:setActive(true)
-		self._paused = false
+		self.isPaused = false
 
 		change(self)
 	end,
 	pause = function(self: Self)
-		if self._paused then
+		if self.isPaused then
 			return
 		end
 
 		self._timer:setActive(false)
-		self._paused = true
+		self.isPaused = true
 
 		change(self)
 	end,
@@ -47,7 +46,7 @@ local class = table.freeze {
 		change(self)
 	end,
 	_evaluate = function(self: Self)
-		if self._paused then
+		if self.isPaused then
 			return false
 		end
 
@@ -73,7 +72,7 @@ local function Timer(scope: Types.Scope): Types.Timer
 		createdAt = os.clock(),
 		_internalValue = 0,
 
-		_paused = false,
+		isPaused = false,
 		_start = peek(externalTime),
 
 		_using = {},

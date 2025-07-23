@@ -128,6 +128,7 @@ type EventualConstructor = <V>(
 
 export type Timer = StateObject<number> & {
 	type: "Timer",
+	isPaused: boolean,
 
 	pause: (Timer) -> (),
 	unpause: (Timer) -> (),
@@ -140,6 +141,9 @@ export type AnimatedMover<V> = (start: V, goal: V) -> MoverStepper<V>
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {
 	type: "Animated",
+
+	isSleeping: (Animated<V>) -> boolean,
+	onSleep: (Animated<V>, callback: (V) -> ()) -> () -> (),
 } & StateObject<V>
 
 type AnimatedConstructor = <V>(
