@@ -163,7 +163,7 @@ type SpringConstructor = <V>(
 
 export type Contextual<T> = {
 	now: (Contextual<T>) -> T,
-	executeAs: <T, R, A...>(Contextual<T>, (A...) -> R, A...) -> R,
+	executeWith: <T, R, A...>(Contextual<T>, (A...) -> R, A...) -> R,
 }
 type ContextualConstructor = <T>(default: T) -> Contextual<T>
 

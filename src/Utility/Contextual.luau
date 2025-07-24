@@ -22,7 +22,7 @@ local class = table.freeze {
 
 		return value[1]
 	end,
-	executeAs = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
+	executeWith = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
 		local thread = coroutine.running()
 		local original = self._values[thread]
 
