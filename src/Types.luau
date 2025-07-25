@@ -141,8 +141,8 @@ export type CurveGenerator<V> = (start: V, goal: V, ...any) -> AnimationCurve<V>
 export type Animated<V> = {
 	type: "Animated",
 
-	writeState: (Animated<V>, index: number, value: any) -> (),
-	readState: (Animated<V>, index: number) -> any?,
+	setDynamic: (Animated<V>, index: number, value: any) -> (),
+	getDynamic: (Animated<V>, index: number) -> any?,
 } & StateObject<V>
 
 type AnimatedConstructor = <V>(

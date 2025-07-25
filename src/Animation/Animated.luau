@@ -20,7 +20,7 @@ type Self<V> = Types.Animated<V> & {
 	_activeGenerator: Types.CurveGenerator<V>,
 	_activeCurve: Types.AnimationCurve<V>,
 
-	_activeState: { any },
+	_activeDynamics: { any },
 
 	_shouldRegenerate: boolean?,
 
@@ -28,16 +28,16 @@ type Self<V> = Types.Animated<V> & {
 }
 
 local function _syncFromCurve<V>(
-	inPlaceState: { any },
+	dynamics: { any },
 	shouldSleep: boolean,
 	outputValue: V,
 	...: any
 ): (boolean, V)
 	-- clear and update state in place, instead of constructing a new table
-	table.clear(inPlaceState)
+	table.clear(dynamics)
 
 	for i = 1, select("#", ...) do
-		inPlaceState[i] = select(i, ...)
+		dynamics[i] = select(i, ...)
 	end
 
 	return shouldSleep, outputValue
@@ -48,14 +48,14 @@ local class = table.freeze {
 	kind = "state",
 	timeliness = "eager",
 
-	writeState = function<V>(self: Self<V>, index: number, value: any)
-		self._activeState[index] = value
+	setDynamic = function<V>(self: Self<V>, index: number, value: any)
+		self._activeDynamics[index] = value
 		self._shouldRegenerate = true
 
 		change(self)
 	end,
-	readState = function<V>(self: Self<V>, index: number)
-		return self._activeState[index]
+	getDynamic = function<V>(self: Self<V>, index: number)
+		return self._activeDynamics[index]
 	end,
 	_evaluate = function<V>(self: Self<V>)
 		local goal = self._goal
@@ -90,7 +90,7 @@ local class = table.freeze {
 			self._activeCurve = nextGenerator(
 				self._activeStart,
 				self._activeGoal,
-				unpack(self._activeState)
+				unpack(self._activeDynamics)
 			)
 
 			timer:reset()
@@ -105,7 +105,7 @@ local class = table.freeze {
 
 		local oldValue = self._internalValue :: any
 		local shouldSleep, newValue =
-			_syncFromCurve(self._activeState, self._activeCurve(elapsed))
+			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
 
 		self._internalValue = newValue
 
@@ -141,7 +141,7 @@ local function Animated<V>(
 		_activeGenerator = nil,
 		_activeCurve = nil,
 
-		_activeState = {},
+		_activeDynamics = {},
 
 		_timer = timer,
 	}, METATABLE) :: any
