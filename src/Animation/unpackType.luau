@@ -29,7 +29,7 @@ local UNPACK_METHODS = {
 	end,
 }
 
-local function unpackType(value: any)
+local function unpackType(value: any): { number }
 	local typeString = typeof(value)
 	local unpacker = UNPACK_METHODS[typeString]
 
