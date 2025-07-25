@@ -27,8 +27,20 @@ type Self<V> = Types.Animated<V> & {
 	_timer: Types.Timer,
 }
 
-local function _unwrap<V>(shouldSleep: boolean, output: V, ...): (boolean, V, { any })
-	return shouldSleep, output, table.pack(...)
+local function _syncFromCurve<V>(
+	inPlaceState: { any },
+	shouldSleep: boolean,
+	outputValue: V,
+	...: any
+): (boolean, V)
+	-- clear and update state in place, instead of constructing a new table
+	table.clear(inPlaceState)
+
+	for i = 1, select("#", ...) do
+		inPlaceState[i] = select(i, ...)
+	end
+
+	return shouldSleep, outputValue
 end
 
 local class = table.freeze {
@@ -78,7 +90,7 @@ local class = table.freeze {
 			self._activeCurve = nextGenerator(
 				self._activeStart,
 				self._activeGoal,
-				table.unpack(self._activeState)
+				unpack(self._activeState)
 			)
 
 			timer:reset()
@@ -92,9 +104,9 @@ local class = table.freeze {
 		end
 
 		local oldValue = self._internalValue :: any
-		local shouldSleep, newValue, newState = _unwrap(self._activeCurve(elapsed))
+		local shouldSleep, newValue =
+			_syncFromCurve(self._activeState, self._activeCurve(elapsed))
 
-		self._activeState = newState
 		self._internalValue = newValue
 
 		-- sleep
