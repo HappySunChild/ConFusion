@@ -7,6 +7,8 @@ local Timer = require "./Timer"
 local depend = require "../Graph/depend"
 local evaluate = require "../Graph/evaluate"
 
+local destructor = require "../Memory/destructor"
+
 local castToState = require "../State/castToState"
 local peek = require "../State/peek"
 
@@ -108,6 +110,8 @@ local function Animated<V>(
 
 		_timer = timer,
 	}, METATABLE) :: any
+
+	table.insert(scope, destructor(newAnimated))
 
 	evaluate(newAnimated, true)
 
