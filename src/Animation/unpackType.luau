@@ -5,6 +5,9 @@ local UNPACK_METHODS = {
 	number = function(value: number)
 		return { value }
 	end,
+	vector = function(value: vector)
+		return { value.x, value.y, value.z }
+	end,
 	Vector2 = function(value: Vector2)
 		return { value.X, value.Y }
 	end,

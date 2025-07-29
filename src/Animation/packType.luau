@@ -5,6 +5,9 @@ local PACK_METHODS = {
 	number = function(numbers: { number })
 		return numbers[1]
 	end,
+	vector = function(numbers: { number })
+		return vector.create(numbers[1], numbers[2], numbers[3])
+	end,
 	Vector2 = function(numbers: { number })
 		return Vector2.new(numbers[1], numbers[2])
 	end,

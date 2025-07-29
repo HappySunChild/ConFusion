@@ -1,10 +1,15 @@
 --!strict
 local Oklab = require "../Colour/Oklab"
 
+local function vectorLerp(a: vector, b: vector, alpha: number)
+	return a + (b - a) * alpha
+end
+
 local LERP_FUNCTIONS = {
 	number = function(a: number, b: number, alpha: number)
 		return alpha * (b - a) + a
 	end,
+	vector = vectorLerp,
 	Color3 = function(a: Color3, b: Color3, alpha: number)
 		local okFrom = Oklab.fromSRGB(a)
 		local okTarget = Oklab.fromSRGB(b)
