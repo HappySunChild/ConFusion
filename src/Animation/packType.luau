@@ -33,7 +33,7 @@ local PACK_METHODS = {
 			)
 	end,
 	Color3 = function(numbers: { number })
-		return Oklab.toSRGB(Vector3.new(numbers[1], numbers[2], numbers[3]), false)
+		return Oklab.toSRGB(vector.create(numbers[1], numbers[2], numbers[3]), false)
 	end,
 }
 

@@ -14,7 +14,7 @@ local LERP_FUNCTIONS = {
 		local okFrom = Oklab.fromSRGB(a)
 		local okTarget = Oklab.fromSRGB(b)
 
-		return Oklab.toSRGB(okFrom:Lerp(okTarget, alpha))
+		return Oklab.toSRGB(vectorLerp(okFrom, okTarget, alpha))
 	end,
 	Vector3 = function(a: Vector3, b: Vector3, alpha: number)
 		return a:Lerp(b, alpha)

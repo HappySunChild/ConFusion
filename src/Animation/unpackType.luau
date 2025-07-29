@@ -28,7 +28,7 @@ local UNPACK_METHODS = {
 	Color3 = function(value: Color3)
 		local lab = Oklab.fromSRGB(value)
 
-		return { lab.X, lab.Y, lab.Z }
+		return { lab.x, lab.y, lab.z }
 	end,
 }
 
