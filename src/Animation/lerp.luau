@@ -6,9 +6,7 @@ local function vectorLerp(a: vector, b: vector, alpha: number)
 end
 
 local LERP_FUNCTIONS = {
-	number = function(a: number, b: number, alpha: number)
-		return alpha * (b - a) + a
-	end,
+	number = math.lerp,
 	vector = vectorLerp,
 	Color3 = function(a: Color3, b: Color3, alpha: number)
 		local okFrom = Oklab.fromSRGB(a)
