@@ -58,19 +58,21 @@ local Fusion = table.freeze {
 
 	-- Utility
 	Contextual = require "@self/Utility/Contextual",
-	peek = require "@self/State/peek",
 	map = require "@self/Utility/map",
+	peek = require "@self/State/peek",
 	flatten = require "@self/Utility/flatten",
-
+	
 	-- Graph
 	Observer = require "@self/Graph/Observer",
-
+	
 	-- Animation
 	Timer = require "@self/Animation/Timer",
 	Animated = require "@self/Animation/Animated",
 	Tween = require "@self/Animation/Tween",
 	Spring = require "@self/Animation/Spring",
-
+	packType = require "@self/Animation/packType",
+	unpackType = require "@self/Animation/unpackType",
+	
 	-- Instances
 	New = require "@self/Instances/New",
 	Hydrate = require "@self/Instances/Hydrate",
