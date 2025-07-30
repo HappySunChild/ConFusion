@@ -1,11 +1,11 @@
 --!strict
 local Oklab = require "../Colour/Oklab"
 
-local function vectorLerp(a: vector, b: vector, alpha: number)
+local function vectorLerp(a: vector, b: vector, alpha: number): vector
 	return a + (b - a) * alpha
 end
 
-local LERP_FUNCTIONS = {
+local LERP_FUNCTIONS = table.freeze {
 	number = math.lerp,
 	vector = vectorLerp,
 	Color3 = function(a: Color3, b: Color3, alpha: number)
@@ -32,13 +32,13 @@ local LERP_FUNCTIONS = {
 	UDim2 = function(a: UDim2, b: UDim2, alpha: number)
 		return a:Lerp(b, alpha)
 	end,
-}
+} :: { [string]: <V>(a: V, b: V, alpha: number) -> V }
 
 local function lerp<V>(from: V, target: V, alpha: number): V
 	local dataType = typeof(from)
 
 	if typeof(target) == dataType then
-		local interpolator = LERP_FUNCTIONS[dataType] :: ((V, V, number) -> V)?
+		local interpolator = LERP_FUNCTIONS[dataType]
 
 		if interpolator ~= nil then
 			return interpolator(from, target, alpha)

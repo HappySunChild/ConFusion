@@ -1,7 +1,7 @@
 --!strict
 local Oklab = require "../Colour/Oklab"
 
-local UNPACK_METHODS = {
+local UNPACK_METHODS = table.freeze {
 	number = function(value: number)
 		return { value }
 	end,
@@ -30,7 +30,7 @@ local UNPACK_METHODS = {
 
 		return { lab.x, lab.y, lab.z }
 	end,
-}
+} :: { [string]: (value: any) -> { number } }
 
 local function unpackType(value: any)
 	local typeString = typeof(value)

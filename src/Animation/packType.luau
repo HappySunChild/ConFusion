@@ -1,7 +1,7 @@
 --!strict
 local Oklab = require "../Colour/Oklab"
 
-local PACK_METHODS = {
+local PACK_METHODS = table.freeze {
 	number = function(numbers: { number })
 		return numbers[1]
 	end,
@@ -35,7 +35,7 @@ local PACK_METHODS = {
 	Color3 = function(numbers: { number })
 		return Oklab.toSRGB(vector.create(numbers[1], numbers[2], numbers[3]), false)
 	end,
-}
+} :: { [string]: (numbers: { number }) -> any }
 
 local function packType(dataType: string, packed: { number })
 	local packer = PACK_METHODS[dataType]
