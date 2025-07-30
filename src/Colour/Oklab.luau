@@ -45,7 +45,7 @@ end
 return table.freeze {
 	fromLinear = fromLinear,
 	toLinear = toLinear,
-	
+
 	fromSRGB = function(srgb: Color3): vector
 		return fromLinear(sRGB.toLinear(srgb))
 	end,
