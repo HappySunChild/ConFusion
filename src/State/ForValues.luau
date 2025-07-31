@@ -9,6 +9,8 @@ local Value = require "./Value"
 local For = require "./For"
 local ForTypes = require "./For/ForTypes"
 
+local checkDissolvable = require "./For/checkDissolvable"
+
 local parseError = require "../Logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
@@ -63,8 +65,22 @@ end
 local function ForValues<S, IK, IV, OV>(
 	scope: Types.Scope<S>,
 	inputTable: Types.UsedAs<{ [IK]: IV }>,
-	processor: (Types.Use, Types.Scope<S>, IK) -> OV
-): Types.For<IK, OV>
+	processor: (Types.Use, Types.Scope<S>, IV) -> OV
+): Types.For<IK, OV> | { [IK]: OV }
+	local dissolvable, values = checkDissolvable(
+		scope,
+		inputTable,
+		function(use, scope, inputKey, inputValue)
+			local newValue = processor(use, scope, inputValue)
+
+			return inputKey, newValue
+		end
+	)
+
+	if dissolvable then
+		return values
+	end
+
 	return For(scope, inputTable, function(scope, initialKey, initialValue)
 		return SubObject(scope, initialKey, initialValue, processor)
 	end)
