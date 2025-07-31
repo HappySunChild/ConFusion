@@ -1,9 +1,9 @@
 --!strict
-local Types = require "../Types"
+local memory = require "./types"
 
 local active = {}
 
-local function doCleanup(action: Types.CleanupTask)
+local function doCleanup(action: memory.CleanupTask)
 	if active[action] then
 		error(`doCleanup has already been called on '{action}'`)
 	end
@@ -19,7 +19,7 @@ local function doCleanup(action: Types.CleanupTask)
 	elseif taskType == "function" then
 		(action :: () -> ())()
 	elseif taskType == "table" then
-		action = action :: { Types.CleanupTask }
+		action = action :: { memory.CleanupTask }
 
 		if action[1] ~= nil then
 			for i = #action, 1, -1 do

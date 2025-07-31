@@ -1,16 +1,28 @@
 --!strict
-local Types = require "./Types"
+local log = require "./log/types"
 
-local formatError = require "./Logging/formatError"
+export type ExternalProvider = {
+	startScheduler: () -> (),
+	stopScheduler: () -> (),
+
+	logErrorNonFatal: (message: string) -> (),
+	logWarn: (message: string) -> (),
+
+	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	cancelTask: (task: thread) -> boolean,
+}
+
+local formatError = require "./log/formatError"
 
 local boundCallbacks = {}
-local activeProvider: Types.ExternalProvider? = nil
+local activeProvider: ExternalProvider? = nil
 
 local lastUpdate = os.clock()
 local deltaTime = 0
 
 local External = table.freeze {
-	setProvider = function(newProvider: Types.ExternalProvider?)
+	setProvider = function(newProvider: ExternalProvider?)
 		local oldProvider = activeProvider
 
 		if oldProvider ~= nil then
@@ -75,14 +87,14 @@ local External = table.freeze {
 
 	logError = function(
 		messageId: formatError.MessageId,
-		err: Types.Error?,
+		err: log.Error?,
 		...: any?
 	): never
 		error(formatError(messageId, err, ...), 0)
 	end,
 	logErrorNonFatal = function(
 		messageId: formatError.MessageId,
-		err: Types.Error?,
+		err: log.Error?,
 		...: any?
 	)
 		local message = formatError(messageId, err, ...)
@@ -93,7 +105,7 @@ local External = table.freeze {
 			print(message)
 		end
 	end,
-	logWarn = function(messageId: formatError.MessageId, err: Types.Error, ...: any?)
+	logWarn = function(messageId: formatError.MessageId, err: log.Error, ...: any?)
 		local message = formatError(messageId, err, ...)
 
 		if activeProvider then

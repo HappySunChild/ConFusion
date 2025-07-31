@@ -1,10 +1,10 @@
 --!strict
-local Types = require "../Types"
+local graph = require "../graph/types"
 
-local nameOf = require "../Utility/nameOf"
-local nicknames = require "../Utility/nicknames"
+local nameOf = require "../log/nameOf"
+local nicknames = require "../log/nicknames"
 
-local function destroy<V>(target: Types.GraphObject)
+local function destroy<V>(target: graph.GraphObject)
 	target.scope = nil
 
 	local using = target._using
@@ -26,7 +26,7 @@ local function destroy<V>(target: Types.GraphObject)
 	end
 end
 
-local function destructor(target: Types.GraphObject)
+local function destructor(target: graph.GraphObject)
 	local function destruct()
 		destroy(target)
 

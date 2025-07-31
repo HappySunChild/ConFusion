@@ -1,14 +1,16 @@
+local graph = require "./types"
+local memory = require "../memory/types"
+
 local External = require "../External"
-local Types = require "../Types"
 
 local castToGraph = require "./castToGraph"
 local depend = require "./depend"
 local evaluate = require "./evaluate"
 
-local destructor = require "../Memory/destructor"
+local destructor = require "../memory/destructor"
 
-type Self = Types.Observer & {
-	_subject: Types.GraphObject?,
+type Self = graph.Observer & {
+	_subject: graph.GraphObject?,
 	_listeners: { () -> () },
 }
 
@@ -48,7 +50,7 @@ local class = table.freeze {
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Observer(scope: Types.Scope, subject: Types.GraphObject)
+local function Observer(scope: memory.Scope, subject: graph.GraphObject): graph.Observer
 	local newObserver = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),

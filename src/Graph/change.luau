@@ -1,25 +1,13 @@
+local graph = require "./types"
+
 local External = require "../External"
-local Types = require "../Types"
 
-local castToGraph = require "../Graph/castToGraph"
-local evaluate = require "../Graph/evaluate"
+local castToGraph = require "./castToGraph"
+local evaluate = require "./evaluate"
 
-local xkindof = require "../Utility/xkindof"
+local kindof = require "../kindof"
 
-local function collectObservers(
-	target: Types.GraphObject,
-	outputTable: { Types.Observer }
-)
-	if target._observers ~= nil then
-		for _, observer in target._observers do
-			table.insert(outputTable, observer)
-		end
-	end
-
-	return outputTable
-end
-
-local function change(target: Types.GraphObject)
+local function change(target: graph.GraphObject)
 	if not castToGraph(target) then
 		return External.logError("invalidChangeType", nil, typeof(target))
 	end
@@ -59,11 +47,7 @@ local function change(target: Types.GraphObject)
 
 	local eagerList = {}
 
-	collectObservers(target, eagerList)
-
-	for _, user: Types.GraphObject in userList do
-		collectObservers(user, eagerList)
-
+	for _, user: graph.GraphObject in userList do
 		if user.timeliness == "eager" then
 			table.insert(eagerList, user)
 		end
@@ -73,10 +57,10 @@ local function change(target: Types.GraphObject)
 		return a.createdAt < b.createdAt
 	end)
 
-	for _, eagerUser: Types.GraphObject in eagerList do
+	for _, eagerUser: graph.GraphObject in eagerList do
 		-- this feels a little gross, making a special case just for observers.
 		-- but it works *okayyyy*
-		if xkindof(eagerUser) == "observer" then
+		if kindof(eagerUser) == "observer" then
 			eagerUser.callback()
 
 			continue
