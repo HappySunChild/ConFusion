@@ -2,7 +2,6 @@ local HttpService = game:GetService "HttpService"
 local RunService = game:GetService "RunService"
 
 local External = require "./External"
-local Types = require "./Types"
 
 local function performUpdateStep()
 	External.performUpdate(os.clock())
@@ -10,7 +9,7 @@ end
 
 local schedulerDisconnect
 
-local RobloxProvider: Types.ExternalProvider = table.freeze {
+local RobloxProvider: External.ExternalProvider = table.freeze {
 	doTaskImmediate = function(resume: (...any) -> (), ...)
 		return task.spawn(resume, ...)
 	end,
