@@ -67,12 +67,6 @@ export type Value<T> = {
 
 	set: (Value<T>, newValue: T) -> T,
 	update: (Value<T>, predicate: (T) -> T) -> T,
-
-	bindToInstanceProperty: (
-		Value<T>,
-		instance: Instance,
-		property: string
-	) -> Disconnect,
 } & StateObject<T>
 
 type ValueConstructor = <V>(scope: Scope<unknown>, initialValue: V?) -> Value<V>
@@ -236,11 +230,16 @@ export type ConFusion = {
 	read Spring: SpringConstructor,
 
 	-- Instances
+	read Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
 	read New: (
 		scope: Scope,
-		classNameOrTemplate: Instance | string
+		className: string
 	) -> (props: Properties) -> Instance,
-	read Hydrate: (scope: Scope, instance: Instance) -> (props: Properties) -> Instance,
+	read FromTemplate: (
+		scope: Scope,
+		template: Instance
+	) -> (props: Properties) -> Instance,
+
 	read WithChild: (
 		scope: Scope,
 		name: string
@@ -257,6 +256,18 @@ export type ConFusion = {
 		scope: Scope,
 		className: string
 	) -> (props: Properties) -> (parent: Instance) -> Instance?,
+
+	-- Instance State
+	read PropertyOf: (
+		scope: Scope,
+		instance: Instance,
+		property: string
+	) -> StateObject<unknown>,
+	read AttributeOf: (
+		scope: Scope,
+		instance: Instance,
+		attribute: string
+	) -> StateObject<unknown>,
 
 	-- Instance Keys
 	read Children: SpecialKey<"Children">,

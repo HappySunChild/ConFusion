@@ -1,50 +1,29 @@
 local External = require "../External"
 local Types = require "../Types"
 
-local applyProperties = require "./applyProperties"
+local Hydrate = require "./Hydrate"
+
 local defaultProperties = require "./defaultProperties"
 
 local function New<T>(
 	scope: Types.Scope<T>,
-	classNameOrTemplate: string | Instance
+	className: string
 ): (props: Types.Properties) -> Instance
-	local instance
+	local success, newInstance = pcall(Instance.new, className)
 
-	if typeof(classNameOrTemplate) == "Instance" then
-		instance = classNameOrTemplate:Clone()
-
-		if not instance then
-			External.logError(
-				"cannotCreateTemplate",
-				nil,
-				classNameOrTemplate:GetFullName()
-			)
-		end
-	else
-		local success, newInstance = pcall(Instance.new, classNameOrTemplate)
-
-		if not success then
-			External.logError("cannotCreateClass", nil, classNameOrTemplate)
-		end
-
-		local classProps = defaultProperties[classNameOrTemplate]
-
-		if classProps then
-			for key, value in classProps do
-				newInstance[key] = value
-			end
-		end
-
-		instance = newInstance
+	if not success then
+		External.logError("cannotCreateClass", nil, className)
 	end
 
-	return function(props: Types.Properties): Instance
-		table.insert(scope, instance)
+	local classProps = defaultProperties[className]
 
-		applyProperties(scope, instance, props)
-
-		return instance
+	if classProps then
+		for key, value in classProps do
+			newInstance[key] = value
+		end
 	end
+
+	return Hydrate(scope, newInstance :: Instance)
 end
 
 return New
