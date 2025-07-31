@@ -37,7 +37,7 @@ local PACK_METHODS = table.freeze {
 	end,
 } :: { [string]: (numbers: { number }) -> any }
 
-local function packType(dataType: string, packed: { number })
+local function packType(dataType: string, packed: { number }): any
 	local packer = PACK_METHODS[dataType]
 
 	if type(packer) == "function" then

@@ -32,7 +32,7 @@ local UNPACK_METHODS = table.freeze {
 	end,
 } :: { [string]: (value: any) -> { number } }
 
-local function unpackType(value: any)
+local function unpackType(value: any): { number }
 	local typeString = typeof(value)
 	local unpacker = UNPACK_METHODS[typeString]
 

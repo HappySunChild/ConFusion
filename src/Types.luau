@@ -13,6 +13,16 @@ export type Child = Instance | ((Instance) -> Instance?) | { Child } | StateObje
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
 
+export type PackableType =
+	"number"
+	| "Vector2"
+	| "Vector3"
+	| "UDim"
+	| "UDim2"
+	| "CFrame"
+	| "Color3"
+	| string
+
 export type Properties = { [SpecialKey<string> | string]: any }
 
 export type Scope<T = any> = { CleanupTask } & T
@@ -134,12 +144,15 @@ export type Timer = StateObject<number> & {
 	reset: (Timer) -> (),
 }
 
-export type AnimationCurve<V> = (elapsed: number) -> (boolean, V)
-export type CurveGenerator<V> = (start: V, goal: V) -> AnimationCurve<V>
+export type AnimationCurve<V> = (elapsed: number) -> (boolean, V, ...any)
+export type CurveGenerator<V> = (start: V, goal: V, ...any) -> AnimationCurve<V>
 
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {
 	type: "Animated",
+
+	setDynamic: (Animated<V>, index: number, value: any) -> (),
+	getDynamic: (Animated<V>, index: number) -> any?,
 } & StateObject<V>
 
 type AnimatedConstructor = <V>(
@@ -212,8 +225,8 @@ export type ConFusion = {
 
 	-- Utility
 	read Contextual: ContextualConstructor,
-	read peek: <V>(value: UsedAs<V> | V) -> V,
 	read map: <V, O>(value: StateObject<V>, callback: (V) -> O) -> Computed<O>,
+	read peek: <V>(value: UsedAs<V> | V) -> V,
 	read flatten: <T>(use: Use, target: UsedAs<T>) -> T,
 
 	-- Graph
@@ -234,6 +247,8 @@ export type ConFusion = {
 	read Animated: AnimatedConstructor,
 	read Tween: TweenConstructor,
 	read Spring: SpringConstructor,
+	read packType: (dataType: PackableType, input: { number }) -> any?,
+	read unpackType: (input: any) -> { number },
 
 	-- Instances
 	read New: (
