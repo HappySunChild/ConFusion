@@ -14,7 +14,7 @@ local deriveScope = require "../memory/deriveScope"
 local destructor = require "../memory/destructor"
 local doCleanup = require "../memory/doCleanup"
 
-local parseError = require "../log/parseError"
+local parseError = require "../logging/parseError"
 
 
 type Self<T, S> = calc.Computed<T> & {

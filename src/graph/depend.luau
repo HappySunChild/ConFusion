@@ -5,7 +5,7 @@ local External = require "../External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
-local nameOf = require "../log/nameOf"
+local nameOf = require "../logging/nameOf"
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
 	if castToGraph(dependency) then

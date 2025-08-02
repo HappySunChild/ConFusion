@@ -1,6 +1,6 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../log/types"
+local log = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -11,7 +11,7 @@ local Computed = require "./Computed"
 local For = require "./For"
 local Value = require "./Value"
 
-local parseError = require "../log/parseError"
+local parseError = require "../logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {

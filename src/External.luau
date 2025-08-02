@@ -1,5 +1,5 @@
 --!strict
-local log = require "./log/types"
+local logging = require "./logging/types"
 
 export type ExternalProvider = {
 	startScheduler: () -> (),
@@ -13,7 +13,7 @@ export type ExternalProvider = {
 	cancelTask: (task: thread) -> boolean,
 }
 
-local formatError = require "./log/formatError"
+local formatError = require "./logging/formatError"
 
 local boundCallbacks = {}
 local activeProvider: ExternalProvider? = nil
@@ -87,14 +87,14 @@ local External = table.freeze {
 
 	logError = function(
 		messageId: formatError.MessageId,
-		err: log.Error?,
+		err: logging.Error?,
 		...: any?
 	): never
 		error(formatError(messageId, err, ...), 0)
 	end,
 	logErrorNonFatal = function(
 		messageId: formatError.MessageId,
-		err: log.Error?,
+		err: logging.Error?,
 		...: any?
 	)
 		local message = formatError(messageId, err, ...)
@@ -105,7 +105,7 @@ local External = table.freeze {
 			print(message)
 		end
 	end,
-	logWarn = function(messageId: formatError.MessageId, err: log.Error, ...: any?)
+	logWarn = function(messageId: formatError.MessageId, err: logging.Error, ...: any?)
 		local message = formatError(messageId, err, ...)
 
 		if activeProvider then

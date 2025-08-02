@@ -1,5 +1,5 @@
 --!strict
-local log = require "./types"
+local logging = require "./types"
 
 local messages = require "./messages"
 
@@ -7,7 +7,7 @@ export type MessageId = string | keyof<typeof(messages)>
 
 local function formatError(
 	messageId: MessageId,
-	errorOrTrace: log.Error | string | nil,
+	errorOrTrace: logging.Error | string | nil,
 	...: unknown
 )
 	local err = if typeof(errorOrTrace) == "table" then errorOrTrace else nil

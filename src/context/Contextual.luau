@@ -2,7 +2,7 @@ local context = require "./types"
 
 local External = require "../External"
 
-local parseError = require "../log/parseError"
+local parseError = require "../logging/parseError"
 
 type Self<T> = context.Contextual<T> & {
 	_default: T,

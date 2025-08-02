@@ -13,7 +13,7 @@ local peek = require "../use/peek"
 
 local Observer = require "../graph/Observer"
 
-local parseError = require "../log/parseError"
+local parseError = require "../logging/parseError"
 
 local kindof = require "../kindof"
 local xtypeof = require "../xtypeof"

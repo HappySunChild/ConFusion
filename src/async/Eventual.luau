@@ -14,7 +14,7 @@ local peek = require "../use/peek"
 
 local destructor = require "../memory/destructor"
 
-local parseError = require "../log/parseError"
+local parseError = require "../logging/parseError"
 
 type processor<V> = (use: calc.Use, become: (V) -> nil) -> ()
 type Self<V> = async.Eventual<V> & {
