@@ -16,6 +16,29 @@ local instances = require "@self/roblox-instances/types"
 local memory = require "@self/memory/types"
 local motion = require "@self/motion/types"
 
+export type Scope<T = ConFusion> = memory.Scope<T>
+
+export type Observer = graph.Observer
+export type GraphObject = graph.GraphObject
+
+export type StateObject<T> = calc.StateObject<T>
+export type Value<V> = calc.Value<V>
+export type Computed<V> = calc.Computed<V>
+export type For<OK, OV> = calc.For<OK, OV>
+export type Use = calc.Use
+export type UsedAs<T> = calc.UsedAs<T>
+
+export type Animated<T> = motion.Animated<T>
+
+export type Eventual<T> = async.Eventual<T>
+
+export type Contextual<T> = context.Contextual<T>
+
+export type Timer = chrono.Timer
+
+export type SpecialKey<T = string> = instances.SpecialKey
+export type Child = instances.Child
+
 type ConFusion = {
 	read version: {
 		read major: number,
@@ -86,15 +109,6 @@ type ConFusion = {
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
 }
-
-export type Value<V> = calc.Value<V>
-export type Computed<V> = calc.Computed<V>
-export type Use = calc.Use
-export type UsedAs<T> = calc.UsedAs<T>
-
-export type Scope<T = ConFusion> = memory.Scope<T>
-
-export type SpecialKey<T = string> = instances.SpecialKey
 
 local External = require "@self/External"
 
