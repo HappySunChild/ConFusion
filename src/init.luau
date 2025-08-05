@@ -1,6 +1,7 @@
 --!strict
-
 --[[
+package: confusion-for-roblox
+
 ConFusion - A fork of Fusion
 
 GitHub Repository: https://github.com/HappySunChild/ConFusion
