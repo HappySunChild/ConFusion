@@ -13,37 +13,32 @@ local EPSILON = 0.0001
 
 local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<number>)
 	local startP = {}
-	local startV = {}
 
 	local currentP = {}
 	local currentV = {}
 
-	local targetP = {}
-	local numSprings = 0
-
 	local activeType = ""
 
-	return function(start: unknown, target: unknown)
+	return function<V>(start: V, target: V, initialVelocity: { number }?)
 		local discontinuous = typeof(target) ~= activeType
 
-		targetP = unpackType(target)
-		numSprings = #targetP
+		activeType = typeof(target)
+
+		local targetP = unpackType(target)
+		local numSprings = #targetP
 
 		if discontinuous then
 			startP = table.clone(targetP)
 			currentP = table.clone(targetP)
 
-			startV = table.create(numSprings, 0)
+			initialVelocity = table.create(numSprings, 0)
 			currentV = table.create(numSprings, 0)
 		else
 			startP = table.clone(currentP)
-			startV = table.clone(currentV)
 		end
 
-		activeType = typeof(target)
-
 		-- spring stepper
-		return function(elapsed: number)
+		return function(elapsed: number): V
 			local shouldSleep = false
 			local newValue
 
@@ -59,7 +54,7 @@ local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<numb
 					local startP = startP[index] :: number
 					local targetP = targetP[index] :: number
 
-					local startV = startV[index] :: number
+					local startV = initialVelocity[index] :: number
 					local startD = startP - targetP
 
 					local latestD = startD * posPos + startV * posVel
@@ -85,7 +80,7 @@ local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<numb
 				newValue = packType(activeType, currentP)
 			end
 
-			return shouldSleep, newValue
+			return shouldSleep, newValue, currentV
 		end
 	end
 end
