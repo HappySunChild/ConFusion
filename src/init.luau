@@ -75,6 +75,12 @@ type ConFusion = {
 
 	-- Graph
 	read Observer: graph.ObserverConstructor,
+	read observe: (
+		scope: memory.Scope,
+		subject: graph.GraphObject,
+		callback: () -> (),
+		immediate: boolean?
+	) -> () -> (),
 
 	-- Chrono
 	read Timer: chrono.TimerConstructor,
@@ -143,6 +149,7 @@ local ConFusion = table.freeze {
 
 	-- Graph
 	Observer = require "@self/graph/Observer",
+	observe = require "@self/graph/observe",
 
 	-- Chrono
 	Timer = require "@self/chrono/Timer",

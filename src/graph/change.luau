@@ -5,7 +5,27 @@ local External = require "../External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
-local kindof = require "../kindof"
+local function _isEager(target: graph.GraphObject)
+	if target.timeliness == "eager" then
+		return true
+	end
+
+	if target._observers ~= nil then
+		return next(target._observers) ~= nil
+	end
+
+	return false
+end
+
+local function _fireObservers(target: graph.GraphObject)
+	if target._observers == nil then
+		return
+	end
+
+	for _, callback in target._observers do
+		External.doTaskImmediate(callback)
+	end
+end
 
 local function change(target: graph.GraphObject)
 	if not castToGraph(target) then
@@ -18,15 +38,16 @@ local function change(target: graph.GraphObject)
 
 	local searchInNow = { target }
 	local searchInNext = {}
-	local userList = {}
+
+	local eagerList = {}
 
 	repeat
 		local done = true
 
-		for _, searchTarget in searchInNow do
+		for _, searchTarget: graph.GraphObject in searchInNow do
 			for user in searchTarget._users do
 				if user.validity == "busy" then
-					return External.logError "infiniteLoop"
+					External.logError "infiniteLoop"
 				end
 
 				if user.validity == "valid" then
@@ -35,7 +56,10 @@ local function change(target: graph.GraphObject)
 					done = false
 
 					table.insert(searchInNext, user)
-					table.insert(userList, user)
+
+					if _isEager(user) then
+						table.insert(eagerList, user)
+					end
 				end
 			end
 		end
@@ -45,28 +69,16 @@ local function change(target: graph.GraphObject)
 		table.clear(searchInNext)
 	until done
 
-	local eagerList = {}
-
-	for _, user: graph.GraphObject in userList do
-		if user.timeliness == "eager" then
-			table.insert(eagerList, user)
-		end
-	end
-
 	table.sort(eagerList, function(a, b)
 		return a.createdAt < b.createdAt
 	end)
 
+	_fireObservers(target)
+
 	for _, eagerUser: graph.GraphObject in eagerList do
-		-- this feels a little gross, making a special case just for observers.
-		-- but it works *okayyyy*
-		if kindof(eagerUser) == "observer" then
-			eagerUser.callback()
-
-			continue
+		if evaluate(eagerUser) then
+			_fireObservers(eagerUser)
 		end
-
-		evaluate(eagerUser, false)
 	end
 
 	return true

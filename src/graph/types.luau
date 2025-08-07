@@ -15,6 +15,7 @@ export type GraphObject = {
 	_lastCompute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
+	_observers: { [{}]: () -> () }?,
 
 	_evaluate: (GraphObject) -> boolean,
 } & memory.ScopedObject
