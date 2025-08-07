@@ -11,7 +11,7 @@ local castToState = require "../calc/castToState"
 
 local peek = require "../use/peek"
 
-local Observer = require "../graph/Observer"
+local observe = require "../graph/observe"
 
 local parseError = require "../logging/parseError"
 
@@ -64,9 +64,9 @@ local function applyProperty(
 	value: calc.UsedAs<any>
 )
 	if castToState(value) then
-		Observer(scope, value):onBind(function()
+		observe(scope, value, function()
 			setProperty(instance, property, peek(value))
-		end)
+		end, true)
 
 		return
 	end
@@ -81,7 +81,7 @@ local function applyProperties<T>(
 )
 	props = table.clone(props)
 
-	local specialKeys: { instances.SpecialKey<any> } = {}
+	local specialKeys: { instances.SpecialKey } = {}
 
 	props[Parent] = props.Parent
 	props.Parent = nil

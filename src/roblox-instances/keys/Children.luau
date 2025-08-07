@@ -3,7 +3,7 @@ local memory = require "../../memory/types"
 
 local External = require "../../External"
 
-local Observer = require "../../graph/Observer"
+local observe = require "../../graph/observe"
 
 local castToState = require "../../calc/castToState"
 
@@ -57,7 +57,7 @@ local Children = SpecialKey "Children" {
 
 					if childScope == nil then
 						childScope = {}
-						Observer(childScope, child):onChange(updateChildren)
+						observe(childScope, child, updateChildren)
 					else
 						oldScopes[child] = nil
 					end

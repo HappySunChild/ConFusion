@@ -2,7 +2,7 @@ local calc = require "../../calc/types"
 local instances = require "../types"
 local memory = require "../../memory/types"
 
-local Observer = require "../../graph/Observer"
+local observe = require "../../graph/observe"
 
 local castToState = require "../../calc/castToState"
 
@@ -28,7 +28,7 @@ local Parent = SpecialKey "Parent" {
 		parent: calc.UsedAs<Instance?>
 	)
 		if castToState(parent) then
-			Observer(scope, parent):onBind(function()
+			observe(scope, parent, function()
 				setParent(applyTo, peek(parent))
 			end)
 		end
