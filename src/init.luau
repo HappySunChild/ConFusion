@@ -52,11 +52,6 @@ type ConFusion = {
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (action: memory.CleanupTask) -> (),
 
-	-- External
-	read setProvider: (
-		provider: External.ExternalProvider?
-	) -> External.ExternalProvider?,
-
 	-- State/Calculated State
 	read Computed: calc.ComputedConstructor,
 	read Value: calc.ValueConstructor,
@@ -127,9 +122,6 @@ local ConFusion = table.freeze {
 	deriveScope = require "@self/memory/deriveScope",
 	innerScope = require "@self/memory/innerScope",
 	doCleanup = require "@self/memory/doCleanup",
-
-	-- External
-	setProvider = External.setProvider,
 
 	-- State/Calculated State
 	Computed = require "@self/calc/Computed",
