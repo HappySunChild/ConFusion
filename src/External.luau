@@ -105,8 +105,8 @@ local External = table.freeze {
 			print(message)
 		end
 	end,
-	logWarn = function(messageId: formatError.MessageId, err: logging.Error, ...: any?)
-		local message = formatError(messageId, err, ...)
+	logWarn = function(messageId: formatError.MessageId, ...: any?)
+		local message = formatError(messageId, debug.traceback(nil, 2), ...)
 
 		if activeProvider then
 			activeProvider.logWarn(message)
