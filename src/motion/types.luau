@@ -1,12 +1,15 @@
 local calc = require "../calc/types"
 local memory = require "../memory/types"
 
-export type AnimationCurve<V> = (elapsed: number) -> (boolean, V)
-export type CurveGenerator<V> = (start: V, goal: V) -> AnimationCurve<V>
+export type AnimationCurve<V> = (elapsed: number) -> (boolean, V, ...any)
+export type CurveGenerator<V> = (start: V, goal: V, ...any) -> AnimationCurve<V>
 
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {
 	type: "Animated",
+
+	setDynamic: (self: Animated<V>, index: number, value: any) -> (),
+	getDynamic: (self: Animated<V>, index: number) -> any?,
 } & calc.StateObject<V>
 export type AnimatedConstructor = <V>(
 	scope: memory.Scope,

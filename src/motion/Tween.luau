@@ -10,12 +10,12 @@ local lerp = require "./lerp"
 local peek = require "../use/peek"
 
 local function tweenMover(info: calc.UsedAs<TweenInfo>)
-	return function(start: unknown, target: unknown)
+	return function<V>(start: V, target: V)
 		local activeInfo = peek(info)
 		local duration = getTweenDuration(activeInfo)
 
 		-- tween stepper
-		return function(elapsed: number)
+		return function(elapsed: number): V
 			local alpha = getTweenAlpha(activeInfo, elapsed)
 
 			return elapsed >= duration, lerp(start, target, alpha)
