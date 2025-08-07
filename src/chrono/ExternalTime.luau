@@ -58,7 +58,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	return newExternalTime
 end
 
-External.bindToUpdate(function(now: number)
+External.bindToUpdateStep(function(now: number)
 	class._internalValue = now
 
 	for _, timer in allTimers do

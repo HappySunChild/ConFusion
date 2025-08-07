@@ -37,7 +37,7 @@ local External = table.freeze {
 
 		return oldProvider
 	end,
-	bindToUpdate = function(callback: (now: number) -> ()): () -> ()
+	bindToUpdateStep = function(callback: (now: number) -> ()): () -> ()
 		local uniqueIdentifier = {}
 		boundCallbacks[uniqueIdentifier] = callback
 
@@ -45,7 +45,7 @@ local External = table.freeze {
 			boundCallbacks[uniqueIdentifier] = nil
 		end
 	end,
-	performUpdate = function(): ()
+	performUpdateStep = function(): ()
 		local now = os.clock()
 
 		deltaTime = now - lastUpdate

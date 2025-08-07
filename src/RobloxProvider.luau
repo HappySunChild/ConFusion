@@ -4,7 +4,7 @@ local RunService = game:GetService "RunService"
 local External = require "./External"
 
 local function performUpdateStep()
-	External.performUpdate(os.clock())
+	External.performUpdateStep()
 end
 
 local schedulerDisconnect
