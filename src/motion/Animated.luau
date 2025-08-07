@@ -8,6 +8,7 @@ local External = require "../External"
 
 local Timer = require "../chrono/Timer"
 
+local change = require "../graph/change"
 local depend = require "../graph/depend"
 local evaluate = require "../graph/evaluate"
 
@@ -22,6 +23,9 @@ type Self<V> = motion.Animated<V> & {
 	_activeStart: V,
 	_activeGoal: V,
 
+	_activeDynamics: { any },
+	_regenerate: boolean?,
+
 	_generator: calc.UsedAs<motion.CurveGenerator<V>>,
 	_activeGenerator: motion.CurveGenerator<V>,
 	_activeCurve: motion.AnimationCurve<V>,
@@ -29,17 +33,37 @@ type Self<V> = motion.Animated<V> & {
 	_timer: chrono.Timer,
 }
 
+local function _syncFromCurve<V>(
+	dynamics: { any },
+	shouldSleep: boolean,
+	outputValue: V,
+	...: any
+): (boolean, V)
+	table.clear(dynamics)
+
+	for i = 1, select("#", ...) do
+		dynamics[i] = select(i, ...)
+	end
+
+	return shouldSleep, outputValue
+end
+
 local class = table.freeze {
 	type = "Animated",
 	kind = "state",
 	timeliness = "eager",
 
+	setDynamic = function<V>(self: Self<V>, index: number, value: any)
+		self._activeDynamics[index] = value
+		self._regenerate = true
+
+		change(self)
+	end,
+	getDynamic = function<V>(self: Self<V>, index: number)
+		return self._activeDynamics[index]
+	end,
 	_evaluate = function<V>(self: Self<V>)
 		local goal = self._goal
-
-		if not castToState(self._goal) then
-			return false
-		end
 
 		local generator = self._generator
 		local timer = self._timer
@@ -51,19 +75,29 @@ local class = table.freeze {
 			depend(self, generator :: any)
 		end
 
+		if castToState(goal) then
+			depend(self, goal)
+		end
+
 		depend(self, timer)
-		depend(self, goal)
 
 		-- wake
 		if
 			nextGoal ~= self._activeGoal :: any
 			or nextGenerator ~= self._activeGenerator
+			or self._regenerate == true
 		then
+			self._regenerate = nil
+
 			self._activeStart = self._internalValue
 			self._activeGoal = nextGoal
 
 			self._activeGenerator = nextGenerator
-			self._activeCurve = nextGenerator(self._activeStart, self._activeGoal)
+			self._activeCurve = nextGenerator(
+				self._activeStart,
+				self._activeGoal,
+				unpack(self._activeDynamics)
+			)
 
 			timer:reset()
 			timer:unpause()
@@ -75,16 +109,15 @@ local class = table.freeze {
 			elapsed = External.getDeltaTime()
 		end
 
-		local shouldSleep, newValue = self._activeCurve(elapsed)
-		-- sleep
-
-		if shouldSleep or (self._activeStart :: any) == nextGoal then
-			timer:pause()
-		end
-
 		local oldValue = self._internalValue :: any
+		local shouldSleep, newValue =
+			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
 
 		self._internalValue = newValue
+
+		if shouldSleep then
+			timer:pause()
+		end
 
 		return (oldValue :: any) ~= (newValue :: any)
 	end,
@@ -108,6 +141,8 @@ local function Animated<V>(
 		_goal = goal,
 		_activeStart = nil,
 		_activeGoal = nil,
+
+		_activeDynamics = {},
 
 		_generator = mover,
 		_activeGenerator = nil,
