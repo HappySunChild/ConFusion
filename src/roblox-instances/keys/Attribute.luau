@@ -2,7 +2,7 @@ local calc = require "../../calc/types"
 local instances = require "../types"
 local memory = require "../../memory/types"
 
-local Observer = require "../../graph/Observer"
+local observe = require "../../graph/observe"
 
 local castToState = require "../../calc/castToState"
 
@@ -24,7 +24,7 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 				value: calc.UsedAs<any>
 			)
 				if castToState(value) then
-					Observer(scope, value):onBind(function()
+					observe(scope, value, function()
 						applyTo:SetAttribute(attribute, peek(value))
 					end)
 				end

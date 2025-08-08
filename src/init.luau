@@ -19,7 +19,6 @@ local motion = require "@self/motion/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
-export type Observer = graph.Observer
 export type GraphObject = graph.GraphObject
 
 export type StateObject<T> = calc.StateObject<T>
@@ -74,7 +73,12 @@ type ConFusion = {
 	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
 
 	-- Graph
-	read Observer: graph.ObserverConstructor,
+	read observe: (
+		scope: memory.Scope,
+		subject: graph.GraphObject,
+		callback: () -> (),
+		immediate: boolean?
+	) -> () -> (),
 
 	-- Chrono
 	read Timer: chrono.TimerConstructor,
@@ -142,7 +146,7 @@ local ConFusion = table.freeze {
 	flatten = require "@self/use/flatten",
 
 	-- Graph
-	Observer = require "@self/graph/Observer",
+	observe = require "@self/graph/observe",
 
 	-- Chrono
 	Timer = require "@self/chrono/Timer",

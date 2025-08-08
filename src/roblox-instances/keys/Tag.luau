@@ -2,7 +2,7 @@ local calc = require "../../calc/types"
 local instances = require "../types"
 local memory = require "../../memory/types"
 
-local Observer = require "../../graph/Observer"
+local observe = require "../../graph/observe"
 
 local castToState = require "../../calc/castToState"
 
@@ -24,7 +24,7 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 				enabled: calc.UsedAs<boolean>
 			)
 				if castToState(enabled) then
-					Observer(scope, enabled):onChange(function()
+					observe(scope, enabled, function()
 						local value = peek(enabled)
 
 						if value == true then
