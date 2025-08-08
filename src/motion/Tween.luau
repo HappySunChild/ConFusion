@@ -34,10 +34,7 @@ local function Tween<V>(
 		return goal
 	end
 
-	local tween = Animated(scope, goal, tweenMover(info))
-	tween.name = "Tween"
-
-	return tween
+	return Animated(scope, goal, tweenMover(info))
 end
 
 return Tween

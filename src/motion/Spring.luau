@@ -91,13 +91,7 @@ local function Spring<V>(
 	speed: calc.UsedAs<number>?,
 	damping: calc.UsedAs<number>?
 ): motion.Animated<V>
-	speed = speed or 10
-	damping = damping or 1
-
-	local spring = Animated(scope, goal, springMover(speed, damping))
-	spring.name = "Spring"
-
-	return spring
+	return Animated(scope, goal, springMover(speed or 10, damping or 1))
 end
 
 return Spring
