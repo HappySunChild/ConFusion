@@ -1,52 +1,31 @@
+--!strict
 local instances = require "./types"
 local memory = require "../memory/types"
 
 local External = require "../External"
 
-local applyProperties = require "./applyProperties"
+local Hydrate = require "./Hydrate"
 local defaultProperties = require "./defaultProperties"
 
 local function New(
 	scope: memory.Scope,
-	classNameOrTemplate: string | Instance
+	className: string
 ): (props: instances.Properties) -> Instance
-	local instance
+	local success, newInstance = pcall(Instance.new, className)
 
-	if typeof(classNameOrTemplate) == "Instance" then
-		instance = classNameOrTemplate:Clone()
-
-		if not instance then
-			External.logError(
-				"cannotCreateTemplate",
-				nil,
-				classNameOrTemplate:GetFullName()
-			)
-		end
-	else
-		local success, newInstance = pcall(Instance.new, classNameOrTemplate)
-
-		if not success then
-			External.logError("cannotCreateClass", nil, classNameOrTemplate)
-		end
-
-		local classProps = defaultProperties[classNameOrTemplate]
-
-		if classProps then
-			for key, value in classProps do
-				newInstance[key] = value
-			end
-		end
-
-		instance = newInstance
+	if not success then
+		External.logError("cannotCreateClass", nil, className)
 	end
 
-	return function(props: instances.Properties): Instance
-		table.insert(scope, instance)
+	local classProps = defaultProperties[className]
 
-		applyProperties(scope, instance, props)
-
-		return instance
+	if classProps then
+		for key, value in classProps do
+			newInstance[key] = value
+		end
 	end
+
+	return Hydrate(scope, newInstance)
 end
 
 return New

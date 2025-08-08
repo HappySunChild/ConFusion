@@ -1,12 +1,13 @@
+--!strict
 local instances = require "./types"
 local memory = require "../memory/types"
 
 local applyProperties = require "./applyProperties"
 
-local function Hydrate(
+local function Hydrate<InstanceT>(
 	scope: memory.Scope,
-	instance: Instance
-): (props: instances.Properties) -> Instance
+	instance: InstanceT
+): (props: instances.Properties) -> InstanceT
 	return function(props: instances.Properties)
 		table.insert(scope, instance)
 

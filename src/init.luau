@@ -90,6 +90,7 @@ type ConFusion = {
 
 	-- Instances
 	read New: instances.NewConstructor,
+	read FromTemplate: instances.FromTemplateConstructor,
 	read Hydrate: instances.HydrateConstructor,
 	read WithChild: instances.WithChildConstructor,
 	read WithChildOfClass: instances.WithChildOfClassConstructor,
