@@ -29,12 +29,17 @@ export type Child =
 
 export type NewConstructor = (
 	scope: memory.Scope,
-	classNameOrTemplate: string | Instance
+	className: string
 ) -> (Properties) -> Instance
-export type HydrateConstructor = (
+export type FromTemplateConstructor = <InstanceT>(
 	scope: memory.Scope,
-	instance: Instance
-) -> (Properties) -> Instance
+	template: InstanceT
+) -> (Properties) -> InstanceT
+export type HydrateConstructor = <InstanceT>(
+	scope: memory.Scope,
+	instance: InstanceT
+) -> (Properties) -> InstanceT
+
 export type WithChildConstructor = (
 	scope: memory.Scope,
 	name: string

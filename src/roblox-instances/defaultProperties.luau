@@ -182,4 +182,4 @@ return {
 		TopSurface = Enum.SurfaceType.Smooth,
 		BottomSurface = Enum.SurfaceType.Smooth,
 	},
-}
+} :: { [string]: { [string]: any } }
