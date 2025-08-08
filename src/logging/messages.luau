@@ -2,6 +2,8 @@ return {
 	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
 	callbackError = "Error in callback:\nERROR_MESSAGE",
 
+	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
+
 	missingChild = "Could not find child '%s' in '%s'.",
 	missingChildClass = "Could not find child of class '%s' in '%s'.",
 	missingDescendant = "Could not find descendant '%s' in '%s'.",
@@ -26,4 +28,6 @@ return {
 
 	missingSpecialKeyStage = "The SpecialKey '%s' is missing a stage property.",
 	invalidSpecialKeyStage = "The SpecialKey '%s' has an invalid stage '%s'.",
+
+	expectedType = "Expected a %s, got %s.",
 }

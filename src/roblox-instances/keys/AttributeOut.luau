@@ -2,6 +2,7 @@ local calc = require "../../calc/types"
 local instances = require "../types"
 local memory = require "../../memory/types"
 
+local External = require "../../External"
 local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
@@ -20,7 +21,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
-					return error(`Invalid Out type.`, 2)
+					External.logError("expectedType", nil, "Value", xtypeof(value))
 				end
 
 				local event = applyTo:GetAttributeChangedSignal(attribute)

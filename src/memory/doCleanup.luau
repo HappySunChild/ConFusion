@@ -1,11 +1,13 @@
 --!strict
 local memory = require "./types"
 
+local External = require "../External"
+
 local active = {}
 
 local function doCleanup(action: memory.CleanupTask)
 	if active[action] then
-		error(`doCleanup has already been called on '{action}'`)
+		External.logError "destroyedTwice"
 	end
 
 	active[action] = true
