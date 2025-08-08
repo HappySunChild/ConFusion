@@ -96,6 +96,9 @@ type ConFusion = {
 	read WithDescendant: instances.WithChildConstructor,
 	read WithDescendantOfClass: instances.WithChildOfClassConstructor,
 
+	read PropertyOf: instances.PropertyOfConstructor,
+	read AttributeOf: instances.AttributeOfConstructor,
+
 	read Children: instances.SpecialKey<"Children">,
 	read OnStartup: instances.SpecialKey<"OnStartup">,
 	read OnRemoval: instances.SpecialKey<"OnRemoval">,
@@ -163,6 +166,9 @@ local ConFusion = table.freeze {
 	WithChildOfClass = require "@self/roblox-instances/WithChildOfClass",
 	WithDescendant = require "@self/roblox-instances/WithDescendant",
 	WithDescendantOfClass = require "@self/roblox-instances/WithDescendantOfClass",
+
+	PropertyOf = require "@self/roblox-instances/PropertyOf",
+	AttributeOf = require "@self/roblox-instances/AttributeOf",
 
 	-- Instance Keys
 	Children = require "@self/roblox-instances/keys/Children",
