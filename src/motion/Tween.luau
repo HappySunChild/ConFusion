@@ -7,6 +7,8 @@ local getTweenAlpha = require "./getTweenAlpha"
 local getTweenDuration = require "./getTweenDuration"
 local lerp = require "./lerp"
 
+local castToState = require "../calc/castToState"
+
 local peek = require "../use/peek"
 
 local function tweenMover(info: calc.UsedAs<TweenInfo>)
@@ -27,7 +29,11 @@ local function Tween<V>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<V>,
 	info: calc.UsedAs<TweenInfo>
-): motion.Animated<V>
+): motion.Animated<V> | V
+	if castToState(goal) == nil then
+		return goal
+	end
+
 	local tween = Animated(scope, goal, tweenMover(info))
 	tween.name = "Tween"
 

@@ -8,9 +8,10 @@ local External = require "../External"
 local doCleanup = require "../memory/doCleanup"
 
 local Computed = require "./Computed"
+local For = require "./For"
 local Value = require "./Value"
 
-local For = require "./For"
+local checkDissolvable = require "./For/checkDissolvable"
 
 local parseError = require "../logging/parseError"
 
@@ -82,7 +83,13 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		IK,
 		IV
 	) -> (OK, OV)
-): calc.For<OK, OV>
+): calc.For<OK, OV> | { [OK]: OV }
+	local canDissolve, constant = checkDissolvable(scope, inputTable, processor)
+
+	if canDissolve then
+		return constant
+	end
+
 	return For(scope, inputTable, function(scope, initialKey, initialValue)
 		return SubObject(scope, initialKey, initialValue, processor)
 	end)

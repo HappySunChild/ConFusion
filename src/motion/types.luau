@@ -21,7 +21,7 @@ export type TweenConstructor = <V>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<V>,
 	info: calc.UsedAs<TweenInfo>
-) -> Animated<V>
+) -> Animated<V> | V
 export type SpringConstructor = <V>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<V>,

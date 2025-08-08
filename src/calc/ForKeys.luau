@@ -8,9 +8,10 @@ local External = require "../External"
 local doCleanup = require "../memory/doCleanup"
 
 local Computed = require "./Computed"
+local For = require "./For"
 local Value = require "./Value"
 
-local For = require "./For"
+local checkDissolvable = require "./For/checkDissolvable"
 
 local parseError = require "../logging/parseError"
 
@@ -67,7 +68,13 @@ local function ForKeys<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	inputTable: calc.UsedAs<{ [IK]: IV }>,
 	processor: (calc.Use, memory.Scope<S>, IK) -> OK
-): calc.For<OK, IV>
+): calc.For<OK, IV> | { [OK]: IV }
+	local canDissolve, constant = checkDissolvable(scope, inputTable, processor)
+
+	if canDissolve then
+		return constant
+	end
+
 	return For(scope, inputTable, function(scope, initialKey, initialValue)
 		return SubObject(scope, initialKey, initialValue, processor)
 	end)

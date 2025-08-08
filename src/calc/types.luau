@@ -35,7 +35,7 @@ export type Computed<T> = {
 export type ComputedConstructor = <S, T>(
 	scope: memory.Scope<S>,
 	processor: (Use, memory.Scope<S>) -> T
-) -> Computed<T>
+) -> Computed<T> | T
 
 -- A state object which maps over keys and/or values in another table.
 export type For<OK, OV> = {
@@ -46,16 +46,16 @@ export type ForPairsConstructor = <S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	inputTable: UsedAs<{ [IK]: IV }>,
 	processor: (Use, memory.Scope<S>, IK, IV) -> (OK, OV)
-) -> For<OK, OV>
+) -> For<OK, OV> | { [OK]: OV }
 export type ForKeysConstructor = <S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	inputTable: UsedAs<{ [IK]: IV }>,
 	processor: (Use, memory.Scope<S>, IK) -> OK
-) -> For<OK, IV>
+) -> For<OK, IV> | { [OK]: IV }
 export type ForValuesConstructor = <S, IK, IV, OV>(
 	scope: memory.Scope<S>,
 	inputTable: UsedAs<{ [IK]: IV }>,
 	processor: (Use, memory.Scope<S>, IV) -> OV
-) -> For<IK, OV>
+) -> For<IK, OV> | { [IK]: OV }
 
 return nil
