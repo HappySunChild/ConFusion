@@ -8,8 +8,9 @@ export type ExternalProvider = {
 	logErrorNonFatal: (message: string) -> (),
 	logWarn: (message: string) -> (),
 
-	doTaskImmediate: (resume: (...unknown) -> (), ...unknown) -> thread?,
-	doTaskDeferred: (resume: (...unknown) -> (), ...unknown) -> thread?,
+	doTaskImmediate: <A>(resume: (...A) -> () | thread, ...A) -> thread?,
+	doTaskDeferred: <A>(resume: (...A) -> () | thread, ...A) -> thread?,
+	doTaskDelayed: <A>(sec: number, resume: (...A) -> () | thread, ...A) -> thread?,
 	cancelTask: (task: thread) -> boolean,
 }
 
@@ -63,19 +64,26 @@ local External = table.freeze {
 		return lastUpdate
 	end,
 
-	doTaskImmediate = function(resume: (...any?) -> (), ...: any?): thread?
+	doTaskImmediate = function<A>(resume: (...A) -> () | thread, ...: A): thread?
 		if not activeProvider then
 			return nil
 		end
 
 		return activeProvider.doTaskImmediate(resume, ...)
 	end,
-	doTaskDeferred = function(resume: (...any?) -> (), ...: any?): thread?
+	doTaskDeferred = function<A>(resume: (...A) -> () | thread, ...: A): thread?
 		if not activeProvider then
 			return nil
 		end
 
 		return activeProvider.doTaskDeferred(resume, ...)
+	end,
+	doTaskDelayed = function<A>(sec: number, resume: (...A) -> () | thread, ...: A): thread?
+		if not activeProvider then
+			return nil
+		end
+
+		return activeProvider.doTaskDelayed(sec, resume, ...)
 	end,
 	cancelTask = function(task: thread): boolean
 		if not activeProvider then
