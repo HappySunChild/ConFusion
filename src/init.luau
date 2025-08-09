@@ -64,6 +64,7 @@ type ConFusion = {
 
 	-- Async
 	read Eventual: async.EventualConstructor,
+	read await: (subject: graph.GraphObject) -> (),
 
 	-- Contextual
 	read Contextual: context.ContextConstructor,
@@ -141,6 +142,7 @@ local ConFusion = table.freeze {
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
+	await = require "@self/async/await",
 
 	-- Context
 	Contextual = require "@self/context/Contextual",
