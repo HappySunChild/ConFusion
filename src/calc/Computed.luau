@@ -11,6 +11,7 @@ local isSimilar = require "./isSimilar"
 local dissolvingUse = require "../use/dissolvingUse"
 local peek = require "../use/peek"
 
+local checkArity = require "../memory/checkArity"
 local deriveScope = require "../memory/deriveScope"
 local destructor = require "../memory/destructor"
 local doCleanup = require "../memory/doCleanup"
@@ -91,6 +92,8 @@ local function Computed<T, S>(
 	scope: memory.Scope<S>,
 	processor: ComputedProcessor<S, T>
 ): calc.Computed<T>
+	checkArity(processor)
+
 	local canDissolve, constant = checkDissolvable(scope, processor)
 
 	if canDissolve then
