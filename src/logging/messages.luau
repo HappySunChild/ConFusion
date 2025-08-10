@@ -4,6 +4,8 @@ return {
 
 	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
 
+	awaitNonGraph = "Can't await non-graph values.",
+
 	missingChild = "Could not find child '%s' in '%s'.",
 	missingChildClass = "Could not find child of class '%s' in '%s'.",
 	missingDescendant = "Could not find descendant '%s' in '%s'.",
