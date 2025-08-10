@@ -57,10 +57,6 @@ type ConFusion = {
 	read ForPairs: calc.ForPairsConstructor,
 	read ForKeys: calc.ForKeysConstructor,
 	read ForValue: calc.ForValuesConstructor,
-	read map: <IT, OT>(
-		value: calc.UsedAs<IT>,
-		processor: (IT) -> OT
-	) -> calc.Computed<OT> | OT,
 
 	-- Async
 	read Eventual: async.EventualConstructor,
@@ -137,7 +133,6 @@ local ConFusion = table.freeze {
 	ForPairs = require "@self/calc/ForPairs",
 	ForKeys = require "@self/calc/ForKeys",
 	ForValues = require "@self/calc/ForValues",
-	map = require "@self/calc/map",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
