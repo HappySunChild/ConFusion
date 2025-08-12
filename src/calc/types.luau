@@ -18,12 +18,6 @@ export type Value<T> = {
 
 	set: (Value<T>, newValue: T) -> T,
 	update: (Value<T>, predicate: (T) -> T) -> T,
-
-	bindToInstanceProperty: (
-		Value<T>,
-		instance: Instance,
-		property: string
-	) -> () -> (),
 } & StateObject<T>
 export type ValueConstructor = <T>(scope: memory.Scope, initialValue: T) -> Value<T>
 
