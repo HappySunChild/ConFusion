@@ -16,6 +16,7 @@ local graph = require "@self/graph/types"
 local instances = require "@self/roblox-instances/types"
 local memory = require "@self/memory/types"
 local motion = require "@self/motion/types"
+local pipeline = require "@self/pipeline/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
@@ -83,6 +84,9 @@ type ConFusion = {
 	read Animated: motion.AnimatedConstructor,
 	read Tween: motion.TweenConstructor,
 	read Spring: motion.SpringConstructor,
+
+	-- Plumbing
+	read Pipe: pipeline.PipeConstructor,
 
 	-- Instances
 	read New: instances.NewConstructor,
@@ -154,6 +158,9 @@ local ConFusion = table.freeze {
 	Animated = require "@self/motion/Animated",
 	Tween = require "@self/motion/Tween",
 	Spring = require "@self/motion/Spring",
+
+	-- Plumbing
+	Pipe = require "@self/pipeline/Pipe",
 
 	-- Instances
 	New = require "@self/roblox-instances/New",
