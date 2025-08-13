@@ -3,6 +3,9 @@ local memory = require "../memory/types"
 local pipeline = require "./types"
 
 local Computed = require "../calc/Computed"
+local ForKeys = require "../calc/ForKeys"
+local ForPairs = require "../calc/ForPairs"
+local ForValues = require "../calc/ForValues"
 local isSimilar = require "../calc/isSimilar"
 
 local Spring = require "../motion/Spring"
@@ -26,16 +29,6 @@ local class = table.freeze {
 	kind = "state",
 	timeliness = "lazy",
 
-	map = function<T, O>(self: Self<T>, processor: (T, calc.Use, memory.Scope) -> O): Self<O>
-		local previous = self._current
-		local newComputed = Computed(self._internalScope, function(use, scope)
-			return processor(use(previous), use, scope)
-		end)
-
-		self._current = newComputed
-
-		return self
-	end,
 	spring = function<T>(
 		self: Self<T>,
 		speed: calc.UsedAs<number>?,
@@ -51,6 +44,57 @@ local class = table.freeze {
 		local newTween = Tween(self._internalScope, self._current, info)
 
 		self._current = newTween
+
+		return self
+	end,
+
+	map = function<T, O>(
+		self: Self<T>,
+		processor: (value: T, use: calc.Use, scope: memory.Scope) -> O
+	): Self<O>
+		local previous = self._current
+		local newComputed = Computed(self._internalScope, function(use, scope)
+			return processor(use(previous), use, scope)
+		end)
+
+		self._current = newComputed
+
+		return self
+	end,
+
+	forPairs = function<IK, IV, OK, OV>(
+		self: Self<{ [IK]: IV }>,
+		processor: calc.ForPairsProcessor<
+			unknown,
+			IK,
+			IV,
+			OK,
+			OV
+		>
+	): Self<{ [OK]: OV }>
+		local newPairs = ForPairs(self._internalScope, self._current, processor)
+
+		self._current = newPairs
+
+		return self
+	end,
+	forValues = function<IK, IV, OV>(
+		self: Self<{ [IK]: IV }>,
+		processor: calc.ForValuesProcessor<unknown, IV, OV>
+	): Self<{ [IK]: OV }>
+		local newValues = ForValues(self._internalScope, self._current, processor)
+
+		self._current = newValues
+
+		return self
+	end,
+	forKeys = function<IK, IV, OK>(
+		self: Self<{ [IK]: IV }>,
+		processor: calc.ForKeysProcessor<unknown, IK, OK>
+	): Self<{ [OK]: IV }>
+		local newKeys = ForKeys(self._internalScope, self._current, processor)
+
+		self._current = newKeys
 
 		return self
 	end,
