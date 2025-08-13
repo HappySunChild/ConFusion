@@ -2,6 +2,8 @@ local calc = require "../calc/types"
 local memory = require "../memory/types"
 local pipeline = require "./types"
 
+local External = require "../External"
+
 local Computed = require "../calc/Computed"
 local ForKeys = require "../calc/ForKeys"
 local ForPairs = require "../calc/ForPairs"
@@ -22,7 +24,18 @@ local peek = require "../use/peek"
 type Self<T> = pipeline.Pipe<T> & {
 	_internalScope: memory.Scope,
 	_current: calc.UsedAs<T>,
+	_done: boolean?,
 }
+
+local function checkFrozen(self: Self<any>)
+	if not self._done then
+		return
+	end
+
+	External.logError "pipeModifyFrozen"
+end
+
+local _Pipe
 
 local class = table.freeze {
 	type = "Pipe",
@@ -34,6 +47,8 @@ local class = table.freeze {
 		speed: calc.UsedAs<number>?,
 		damping: calc.UsedAs<number>?
 	): Self<T>
+		checkFrozen(self)
+
 		local newSpring = Spring(self._internalScope, self._current, speed, damping)
 
 		self._current = newSpring
@@ -41,6 +56,8 @@ local class = table.freeze {
 		return self
 	end,
 	tween = function<T>(self: Self<T>, info: calc.UsedAs<TweenInfo>): Self<T>
+		checkFrozen(self)
+
 		local newTween = Tween(self._internalScope, self._current, info)
 
 		self._current = newTween
@@ -52,6 +69,8 @@ local class = table.freeze {
 		self: Self<T>,
 		processor: (value: T, use: calc.Use, scope: memory.Scope) -> O
 	): Self<O>
+		checkFrozen(self)
+
 		local previous = self._current
 		local newComputed = Computed(self._internalScope, function(use, scope)
 			return processor(use(previous), use, scope)
@@ -72,6 +91,8 @@ local class = table.freeze {
 			OV
 		>
 	): Self<{ [OK]: OV }>
+		checkFrozen(self)
+
 		local newPairs = ForPairs(self._internalScope, self._current, processor)
 
 		self._current = newPairs
@@ -82,6 +103,8 @@ local class = table.freeze {
 		self: Self<{ [IK]: IV }>,
 		processor: calc.ForValuesProcessor<unknown, IV, OV>
 	): Self<{ [IK]: OV }>
+		checkFrozen(self)
+
 		local newValues = ForValues(self._internalScope, self._current, processor)
 
 		self._current = newValues
@@ -92,9 +115,18 @@ local class = table.freeze {
 		self: Self<{ [IK]: IV }>,
 		processor: calc.ForKeysProcessor<unknown, IK, OK>
 	): Self<{ [OK]: IV }>
+		checkFrozen(self)
+
 		local newKeys = ForKeys(self._internalScope, self._current, processor)
 
 		self._current = newKeys
+
+		return self
+	end,
+
+	-- setting return type as StateObject to remove method suggestions, since they will all just error anyway
+	finish = function<T>(self: Self<T>): calc.StateObject<T>
+		self._done = true
 
 		return self
 	end,
@@ -114,13 +146,13 @@ local class = table.freeze {
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Pipe<V>(scope: memory.Scope, rootInput: calc.UsedAs<V>): pipeline.Pipe<V>
+local function Pipe<V>(scope: memory.Scope, initialValue: calc.UsedAs<V>): pipeline.Pipe<V>
 	local newPipe: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
-		_current = rootInput,
-		_internalValue = peek(rootInput),
+		_current = initialValue,
+		_internalValue = peek(initialValue),
 		_internalScope = deriveScope(scope),
 
 		_users = {},
@@ -134,5 +166,7 @@ local function Pipe<V>(scope: memory.Scope, rootInput: calc.UsedAs<V>): pipeline
 
 	return newPipe
 end
+
+_Pipe = Pipe
 
 return Pipe

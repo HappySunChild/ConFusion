@@ -29,6 +29,8 @@ export type Pipe<T> = calc.StateObject<T> & {
 		Pipe<T>,
 		processor: calc.ForKeysProcessor<unknown, IK, OK>
 	) -> Pipe<{ [OK]: IV }>,
+
+	finish: (Pipe<T>) -> calc.StateObject<T>,
 }
 export type PipeConstructor = <T>(
 	scope: memory.Scope,
