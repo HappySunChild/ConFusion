@@ -37,6 +37,8 @@ export type Contextual<T> = context.Contextual<T>
 
 export type Timer = chrono.Timer
 
+export type Pipe<T> = pipeline.Pipe<T>
+
 export type SpecialKey<T = string> = instances.SpecialKey
 export type Child = instances.Child
 
