@@ -35,8 +35,6 @@ local function checkFrozen(self: Self<any>)
 	External.logError "pipeModifyFrozen"
 end
 
-local _Pipe
-
 local class = table.freeze {
 	type = "Pipe",
 	kind = "state",
@@ -166,7 +164,5 @@ local function Pipe<V>(scope: memory.Scope, initialValue: calc.UsedAs<V>): pipel
 
 	return newPipe
 end
-
-_Pipe = Pipe
 
 return Pipe
