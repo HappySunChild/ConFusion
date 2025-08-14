@@ -69,14 +69,22 @@ local class = table.freeze {
 		local timer = self._timer
 
 		local nextGoal = peek(goal)
+
+		if castToState(goal) then
+			depend(self, goal)
+		end
+
+		-- protect against NaN goals
+		if nextGoal ~= nextGoal then
+			External.logWarn("animatedInvalidGoal", nextGoal)
+
+			return false
+		end
+
 		local nextGenerator = peek(generator) :: motion.CurveGenerator<V>
 
 		if castToState(generator) then
 			depend(self, generator :: any)
-		end
-
-		if castToState(goal) then
-			depend(self, goal)
 		end
 
 		depend(self, timer)
@@ -112,6 +120,12 @@ local class = table.freeze {
 		local oldValue = self._internalValue :: any
 		local shouldSleep, newValue =
 			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
+
+		if (newValue :: any) ~= (newValue :: any) then
+			External.logWarn("animatedInvalidMotion", newValue, self._activeGoal)
+
+			newValue = self._activeGoal
+		end
 
 		self._internalValue = newValue
 
