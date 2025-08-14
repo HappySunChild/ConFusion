@@ -1,40 +1,41 @@
 local calc = require "../calc/types"
 local memory = require "../memory/types"
 
-export type Pipe<T> = calc.StateObject<T> & {
+export type Pipe<S, T> = {
 	type: "Pipe",
+	kind: "pipe",
 
 	spring: (
-		Pipe<T>,
+		Pipe<S, T>,
 		speed: calc.UsedAs<number>?,
 		damping: calc.UsedAs<number>?
-	) -> Pipe<T>,
-	tween: (Pipe<T>, info: calc.UsedAs<TweenInfo>) -> Pipe<T>,
+	) -> Pipe<S, T>,
+	tween: (Pipe<S, T>, info: calc.UsedAs<TweenInfo>) -> Pipe<S, T>,
 
 	map: <O>(
-		Pipe<T>,
-		processor: (value: T, use: calc.Use, scope: memory.Scope) -> O
-	) -> Pipe<T>, -- Pipe<O>, -- this isn't allowed?
+		Pipe<S, T>,
+		processor: (value: T, use: calc.Use, scope: memory.Scope<S>) -> O
+	) -> Pipe<S, T>, -- Pipe<O>, -- this isn't allowed?
 
 	forPairs: <IK, IV, OK, OV>(
-		Pipe<T>,
-		processor: calc.ForPairsProcessor<unknown, IK, IV, OK, OV>
-	) -> Pipe<T>, -- Pipe<{ [OK]: OV }>,
+		Pipe<S, T>,
+		processor: calc.ForPairsProcessor<S, IK, IV, OK, OV>
+	) -> Pipe<S, T>, -- Pipe<{ [OK]: OV }>,
 	forValues: <IK, IV, OV>(
-		Pipe<T>,
-		processor: calc.ForValuesProcessor<unknown, IV, OV>
-	) -> Pipe<T>, -- Pipe<{ [IK]: OV }>,
+		Pipe<S, T>,
+		processor: calc.ForValuesProcessor<S, IV, OV>
+	) -> Pipe<S, T>, -- Pipe<{ [IK]: OV }>,
 	forKeys: <IK, IV, OK>(
-		Pipe<T>,
-		processor: calc.ForKeysProcessor<unknown, IK, OK>
-	) -> Pipe<T>, -- Pipe<{ [OK]: IV }>,
+		Pipe<S, T>,
+		processor: calc.ForKeysProcessor<S, IK, OK>
+	) -> Pipe<S, T>, -- Pipe<{ [OK]: IV }>,
 
-	finish: (Pipe<T>) -> calc.StateObject<T>,
+	finish: (Pipe<S, T>) -> calc.UsedAs<T>,
 }
 
-export type PipeConstructor = <T>(
-	scope: memory.Scope,
+export type PipeConstructor = <S, T>(
+	scope: memory.Scope<S>,
 	initialValue: calc.UsedAs<T>
-) -> Pipe<T>
+) -> Pipe<S, T>
 
 return nil

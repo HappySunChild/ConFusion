@@ -8,79 +8,63 @@ local Computed = require "../calc/Computed"
 local ForKeys = require "../calc/ForKeys"
 local ForPairs = require "../calc/ForPairs"
 local ForValues = require "../calc/ForValues"
-local isSimilar = require "../calc/isSimilar"
 
 local Spring = require "../motion/Spring"
 local Tween = require "../motion/Tween"
 
 local deriveScope = require "../memory/deriveScope"
-local destructor = require "../memory/destructor"
 
-local castToGraph = require "../graph/castToGraph"
-local depend = require "../graph/depend"
-
-local peek = require "../use/peek"
-
-type Self<T> = pipeline.Pipe<T> & {
-	_internalScope: memory.Scope,
-	_current: calc.UsedAs<T>,
-	_done: boolean?,
+type Self<S, T> = pipeline.Pipe<S, T> & {
+	_latest: calc.UsedAs<T>,
+	_internalScope: memory.Scope<S>,
+	_targetScope: memory.Scope<S>,
 }
 
-local function checkFrozen(self: Self<any>)
-	if not self._done then
-		return
+local function _checkFinished(self: Self<any, any>)
+	if self._internalScope == nil and self._targetScope == nil then
+		External.logError "pipeModifyFrozen"
 	end
-
-	External.logError "pipeModifyFrozen"
 end
 
 local class = table.freeze {
 	type = "Pipe",
-	kind = "state",
-	timeliness = "lazy",
+	kind = "pipe",
 
-	spring = function<T>(
-		self: Self<T>,
+	spring = function<S, T>(
+		self: Self<S, T>,
 		speed: calc.UsedAs<number>?,
 		damping: calc.UsedAs<number>?
-	): Self<T>
-		checkFrozen(self)
+	): Self<S, T>
+		_checkFinished(self)
 
-		local newSpring = Spring(self._internalScope, self._current, speed, damping)
-
-		self._current = newSpring
+		self._latest = Spring(self._internalScope, self._latest, speed, damping)
 
 		return self
 	end,
-	tween = function<T>(self: Self<T>, info: calc.UsedAs<TweenInfo>): Self<T>
-		checkFrozen(self)
+	tween = function<S, T>(self: Self<S, T>, info: calc.UsedAs<TweenInfo>): Self<S, T>
+		_checkFinished(self)
 
-		local newTween = Tween(self._internalScope, self._current, info)
-
-		self._current = newTween
+		self._latest = Tween(self._internalScope, self._latest, info)
 
 		return self
 	end,
 
-	map = function<T, O>(
-		self: Self<T>,
-		processor: (value: T, use: calc.Use, scope: memory.Scope) -> O
-	): Self<O>
-		checkFrozen(self)
+	map = function<S, T, O>(
+		self: Self<S, T>,
+		processor: (value: T, use: calc.Use, scope: memory.Scope<S>) -> O
+	): Self<S, O>
+		_checkFinished(self)
 
-		local previous = self._current
-		local newComputed = Computed(self._internalScope, function(use, scope)
-			return processor(use(previous), use, scope)
+		local latest = self._latest
+		self._latest = Computed(self._internalScope, function(use, scope)
+			return processor(use(latest), use, scope)
 		end)
 
-		self._current = newComputed
-
 		return self
 	end,
 
-	forPairs = function<IK, IV, OK, OV>(
-		self: Self<{ [IK]: IV }>,
+	forPairs = function<S, IK, IV, OK, OV>(
+		self: Self<S, { [IK]: IV }>,
 		processor: calc.ForPairsProcessor<
 			unknown,
 			IK,
@@ -88,79 +72,60 @@ local class = table.freeze {
 			OK,
 			OV
 		>
-	): Self<{ [OK]: OV }>
-		checkFrozen(self)
+	): Self<S, { [OK]: OV }>
+		_checkFinished(self)
 
-		local newPairs = ForPairs(self._internalScope, self._current, processor)
-
-		self._current = newPairs
+		self._latest = ForPairs(self._internalScope, self._latest, processor)
 
 		return self
 	end,
-	forValues = function<IK, IV, OV>(
-		self: Self<{ [IK]: IV }>,
-		processor: calc.ForValuesProcessor<unknown, IV, OV>
-	): Self<{ [IK]: OV }>
-		checkFrozen(self)
+	forValues = function<S, IK, IV, OV>(
+		self: Self<S, { [IK]: IV }>,
+		processor: calc.ForValuesProcessor<S, IV, OV>
+	): Self<S, { [IK]: OV }>
+		_checkFinished(self)
 
-		local newValues = ForValues(self._internalScope, self._current, processor)
-
-		self._current = newValues
+		self._latest = ForValues(self._internalScope, self._latest, processor)
 
 		return self
 	end,
-	forKeys = function<IK, IV, OK>(
-		self: Self<{ [IK]: IV }>,
-		processor: calc.ForKeysProcessor<unknown, IK, OK>
-	): Self<{ [OK]: IV }>
-		checkFrozen(self)
+	forKeys = function<S, IK, IV, OK>(
+		self: Self<S, { [IK]: IV }>,
+		processor: calc.ForKeysProcessor<S, IK, OK>
+	): Self<S, { [OK]: IV }>
+		_checkFinished(self)
 
-		local newKeys = ForKeys(self._internalScope, self._current, processor)
-
-		self._current = newKeys
+		self._latest = ForKeys(self._internalScope, self._latest, processor)
 
 		return self
 	end,
 
-	-- setting return type as StateObject to remove method suggestions, since they will all just error anyway
-	finish = function<T>(self: Self<T>): calc.StateObject<T>
-		self._done = true
+	finish = function<T>(self: Self<unknown, T>): calc.UsedAs<T>
+		_checkFinished(self)
 
-		return self
-	end,
+		table.insert(self._targetScope, self._internalScope)
 
-	_evaluate = function(self: Self<unknown>)
-		if castToGraph(self._current) then
-			depend(self, self._current)
-		end
+		local latest = self._latest
 
-		local newValue = peek(self._current)
-		local oldValue = self._internalValue
+		self._targetScope = nil
+		self._internalScope = nil
+		self._latest = nil
 
-		self._internalValue = newValue
-
-		return not isSimilar(newValue, oldValue)
+		return latest
 	end,
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Pipe<V>(scope: memory.Scope, initialValue: calc.UsedAs<V>): pipeline.Pipe<V>
-	local newPipe: Self<V> = setmetatable({
-		scope = scope,
-		createdAt = os.clock(),
-
-		_current = initialValue,
-		_internalValue = peek(initialValue),
+local function Pipe<S, T>(
+	scope: memory.Scope<S>,
+	initialValue: calc.UsedAs<T>
+): pipeline.Pipe<S, T>
+	local newPipe: Self<S, T> = setmetatable({
+		_targetScope = scope,
 		_internalScope = deriveScope(scope),
 
-		_users = {},
-		_using = {},
+		_latest = initialValue,
 	}, METATABLE) :: any
-
-	table.insert(scope, {
-		destructor(newPipe),
-		newPipe._internalScope,
-	})
 
 	return newPipe
 end
