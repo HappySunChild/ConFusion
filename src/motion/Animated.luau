@@ -76,7 +76,7 @@ local class = table.freeze {
 
 		-- protect against NaN goals
 		if nextGoal ~= nextGoal then
-			External.logWarn("animatedInvalidGoal", tostring(nextGoal))
+			External.logWarn("animatedInvalidGoal", nextGoal)
 
 			return false
 		end
@@ -122,11 +122,7 @@ local class = table.freeze {
 			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
 
 		if (newValue :: any) ~= (newValue :: any) then
-			External.logWarn(
-				"animatedInvalidMotion",
-				tostring(newValue :: any),
-				tostring(self._activeGoal)
-			)
+			External.logWarn("animatedInvalidMotion", newValue, self._activeGoal)
 
 			newValue = self._activeGoal
 		end
