@@ -4,8 +4,8 @@ return {
 
 	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
 
-	animatedInvalidGoal = "An Animated was given a '%s' goal. Ensure '%s' isn't being passed anywhere!",
-	animatedInvalidMotion = "An Animated encountered '%s' during motion. Ensure '%s' isn't being passed anywhere!",
+	animatedInvalidGoal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%s'",
+	animatedInvalidMotion = "An Animated encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%s'\nGoal: '%s'",
 
 	missingChild = "Could not find child '%s' in '%s'.",
 	missingChildClass = "Could not find child of class '%s' in '%s'.",
