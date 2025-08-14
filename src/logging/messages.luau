@@ -26,8 +26,6 @@ return {
 
 	forKeyCollision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
 
-	pipeModifyFrozen = "Can't modify Pipe that has already been frozen with `:finish()`.",
-
 	missingSpecialKeyStage = "The SpecialKey '%s' is missing a stage property.",
 	invalidSpecialKeyStage = "The SpecialKey '%s' has an invalid stage '%s'.",
 
