@@ -113,6 +113,7 @@ local class = table.freeze {
 
 		local elapsed = peek(timer) :: number
 
+		-- fix Animateds following eachother
 		if elapsed == 0 then
 			elapsed = External.getDeltaTime()
 		end
