@@ -20,7 +20,6 @@ local peek = require "../use/peek"
 
 type Self<V> = motion.Animated<V> & {
 	_goal: calc.UsedAs<V>,
-	_activeStart: V,
 	_activeGoal: V,
 
 	_activeDynamics: { any },
@@ -38,14 +37,14 @@ local function _syncFromCurve<V>(
 	shouldSleep: boolean,
 	outputValue: V,
 	...: any
-): (boolean, V)
+): (V, boolean)
 	table.clear(dynamics)
 
 	for i = 1, select("#", ...) do
-		dynamics[i] = select(i, ...)
+		dynamics[i + 1] = select(i, ...)
 	end
 
-	return shouldSleep, outputValue
+	return outputValue, shouldSleep
 end
 
 local class = table.freeze {
@@ -97,15 +96,11 @@ local class = table.freeze {
 		then
 			self._regenerate = nil
 
-			self._activeStart = self._internalValue
 			self._activeGoal = nextGoal
 
 			self._activeGenerator = nextGenerator
-			self._activeCurve = nextGenerator(
-				self._activeStart,
-				self._activeGoal,
-				unpack(self._activeDynamics)
-			)
+			self._activeCurve =
+				nextGenerator(self._activeGoal, unpack(self._activeDynamics))
 
 			timer:reset()
 			timer:unpause()
@@ -118,7 +113,7 @@ local class = table.freeze {
 		end
 
 		local oldValue = self._internalValue :: any
-		local shouldSleep, newValue =
+		local newValue, shouldSleep =
 			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
 
 		if (newValue :: any) ~= (newValue :: any) then
@@ -127,6 +122,7 @@ local class = table.freeze {
 			newValue = self._activeGoal
 		end
 
+		self._activeDynamics[1] = newValue
 		self._internalValue = newValue
 
 		if shouldSleep then
@@ -147,16 +143,16 @@ local function Animated<V>(
 	local newAnimated: Self<V> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
-		_internalValue = peek(goal),
+
+		_internalValue = nil,
 
 		_using = {},
 		_users = {},
 
 		_goal = goal,
-		_activeStart = nil,
 		_activeGoal = nil,
 
-		_activeDynamics = {},
+		_activeDynamics = { peek(goal) },
 
 		_generator = mover,
 		_activeGenerator = nil,
