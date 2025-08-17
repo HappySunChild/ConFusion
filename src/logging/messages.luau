@@ -1,6 +1,8 @@
 return {
 	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
+
 	callbackError = "Error in callback:\nERROR_MESSAGE",
+	callbackNoScope = "Callback for %s does not utilize passed scope parameter! You can silence this by prefixing the `scope` parameter with an underscore.",
 
 	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
   
