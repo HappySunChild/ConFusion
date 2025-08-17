@@ -2,7 +2,7 @@ local calc = require "../calc/types"
 local memory = require "../memory/types"
 
 export type AnimationCurve<V> = (elapsed: number) -> (boolean, V, ...any)
-export type CurveGenerator<V> = (start: V, goal: V, ...any) -> AnimationCurve<V>
+export type CurveGenerator<V> = (goal: V, start: V, ...any) -> AnimationCurve<V>
 
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<V> = {

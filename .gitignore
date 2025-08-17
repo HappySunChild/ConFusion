@@ -1,4 +1,5 @@
 .github/
+.vscode/
 sourcemap.json
 tests/
 temp/

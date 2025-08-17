@@ -9,7 +9,7 @@ export type Eventual<T> = {
 } & calc.StateObject<T>
 export type EventualConstructor = <S, T>(
 	scope: memory.Scope<S>,
-	processor: (calc.Use, memory.Scope<S>) -> T,
+	processor: (use: calc.Use, scope: memory.Scope<S>, become: (target: T) -> ()) -> T,
 	pendingValue: T
 ) -> Eventual<T>
 
