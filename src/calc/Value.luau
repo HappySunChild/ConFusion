@@ -1,3 +1,4 @@
+--!strict
 local calc = require "./types"
 local memory = require "../memory/types"
 
@@ -16,7 +17,7 @@ local class = table.freeze {
 
 	_using = table.freeze {},
 
-	set = function<V>(self: Self<V>, newValue: any)
+	set = function<V>(self: Self<V>, newValue: V): V
 		if not isSimilar(newValue, self._internalValue) then
 			self._internalValue = newValue
 
@@ -25,7 +26,7 @@ local class = table.freeze {
 
 		return newValue
 	end,
-	update = function<V>(self: Self<V>, updater: (V) -> any): any
+	update = function<V>(self: Self<V>, updater: (V) -> V): V
 		return self:set(updater(self._internalValue))
 	end,
 	_evaluate = function()
