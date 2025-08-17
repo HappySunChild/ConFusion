@@ -6,6 +6,9 @@ local External = require "../External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
+local nameOf = require "../logging/nameOf"
+local nicknames = require "../logging/nicknames"
+
 local function observe(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
@@ -38,6 +41,8 @@ local function observe(
 			table.remove(scope, index)
 		end
 	end
+
+	nicknames[disconnect] = `Observer ({nameOf(subject, "unknown")})`
 
 	table.insert(scope, disconnect)
 

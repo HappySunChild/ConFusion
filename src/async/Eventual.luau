@@ -32,6 +32,18 @@ type Self<T, S> = async.Eventual<T> & {
 	_activeThread: thread?,
 }
 
+local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
+	if eventual._activeThread ~= nil then
+		External.cancelTask(eventual._activeThread)
+	end
+
+	if eventual._innerScope ~= nil then
+		doCleanup(eventual._innerScope)
+
+		eventual._innerScope = nil
+	end
+end
+
 local class = table.freeze {
 	type = "Eventual",
 	kind = "state",
@@ -169,20 +181,7 @@ local function Eventual<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, {
-		destructor(newEventual),
-		function()
-			if newEventual._activeThread ~= nil then
-				External.cancelTask(newEventual._activeThread)
-			end
-
-			if newEventual._innerScope ~= nil then
-				doCleanup(newEventual._innerScope)
-
-				newEventual._innerScope = nil
-			end
-		end,
-	})
+	table.insert(scope, destructor(newEventual, auxiliaryDestructor))
 
 	evaluate(newEventual, true)
 

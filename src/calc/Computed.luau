@@ -25,6 +25,14 @@ type Self<T, S> = calc.Computed<T> & {
 	_processor: ComputedProcessor<S, T>,
 }
 
+local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
+	if computed._innerScope ~= nil then
+		doCleanup(computed._innerScope)
+
+		computed._innerScope = nil
+	end
+end
+
 local function checkDissolvable<T, S>(
 	scope: memory.Scope<S>,
 	processor: ComputedProcessor<S, T>
@@ -33,6 +41,11 @@ local function checkDissolvable<T, S>(
 	local success, value = pcall(processor, dissolvingUse, dissolvingScope)
 
 	if success then
+		-- scope went unused, we can clean it up
+		if #dissolvingScope == 1 then
+			doCleanup(dissolvingScope)
+		end
+
 		return true, value
 	end
 
@@ -112,16 +125,7 @@ local function Computed<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, {
-		destructor(newComputed),
-		function()
-			if newComputed._innerScope ~= nil then
-				doCleanup(newComputed._innerScope)
-
-				newComputed._innerScope = nil
-			end
-		end,
-	})
+	table.insert(scope, destructor(newComputed, auxiliaryDestructor))
 
 	return newComputed
 end
