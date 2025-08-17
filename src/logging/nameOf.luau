@@ -13,10 +13,10 @@ local function nameOf(x: unknown, default: string)
 
 		if type(x.name) == "string" then
 			return x.name
-		elseif type(x.kind) == "string" then
-			return x.kind
 		elseif type(x.type) == "string" then
 			return x.type
+		elseif type(x.kind) == "string" then
+			return x.kind
 		end
 	end
 
