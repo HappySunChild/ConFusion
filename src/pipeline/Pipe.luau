@@ -79,7 +79,7 @@ local class = table.freeze {
 		return self
 	end,
 
-	finish = function<T>(self: Self<unknown, T>): calc.UsedAs<T>
+	resolve = function<T>(self: Self<unknown, T>): calc.UsedAs<T>
 		return self._latest
 	end,
 }

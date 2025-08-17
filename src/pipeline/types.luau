@@ -30,7 +30,7 @@ export type Pipe<S, T> = {
 		processor: calc.ForKeysProcessor<S, IK, OK>
 	) -> Pipe<S, T>, -- Pipe<{ [OK]: IV }>,
 
-	finish: (Pipe<S, T>) -> calc.UsedAs<T>,
+	resolve: (Pipe<S, T>) -> calc.UsedAs<T>,
 }
 
 export type PipeConstructor = <S, T>(
