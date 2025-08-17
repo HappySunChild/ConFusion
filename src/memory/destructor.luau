@@ -1,39 +1,38 @@
 --!strict
 local graph = require "../graph/types"
 
-local nameOf = require "../logging/nameOf"
 local nicknames = require "../logging/nicknames"
 
-local function destroy<V>(target: graph.GraphObject)
+local function destroy(target: graph.GraphObject)
 	target.scope = nil
 
 	local using = target._using
 
-	if using then
-		for dependency in using do
-			dependency._users[target] = nil
-			using[dependency] = nil
-		end
+	for dependency in using do
+		dependency._users[target] = nil
+		using[dependency] = nil
 	end
 
 	local users = target._users
 
-	if users then
-		for user in users do
-			user._using[target] = nil
-			users[user] = nil
-		end
+	for user in users do
+		user._using[target] = nil
+		users[user] = nil
 	end
 end
 
-local function destructor(target: graph.GraphObject)
+local function destructor<T>(target: graph.GraphObject & T, auxiliary: (T) -> ()?)
 	local function destruct()
 		destroy(target)
+
+		if auxiliary then
+			auxiliary(target)
+		end
 
 		nicknames[destruct] = nil
 	end
 
-	nicknames[destruct] = nameOf(target, "unknown") .. "-destructor"
+	nicknames[destruct] = debug.info(2, "n") or "unknown"
 
 	return destruct
 end
