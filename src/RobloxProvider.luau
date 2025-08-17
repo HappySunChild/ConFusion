@@ -10,11 +10,14 @@ end
 local schedulerDisconnect
 
 local RobloxProvider: External.ExternalProvider = table.freeze {
-	doTaskImmediate = function(resume: (...any) -> (), ...)
+	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...)
 		return task.spawn(resume, ...)
 	end,
-	doTaskDeferred = function(resume: (...any) -> (), ...)
+	doTaskDeferred = function<A...>(resume: (A...) -> () | thread, ...: A...)
 		return task.defer(resume, ...)
+	end,
+	doTaskDelayed = function<A...>(sec: number, resume: (A...) -> () | thread, ...: A...)
+		return task.delay(sec, resume)
 	end,
 	cancelTask = function(thread: thread)
 		local success = pcall(task.cancel, thread)

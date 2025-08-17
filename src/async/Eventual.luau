@@ -6,69 +6,84 @@ local External = require "../External"
 
 local change = require "../graph/change"
 local depend = require "../graph/depend"
+local evaluate = require "../graph/evaluate"
 
 local castToState = require "../calc/castToState"
 local isSimilar = require "../calc/isSimilar"
 
 local peek = require "../use/peek"
 
+local deriveScope = require "../memory/deriveScope"
 local destructor = require "../memory/destructor"
+local doCleanup = require "../memory/doCleanup"
 
 local parseError = require "../logging/parseError"
 
-type processor<V> = (use: calc.Use, become: (V) -> nil) -> ()
-type Self<V> = async.Eventual<V> & {
-	_processor: processor<V>,
+type processor<S, T> = (use: calc.Use, scope: memory.Scope<S>, become: (T) -> ()) -> ()
+type Self<T, S> = async.Eventual<T> & {
+	_innerScope: memory.Scope<S>,
+	_processor: processor<S, T>,
 
-	_pendingValue: V,
-	_becomeValue: V,
+	_pendingValue: T,
+	_becomeValue: T?,
 
-	_isBecoming: boolean,
-	_active: thread?,
+	_isBecoming: boolean?,
+	_activeThread: thread?,
 }
 
 local class = table.freeze {
 	type = "Eventual",
 	kind = "state",
-	timeliness = "lazy",
+	timeliness = "eager",
 
-	isPending = function<V>(self: Self<V>)
-		return self._active ~= nil
+	isPending = function<T, S>(self: Self<T, S>)
+		return self._activeThread ~= nil
 	end,
-	_evaluate = function<V>(self: Self<V>): boolean
+	_evaluate = function<T, S>(self: Self<T, S>): boolean
 		if self.scope == nil then
 			return false
 		end
 
+		-- calling `become` causes the Eventual to be reevaluated, but we don't want to completely reevaluate everything
 		if self._isBecoming == true then
 			self._isBecoming = false
 
 			return not isSimilar(self._becomeValue, self._internalValue)
 		end
 
-		if self._active ~= nil then
-			External.cancelTask(self._active)
+		-- cancel any currently active computations
+		if self._activeThread ~= nil then
+			if self._innerScope ~= nil then
+				doCleanup(self._innerScope)
 
-			self._active = nil
+				self._innerScope = nil
+			end
+
+			External.cancelTask(self._activeThread)
+
+			self._activeThread = nil
 		end
 
-		local used = {}
+		local outerScope = self.scope
+		local innerScope = deriveScope(outerScope)
 
-		local function use<T>(target: calc.UsedAs<T>): T
+		local sessionUsed = {}
+
+		local function use<V>(target: calc.UsedAs<V>): V
 			if castToState(target) then
 				depend(self, target)
 
-				table.insert(used, target)
+				sessionUsed[target] = true
 			end
 
 			return peek(target)
 		end
 
-		local function become(value: V)
-			self._becomeValue = self._internalValue
+		local function become(value: T)
 			self._internalValue = value
 
 			if self.validity ~= "busy" then
+				self._becomeValue = self._internalValue
 				self._isBecoming = true
 
 				-- i just realized how unsafe it is to call `change` on a object in a seperate thread.
@@ -77,12 +92,13 @@ local class = table.freeze {
 				-- sounds like a very, very bad idea and will probably lead to pain and suffering later on.
 
 				-- actually if we're already busy then that means that we haven't yielded yet during our processor, which is totally fine
-				-- we don't need to call change
+				-- we don't need to call change since we're already being evaluated...
+
+				-- ignore everything, this is actually completely safe (i think???) and i was just overreacting...
 				change(self)
 
-				-- "re-depend" on used objects after becoming something.
-				-- because calling `evaluate` (and by extension `change`) on an object causes all of its dependencies to be invalidated
-				for _, target in used do
+				-- re-depend on everything we've used in this computation session
+				for target in sessionUsed do
 					depend(self, target)
 				end
 			end
@@ -91,62 +107,73 @@ local class = table.freeze {
 		self._internalValue = self._pendingValue
 
 		local didYield = true
-		local originalValue = self._internalValue
 
 		local activeThread = External.doTaskImmediate(function()
-			local ok, err = xpcall(self._processor, parseError, use, become)
+			local ok, err = xpcall(self._processor, parseError, use, innerScope, become)
 
-			if not ok then
+			if ok then
+				if self._innerScope ~= nil then
+					doCleanup(self._innerScope)
+				end
+
+				self._innerScope = innerScope
+			else
+				doCleanup(innerScope)
+
 				External.logErrorNonFatal("callbackError", err)
 			end
 
-			self._active = nil
+			self._activeThread = nil
 
 			didYield = false
 		end)
 
-		-- if we yielded then set the active thread
-		if didYield == false then
-			self._active = activeThread
+		-- if we yielded then update _activeThread
+		-- this was false for some reason???? i think i was very sleep deprived when i wrote this...
+		if didYield == true then
+			self._activeThread = activeThread
 		end
 
-		local currentValue = self._internalValue
-
-		return not isSimilar(currentValue, originalValue)
+		return not isSimilar(self._internalValue, self._pendingValue)
 	end,
 }
-
 local METATABLE = table.freeze { __index = class }
 
-local function Eventual<V>(
-	scope: memory.Scope,
-	processor: processor<V>,
-	pendingValue: V
-): async.Eventual<V>
-	local newEventual: Self<V> = setmetatable({
+local function Eventual<T, S>(
+	scope: memory.Scope<S>,
+	processor: processor<S, T>,
+	pendingValue: T
+): async.Eventual<T>
+	local newEventual: Self<T, S> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
 		_internalValue = pendingValue,
 		_pendingValue = pendingValue,
 
-		_isBecoming = false,
-		_becomeValue = nil,
-
 		_using = {},
 		_users = {},
 
+		_innerScope = nil,
 		_processor = processor,
 	}, METATABLE) :: any
 
 	table.insert(scope, {
 		destructor(newEventual),
 		function()
-			if newEventual._active ~= nil then
-				External.cancelTask(newEventual._active)
+			if newEventual._activeThread ~= nil then
+				External.cancelTask(newEventual._activeThread)
+			end
+
+			if newEventual._innerScope ~= nil then
+				doCleanup(newEventual._innerScope)
+
+				newEventual._innerScope = nil
 			end
 		end,
 	})
+
+	evaluate(newEventual, true)
 
 	return newEventual
 end

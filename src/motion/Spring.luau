@@ -12,30 +12,32 @@ local peek = require "../use/peek"
 local EPSILON = 0.0001
 
 local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<number>)
-	local startP = {}
-
-	local currentP = {}
 	local currentV = {}
 
 	local activeType = ""
 
-	return function<V>(start: V, target: V, initialVelocity: { number }?)
-		local discontinuous = typeof(target) ~= activeType
+	return function<V>(
+		targetPosition: V,
+		initialPosition: V,
+		initialVelocity: { number }?
+	): (elapsed: number) -> V
+		local discontinuous = typeof(targetPosition) ~= activeType
 
-		activeType = typeof(target)
+		activeType = typeof(targetPosition)
 
-		local targetP = unpackType(target)
+		local startP = unpackType(initialPosition)
+		local targetP = unpackType(targetPosition)
+
 		local numSprings = #targetP
 
 		if discontinuous then
 			startP = table.clone(targetP)
-			currentP = table.clone(targetP)
 
 			initialVelocity = table.create(numSprings, 0)
 			currentV = table.create(numSprings, 0)
-		else
-			startP = table.clone(currentP)
 		end
+
+		local currentP = table.clone(startP)
 
 		-- spring stepper
 		return function(elapsed: number): V
@@ -43,7 +45,7 @@ local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<numb
 			local newValue
 
 			if elapsed <= 0 then
-				newValue = start
+				newValue = initialPosition
 			else
 				local posPos, posVel, velPos, velVel =
 					springCoefficients(elapsed, peek(damping), peek(speed))
@@ -58,16 +60,20 @@ local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<numb
 					local startD = startP - targetP
 
 					local latestD = startD * posPos + startV * posVel
-					local newV = startD * velPos + startV * velVel
+					local latestV = startD * velPos + startV * velVel
 
-					if math.abs(latestD) > EPSILON or math.abs(newV) > EPSILON then
+					if latestD ~= latestD or latestV ~= latestV then
+						latestD, latestV = 0, 0
+					end
+
+					if math.abs(latestD) > EPSILON or math.abs(latestV) > EPSILON then
 						isMoving = true
 					end
 
-					local newP = latestD + targetP
+					local latestP = latestD + targetP
 
-					currentP[index] = newP
-					currentV[index] = newV
+					currentP[index] = latestP
+					currentV[index] = latestV
 				end
 
 				if not isMoving then

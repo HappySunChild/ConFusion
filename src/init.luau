@@ -16,6 +16,7 @@ local graph = require "@self/graph/types"
 local instances = require "@self/roblox-instances/types"
 local memory = require "@self/memory/types"
 local motion = require "@self/motion/types"
+local pipeline = require "@self/pipeline/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
@@ -35,6 +36,8 @@ export type Eventual<T> = async.Eventual<T>
 export type Contextual<T> = context.Contextual<T>
 
 export type Timer = chrono.Timer
+
+export type Pipe<T, S = unknown> = pipeline.Pipe<S, T>
 
 export type SpecialKey<T = string> = instances.SpecialKey
 export type Child = instances.Child
@@ -57,10 +60,6 @@ type ConFusion = {
 	read ForPairs: calc.ForPairsConstructor,
 	read ForKeys: calc.ForKeysConstructor,
 	read ForValue: calc.ForValuesConstructor,
-	read map: <IT, OT>(
-		value: calc.UsedAs<IT>,
-		processor: (IT) -> OT
-	) -> calc.Computed<OT> | OT,
 
 	-- Async
 	read Eventual: async.EventualConstructor,
@@ -88,6 +87,9 @@ type ConFusion = {
 	read Animated: motion.AnimatedConstructor,
 	read Tween: motion.TweenConstructor,
 	read Spring: motion.SpringConstructor,
+
+	-- Pipeline
+	read Pipe: pipeline.PipeConstructor,
 
 	-- Instances
 	read New: instances.NewConstructor,
@@ -138,7 +140,6 @@ local ConFusion = table.freeze {
 	ForPairs = require "@self/calc/ForPairs",
 	ForKeys = require "@self/calc/ForKeys",
 	ForValues = require "@self/calc/ForValues",
-	map = require "@self/calc/map",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
@@ -161,6 +162,9 @@ local ConFusion = table.freeze {
 	Animated = require "@self/motion/Animated",
 	Tween = require "@self/motion/Tween",
 	Spring = require "@self/motion/Spring",
+
+	-- Pipeline
+	Pipe = require "@self/pipeline/Pipe",
 
 	-- Instances
 	New = require "@self/roblox-instances/New",

@@ -12,7 +12,7 @@ local castToState = require "../calc/castToState"
 local peek = require "../use/peek"
 
 local function tweenMover(info: calc.UsedAs<TweenInfo>)
-	return function<V>(start: V, target: V)
+	return function<V>(target: V, start: V): (elapsed: number) -> V
 		local activeInfo = peek(info)
 		local duration = getTweenDuration(activeInfo)
 
