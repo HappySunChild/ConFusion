@@ -12,6 +12,16 @@ type Self = chrono.ExternalTime & {
 	_active: boolean,
 }
 
+local ALL_TIMERS = {}
+
+local function auxiliaryDestructor(externalTime: Self)
+	local index = table.find(ALL_TIMERS, externalTime)
+
+	if index ~= nil then
+		table.remove(ALL_TIMERS, index)
+	end
+end
+
 local class = {
 	type = "ExternalTime",
 	kind = "state",
@@ -29,10 +39,7 @@ local class = {
 		return true
 	end,
 }
-
 local METATABLE = table.freeze { __index = class }
-
-local allTimers = {}
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local newExternalTime = setmetatable({
@@ -43,17 +50,8 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 		_active = true,
 	}, METATABLE) :: Self
 
-	table.insert(scope, {
-		destructor(newExternalTime),
-		function()
-			local index = table.find(allTimers, newExternalTime)
-
-			if index ~= nil then
-				table.remove(allTimers, index)
-			end
-		end,
-	})
-	table.insert(allTimers, newExternalTime)
+	table.insert(ALL_TIMERS, newExternalTime)
+	table.insert(scope, destructor(newExternalTime, auxiliaryDestructor))
 
 	return newExternalTime
 end
@@ -61,7 +59,7 @@ end
 External.bindToUpdateStep(function(now: number)
 	class._internalValue = now
 
-	for _, timer in allTimers do
+	for _, timer in ALL_TIMERS do
 		if timer:isActive() then
 			change(timer)
 		end

@@ -24,6 +24,16 @@ type Self<S, IK, IV, OK, OV> = fort.Disassembly<S, IK, IV, OK, OV> & {
 	) -> fort.SubObject<S, IK, IV, OK, OV>,
 }
 
+local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
+	for object in disassembly._objects do
+		if object.scope ~= nil then
+			doCleanup(object.scope)
+
+			object.scope = nil
+		end
+	end
+end
+
 local class = table.freeze {
 	type = "Disassembly",
 	kind = "graph",
@@ -180,18 +190,7 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		_objects = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, {
-		destructor(newDisassembly),
-		function()
-			for object in newDisassembly._objects do
-				if object.scope ~= nil then
-					doCleanup(object.scope)
-				end
-
-				object.scope = nil -- i really don't understand
-			end
-		end,
-	})
+	table.insert(scope, destructor(newDisassembly, auxiliaryDestructor))
 
 	return newDisassembly
 end
