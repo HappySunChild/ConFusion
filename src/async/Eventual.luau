@@ -80,13 +80,14 @@ local class = table.freeze {
 			return peek(target)
 		end
 
-		local function become(value: T)
-			self._internalValue = value
+		local function become(targetValue: T)
+			-- becomeValue is not the value it's becoming! it is the value the Eventual was at the time of becoming another value!!
+			-- should probably give this a better name...
+			local becomeValue = self._internalValue
+
+			self._internalValue = targetValue
 
 			if self.validity ~= "busy" then
-				self._becomeValue = self._internalValue
-				self._isBecoming = true
-
 				-- i just realized how unsafe it is to call `change` on a object in a seperate thread.
 				-- this will lead to some very weird and confusing errors that will be impossible to debug.
 				-- maybe i could add a parameter to `change` that allows you to skip the busy checks, but that already
@@ -96,7 +97,14 @@ local class = table.freeze {
 				-- we don't need to call change since we're already being evaluated...
 
 				-- ignore everything, this is actually completely safe (i think???) and i was just overreacting...
+
+				self._becomeValue = becomeValue
+				self._isBecoming = true
+
 				change(self)
+
+				-- release value, i think this reduces memoization??
+				self._becomeValue = nil
 
 				-- re-depend on everything we've used in this computation session
 				for target in sessionUsed do
