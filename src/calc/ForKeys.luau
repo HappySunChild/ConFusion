@@ -1,6 +1,5 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -11,6 +10,7 @@ local doCleanup = require "../memory/doCleanup"
 local Computed = require "./Computed"
 local For = require "./For"
 local Value = require "./Value"
+local noYield = require "./noYield"
 
 local checkDissolvable = require "./For/checkDissolvable"
 
@@ -20,13 +20,17 @@ local SUB_OBJECT_META = table.freeze {
 	__index = {
 		roamKeys = false,
 		roamValues = true,
-		invalidateInputKey = function(self): ()
+		invalidateInputKey = function<S, IK, IV, OK, OV>(self: fort.SubObject<
+			S,
+			IK,
+			IV,
+			OK,
+			OV
+		>): ()
 			self._inputKeyState:set(self.inputKey)
 		end,
-		invalidateInputValue = function(_): ()
-			-- do nothing
-		end,
-		useOutputPair = function(self, use)
+		invalidateInputValue = function() end,
+		useOutputPair = function<S, IK, IV, OK, OV>(self: fort.SubObject<S, IK, IV, OK, OV>, use)
 			return use(self._outputKeyState), self.inputValue
 		end,
 	},
@@ -46,21 +50,28 @@ local function SubObject<S, IK, IV, OK>(
 		_inputKeyState = Value(scope, initialKey),
 	}, SUB_OBJECT_META)
 
-	object._outputKeyState = Computed(scope, function(use, scope)
-		local inputKey = use(object._inputKeyState)
-		local ok, outputKey = xpcall(processor, parseError, use, scope, inputKey)
+	object._outputKeyState = Computed(
+		scope,
+		function(use: calc.Use, scope: memory.Scope<S>)
+			local inputKey = use(object._inputKeyState)
+			local execOk, yields, outputKey =
+				noYield(processor, parseError, use, scope, inputKey)
 
-		if ok then
-			return outputKey
+			if execOk and not yields then
+				return outputKey
+			end
+
+			doCleanup(scope)
+
+			if yields then
+				External.logErrorNonFatal("callbackNoYield", nil, "ForKeys")
+			else
+				External.logErrorNonFatal("callbackError", outputKey)
+			end
+
+			return nil
 		end
-
-		local error: log.Error = outputKey
-		External.logErrorNonFatal("callbackError", error)
-		doCleanup(scope)
-		table.clear(scope)
-
-		return nil
-	end)
+	)
 
 	return object
 end
