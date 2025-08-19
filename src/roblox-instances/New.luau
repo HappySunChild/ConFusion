@@ -11,7 +11,7 @@ local function New(
 	scope: memory.Scope,
 	className: string
 ): (props: instances.Properties) -> Instance
-	local success, newInstance = pcall(Instance.new, className)
+	local success, newInstance = pcall(Instance.new, className, nil) -- ok
 
 	if not success then
 		External.logError("cannotCreateClass", nil, className)
