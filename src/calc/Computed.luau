@@ -7,6 +7,7 @@ local depend = require "../graph/depend"
 
 local castToState = require "./castToState"
 local isSimilar = require "./isSimilar"
+local noYield = require "./noYield"
 
 local dissolvingUse = require "../use/dissolvingUse"
 local peek = require "../use/peek"
@@ -38,9 +39,9 @@ local function checkDissolvable<T, S>(
 	processor: ComputedProcessor<S, T>
 ): (boolean, T?)
 	local dissolvingScope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolvingScope)
+	local execOk, yielded, value = noYield(processor, dissolvingUse, dissolvingScope)
 
-	if success then
+	if execOk and not yielded then
 		-- scope went unused, we can clean it up
 		if #dissolvingScope == 1 then
 			doCleanup(dissolvingScope)
@@ -75,16 +76,25 @@ local class = table.freeze {
 			return peek(target)
 		end
 
-		local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
+		local execOk, yielded, newValue =
+			noYield(self._processor, parseError, use, innerScope)
 
-		if ok then
-			local similar = isSimilar(self._internalValue, newValue)
+		if execOk then
+			if yielded then
+				doCleanup(innerScope)
+
+				External.logErrorNonFatal("callbackNoYield", nil, "Computed")
+
+				return false
+			end
 
 			if self._innerScope ~= nil then
 				doCleanup(self._innerScope)
 
 				self._innerScope = nil
 			end
+
+			local similar = isSimilar(self._internalValue, newValue)
 
 			self._innerScope = innerScope
 			self._internalValue = newValue
