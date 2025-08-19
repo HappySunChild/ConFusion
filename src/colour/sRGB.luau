@@ -17,7 +17,7 @@ end
 
 return table.freeze {
 	fromLinear = function(rgb: Color3): Color3
-		return Color3.new(transform(rgb.R), transform(rgb.G, transform(rgb.B)))
+		return Color3.new(transform(rgb.R), transform(rgb.G), transform(rgb.B))
 	end,
 	toLinear = function(srgb: Color3): Color3
 		return Color3.new(inverse(srgb.R), inverse(srgb.G), inverse(srgb.B))
