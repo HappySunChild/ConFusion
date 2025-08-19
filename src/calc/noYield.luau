@@ -1,7 +1,5 @@
 local doesYield = require "./doesYield"
 
-local parseError = require "../logging/parseError"
-
 local function yieldHandler<R...>(execOk: boolean, ...: R...): (boolean, boolean, R...)
 	if not execOk then
 		return false, false, ...
@@ -18,8 +16,12 @@ local function yieldHandler<R...>(execOk: boolean, ...: R...): (boolean, boolean
 	return true, false, select(3, ...)
 end
 
-local function noYield<A..., R...>(callback: (A...) -> R..., ...: A...): (boolean, boolean, R...)
-	return yieldHandler(xpcall(doesYield, parseError, callback, ...))
+local function noYield<A..., R1..., R2...>(
+	callback: (A...) -> R1...,
+	errHandler: (string) -> R2...,
+	...: A...
+): (boolean, boolean, R1...)
+	return yieldHandler(xpcall(doesYield, errHandler, callback, ...))
 end
 
 return noYield
