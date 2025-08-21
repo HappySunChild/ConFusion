@@ -89,6 +89,9 @@ type ConFusion = {
 	read Tween: motion.TweenConstructor,
 	read Spring: motion.SpringConstructor,
 
+	read EasingStyles: motion.EasingStyles,
+	read TweenInfo: motion.TweenInfoConstructor,
+
 	-- Pipeline
 	read Pipe: pipeline.PipeConstructor,
 
@@ -163,6 +166,9 @@ local ConFusion = table.freeze {
 	Animated = require "@self/motion/Animated",
 	Tween = require "@self/motion/Tween",
 	Spring = require "@self/motion/Spring",
+
+	EasingStyles = require "@self/motion/tweening/EasingStyles",
+	TweenInfo = require "@self/motion/tweening/TweenInfo",
 
 	-- Pipeline
 	Pipe = require "@self/pipeline/Pipe",
