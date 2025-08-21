@@ -1,6 +1,5 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -11,6 +10,7 @@ local doCleanup = require "../memory/doCleanup"
 local Computed = require "./Computed"
 local For = require "./For"
 local Value = require "./Value"
+local noYield = require "./noYield"
 
 local checkDissolvable = require "./For/checkDissolvable"
 
@@ -20,13 +20,25 @@ local SUB_OBJECT_META = table.freeze {
 	__index = {
 		roamKeys = false,
 		roamValues = false,
-		invalidateInputKey = function(self): ()
+		invalidateInputKey = function<S, IK, IV, OK, OV>(self: fort.SubObject<
+			S,
+			IK,
+			IV,
+			OK,
+			OV
+		>): ()
 			self._inputKeyState:set(self.inputKey)
 		end,
-		invalidateInputValue = function(self): ()
+		invalidateInputValue = function<S, IK, IV, OK, OV>(self: fort.SubObject<
+			S,
+			IK,
+			IV,
+			OK,
+			OV
+		>): ()
 			self._inputValueState:set(self.inputValue)
 		end,
-		useOutputPair = function(self, use)
+		useOutputPair = function<S, IK, IV, OK, OV>(self: fort.SubObject<S, IK, IV, OK, OV>, use)
 			local pair = use(self._outputPairState)
 			return pair.key, pair.value
 		end,
@@ -56,18 +68,20 @@ local function SubObject<S, IK, IV, OK, OV>(
 	object._outputPairState = Computed(scope, function(use, scope)
 		local inputKey = use(object._inputKeyState)
 		local inputValue = use(object._inputValueState)
-		local ok, outputKey, outputValue =
-			xpcall(processor, parseError, use, scope, inputKey, inputValue)
+		local execOk, yields, outputKey, outputValue =
+			noYield(processor, parseError, use, scope, inputKey, inputValue)
 
-		if ok then
+		if execOk and not yields then
 			return { key = outputKey, value = outputValue }
 		end
 
-		local err: log.Error = outputKey
-		External.logErrorNonFatal("callbackError", err)
-
 		doCleanup(scope)
-		table.clear(scope)
+
+		if yields then
+			External.logErrorNonFatal("callbackNoYield", nil, "ForPairs")
+		else
+			External.logErrorNonFatal("callbackError", outputKey)
+		end
 
 		return { key = nil, value = nil }
 	end)

@@ -5,6 +5,7 @@ local memory = require "../../memory/types"
 local External = require "../../External"
 
 local castToState = require "../castToState"
+local noYield = require "../noYield"
 
 local doCleanup = require "../../memory/doCleanup"
 local innerScope = require "../../memory/innerScope"
@@ -29,10 +30,10 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 	local output = {}
 
 	for key, value in input do
-		local ok, outputKey, outputValue =
-			pcall(processor, dissolvingUse, dissolvingScope, key, value)
+		local execOk, yields, outputKey, outputValue =
+			noYield(processor, dissolvingUse, dissolvingScope, key, value)
 
-		if not ok then
+		if not execOk or yields then
 			doCleanup(dissolvingScope)
 
 			return false, nil
