@@ -57,4 +57,25 @@ export type EasingStyles = {
 	},
 }
 
+-- not to be confused with TweenInfo, this is TweenInfo. got that?
+export type TweenInfo = {
+	type: "TweenInfo",
+	kind: "tweeninfo",
+
+	Time: number,
+	Easing: (number) -> number,
+	RepeatCount: number,
+	Reverses: boolean,
+	DelayTime: number,
+}
+export type TweenInfoConstructor = (
+	info: {
+		duration: number?,
+		easingStyle: ((number) -> number)?,
+		repeatCount: number?,
+		reverses: boolean?,
+		delayTime: number?,
+	}
+) -> TweenInfo
+
 return nil
