@@ -29,4 +29,53 @@ export type SpringConstructor = <V>(
 	damping: calc.UsedAs<number>?
 ) -> Animated<V>
 
+export type EasingStyle = {
+	read Out: (number) -> number,
+	read In: (number) -> number,
+	read InOut: (number) -> number,
+}
+
+export type EasingStyles = {
+	read Constant: EasingStyle,
+	read Linear: EasingStyle,
+	read Exponential: EasingStyle,
+	read Circular: EasingStyle,
+	read Sine: EasingStyle,
+
+	read Back: EasingStyle,
+	read Elastic: EasingStyle,
+
+	read Quad: EasingStyle,
+	read Cubic: EasingStyle,
+	read Quart: EasingStyle,
+	read Quint: EasingStyle,
+
+	read new: {
+		read Exponent: (exponent: number) -> EasingStyle,
+		read Overshoot: (amplitude: number) -> EasingStyle,
+		read Elastic: (period: number) -> EasingStyle,
+	},
+}
+
+-- not to be confused with TweenInfo, this is TweenInfo. got that?
+export type TweenInfo = {
+	type: "TweenInfo",
+	kind: "tweeninfo",
+
+	Time: number,
+	Easing: (number) -> number,
+	RepeatCount: number,
+	Reverses: boolean,
+	DelayTime: number,
+}
+export type TweenInfoConstructor = (
+	info: {
+		duration: number?,
+		easingStyle: ((number) -> number)?,
+		repeatCount: number?,
+		reverses: boolean?,
+		delayTime: number?,
+	}
+) -> TweenInfo
+
 return nil

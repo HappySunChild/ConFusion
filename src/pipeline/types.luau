@@ -1,5 +1,6 @@
 local calc = require "../calc/types"
 local memory = require "../memory/types"
+local motion = require "../motion/types"
 
 export type Pipe<S, T> = {
 	type: "Pipe",
@@ -10,7 +11,7 @@ export type Pipe<S, T> = {
 		speed: calc.UsedAs<number>?,
 		damping: calc.UsedAs<number>?
 	) -> Pipe<S, T>,
-	tween: (Pipe<S, T>, info: calc.UsedAs<TweenInfo>) -> Pipe<S, T>,
+	tween: (Pipe<S, T>, info: calc.UsedAs<motion.TweenInfo>) -> Pipe<S, T>,
 
 	map: <O>(
 		Pipe<S, T>,

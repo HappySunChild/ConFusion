@@ -1,7 +1,6 @@
--- TODO: make this not reliant on tween service, eventually
-local TweenService = game:GetService "TweenService"
+local motion = require "../types"
 
-local function getTweenAlpha(info: TweenInfo, currentTime: number)
+local function getTweenAlpha(info: motion.TweenInfo, currentTime: number)
 	local cycleCount = info.RepeatCount + 1
 	local cycleDuration = info.DelayTime + info.Time
 
@@ -29,10 +28,20 @@ local function getTweenAlpha(info: TweenInfo, currentTime: number)
 		tweenProgress = 2 - tweenProgress
 	end
 
-	local alpha =
-		TweenService:GetValue(tweenProgress, info.EasingStyle, info.EasingDirection)
+	-- this horrific nonsense kind of makes me want to drop support for Roblox's TweenInfo, but we must persevere...
+	if typeof(info) == "TweenInfo" then
+		info = info :: TweenInfo
 
-	return alpha
+		local TweenService = game:GetService "TweenService"
+
+		return TweenService:GetValue(
+			tweenProgress,
+			info.EasingStyle,
+			info.EasingDirection
+		)
+	end
+
+	return info.Easing(tweenProgress)
 end
 
 return getTweenAlpha
