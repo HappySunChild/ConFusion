@@ -1,5 +1,5 @@
 --!strict
-local Oklab = require "../colour/Oklab"
+local Oklab = require "../../colour/Oklab"
 
 local function vectorLerp(a: vector, b: vector, alpha: number): vector
 	return a + (b - a) * alpha
