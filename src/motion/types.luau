@@ -29,4 +29,32 @@ export type SpringConstructor = <V>(
 	damping: calc.UsedAs<number>?
 ) -> Animated<V>
 
+export type EasingStyle = {
+	read Out: (number) -> number,
+	read In: (number) -> number,
+	read InOut: (number) -> number,
+}
+
+export type EasingStyles = {
+	read Constant: EasingStyle,
+	read Linear: EasingStyle,
+	read Exponential: EasingStyle,
+	read Circular: EasingStyle,
+	read Sine: EasingStyle,
+
+	read Back: EasingStyle,
+	read Elastic: EasingStyle,
+
+	read Quad: EasingStyle,
+	read Cubic: EasingStyle,
+	read Quart: EasingStyle,
+	read Quint: EasingStyle,
+
+	read new: {
+		read Exponent: (exponent: number) -> EasingStyle,
+		read Overshoot: (amplitude: number) -> EasingStyle,
+		read Elastic: (period: number) -> EasingStyle,
+	},
+}
+
 return nil
