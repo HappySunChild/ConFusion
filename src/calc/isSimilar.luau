@@ -1,5 +1,3 @@
---!strict
-
 local function isSimilar(a: unknown, b: unknown)
 	local typeA = typeof(a)
 	local isTable = typeA == "table"

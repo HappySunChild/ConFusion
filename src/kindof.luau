@@ -1,5 +1,3 @@
---!strict
-
 local function xkindof(value: any): string?
 	local vType = typeof(value)
 

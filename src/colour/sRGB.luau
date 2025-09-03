@@ -1,4 +1,3 @@
---!strict
 local function transform(channel: number): number
 	if channel >= 0.04045 then
 		return ((channel + 0.055) / (1 + 0.055)) ^ 2.4

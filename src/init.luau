@@ -1,4 +1,3 @@
---!strict
 --[[
 package: confusion-for-roblox
 
