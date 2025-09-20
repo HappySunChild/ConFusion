@@ -183,6 +183,7 @@ local ConFusion = table.freeze {
 	OnStartup = require "@self/roblox-instances/keys/OnStartup",
 	OnRemoval = require "@self/roblox-instances/keys/OnRemoval",
 	Passthrough = require "@self/roblox-instances/keys/Passthrough",
+	Ref = require "@self/roblox-instances/keys/Ref",
 	Attribute = require "@self/roblox-instances/keys/Attribute",
 	AttributeChange = require "@self/roblox-instances/keys/AttributeChange",
 	AttributeOut = require "@self/roblox-instances/keys/AttributeOut",
