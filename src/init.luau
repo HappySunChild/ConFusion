@@ -107,6 +107,7 @@ type ConFusion = {
 	read OnStartup: instances.SpecialKey<"OnStartup">,
 	read OnRemoval: instances.SpecialKey<"OnRemoval">,
 	read Passthrough: instances.SpecialKey<"Passthrough">,
+	read Ref: instances.SpecialKey<"Ref">,
 	read Attribute: (attribute: string) -> instances.SpecialKey<"Attribute">,
 	read AttributeChange: (attribute: string) -> instances.SpecialKey<"AttributeChange">,
 	read AttributeOut: (attribute: string) -> instances.SpecialKey<"AttributeOut">,
