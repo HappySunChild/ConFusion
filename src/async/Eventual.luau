@@ -9,6 +9,7 @@ local depend = require "../graph/depend"
 local evaluate = require "../graph/evaluate"
 
 local castToState = require "../calc/castToState"
+local doesYield = require "../calc/doesYield"
 local isSimilar = require "../calc/isSimilar"
 
 local peek = require "../use/peek"
@@ -42,6 +43,29 @@ local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
 
 		eventual._innerScope = nil
 	end
+end
+
+local function asynchronousProcessor<T, S>(
+	eventual: Self<T, S>,
+	use: calc.Use,
+	innerScope: memory.Scope<S>,
+	become: (T) -> ()
+)
+	local execOk, err = xpcall(eventual._processor, parseError, use, innerScope, become)
+
+	if execOk then
+		if eventual._innerScope ~= nil then
+			doCleanup(eventual._innerScope)
+		end
+
+		eventual._innerScope = innerScope
+	else
+		doCleanup(innerScope)
+
+		External.logErrorNonFatal("callbackError", err)
+	end
+
+	eventual._activeThread = nil
 end
 
 local class = table.freeze {
@@ -127,31 +151,12 @@ local class = table.freeze {
 
 		self._internalValue = self._pendingValue
 
-		local didYield = true
-
-		local activeThread = External.doTaskImmediate(function()
-			local ok, err = xpcall(self._processor, parseError, use, innerScope, become)
-
-			if ok then
-				if self._innerScope ~= nil then
-					doCleanup(self._innerScope)
-				end
-
-				self._innerScope = innerScope
-			else
-				doCleanup(innerScope)
-
-				External.logErrorNonFatal("callbackError", err)
-			end
-
-			self._activeThread = nil
-
-			didYield = false
-		end)
+		local yields, activeThread =
+			doesYield(asynchronousProcessor, self, use, innerScope, become)
 
 		-- if we yielded then update _activeThread
 		-- this was false for some reason???? i think i was very sleep deprived when i wrote this...
-		if didYield == true then
+		if yields == true then
 			self._activeThread = activeThread
 		end
 

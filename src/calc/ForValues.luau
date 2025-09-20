@@ -1,6 +1,5 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -11,6 +10,7 @@ local doCleanup = require "../memory/doCleanup"
 local Computed = require "./Computed"
 local For = require "./For"
 local Value = require "./Value"
+local noYield = require "./noYield"
 
 local checkDissolvable = require "./For/checkDissolvable"
 
@@ -20,13 +20,17 @@ local SUB_OBJECT_META = table.freeze {
 	__index = {
 		roamKeys = false,
 		roamValues = true,
-		invalidateInputKey = function(_): ()
-			-- do nothing
-		end,
-		invalidateInputValue = function(self): ()
+		invalidateInputKey = function() end,
+		invalidateInputValue = function<S, IK, IV, OK, OV>(self: fort.SubObject<
+			S,
+			IK,
+			IV,
+			OK,
+			OV
+		>): ()
 			self._inputValueState:set(self.inputValue)
 		end,
-		useOutputPair = function(self, use)
+		useOutputPair = function<S, IK, IV, OK, OV>(self: fort.SubObject<S, IK, IV, OK, OV>, use)
 			return self.inputKey, use(self._outputValueState)
 		end,
 	},
@@ -48,16 +52,20 @@ local function SubObject<S, IK, IV, OV>(
 
 	object._outputValueState = Computed(scope, function(use, scope)
 		local inputValue = use(object._inputValueState)
-		local ok, outputValue = xpcall(processor, parseError, use, scope, inputValue)
+		local execOk, yields, outputValue =
+			noYield(processor, parseError, use, scope, inputValue)
 
-		if ok then
+		if execOk and not yields then
 			return outputValue
 		end
 
-		local error: log.Error = outputValue
-		External.logErrorNonFatal("callbackError", error)
 		doCleanup(scope)
-		table.clear(scope)
+
+		if yields then
+			External.logErrorNonFatal("callbackNoYield", nil, "ForValues")
+		else
+			External.logErrorNonFatal("callbackError", outputValue)
+		end
 
 		return nil
 	end)
