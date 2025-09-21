@@ -115,6 +115,13 @@ type ConFusion = {
 	read Out: (property: string) -> instances.SpecialKey<"Out">,
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
+
+	-- Styling
+	read Default: instances.SpecialKey<"Default">,
+	read Derives: instances.SpecialKey<"Derives">,
+	read Rules: instances.SpecialKey<"Rules">,
+	read RuleProperties: instances.SpecialKey<"RuleProperties">,
+	read Style: instances.SpecialKey<"Style">,
 }
 
 local External = require "@self/External"
@@ -191,6 +198,12 @@ local ConFusion = table.freeze {
 	Out = require "@self/roblox-instances/keys/Out",
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
+	-- Styling
+	Default = require "@self/roblox-instances/style/Default",
+	Derives = require "@self/roblox-instances/style/Derives",
+	Rules = require "@self/roblox-instances/style/Rules",
+	RuleProperties = require "@self/roblox-instances/style/RuleProperties",
+	Style = require "@self/roblox-instances/style/Style",
 }
 
 return ConFusion :: ConFusion
