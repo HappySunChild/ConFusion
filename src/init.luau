@@ -32,6 +32,7 @@ export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
 export type Animated<T> = motion.Animated<T>
+export type TweenInfo = motion.TweenInfo
 
 export type Eventual<T> = async.Eventual<T>
 
@@ -90,6 +91,9 @@ type ConFusion = {
 	read Animated: motion.AnimatedConstructor,
 	read Tween: motion.TweenConstructor,
 	read Spring: motion.SpringConstructor,
+
+	read EasingStyles: motion.EasingStyles,
+	read TweenInfo: motion.TweenInfoConstructor,
 
 	-- Pipeline
 	read Pipe: pipeline.PipeConstructor,
@@ -169,6 +173,9 @@ local ConFusion = table.freeze {
 	Animated = require "@self/motion/Animated",
 	Tween = require "@self/motion/Tween",
 	Spring = require "@self/motion/Spring",
+
+	EasingStyles = require "@self/motion/tweening/EasingStyles",
+	TweenInfo = require "@self/motion/tweening/TweenInfo",
 
 	-- Pipeline
 	Pipe = require "@self/pipeline/Pipe",

@@ -1,5 +1,6 @@
 local calc = require "../calc/types"
 local memory = require "../memory/types"
+local motion = require "../motion/types"
 local pipeline = require "./types"
 
 local Computed = require "../calc/Computed"
@@ -30,7 +31,7 @@ local class = table.freeze {
 
 		return self
 	end,
-	tween = function<S, T>(self: Self<S, T>, info: calc.UsedAs<TweenInfo>): Self<S, T>
+	tween = function<S, T>(self: Self<S, T>, info: calc.UsedAs<motion.TweenInfo>): Self<S, T>
 		self._latest = Tween(self._internalScope, self._latest, info)
 
 		return self
