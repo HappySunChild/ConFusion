@@ -1,5 +1,3 @@
---!strict
-
 local function xtypeof(value: any): string
 	local vType = typeof(value)
 

@@ -1,4 +1,3 @@
---!strict
 local Oklab = require "../colour/Oklab"
 
 local UNPACK_METHODS = table.freeze {

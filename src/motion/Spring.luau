@@ -11,16 +11,19 @@ local peek = require "../use/peek"
 
 local EPSILON = 0.0001
 
-local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<number>)
+local function springMover<V>(
+	speed: calc.UsedAs<number>,
+	damping: calc.UsedAs<number>
+): motion.CurveGenerator<V>
 	local currentV = {}
 
 	local activeType = ""
 
-	return function<V>(
+	return function(
 		targetPosition: V,
 		initialPosition: V,
 		initialVelocity: { number }?
-	): (elapsed: number) -> V
+	): motion.AnimationCurve<V>
 		local discontinuous = typeof(targetPosition) ~= activeType
 
 		activeType = typeof(targetPosition)
@@ -40,7 +43,7 @@ local function springMover(speed: calc.UsedAs<number>, damping: calc.UsedAs<numb
 		local currentP = table.clone(startP)
 
 		-- spring stepper
-		return function(elapsed: number): V
+		return function(elapsed: number): (boolean, V, { number })
 			local shouldSleep = false
 			local newValue
 

@@ -1,4 +1,3 @@
---!strict
 local instances = require "./types"
 local memory = require "../memory/types"
 

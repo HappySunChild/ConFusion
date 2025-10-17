@@ -1,4 +1,3 @@
---!strict
 -- TODO: if we truly wanted to make this platform agnostic we'd implement our own Color3 object constructor.
 -- maybe we could do something with ExternalProviders for that? again that's if we really REALLY wanted to go that route, sounds like a headache.
 

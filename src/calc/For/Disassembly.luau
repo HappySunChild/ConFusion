@@ -1,4 +1,3 @@
---!strict
 local calc = require "../types"
 local fort = require "./types"
 local memory = require "../../memory/types"
@@ -74,8 +73,8 @@ local class = table.freeze {
 			-- but simple problems like these actually make me want to throw my monitor out the window
 
 			if type(outputKey) == "number" and outputKey ~= nil then
-				minArrayIndex = math.min(minArrayIndex, outputKey)
-				maxArrayIndex = math.max(maxArrayIndex, outputKey)
+				minArrayIndex = math.min(minArrayIndex, outputKey :: number)
+				maxArrayIndex = math.max(maxArrayIndex, outputKey :: number)
 			end
 		end
 

@@ -1,4 +1,3 @@
---!strict
 local nicknames = require "./nicknames"
 
 local function nameOf(x: unknown, default: string)

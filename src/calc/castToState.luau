@@ -1,5 +1,3 @@
---!strict
-
 local kindof = require "../kindof"
 
 local function castToState(target: unknown)

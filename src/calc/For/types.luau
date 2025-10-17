@@ -1,4 +1,3 @@
---!strict
 local calc = require "../../calc/types"
 local memory = require "../../memory/types"
 

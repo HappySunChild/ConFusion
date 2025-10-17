@@ -1,4 +1,3 @@
---!strict
 local memory = require "./types"
 local merge = require "./merge"
 

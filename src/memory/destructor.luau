@@ -1,4 +1,3 @@
---!strict
 local graph = require "../graph/types"
 
 local nicknames = require "../logging/nicknames"

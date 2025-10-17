@@ -1,4 +1,3 @@
---!strict
 local logging = require "./types"
 
 local messages = require "./messages"

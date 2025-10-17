@@ -1,4 +1,3 @@
---!strict
 local function merge(
 	overwrite: boolean,
 	into: { [unknown]: unknown },

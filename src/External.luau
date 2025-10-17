@@ -1,4 +1,3 @@
---!strict
 local logging = require "./logging/types"
 
 export type ExternalProvider = {
