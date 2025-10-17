@@ -35,10 +35,10 @@ local LERP_FUNCTIONS = table.freeze {
 } :: { [string]: <V>(a: V, b: V, alpha: number) -> V }
 
 local function lerp<V>(from: V, target: V, alpha: number): V
-	local dataType = typeof(from)
+	local data_type = typeof(from)
 
-	if typeof(target) == dataType then
-		local interpolator = LERP_FUNCTIONS[dataType]
+	if typeof(target) == data_type then
+		local interpolator = LERP_FUNCTIONS[data_type]
 
 		if interpolator ~= nil then
 			return interpolator(from, target, alpha)
