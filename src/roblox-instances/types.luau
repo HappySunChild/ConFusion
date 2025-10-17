@@ -31,10 +31,6 @@ export type NewConstructor = (
 	scope: memory.Scope,
 	className: string
 ) -> (Properties) -> Instance
-export type FromTemplateConstructor = <InstanceT>(
-	scope: memory.Scope,
-	template: InstanceT
-) -> (Properties) -> InstanceT
 export type HydrateConstructor = <InstanceT>(
 	scope: memory.Scope,
 	instance: InstanceT

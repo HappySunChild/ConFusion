@@ -18,6 +18,7 @@ local pipeline = require "@self/pipeline/types"
 
 local binds = require "@self/roblox-binds/types"
 local instances = require "@self/roblox-instances/types"
+local templates = require "@self/roblox-templates/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
@@ -95,7 +96,6 @@ type ConFusion = {
 
 	-- Roblox Instances
 	read New: instances.NewConstructor,
-	read FromTemplate: instances.FromTemplateConstructor,
 	read Hydrate: instances.HydrateConstructor,
 
 	read Children: instances.SpecialKey<"Children">,
@@ -111,12 +111,14 @@ type ConFusion = {
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
 
-	-- Roblox Binds
-	read OfName: binds.WithChildConstructor,
-	read OfClass: binds.WithChildOfClassConstructor,
-	read DescendantOfName: binds.WithChildConstructor,
-	read DescendantOfClass: binds.WithChildOfClassConstructor,
+	-- Roblox Templates
+	read FromTemplate: templates.FromTemplateConstructor,
+	read OfName: templates.WithChildConstructor,
+	read OfClass: templates.WithChildOfClassConstructor,
+	read DescendantOfName: templates.WithChildConstructor,
+	read DescendantOfClass: templates.WithChildOfClassConstructor,
 
+	-- Roblox Binds
 	read PropertyOf: binds.PropertyOfConstructor,
 	read AttributeOf: binds.AttributeOfConstructor,
 }
@@ -173,7 +175,6 @@ local ConFusion = table.freeze {
 
 	-- Roblox Instances
 	New = require "@self/roblox-instances/New",
-	FromTemplate = require "@self/roblox-instances/FromTemplate",
 	Hydrate = require "@self/roblox-instances/Hydrate",
 
 	Children = require "@self/roblox-instances/keys/Children",
@@ -189,12 +190,14 @@ local ConFusion = table.freeze {
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
 
-	-- Roblox Binds
-	OfName = require "@self/roblox-binds/OfName",
-	OfClass = require "@self/roblox-binds/OfClass",
-	DescendantOfName = require "@self/roblox-binds/DescendantOfName",
-	DescendantOfClass = require "@self/roblox-binds/DescendantOfClass",
+	-- Roblox Templates
+	FromTemplate = require "@self/roblox-templates/FromTemplate",
+	OfName = require "@self/roblox-templates/OfName",
+	OfClass = require "@self/roblox-templates/OfClass",
+	DescendantOfName = require "@self/roblox-templates/DescendantOfName",
+	DescendantOfClass = require "@self/roblox-templates/DescendantOfClass",
 
+	-- Roblox Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",
 	AttributeOf = require "@self/roblox-binds/AttributeOf",
 }
