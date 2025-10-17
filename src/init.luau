@@ -30,6 +30,7 @@ export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
 export type Animated<T> = motion.Animated<T>
+export type TweenInfo = motion.TweenInfo
 
 export type Eventual<T> = async.Eventual<T>
 
