@@ -12,10 +12,12 @@ local calc = require "@self/calc/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local graph = require "@self/graph/types"
-local instances = require "@self/roblox-instances/types"
 local memory = require "@self/memory/types"
 local motion = require "@self/motion/types"
 local pipeline = require "@self/pipeline/types"
+
+local binds = require "@self/roblox-binds/types"
+local instances = require "@self/roblox-instances/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
@@ -91,17 +93,10 @@ type ConFusion = {
 	-- Pipeline
 	read Pipe: pipeline.PipeConstructor,
 
-	-- Instances
+	-- Roblox Instances
 	read New: instances.NewConstructor,
 	read FromTemplate: instances.FromTemplateConstructor,
 	read Hydrate: instances.HydrateConstructor,
-	read WithChild: instances.WithChildConstructor,
-	read WithChildOfClass: instances.WithChildOfClassConstructor,
-	read WithDescendant: instances.WithChildConstructor,
-	read WithDescendantOfClass: instances.WithChildOfClassConstructor,
-
-	read PropertyOf: instances.PropertyOfConstructor,
-	read AttributeOf: instances.AttributeOfConstructor,
 
 	read Children: instances.SpecialKey<"Children">,
 	read OnStartup: instances.SpecialKey<"OnStartup">,
@@ -115,6 +110,15 @@ type ConFusion = {
 	read Out: (property: string) -> instances.SpecialKey<"Out">,
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
+
+	-- Roblox Binds
+	read OfName: binds.WithChildConstructor,
+	read OfClass: binds.WithChildOfClassConstructor,
+	read DescendantOfName: binds.WithChildConstructor,
+	read DescendantOfClass: binds.WithChildOfClassConstructor,
+
+	read PropertyOf: binds.PropertyOfConstructor,
+	read AttributeOf: binds.AttributeOfConstructor,
 }
 
 local External = require "@self/External"
@@ -167,18 +171,11 @@ local ConFusion = table.freeze {
 	-- Pipeline
 	Pipe = require "@self/pipeline/Pipe",
 
-	-- Instances
+	-- Roblox Instances
 	New = require "@self/roblox-instances/New",
+	FromTemplate = require "@self/roblox-instances/FromTemplate",
 	Hydrate = require "@self/roblox-instances/Hydrate",
-	WithChild = require "@self/roblox-instances/WithChild",
-	WithChildOfClass = require "@self/roblox-instances/WithChildOfClass",
-	WithDescendant = require "@self/roblox-instances/WithDescendant",
-	WithDescendantOfClass = require "@self/roblox-instances/WithDescendantOfClass",
 
-	PropertyOf = require "@self/roblox-instances/PropertyOf",
-	AttributeOf = require "@self/roblox-instances/AttributeOf",
-
-	-- Instance Keys
 	Children = require "@self/roblox-instances/keys/Children",
 	OnStartup = require "@self/roblox-instances/keys/OnStartup",
 	OnRemoval = require "@self/roblox-instances/keys/OnRemoval",
@@ -191,6 +188,15 @@ local ConFusion = table.freeze {
 	Out = require "@self/roblox-instances/keys/Out",
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
+
+	-- Roblox Binds
+	OfName = require "@self/roblox-binds/OfName",
+	OfClass = require "@self/roblox-binds/OfClass",
+	DescendantOfName = require "@self/roblox-binds/DescendantOfName",
+	DescendantOfClass = require "@self/roblox-binds/DescendantOfClass",
+
+	PropertyOf = require "@self/roblox-binds/PropertyOf",
+	AttributeOf = require "@self/roblox-binds/AttributeOf",
 }
 
 return ConFusion :: ConFusion
