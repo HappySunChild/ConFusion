@@ -1,6 +1,6 @@
-local motion = require "../types"
+local tweens = require "./types"
 
-local function getTweenAlpha(info: motion.TweenInfo, current_time: number)
+local function getTweenAlpha(info: tweens.TweenInfo, current_time: number)
 	local cycle_count = info.repeat_count + 1
 	local cycle_duration = info.delay_time + info.time
 

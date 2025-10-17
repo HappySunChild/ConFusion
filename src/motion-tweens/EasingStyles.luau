@@ -1,5 +1,5 @@
 --!native
-local motion = require "../types"
+local tweens = require "./types"
 
 local PI = math.pi
 local TAU = PI * 2
@@ -11,7 +11,7 @@ local cos = math.cos
 local sqrt = math.sqrt
 
 local new = table.freeze {
-	Exponent = function(exponent: number): motion.EasingStyle
+	Exponent = function(exponent: number): tweens.EasingStyle
 		local b = 2 ^ (exponent - 1)
 
 		return table.freeze {
@@ -28,7 +28,7 @@ local new = table.freeze {
 			end,
 		}
 	end,
-	Overshoot = function(amplitude: number): motion.EasingStyle
+	Overshoot = function(amplitude: number): tweens.EasingStyle
 		local V0 = amplitude
 		local V1 = amplitude + 1
 		local V2 = amplitude * 1.525
@@ -49,7 +49,7 @@ local new = table.freeze {
 	end,
 	Elastic = function(
 		period: number
-	): motion.EasingStyle -- https://devforum.roblox.com/t/does-anyone-know-the-formulas-for-elastic-easing/2819110/2
+	): tweens.EasingStyle -- https://devforum.roblox.com/t/does-anyone-know-the-formulas-for-elastic-easing/2819110/2
 		local V0 = TAU / period
 
 		return table.freeze {

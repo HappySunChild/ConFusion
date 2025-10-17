@@ -1,6 +1,6 @@
-local motion = require "../types"
+local tweens = require "./types"
 
-local function getTweenDuration(tweenInfo: motion.TweenInfo)
+local function getTweenDuration(tweenInfo: tweens.TweenInfo)
 	if tweenInfo.repeat_count == -1 then
 		return math.huge
 	end

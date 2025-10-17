@@ -13,8 +13,11 @@ local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local graph = require "@self/graph/types"
 local memory = require "@self/memory/types"
-local motion = require "@self/motion/types"
 local pipeline = require "@self/pipeline/types"
+
+local motion = require "@self/motion/types"
+local springs = require "@self/motion-springs/types"
+local tweens = require "@self/motion-tweens/types"
 
 local binds = require "@self/roblox-binds/types"
 local instances = require "@self/roblox-instances/types"
@@ -32,7 +35,7 @@ export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
 export type Animated<T> = motion.Animated<T>
-export type TweenInfo = motion.TweenInfo
+export type TweenInfo = tweens.TweenInfo
 
 export type Eventual<T> = async.Eventual<T>
 
@@ -89,16 +92,19 @@ type ConFusion = {
 
 	-- Motion
 	read Animated: motion.AnimatedConstructor,
-	read Tween: motion.TweenConstructor,
-	read Spring: motion.SpringConstructor,
 
-	read EasingStyles: motion.EasingStyles,
-	read TweenInfo: motion.TweenInfoConstructor,
+	-- Motion: Springs
+	read Spring: springs.SpringConstructor,
+
+	-- Motion: Tweens
+	read Tween: tweens.TweenConstructor,
+	read EasingStyles: tweens.EasingStyles,
+	read TweenInfo: tweens.TweenInfoConstructor,
 
 	-- Pipeline
 	read Pipe: pipeline.PipeConstructor,
 
-	-- Roblox Instances
+	-- Roblox: Instances
 	read New: instances.NewConstructor,
 	read Hydrate: instances.HydrateConstructor,
 
@@ -115,14 +121,14 @@ type ConFusion = {
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
 
-	-- Roblox Templates
+	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
 	read OfName: templates.WithChildConstructor,
 	read OfClass: templates.WithChildOfClassConstructor,
 	read DescendantOfName: templates.WithChildConstructor,
 	read DescendantOfClass: templates.WithChildOfClassConstructor,
 
-	-- Roblox Binds
+	-- Roblox: Binds
 	read PropertyOf: binds.PropertyOfConstructor,
 	read AttributeOf: binds.AttributeOfConstructor,
 }
@@ -171,16 +177,19 @@ local ConFusion = table.freeze {
 
 	-- Motion
 	Animated = require "@self/motion/Animated",
-	Tween = require "@self/motion/Tween",
-	Spring = require "@self/motion/Spring",
 
-	EasingStyles = require "@self/motion/tweening/EasingStyles",
-	TweenInfo = require "@self/motion/tweening/TweenInfo",
+	-- Motion: Springs
+	Spring = require "@self/motion-springs/Spring",
+
+	-- Motion: Tweens
+	Tween = require "@self/motion-tweens/Tween",
+	TweenInfo = require "@self/motion-tweens/TweenInfo",
+	EasingStyles = require "@self/motion-tweens/EasingStyles",
 
 	-- Pipeline
 	Pipe = require "@self/pipeline/Pipe",
 
-	-- Roblox Instances
+	-- Roblox: Instances
 	New = require "@self/roblox-instances/New",
 	Hydrate = require "@self/roblox-instances/Hydrate",
 
@@ -197,14 +206,14 @@ local ConFusion = table.freeze {
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
 
-	-- Roblox Templates
+	-- Roblox: Templates
 	FromTemplate = require "@self/roblox-templates/FromTemplate",
 	OfName = require "@self/roblox-templates/OfName",
 	OfClass = require "@self/roblox-templates/OfClass",
 	DescendantOfName = require "@self/roblox-templates/DescendantOfName",
 	DescendantOfClass = require "@self/roblox-templates/DescendantOfClass",
 
-	-- Roblox Binds
+	-- Roblox: Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",
 	AttributeOf = require "@self/roblox-binds/AttributeOf",
 }

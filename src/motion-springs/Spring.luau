@@ -1,8 +1,9 @@
 local calc = require "../calc/types"
 local memory = require "../memory/types"
-local motion = require "./types"
+local motion = require "../motion/types"
 
-local Animated = require "./Animated"
+local Animated = require "../motion/Animated"
+
 local packType = require "./packType"
 local springCoefficients = require "./springCoefficients"
 local unpackType = require "./unpackType"

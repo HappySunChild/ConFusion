@@ -1,4 +1,4 @@
-local Oklab = require "../../colour/Oklab"
+local Oklab = require "../colour/Oklab"
 
 local LERP_FUNCTIONS = table.freeze {
 	number = math.lerp,

@@ -1,4 +1,4 @@
-local motion = require "../types"
+local tweens = require "./types"
 
 local EasingStyles = require "./EasingStyles"
 
@@ -14,7 +14,7 @@ local function TweenInfo(info: {
 	delay_time: number?,
 	reverses: boolean?,
 	repeat_count: number?,
-}): motion.TweenInfo
+}): tweens.TweenInfo
 	return setmetatable({
 		easing = info.easing_style or EasingStyles.Linear.Out,
 		time = info.time or 1,
