@@ -1,4 +1,3 @@
---!strict
 --!native
 local motion = require "../types"
 

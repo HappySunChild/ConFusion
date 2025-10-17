@@ -1,18 +1,13 @@
---!strict
 local Oklab = require "../../colour/Oklab"
-
-local function vectorLerp(a: vector, b: vector, alpha: number): vector
-	return a + (b - a) * alpha
-end
 
 local LERP_FUNCTIONS = table.freeze {
 	number = math.lerp,
-	vector = vectorLerp,
+	vector = vector.lerp,
 	Color3 = function(a: Color3, b: Color3, alpha: number)
 		local okFrom = Oklab.fromSRGB(a)
 		local okTarget = Oklab.fromSRGB(b)
 
-		return Oklab.toSRGB(vectorLerp(okFrom, okTarget, alpha))
+		return Oklab.toSRGB(vector.lerp(okFrom, okTarget, alpha))
 	end,
 	Vector3 = function(a: Vector3, b: Vector3, alpha: number)
 		return a:Lerp(b, alpha)

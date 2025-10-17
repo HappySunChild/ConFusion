@@ -1,4 +1,3 @@
---!strict
 local motion = require "../types"
 
 local function getTweenDuration(tweenInfo: motion.TweenInfo)

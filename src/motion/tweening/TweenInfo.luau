@@ -1,4 +1,3 @@
---!strict
 local motion = require "../types"
 
 local EasingStyles = require "./EasingStyles"
