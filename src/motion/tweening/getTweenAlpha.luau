@@ -1,47 +1,34 @@
 local motion = require "../types"
 
-local function getTweenAlpha(info: motion.TweenInfo, currentTime: number)
-	local cycleCount = info.RepeatCount + 1
-	local cycleDuration = info.DelayTime + info.Time
+local function getTweenAlpha(info: motion.TweenInfo, current_time: number)
+	local cycle_count = info.repeat_count + 1
+	local cycle_duration = info.delay_time + info.time
 
-	if info.Reverses then
-		cycleDuration += info.Time
+	if info.reverses then
+		cycle_duration += info.time
 	end
 
-	if currentTime == math.huge then
+	if current_time == math.huge then
 		return 1
 	end
 
-	if currentTime >= cycleDuration * cycleCount and cycleCount > 0 then
+	if current_time >= cycle_duration * cycle_count and cycle_count > 0 then
 		return 1
 	end
 
-	local cycleTime = currentTime % cycleDuration
+	local cycle_time = current_time % cycle_duration
 
-	if cycleTime < info.DelayTime then
+	if cycle_time < info.delay_time then
 		return 0
 	end
 
-	local tweenProgress = (cycleTime - info.DelayTime) / info.Time
+	local tween_progress = (cycle_time - info.delay_time) / info.time
 
-	if tweenProgress > 1 then
-		tweenProgress = 2 - tweenProgress
+	if tween_progress > 1 then
+		tween_progress = 2 - tween_progress
 	end
 
-	-- this horrific nonsense kind of makes me want to drop support for Roblox's TweenInfo, but we must persevere...
-	if typeof(info) == "TweenInfo" then
-		info = info :: TweenInfo
-
-		local TweenService = game:GetService "TweenService"
-
-		return TweenService:GetValue(
-			tweenProgress,
-			info.EasingStyle,
-			info.EasingDirection
-		)
-	end
-
-	return info.Easing(tweenProgress)
+	return info.easing(tween_progress)
 end
 
 return getTweenAlpha

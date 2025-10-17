@@ -10,21 +10,18 @@ local class = table.freeze {
 local METATABLE = table.freeze { __index = class }
 
 local function TweenInfo(info: {
-	duration: number?,
-	easingStyle: ((number) -> number)?,
-	repeatCount: number?,
+	easing_style: ((number) -> number)?,
+	time: number?,
+	delay_time: number?,
 	reverses: boolean?,
-	delayTime: number?,
+	repeat_count: number?,
 }): motion.TweenInfo
-	-- it truly pains me to have this in PascalCase, while everything else is in camelCase, but i really don't feel like
-	-- rewriting getTweenDuration to support a single character difference
-	-- this could probably be solved by just dropping support for Roblox's TweenInfo (or just converting it to our TweenInfo in the tweenMover)
 	return setmetatable({
-		Time = info.duration or 1,
-		Easing = info.easingStyle or EasingStyles.Linear.Out,
-		RepeatCount = info.repeatCount or 0,
-		Reverses = info.reverses or false,
-		DelayTime = info.delayTime or 0,
+		easing = info.easing_style or EasingStyles.Linear.Out,
+		time = info.time or 1,
+		delay_time = info.delay_time or 0,
+		reverses = info.reverses or false,
+		repeat_count = info.repeat_count or 0,
 	}, METATABLE) :: any
 end
 
