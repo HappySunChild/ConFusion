@@ -1,18 +1,18 @@
-local instances = require "./types"
+local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
 
-local applyProperties = require "./applyProperties"
+local applyProperties = require "../roblox-instances/applyProperties"
 
-local function WithDescendantOfClass(scope: memory.Scope, className: string)
+local function OfClass(scope: memory.Scope, className: string)
 	return function(props: instances.Properties)
 		return function(parent: Instance)
-			local child = parent:FindFirstChildWhichIsA(className, true)
+			local child = parent:FindFirstChildWhichIsA(className)
 
 			if not child then
 				External.logErrorNonFatal(
-					"missingDescendantClass",
+					"missingChildClass",
 					nil,
 					className,
 					parent.Name
@@ -28,4 +28,4 @@ local function WithDescendantOfClass(scope: memory.Scope, className: string)
 	end
 end
 
-return WithDescendantOfClass
+return OfClass

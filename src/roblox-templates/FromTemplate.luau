@@ -1,9 +1,9 @@
-local instances = require "./types"
+local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
 
-local Hydrate = require "./Hydrate"
+local Hydrate = require "../roblox-instances/Hydrate"
 
 local function FromTemplate<InstanceT>(
 	scope: memory.Scope,

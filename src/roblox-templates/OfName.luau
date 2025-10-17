@@ -1,11 +1,11 @@
-local instances = require "./types"
+local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
 
-local applyProperties = require "./applyProperties"
+local applyProperties = require "../roblox-instances/applyProperties"
 
-local function WithChild(scope: memory.Scope, name: string)
+local function OfName(scope: memory.Scope, name: string)
 	return function(props: instances.Properties)
 		return function(parent: Instance)
 			local child = parent:FindFirstChild(name)
@@ -23,4 +23,4 @@ local function WithChild(scope: memory.Scope, name: string)
 	end
 end
 
-return WithChild
+return OfName
