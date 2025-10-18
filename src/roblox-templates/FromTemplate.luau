@@ -1,5 +1,6 @@
 local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
+local templates = require "./types"
 
 local External = require "../External"
 
@@ -13,7 +14,7 @@ local function FromTemplate<InstanceT>(
 	local newInstance = template:Clone()
 
 	if not newInstance then
-		External.logError("cannotCreateTemplate", nil, template:GetFullName())
+		External.logError(templates.cannotCreateTemplate, nil, template:GetFullName())
 	end
 
 	return Hydrate(scope, template)

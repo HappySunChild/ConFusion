@@ -17,4 +17,7 @@ export type AnimatedConstructor = <V>(
 	mover: calc.UsedAs<CurveGenerator<V>>
 ) -> Animated<V>
 
-return nil
+return {
+	animatedInvalidGoal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
+	animatedInvalidMotion = "An Animated encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
+}

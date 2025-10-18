@@ -20,4 +20,11 @@ export type GraphObject = {
 	_evaluate: (GraphObject) -> boolean,
 } & memory.ScopedObject
 
-return nil
+return {
+	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
+
+	cannotDepend = "%s (%s) cannot depend on %s (%s).",
+
+	invalidEvaluateType = "Invalid evaluate argument, got '%s'.",
+	invalidChangeType = "Can't change non-state value, got '%s'.",
+}

@@ -13,4 +13,6 @@ export type EventualConstructor = <S, T>(
 	pendingValue: T
 ) -> Eventual<T>
 
-return nil
+return {
+	awaitNonGraph = "Can't await non-graph values.",
+}

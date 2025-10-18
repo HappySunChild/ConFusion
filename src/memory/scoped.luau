@@ -1,4 +1,5 @@
 local memory = require "./types"
+
 local merge = require "./merge"
 
 local function scoped(

@@ -36,4 +36,19 @@ export type HydrateConstructor = <InstanceT>(
 	instance: InstanceT
 ) -> (Properties) -> InstanceT
 
-return nil
+return {
+	cannotCreateClass = "Unable to create instance of type '%s'.",
+	cannotConnectChange = "The %s class doesn't have a property called '%s'.",
+	cannotConnectEvent = "The %s class doesn't have a event called '%s'.",
+
+	propertyInvalidType = "'%s.%s' expected a '%s' type, but got a '%s' type.",
+	propertyCannotAssign = "The %s class has no assignable property '%s'.",
+	propertyAssignError = "Error while setting property:\nERROR_MESSAGE",
+
+	invalidChildType = "Invalid child type '%s'.",
+
+	missingSpecialKeyStage = "The SpecialKey '%s' is missing a stage property.",
+	invalidSpecialKeyStage = "The SpecialKey '%s' has an invalid stage '%s'.",
+
+	expectedType = "Expected a %s, got %s.",
+}

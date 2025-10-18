@@ -1,6 +1,6 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../logging/types"
+local logging = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -62,10 +62,11 @@ local function SubObject<S, IK, IV, OK, OV>(
 			return { key = outputKey, value = outputValue }
 		end
 
-		local err: log.Error = outputKey
-		External.logErrorNonFatal("callbackError", err)
+		local err: logging.Error = outputKey
+		External.logErrorNonFatal(logging.callbackError, err)
 
 		doCleanup(scope)
+
 		table.clear(scope)
 
 		return { key = nil, value = nil }
@@ -84,9 +85,9 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		IV
 	) -> (OK, OV)
 ): calc.For<OK, OV> | { [OK]: OV }
-	local canDissolve, constant = checkDissolvable(scope, inputTable, processor)
+	local can_dissolve, constant = checkDissolvable(scope, inputTable, processor)
 
-	if canDissolve then
+	if can_dissolve then
 		return constant
 	end
 

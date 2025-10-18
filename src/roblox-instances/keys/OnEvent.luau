@@ -22,7 +22,7 @@ local function OnEvent(eventName: string): instances.SpecialKey<"OnEvent">
 
 				if not ok or typeof(event) ~= "RBXScriptSignal" then
 					External.logError(
-						"cannotConnectEvent",
+						instances.cannotConnectEvent,
 						nil,
 						applyTo.ClassName,
 						eventName

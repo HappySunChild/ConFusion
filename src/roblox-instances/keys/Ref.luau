@@ -1,4 +1,5 @@
 local calc = require "../../calc/types"
+local instances = require "../types"
 
 local External = require "../../External"
 local xtypeof = require "../../xtypeof"
@@ -22,7 +23,7 @@ local Ref = SpecialKey "Ref" {
 		refs = refs :: { calc.Value<Instance> }
 		for _, ref in refs do
 			if xtypeof(ref) ~= "Value" then
-				External.logError("expectedType", nil, "Value", xtypeof(ref))
+				External.logError(instances.expectedType, nil, "Value", xtypeof(ref))
 			end
 
 			ref:set(applyTo)

@@ -1,5 +1,6 @@
 local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
+local templates = require "./types"
 
 local External = require "../External"
 
@@ -11,7 +12,12 @@ local function DescendantOfName(scope: memory.Scope, name: string)
 			local child = parent:FindFirstChild(name, true)
 
 			if not child then
-				External.logErrorNonFatal("missingDescendant", nil, name, parent.Name)
+				External.logErrorNonFatal(
+					templates.missingDescendant,
+					nil,
+					name,
+					parent.Name
+				)
 
 				return
 			end

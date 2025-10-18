@@ -4,4 +4,6 @@ export type ScopedObject = {
 	scope: Scope<unknown>?,
 }
 
-return nil
+return {
+	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
+}

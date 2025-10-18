@@ -69,7 +69,7 @@ local Children = SpecialKey "Children" {
 					end
 				else
 					External.logErrorNonFatal(
-						"invalidChildType",
+						instances.invalidChildType,
 						debug.traceback(nil, 2),
 						childType
 					)

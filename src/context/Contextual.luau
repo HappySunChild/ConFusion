@@ -1,4 +1,5 @@
 local context = require "./types"
+local logging = require "../logging/types"
 
 local External = require "../External"
 
@@ -34,7 +35,7 @@ local class = table.freeze {
 		self._values[thread] = original
 
 		if not ok then
-			External.logError("callbackError", value)
+			External.logError(logging.callbackError, value)
 		end
 
 		return value

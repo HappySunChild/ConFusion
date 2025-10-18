@@ -6,8 +6,6 @@ local function deriveScope<S>(
 	existing: memory.Scope<S>,
 	methods: { [unknown]: unknown }?
 ): unknown
-	-- the plague !strict has brought upon me
-	-- why? why must I bring unnecessary pain upon myself?
 	local metatable = getmetatable(existing :: any)
 
 	if methods ~= nil then

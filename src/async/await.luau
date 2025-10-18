@@ -1,3 +1,4 @@
+local async = require "./types"
 local graph = require "../graph/types"
 
 local External = require "../External"
@@ -10,7 +11,7 @@ local function await(subject: graph.GraphObject)
 	if not castToGraph(subject) then
 		-- i believe this should error, because if we didn't it would infitely yield a thread
 		-- or cause loops that depend on it to spiral out of control
-		External.logError "awaitNonGraph"
+		External.logError(async.awaitNonGraph)
 	end
 
 	local current = coroutine.running()

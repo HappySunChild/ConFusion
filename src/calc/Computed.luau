@@ -1,4 +1,5 @@
 local calc = require "./types"
+local logging = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -63,8 +64,8 @@ local class = table.freeze {
 			return false
 		end
 
-		local outerScope = self.scope
-		local innerScope = deriveScope(outerScope)
+		local outer_scope = self.scope
+		local inner_scope = deriveScope(outer_scope)
 
 		local function use<V>(target: calc.UsedAs<V>): V
 			if castToState(target) then
@@ -74,10 +75,10 @@ local class = table.freeze {
 			return peek(target)
 		end
 
-		local ok, newValue = xpcall(self._processor, parseError, use, innerScope)
+		local ok, new_value = xpcall(self._processor, parseError, use, inner_scope)
 
 		if ok then
-			local similar = isSimilar(self._internalValue, newValue)
+			local similar = isSimilar(self._internalValue, new_value)
 
 			if self._innerScope ~= nil then
 				doCleanup(self._innerScope)
@@ -85,14 +86,14 @@ local class = table.freeze {
 				self._innerScope = nil
 			end
 
-			self._innerScope = innerScope
-			self._internalValue = newValue
+			self._innerScope = inner_scope
+			self._internalValue = new_value
 
 			return not similar
 		else
-			doCleanup(innerScope)
+			doCleanup(inner_scope)
 
-			External.logErrorNonFatal("callbackError", newValue)
+			External.logErrorNonFatal(logging.callbackError, new_value :: logging.Error)
 		end
 
 		return false
@@ -104,9 +105,9 @@ local function Computed<T, S>(
 	scope: memory.Scope<S>,
 	processor: ComputedProcessor<S, T>
 ): calc.Computed<T>
-	local canDissolve, constant = checkDissolvable(scope, processor)
+	local can_dissolve, constant = checkDissolvable(scope, processor)
 
-	if canDissolve then
+	if can_dissolve then
 		return constant
 	end
 
