@@ -133,9 +133,9 @@ type ConFusion = {
 	read AttributeOf: binds.AttributeOfConstructor,
 }
 
-local External = require "@self/External"
+local External = require "@self/external/External"
 
-local RobloxProvider = require "@self/RobloxProvider"
+local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
 External.setProvider(RobloxProvider)
 
 local ConFusion = table.freeze {

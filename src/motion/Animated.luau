@@ -3,7 +3,7 @@ local chrono = require "../chrono/types"
 local memory = require "../memory/types"
 local motion = require "./types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local Timer = require "../chrono/Timer"
 

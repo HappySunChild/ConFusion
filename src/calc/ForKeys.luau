@@ -3,7 +3,7 @@ local fort = require "./For/types"
 local logging = require "../logging/types"
 local memory = require "../memory/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local doCleanup = require "../memory/doCleanup"
 

@@ -1,6 +1,6 @@
 local memory = require "./types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local active = {}
 

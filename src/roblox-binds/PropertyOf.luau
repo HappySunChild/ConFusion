@@ -2,7 +2,7 @@ local binds = require "./types"
 local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local destructor = require "../memory/destructor"
 

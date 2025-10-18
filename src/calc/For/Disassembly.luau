@@ -2,7 +2,7 @@ local calc = require "../types"
 local fort = require "./types"
 local memory = require "../../memory/types"
 
-local External = require "../../External"
+local External = require "../../external/External"
 
 local deriveScope = require "../../memory/deriveScope"
 local destructor = require "../../memory/destructor"

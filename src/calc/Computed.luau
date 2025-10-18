@@ -2,7 +2,7 @@ local calc = require "./types"
 local logging = require "../logging/types"
 local memory = require "../memory/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local depend = require "../graph/depend"
 

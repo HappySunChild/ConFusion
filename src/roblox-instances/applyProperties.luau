@@ -2,7 +2,7 @@ local calc = require "../calc/types"
 local instances = require "./types"
 local memory = require "../memory/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local Parent = require "./keys/_Parent"
 local sortKeys = require "./keys/sortKeys"
