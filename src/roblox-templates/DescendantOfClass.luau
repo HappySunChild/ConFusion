@@ -1,5 +1,6 @@
 local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
+local templates = require "./types"
 
 local External = require "../External"
 
@@ -12,7 +13,7 @@ local function DescendantOfClass(scope: memory.Scope, className: string)
 
 			if not child then
 				External.logErrorNonFatal(
-					"missingDescendantClass",
+					templates.missingDescendantClass,
 					nil,
 					className,
 					parent.Name

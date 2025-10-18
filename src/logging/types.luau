@@ -5,4 +5,6 @@ export type Error = {
 	trace: string,
 }
 
-return nil
+return {
+	callbackError = "Error in callback:\nERROR_MESSAGE",
+}

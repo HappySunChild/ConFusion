@@ -13,7 +13,7 @@ local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
 
 		if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
 			return External.logError(
-				"cannotDepend",
+				graph.cannotDepend,
 				nil,
 				nameOf(user, "User"),
 				table.isfrozen(user._using) and "FROZEN" or "NOT FROZEN",

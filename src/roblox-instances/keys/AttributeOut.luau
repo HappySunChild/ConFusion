@@ -21,7 +21,12 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
-					External.logError("expectedType", nil, "Value", xtypeof(value))
+					External.logError(
+						instances.expectedType,
+						nil,
+						"Value",
+						xtypeof(value)
+					)
 				end
 
 				local event = applyTo:GetAttributeChangedSignal(attribute)

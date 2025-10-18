@@ -1,5 +1,6 @@
 local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
+local templates = require "./types"
 
 local External = require "../External"
 
@@ -11,7 +12,7 @@ local function OfName(scope: memory.Scope, name: string)
 			local child = parent:FindFirstChild(name)
 
 			if not child then
-				External.logErrorNonFatal("missingChild", nil, name, parent.Name)
+				External.logErrorNonFatal(templates.missingChild, nil, name, parent.Name)
 
 				return
 			end

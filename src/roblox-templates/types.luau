@@ -15,4 +15,11 @@ export type WithChildOfClassConstructor = (
 	className: string
 ) -> (instances.Properties) -> (parent: Instance) -> Instance?
 
-return nil
+return {
+	cannotCreateTemplate = "Unable to create template of instance '%s'.",
+
+	missingChild = "Could not find child '%s' in '%s'.",
+	missingChildClass = "Could not find child of class '%s' in '%s'.",
+	missingDescendant = "Could not find descendant '%s' in '%s'.",
+	missingDescendantClass = "Could not find descendant of class '%s' in '%s'.",
+}

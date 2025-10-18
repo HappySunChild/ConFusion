@@ -29,25 +29,25 @@ end
 
 local function change(target: graph.GraphObject)
 	if not castToGraph(target) then
-		return External.logError("invalidChangeType", nil, typeof(target))
+		return External.logError(graph.invalidChangeType, nil, typeof(target))
 	end
 
 	if not evaluate(target, true) then
 		return
 	end
 
-	local searchInNow = { target }
-	local searchInNext = {}
+	local search_now = { target }
+	local search_next = {}
 
-	local eagerList = {}
+	local eager_users = {}
 
 	repeat
 		local done = true
 
-		for _, searchTarget: graph.GraphObject in searchInNow do
+		for _, searchTarget: graph.GraphObject in search_now do
 			for user in searchTarget._users do
 				if user.validity == "busy" then
-					External.logError "infiniteLoop"
+					External.logError(graph.infiniteLoop)
 				end
 
 				if user.validity == "valid" then
@@ -55,29 +55,29 @@ local function change(target: graph.GraphObject)
 
 					done = false
 
-					table.insert(searchInNext, user)
+					table.insert(search_next, user)
 
 					if _isEager(user) then
-						table.insert(eagerList, user)
+						table.insert(eager_users, user)
 					end
 				end
 			end
 		end
 
-		searchInNow, searchInNext = searchInNext, searchInNow
+		search_now, search_next = search_next, search_now
 
-		table.clear(searchInNext)
+		table.clear(search_next)
 	until done
 
-	table.sort(eagerList, function(a, b)
+	table.sort(eager_users, function(a, b)
 		return a.createdAt < b.createdAt
 	end)
 
 	_fireObservers(target)
 
-	for _, eagerUser: graph.GraphObject in eagerList do
-		if evaluate(eagerUser) then
-			_fireObservers(eagerUser)
+	for _, user: graph.GraphObject in eager_users do
+		if evaluate(user) then
+			_fireObservers(user)
 		end
 	end
 

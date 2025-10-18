@@ -6,20 +6,20 @@ local active = {}
 
 local function doCleanup(action: memory.CleanupTask)
 	if active[action] then
-		External.logError "destroyedTwice"
+		External.logError(memory.destroyedTwice)
 	end
 
 	active[action] = true
 
-	local taskType = typeof(action)
+	local task_type = typeof(action)
 
-	if taskType == "Instance" then
+	if task_type == "Instance" then
 		(action :: Instance):Destroy()
-	elseif taskType == "RBXScriptConnection" then
+	elseif task_type == "RBXScriptConnection" then
 		(action :: RBXScriptConnection):Disconnect()
-	elseif taskType == "function" then
+	elseif task_type == "function" then
 		(action :: () -> ())()
-	elseif taskType == "table" then
+	elseif task_type == "table" then
 		action = action :: { memory.CleanupTask }
 
 		if action[1] ~= nil then

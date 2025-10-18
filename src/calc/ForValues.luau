@@ -1,6 +1,6 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local log = require "../logging/types"
+local logging = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -53,9 +53,11 @@ local function SubObject<S, IK, IV, OV>(
 			return outputValue
 		end
 
-		local error: log.Error = outputValue
-		External.logErrorNonFatal("callbackError", error)
+		local error: logging.Error = outputValue
+		External.logErrorNonFatal(logging.callbackError, error)
+
 		doCleanup(scope)
+
 		table.clear(scope)
 
 		return nil
@@ -69,7 +71,7 @@ local function ForValues<S, IK, IV, OV>(
 	inputTable: calc.UsedAs<{ [IK]: IV }>,
 	processor: (calc.Use, memory.Scope<S>, IV) -> OV
 ): calc.For<IK, OV> | { [IK]: OV }
-	local canDissolve, constant = checkDissolvable(
+	local can_dissolve, constant = checkDissolvable(
 		scope,
 		inputTable,
 		function(use, scope, inputKey, inputValue)
@@ -79,7 +81,7 @@ local function ForValues<S, IK, IV, OV>(
 		end
 	)
 
-	if canDissolve then
+	if can_dissolve then
 		return constant
 	end
 

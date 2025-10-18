@@ -1,5 +1,6 @@
 local async = require "./types"
 local calc = require "../calc/types"
+local logging = require "../logging/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -126,7 +127,7 @@ local class = table.freeze {
 
 		self._internalValue = self._pendingValue
 
-		local didYield = true
+		local completed = false
 
 		local activeThread = External.doTaskImmediate(function()
 			local ok, err = xpcall(self._processor, parseError, use, innerScope, become)
@@ -140,17 +141,16 @@ local class = table.freeze {
 			else
 				doCleanup(innerScope)
 
-				External.logErrorNonFatal("callbackError", err)
+				External.logErrorNonFatal(logging.callbackError, err :: logging.Error)
 			end
 
 			self._activeThread = nil
 
-			didYield = false
+			completed = true
 		end)
 
-		-- if we yielded then update _activeThread
-		-- this was false for some reason???? i think i was very sleep deprived when i wrote this...
-		if didYield == true then
+		-- if we didn't complete the task then update keep track of the thread
+		if completed == false then
 			self._activeThread = activeThread
 		end
 

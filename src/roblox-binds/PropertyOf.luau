@@ -1,4 +1,5 @@
-local instances = require "./types"
+local binds = require "./types"
+local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 
 local External = require "../External"
@@ -23,20 +24,20 @@ local function PropertyOf(
 	scope: memory.Scope,
 	instance: Instance,
 	property: string
-): instances.PropertyOf<unknown>
+): binds.PropertyOf<unknown>
 	local ok, event: RBXScriptSignal =
 		pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok then
 		External.logError(
-			"cannotConnectChange",
+			instances.cannotConnectChange,
 			nil,
 			instance.ClassName,
 			tostring(property)
 		)
 	end
 
-	local newProperty: instances.PropertyOf<unknown> = setmetatable({
+	local newProperty: binds.PropertyOf<unknown> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
