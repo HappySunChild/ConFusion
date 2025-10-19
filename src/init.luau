@@ -207,7 +207,7 @@ local ConFusion = table.freeze {
 	StyleRule = require "@self/roblox-stylesheets/StyleRule",
 	StyleSheet = require "@self/roblox-stylesheets/StyleSheet",
 
-	Default = require "@self/roblox-stylsheets/keys/Default",
+	Default = require "@self/roblox-stylesheets/keys/Default",
 	Derives = require "@self/roblox-stylesheets/keys/Derives",
 	Rules = require "@self/roblox-stylesheets/keys/Rules",
 	RuleProperties = require "@self/roblox-stylesheets/keys/RuleProperties",
