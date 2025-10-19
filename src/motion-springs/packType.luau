@@ -32,7 +32,12 @@ local PACK_METHODS = table.freeze {
 			)
 	end,
 	Color3 = function(numbers: { number })
-		return Oklab.toSRGB(vector.create(numbers[1], numbers[2], numbers[3]), false)
+		local ok_result = Oklab.fromOklabToSRGB(
+			vector.create(numbers[1], numbers[2], numbers[3]),
+			false
+		)
+
+		return Color3.new(ok_result.x, ok_result.y, ok_result.z)
 	end,
 } :: { [string]: (numbers: { number }) -> any }
 

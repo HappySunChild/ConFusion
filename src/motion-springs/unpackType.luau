@@ -25,7 +25,7 @@ local UNPACK_METHODS = table.freeze {
 		return { value.X, value.Y, value.Z, axis.X, axis.Y, axis.Z, angle }
 	end,
 	Color3 = function(value: Color3)
-		local lab = Oklab.fromSRGB(value)
+		local lab = Oklab.fromSRGBToOklab(value)
 
 		return { lab.x, lab.y, lab.z }
 	end,
