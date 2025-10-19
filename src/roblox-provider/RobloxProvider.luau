@@ -1,15 +1,17 @@
 local HttpService = game:GetService "HttpService"
 local RunService = game:GetService "RunService"
 
-local External = require "./External"
+local external = require "../external/types"
+
+local External = require "../external/External"
 
 local function performUpdateStep()
 	External.performUpdateStep()
 end
 
-local schedulerDisconnect
+local scheduler_disconnect
 
-local RobloxProvider: External.ExternalProvider = table.freeze {
+return table.freeze {
 	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...)
 		return task.spawn(resume, ...)
 	end,
@@ -35,21 +37,21 @@ local RobloxProvider: External.ExternalProvider = table.freeze {
 				performUpdateStep
 			)
 
-			schedulerDisconnect = function()
+			scheduler_disconnect = function()
 				RunService:UnbindFromRenderStep(id)
 			end
 		else
 			local connection = RunService.Heartbeat:Connect(performUpdateStep)
 
-			schedulerDisconnect = function()
+			scheduler_disconnect = function()
 				connection:Disconnect()
 			end
 		end
 	end,
 	stopScheduler = function()
-		if schedulerDisconnect ~= nil then
-			schedulerDisconnect()
-			schedulerDisconnect = nil
+		if scheduler_disconnect ~= nil then
+			scheduler_disconnect()
+			scheduler_disconnect = nil
 		end
 	end,
 
@@ -57,6 +59,4 @@ local RobloxProvider: External.ExternalProvider = table.freeze {
 		task.spawn(error, message, 0)
 	end,
 	logWarn = warn,
-}
-
-return RobloxProvider
+} :: external.ExternalProvider

@@ -1,7 +1,7 @@
 local context = require "./types"
 local logging = require "../logging/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local parseError = require "../logging/parseError"
 

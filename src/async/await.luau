@@ -1,7 +1,7 @@
 local async = require "./types"
 local graph = require "../graph/types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local castToGraph = require "../graph/castToGraph"
 local observe = require "../graph/observe"

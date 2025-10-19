@@ -2,7 +2,7 @@ local instances = require "../roblox-instances/types"
 local memory = require "../memory/types"
 local templates = require "./types"
 
-local External = require "../External"
+local External = require "../external/External"
 
 local applyProperties = require "../roblox-instances/applyProperties"
 

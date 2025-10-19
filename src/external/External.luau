@@ -1,38 +1,30 @@
-local logging = require "./logging/types"
+local external = require "./types"
+local logging = require "../logging/types"
 
-export type ExternalProvider = {
-	startScheduler: () -> (),
-	stopScheduler: () -> (),
-
-	logErrorNonFatal: (message: string) -> (),
-	logWarn: (message: string) -> (),
-
-	doTaskImmediate: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
-	doTaskDeferred: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
-	doTaskDelayed: <A...>(sec: number, resume: (A...) -> () | thread, A...) -> thread?,
-	cancelTask: (task: thread) -> boolean,
-}
-
-local formatError = require "./logging/formatError"
+local formatError = require "../logging/formatError"
 
 local bound_callbacks = {}
-local active_provider: ExternalProvider? = nil
+local active_provider: external.ExternalProvider? = nil
 
 local last_update = os.clock()
 local delta_time = 0
 
+local function logError(message: string, err: logging.Error?, ...: any?): never
+	error(formatError(message, err, ...), 0)
+end
+
 local External = table.freeze {
-	setProvider = function(newProvider: ExternalProvider?)
+	setProvider = function(new_provider: external.ExternalProvider?)
 		local old_provider = active_provider
 
 		if old_provider ~= nil then
 			old_provider.stopScheduler()
 		end
 
-		active_provider = newProvider
+		active_provider = new_provider
 
-		if newProvider then
-			newProvider.startScheduler()
+		if new_provider then
+			new_provider.startScheduler()
 		end
 
 		return old_provider
@@ -65,14 +57,14 @@ local External = table.freeze {
 
 	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
 		if not active_provider then
-			return nil
+			logError(external.missingProvider)
 		end
 
 		return active_provider.doTaskImmediate(resume, ...)
 	end,
 	doTaskDeferred = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
 		if not active_provider then
-			return nil
+			logError(external.missingProvider)
 		end
 
 		return active_provider.doTaskDeferred(resume, ...)
@@ -83,22 +75,20 @@ local External = table.freeze {
 		...: A...
 	): thread?
 		if not active_provider then
-			return nil
+			logError(external.missingProvider)
 		end
 
 		return active_provider.doTaskDelayed(sec, resume, ...)
 	end,
 	cancelTask = function(task: thread): boolean
 		if not active_provider then
-			return false
+			logError(external.missingProvider)
 		end
 
 		return active_provider.cancelTask(task)
 	end,
 
-	logError = function(message: string, err: logging.Error?, ...: any?): never
-		error(formatError(message, err, ...), 0)
-	end,
+	logError = logError,
 	logErrorNonFatal = function(message: string, err: logging.Error?, ...: any?)
 		local formatted_message = formatError(message, err, ...)
 
