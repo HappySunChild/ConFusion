@@ -1,10 +1,10 @@
 local calc = require "../../calc/types"
-local instances = require "../types"
+local instances = require "../../roblox-instances/types"
 local memory = require "../../memory/types"
 
-local applyProperties = require "../applyProperties"
+local applyProperties = require "../../roblox-instances/applyProperties"
 
-local SpecialKey = require "../keys/SpecialKey"
+local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
 
 return SpecialKey "Style" {
 	stage = "descendants",

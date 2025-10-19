@@ -16,7 +16,7 @@ local instances = require "@self/roblox-instances/types"
 local memory = require "@self/memory/types"
 local motion = require "@self/motion/types"
 local pipeline = require "@self/pipeline/types"
-local style = require "@self/roblox-instances/style/types"
+local style = require "@self/roblox-stylesheets/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
 
@@ -202,15 +202,16 @@ local ConFusion = table.freeze {
 	Out = require "@self/roblox-instances/keys/Out",
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
-	-- Styling
-	StyleRule = require "@self/roblox-instances/style/StyleRule",
-	StyleSheet = require "@self/roblox-instances/style/StyleSheet",
 
-	Default = require "@self/roblox-instances/style/Default",
-	Derives = require "@self/roblox-instances/style/Derives",
-	Rules = require "@self/roblox-instances/style/Rules",
-	RuleProperties = require "@self/roblox-instances/style/RuleProperties",
-	Style = require "@self/roblox-instances/style/Style",
+	-- Roblox: Styling
+	StyleRule = require "@self/roblox-stylesheets/StyleRule",
+	StyleSheet = require "@self/roblox-stylesheets/StyleSheet",
+
+	Default = require "@self/roblox-stylsheets/keys/Default",
+	Derives = require "@self/roblox-stylesheets/keys/Derives",
+	Rules = require "@self/roblox-stylesheets/keys/Rules",
+	RuleProperties = require "@self/roblox-stylesheets/keys/RuleProperties",
+	Style = require "@self/roblox-stylesheets/keys/Style",
 }
 
 return ConFusion :: ConFusion

@@ -1,5 +1,5 @@
-local calc = require "../../calc/types"
-local memory = require "../../memory/types"
+local calc = require "../calc/types"
+local memory = require "../memory/types"
 
 export type StyleRuleProperties = {
 	rules: { [number]: StyleRule }?,

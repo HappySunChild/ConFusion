@@ -1,6 +1,6 @@
-local instances = require "../types"
+local instances = require "../../roblox-instances/types"
 
-local SpecialKey = require "../keys/SpecialKey"
+local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
 
 return SpecialKey "Derives" {
 	stage = "self",

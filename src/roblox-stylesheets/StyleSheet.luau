@@ -1,11 +1,12 @@
-local memory = require "../../memory/types"
+local memory = require "../memory/types"
 local style = require "./types"
 
-local Attribute = require "../keys/Attribute"
-local Derives = require "./Derives"
-local Rules = require "./Rules"
+local Derives = require "./keys/Derives"
+local Rules = require "./keys/Rules"
 
-local applyProperties = require "../applyProperties"
+local Attribute = require "../roblox-instances/keys/Attribute"
+
+local applyProperties = require "../roblox-instances/applyProperties"
 
 local function StyleSheet(
 	scope: memory.Scope,

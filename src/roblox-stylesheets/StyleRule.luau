@@ -1,10 +1,10 @@
-local memory = require "../../memory/types"
+local memory = require "../memory/types"
 local style = require "./types"
 
-local RuleProperties = require "./RuleProperties"
-local Rules = require "./Rules"
+local RuleProperties = require "./keys/RuleProperties"
+local Rules = require "./keys/Rules"
 
-local applyProperties = require "../applyProperties"
+local applyProperties = require "../roblox-instances/applyProperties"
 
 local function StyleRule(scope: memory.Scope, selector: string)
 	local newRule = Instance.new "StyleRule"

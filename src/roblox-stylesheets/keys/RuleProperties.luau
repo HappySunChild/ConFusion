@@ -1,5 +1,5 @@
 local calc = require "../../calc/types"
-local instances = require "../types"
+local instances = require "../../roblox-instances/types"
 local memory = require "../../memory/types"
 
 local castToState = require "../../calc/castToState"
@@ -8,7 +8,7 @@ local peek = require "../../use/peek"
 
 local observe = require "../../graph/observe"
 
-local SpecialKey = require "../keys/SpecialKey"
+local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
 
 local function applyProperty(
 	scope: memory.Scope,
