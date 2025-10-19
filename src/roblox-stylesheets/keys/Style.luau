@@ -14,9 +14,11 @@ return SpecialKey "Style" {
 		style: calc.UsedAs<StyleSheet>
 	)
 		local link = Instance.new "StyleLink"
-		link.Parent = applyTo
 
-		applyProperties(scope, link, { StyleSheet = style })
+		applyProperties(scope, link, {
+			Parent = applyTo,
+			StyleSheet = style,
+		})
 
 		table.insert(scope, link)
 	end,
