@@ -13,7 +13,7 @@ local function logError(message: string, err: logging.Error?, ...: any?): never
 	error(formatError(message, err, ...), 0)
 end
 
-local External = table.freeze {
+return table.freeze {
 	setProvider = function(new_provider: external.ExternalProvider?)
 		local old_provider = active_provider
 
@@ -21,11 +21,11 @@ local External = table.freeze {
 			old_provider.stopScheduler()
 		end
 
-		active_provider = new_provider
-
 		if new_provider then
 			new_provider.startScheduler()
 		end
+
+		active_provider = new_provider
 
 		return old_provider
 	end,
@@ -108,5 +108,3 @@ local External = table.freeze {
 		end
 	end,
 }
-
-return External
