@@ -1,37 +1,40 @@
 local memory = require "./types"
 
 local External = require "../external/External"
+local ExternalDebug = require "../external/ExternalDebug"
 
 local active = {}
 
-local function doCleanup(action: memory.CleanupTask)
-	if active[action] then
+local function doCleanup(cleanup_task: memory.CleanupTask)
+	if active[cleanup_task] then
 		External.logError(memory.destroyedTwice)
 	end
 
-	active[action] = true
+	active[cleanup_task] = true
 
-	local task_type = typeof(action)
+	local task_type = typeof(cleanup_task)
 
 	if task_type == "Instance" then
-		(action :: Instance):Destroy()
+		cleanup_task:Destroy()
 	elseif task_type == "RBXScriptConnection" then
-		(action :: RBXScriptConnection):Disconnect()
+		cleanup_task:Disconnect()
 	elseif task_type == "function" then
-		(action :: () -> ())()
+		cleanup_task()
 	elseif task_type == "table" then
-		action = action :: { memory.CleanupTask }
+		cleanup_task = cleanup_task :: { memory.CleanupTask }
 
-		if action[1] ~= nil then
-			for i = #action, 1, -1 do
-				doCleanup(action[i])
+		if cleanup_task[1] ~= nil then
+			for i = #cleanup_task, 1, -1 do
+				doCleanup(cleanup_task[i])
 
-				action[i] = nil
+				cleanup_task[i] = nil
 			end
+
+			ExternalDebug.untrackScope(cleanup_task)
 		end
 	end
 
-	active[action] = nil
+	active[cleanup_task] = nil
 end
 
 return doCleanup
