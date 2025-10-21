@@ -1,4 +1,4 @@
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"

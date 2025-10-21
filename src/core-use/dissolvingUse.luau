@@ -1,6 +1,6 @@
-local calc = require "../calc/types"
+local calc = require "../core-calc/types"
 
-local castToState = require "../calc/castToState"
+local castToState = require "../core-calc/castToState"
 
 local function dissolvingUse<T>(target: calc.UsedAs<T>): T
 	if castToState(target) then

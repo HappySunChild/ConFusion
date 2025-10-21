@@ -1,5 +1,5 @@
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local memory = require "../core-memory/types"
 local tweens = require "../motion-tweens/types"
 
 export type Pipe<S, T> = {

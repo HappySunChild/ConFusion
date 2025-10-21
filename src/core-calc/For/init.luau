@@ -1,15 +1,16 @@
 local calc = require "./types"
-local memory = require "../memory/types"
 local fort = require "@self/types"
+local memory = require "../core-memory/types"
 
-local destructor = require "../memory/destructor"
+local destructor = require "../core-memory/destructor"
 
-local Disassembly = require "@self/Disassembly"
+local peek = require "../core-use/peek"
+
+local depend = require "../core-graph/depend"
 
 local castToState = require "./castToState"
-local peek = require "../use/peek"
 
-local depend = require "../graph/depend"
+local Disassembly = require "@self/Disassembly"
 
 type Self<S, IK, IV, OK, OV> = calc.For<OK, OV> & {
 	_disassembly: fort.Disassembly<S, IK, IV, OK, OV>,

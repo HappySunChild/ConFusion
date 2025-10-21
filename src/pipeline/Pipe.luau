@@ -1,17 +1,17 @@
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local memory = require "../core-memory/types"
 local pipeline = require "./types"
 local tweens = require "../motion-tweens/types"
 
-local Computed = require "../calc/Computed"
-local ForKeys = require "../calc/ForKeys"
-local ForPairs = require "../calc/ForPairs"
-local ForValues = require "../calc/ForValues"
+local innerScope = require "../core-memory/innerScope"
+
+local Computed = require "../core-calc/Computed"
+local ForKeys = require "../core-calc/ForKeys"
+local ForPairs = require "../core-calc/ForPairs"
+local ForValues = require "../core-calc/ForValues"
 
 local Spring = require "../motion-springs/Spring"
 local Tween = require "../motion-tweens/Tween"
-
-local innerScope = require "../memory/innerScope"
 
 type Self<S, T> = pipeline.Pipe<S, T> & {
 	_latest: calc.UsedAs<T>,

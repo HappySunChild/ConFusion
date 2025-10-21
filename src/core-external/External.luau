@@ -1,7 +1,7 @@
 local external = require "./types"
-local logging = require "../logging/types"
+local logging = require "../core-logging/types"
 
-local formatError = require "../logging/formatError"
+local formatError = require "../core-logging/formatError"
 
 local bound_callbacks = {}
 local active_provider: external.ExternalProvider? = nil

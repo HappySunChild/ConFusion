@@ -1,8 +1,8 @@
 local instances = require "../roblox-instances/types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 local templates = require "./types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
 local Hydrate = require "../roblox-instances/Hydrate"
 
