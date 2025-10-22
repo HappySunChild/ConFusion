@@ -1,9 +1,12 @@
 local external = require "./types"
 local memory = require "../memory/types"
 
+local nameOf = require "../logging/nameOf"
+
 local active_debugger: external.ExternalDebugger? = nil
 
 return table.freeze {
+	getName = nameOf,
 	setDebugger = function(new_debugger: external.ExternalDebugger?)
 		local old_debugger = active_debugger
 
