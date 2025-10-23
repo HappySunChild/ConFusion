@@ -1,7 +1,7 @@
 local memory = require "./types"
 
-local External = require "../external/External"
-local ExternalDebug = require "../external/ExternalDebug"
+local External = require "../core-external/External"
+local ExternalDebug = require "../core-external/ExternalDebug"
 
 local active = {}
 
