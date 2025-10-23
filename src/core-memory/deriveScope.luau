@@ -1,6 +1,6 @@
 local memory = require "./types"
 
-local ExternalDebug = require "../external/ExternalDebug"
+local ExternalDebug = require "../core-external/ExternalDebug"
 
 local merge = require "./merge"
 
