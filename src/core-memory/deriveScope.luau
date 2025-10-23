@@ -1,5 +1,7 @@
 local memory = require "./types"
 
+local ExternalDebug = require "../core-external/ExternalDebug"
+
 local merge = require "./merge"
 
 local function deriveScope<S>(
@@ -9,11 +11,15 @@ local function deriveScope<S>(
 	local metatable = getmetatable(existing :: any)
 
 	if methods ~= nil then
-		metatable = table.clone(metatable) :: { [unknown]: unknown }
+		metatable = table.clone(metatable) :: any
 		metatable.__index = merge(true, {}, metatable.__index, merge(false, {}, methods))
 	end
 
-	return setmetatable({}, metatable)
+	local scope = setmetatable({}, metatable)
+
+	ExternalDebug.trackScope(scope)
+
+	return scope
 end
 
 return deriveScope :: <T, M>(existing: T, methods: M?) -> T & M

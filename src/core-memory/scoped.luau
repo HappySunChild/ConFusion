@@ -1,5 +1,7 @@
 local memory = require "./types"
 
+local ExternalDebug = require "../external/ExternalDebug"
+
 local merge = require "./merge"
 
 local function scoped(
@@ -7,8 +9,11 @@ local function scoped(
 	methods: { [unknown]: unknown }
 ): unknown
 	local metatable = { __index = merge(false, {}, base, methods) }
+	local scope = setmetatable({}, metatable)
 
-	return setmetatable({}, metatable)
+	ExternalDebug.trackScope(scope)
+
+	return scope
 end
 
 return scoped :: <B, M>(base: B, methods: M) -> B & M
