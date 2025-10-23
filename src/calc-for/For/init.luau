@@ -1,14 +1,14 @@
-local calc = require "./types"
-local fort = require "@self/types"
+local calc = require "../core-calc/types"
+local fort = require "./types"
 local memory = require "../core-memory/types"
+
+local castToState = require "../core-calc/castToState"
 
 local destructor = require "../core-memory/destructor"
 
-local peek = require "../core-use/peek"
-
 local depend = require "../core-graph/depend"
 
-local castToState = require "./castToState"
+local peek = require "../core-use/peek"
 
 local Disassembly = require "@self/Disassembly"
 
