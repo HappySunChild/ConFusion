@@ -1,22 +1,22 @@
-local calc = require "../calc/types"
+local calc = require "../core-calc/types"
 local instances = require "./types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local Parent = require "./keys/_Parent"
-local sortKeys = require "./keys/sortKeys"
+local parseError = require "../core-logging/parseError"
 
-local castToState = require "../calc/castToState"
+local castToState = require "../core-calc/castToState"
 
-local peek = require "../use/peek"
+local observe = require "../core-graph/observe"
 
-local observe = require "../graph/observe"
-
-local parseError = require "../logging/parseError"
+local peek = require "../core-use/peek"
 
 local kindof = require "../kindof"
 local xtypeof = require "../xtypeof"
+
+local Parent = require "./keys/_Parent"
+local sortKeys = require "./keys/sortKeys"
 
 local function rawSetProperty(instance: Instance, property: string, value: any)
 	instance[property] = value

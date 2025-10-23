@@ -1,24 +1,24 @@
 local async = require "./types"
-local calc = require "../calc/types"
-local logging = require "../logging/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local logging = require "../core-logging/types"
+local memory = require "../core-memory/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local change = require "../graph/change"
-local depend = require "../graph/depend"
-local evaluate = require "../graph/evaluate"
+local change = require "../core-graph/change"
+local depend = require "../core-graph/depend"
+local evaluate = require "../core-graph/evaluate"
 
-local castToState = require "../calc/castToState"
-local isSimilar = require "../calc/isSimilar"
+local castToState = require "../core-calc/castToState"
+local isSimilar = require "../core-calc/isSimilar"
 
-local peek = require "../use/peek"
+local peek = require "../core-use/peek"
 
-local deriveScope = require "../memory/deriveScope"
-local destructor = require "../memory/destructor"
-local doCleanup = require "../memory/doCleanup"
+local deriveScope = require "../core-memory/deriveScope"
+local destructor = require "../core-memory/destructor"
+local doCleanup = require "../core-memory/doCleanup"
 
-local parseError = require "../logging/parseError"
+local parseError = require "../core-logging/parseError"
 
 type processor<S, T> = (use: calc.Use, scope: memory.Scope<S>, become: (T) -> ()) -> ()
 type Self<T, S> = async.Eventual<T> & {

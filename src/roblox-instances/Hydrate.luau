@@ -1,5 +1,5 @@
 local instances = require "./types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
 local applyProperties = require "./applyProperties"
 

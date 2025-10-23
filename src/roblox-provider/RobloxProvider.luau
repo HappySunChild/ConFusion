@@ -1,9 +1,9 @@
 local HttpService = game:GetService "HttpService"
 local RunService = game:GetService "RunService"
 
-local external = require "../external/types"
+local external = require "../core-external/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
 local function performUpdateStep()
 	External.performUpdateStep()

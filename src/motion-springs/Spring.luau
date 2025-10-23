@@ -1,14 +1,14 @@
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local memory = require "../core-memory/types"
 local motion = require "../motion/types"
+
+local peek = require "../core-use/peek"
 
 local Animated = require "../motion/Animated"
 
 local packType = require "./packType"
 local springCoefficients = require "./springCoefficients"
 local unpackType = require "./unpackType"
-
-local peek = require "../use/peek"
 
 local EPSILON = 0.0001
 

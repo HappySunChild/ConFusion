@@ -1,5 +1,5 @@
-local graph = require "../graph/types"
-local memory = require "../memory/types"
+local graph = require "../core-graph/types"
+local memory = require "../core-memory/types"
 
 export type StateObject<V> = {
 	_internalValue: V,
