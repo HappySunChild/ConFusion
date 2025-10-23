@@ -1,5 +1,5 @@
 local external = require "./types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
 local nameOf = require "../logging/nameOf"
 
