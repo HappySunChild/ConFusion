@@ -1,9 +1,9 @@
 local calc = require "./types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
-local change = require "../graph/change"
+local change = require "../core-graph/change"
 
-local destructor = require "../memory/destructor"
+local destructor = require "../core-memory/destructor"
 
 local isSimilar = require "./isSimilar"
 

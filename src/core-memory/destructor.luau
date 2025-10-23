@@ -1,6 +1,6 @@
-local graph = require "../graph/types"
+local graph = require "../core-graph/types"
 
-local nicknames = require "../logging/nicknames"
+local nicknames = require "../core-logging/nicknames"
 
 local function destroy(target: graph.GraphObject)
 	target.scope = nil

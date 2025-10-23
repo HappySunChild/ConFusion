@@ -1,7 +1,7 @@
 local instances = require "../types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../external/External"
+local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 

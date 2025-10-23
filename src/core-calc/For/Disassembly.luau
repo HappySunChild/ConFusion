@@ -1,17 +1,18 @@
 local calc = require "../types"
 local fort = require "./types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../external/External"
+local External = require "../../core-external/External"
 
-local deriveScope = require "../../memory/deriveScope"
-local destructor = require "../../memory/destructor"
-local doCleanup = require "../../memory/doCleanup"
+local deriveScope = require "../../core-memory/deriveScope"
+local destructor = require "../../core-memory/destructor"
+local doCleanup = require "../../core-memory/doCleanup"
+
+local peek = require "../../core-use/peek"
+
+local depend = require "../../core-graph/depend"
 
 local castToState = require "../castToState"
-local peek = require "../../use/peek"
-
-local depend = require "../../graph/depend"
 
 type Self<S, IK, IV, OK, OV> = fort.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,

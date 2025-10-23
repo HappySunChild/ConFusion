@@ -1,9 +1,9 @@
 local context = require "./types"
-local logging = require "../logging/types"
+local logging = require "../core-logging/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local parseError = require "../logging/parseError"
+local parseError = require "../core-logging/parseError"
 
 type Self<T> = context.Contextual<T> & {
 	_default: T,

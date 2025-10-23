@@ -1,5 +1,5 @@
 local instances = require "../roblox-instances/types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
 export type FromTemplateConstructor = <InstanceT>(
 	scope: memory.Scope,

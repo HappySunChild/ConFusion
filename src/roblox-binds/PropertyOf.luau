@@ -1,12 +1,12 @@
 local binds = require "./types"
 local instances = require "../roblox-instances/types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local destructor = require "../memory/destructor"
+local destructor = require "../core-memory/destructor"
 
-local change = require "../graph/change"
+local change = require "../core-graph/change"
 
 local class = table.freeze {
 	type = "PropertyOf",

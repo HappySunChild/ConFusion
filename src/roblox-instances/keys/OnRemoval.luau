@@ -1,6 +1,6 @@
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local doCleanup = require "../../memory/doCleanup"
+local doCleanup = require "../../core-memory/doCleanup"
 
 local SpecialKey = require "./SpecialKey"
 

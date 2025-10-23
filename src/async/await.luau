@@ -1,10 +1,10 @@
 local async = require "./types"
-local graph = require "../graph/types"
+local graph = require "../core-graph/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local castToGraph = require "../graph/castToGraph"
-local observe = require "../graph/observe"
+local castToGraph = require "../core-graph/castToGraph"
+local observe = require "../core-graph/observe"
 
 -- Pauses the current thread until the subject receives an eager update
 local function await(subject: graph.GraphObject)

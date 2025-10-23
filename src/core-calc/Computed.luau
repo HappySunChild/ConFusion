@@ -1,23 +1,23 @@
 local calc = require "./types"
-local logging = require "../logging/types"
-local memory = require "../memory/types"
+local logging = require "../core-logging/types"
+local memory = require "../core-memory/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local depend = require "../graph/depend"
+local depend = require "../core-graph/depend"
+
+local parseError = require "../core-logging/parseError"
+
+local dissolvingUse = require "../core-use/dissolvingUse"
+local peek = require "../core-use/peek"
+
+local deriveScope = require "../core-memory/deriveScope"
+local destructor = require "../core-memory/destructor"
+local doCleanup = require "../core-memory/doCleanup"
+local innerScope = require "../core-memory/innerScope"
 
 local castToState = require "./castToState"
 local isSimilar = require "./isSimilar"
-
-local dissolvingUse = require "../use/dissolvingUse"
-local peek = require "../use/peek"
-
-local deriveScope = require "../memory/deriveScope"
-local destructor = require "../memory/destructor"
-local doCleanup = require "../memory/doCleanup"
-local innerScope = require "../memory/innerScope"
-
-local parseError = require "../logging/parseError"
 
 type ComputedProcessor<S, T> = (use: calc.Use, scope: memory.Scope<S>) -> T
 type Self<T, S> = calc.Computed<T> & {

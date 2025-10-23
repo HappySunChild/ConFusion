@@ -1,19 +1,19 @@
 local calc = require "./types"
 local fort = require "./For/types"
-local logging = require "../logging/types"
-local memory = require "../memory/types"
+local logging = require "../core-logging/types"
+local memory = require "../core-memory/types"
 
-local External = require "../external/External"
+local External = require "../core-external/External"
 
-local doCleanup = require "../memory/doCleanup"
+local doCleanup = require "../core-memory/doCleanup"
+
+local parseError = require "../core-logging/parseError"
+
+local checkDissolvable = require "./For/checkDissolvable"
 
 local Computed = require "./Computed"
 local For = require "./For"
 local Value = require "./Value"
-
-local checkDissolvable = require "./For/checkDissolvable"
-
-local parseError = require "../logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {

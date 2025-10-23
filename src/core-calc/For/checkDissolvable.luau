@@ -1,15 +1,15 @@
 local calc = require "../types"
 local fort = require "./types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../external/External"
+local External = require "../../core-external/External"
+
+local doCleanup = require "../../core-memory/doCleanup"
+local innerScope = require "../../core-memory/innerScope"
+
+local dissolvingUse = require "../../core-use/dissolvingUse"
 
 local castToState = require "../castToState"
-
-local doCleanup = require "../../memory/doCleanup"
-local innerScope = require "../../memory/innerScope"
-
-local dissolvingUse = require "../../use/dissolvingUse"
 
 local function checkDissolvable<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,

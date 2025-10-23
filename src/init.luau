@@ -7,12 +7,13 @@ GitHub Repository: https://github.com/HappySunChild/ConFusion
 Fusion on GitHub: https://github.com/dphfox/Fusion
 --]]
 
+local calc = require "@self/core-calc/types"
+local graph = require "@self/core-graph/types"
+local memory = require "@self/core-memory/types"
+
 local async = require "@self/async/types"
-local calc = require "@self/calc/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
-local graph = require "@self/graph/types"
-local memory = require "@self/memory/types"
 local pipeline = require "@self/pipeline/types"
 
 local motion = require "@self/motion/types"
@@ -54,38 +55,38 @@ type ConFusion = {
 		read minor: number,
 	},
 
-	-- Memory
+	-- Core: Memory
 	read scoped: <B, M>(base: B, methods: M?) -> memory.Scope<B> & M,
 	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
 	read doCleanup: (action: memory.CleanupTask) -> (),
 	read insert: <Tasks...>(scope: memory.Scope, Tasks...) -> Tasks...,
 
-	-- State/Calculated State
+	-- Core: State
 	read Computed: calc.ComputedConstructor,
 	read Value: calc.ValueConstructor,
 	read ForPairs: calc.ForPairsConstructor,
 	read ForKeys: calc.ForKeysConstructor,
 	read ForValue: calc.ForValuesConstructor,
 
-	-- Async
-	read Eventual: async.EventualConstructor,
-	read await: (subject: graph.GraphObject) -> (),
-
-	-- Contextual
-	read Contextual: context.ContextConstructor,
-
-	-- Use
-	read peek: calc.Use,
-	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
-
-	-- Graph
+	-- Core: Graph
 	read observe: (
 		scope: memory.Scope,
 		subject: graph.GraphObject,
 		callback: () -> (),
 		immediate: boolean?
 	) -> () -> (),
+
+	-- Core: Use
+	read peek: calc.Use,
+	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
+
+	-- Async
+	read Eventual: async.EventualConstructor,
+	read await: (subject: graph.GraphObject) -> (),
+
+	-- Context
+	read Contextual: context.ContextConstructor,
 
 	-- Chrono
 	read Timer: chrono.TimerConstructor,
@@ -133,7 +134,7 @@ type ConFusion = {
 	read AttributeOf: binds.AttributeOfConstructor,
 }
 
-local External = require "@self/external/External"
+local External = require "@self/core-external/External"
 
 local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
 External.setProvider(RobloxProvider)
@@ -144,19 +145,26 @@ local ConFusion = table.freeze {
 		minor = 4,
 	},
 
-	-- Memory
-	scoped = require "@self/memory/scoped",
-	deriveScope = require "@self/memory/deriveScope",
-	innerScope = require "@self/memory/innerScope",
-	doCleanup = require "@self/memory/doCleanup",
-	insert = require "@self/memory/insert",
+	-- Core: Memory
+	scoped = require "@self/core-memory/scoped",
+	deriveScope = require "@self/core-memory/deriveScope",
+	innerScope = require "@self/core-memory/innerScope",
+	doCleanup = require "@self/core-memory/doCleanup",
+	insert = require "@self/core-memory/insert",
 
-	-- State/Calculated State
-	Computed = require "@self/calc/Computed",
-	Value = require "@self/calc/Value",
-	ForPairs = require "@self/calc/ForPairs",
-	ForKeys = require "@self/calc/ForKeys",
-	ForValues = require "@self/calc/ForValues",
+	-- Core: State
+	Computed = require "@self/core-calc/Computed",
+	Value = require "@self/core-calc/Value",
+	ForPairs = require "@self/core-calc/ForPairs",
+	ForKeys = require "@self/core-calc/ForKeys",
+	ForValues = require "@self/core-calc/ForValues",
+
+	-- Core: Graph
+	observe = require "@self/core-graph/observe",
+
+	-- Core: Use
+	peek = require "@self/core-use/peek",
+	flatten = require "@self/core-use/flatten",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
@@ -164,13 +172,6 @@ local ConFusion = table.freeze {
 
 	-- Context
 	Contextual = require "@self/context/Contextual",
-
-	-- Use
-	peek = require "@self/use/peek",
-	flatten = require "@self/use/flatten",
-
-	-- Graph
-	observe = require "@self/graph/observe",
 
 	-- Chrono
 	Timer = require "@self/chrono/Timer",

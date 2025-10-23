@@ -1,7 +1,8 @@
-local calc = require "../../calc/types"
+local calc = require "../../core-calc/types"
 local instances = require "../types"
 
-local External = require "../../external/External"
+local External = require "../../core-external/External"
+
 local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
