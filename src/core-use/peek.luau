@@ -4,14 +4,14 @@ local castToState = require "../core-calc/castToState"
 
 local evaluate = require "../core-graph/evaluate"
 
-local function peek<V>(target: calc.StateObject<V> | V): V
+local function peek<T>(target: calc.UsedAs<T>): T
 	if castToState(target) then
 		evaluate(target)
 
-		return target._internalValue :: V
+		return target._internalValue :: T
 	end
 
-	return target :: V
+	return target :: T
 end
 
 return peek
