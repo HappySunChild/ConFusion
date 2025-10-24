@@ -163,9 +163,6 @@ local ConFusion = table.freeze {
 	-- Core: State
 	Computed = require "@self/core-calc/Computed",
 	Value = require "@self/core-calc/Value",
-	ForPairs = require "@self/core-calc/ForPairs",
-	ForKeys = require "@self/core-calc/ForKeys",
-	ForValues = require "@self/core-calc/ForValues",
 
 	-- Core: Graph
 	observe = require "@self/core-graph/observe",
@@ -173,6 +170,11 @@ local ConFusion = table.freeze {
 	-- Core: Use
 	peek = require "@self/core-use/peek",
 	flatten = require "@self/core-use/flatten",
+
+	-- Calc: Iter
+	ForPairs = require "@self/calc-iter/ForPairs",
+	ForKeys = require "@self/calc-iter/ForKeys",
+	ForValues = require "@self/calc-iter/ForValues",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
