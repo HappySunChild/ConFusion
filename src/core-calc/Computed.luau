@@ -4,19 +4,16 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local depend = require "../core-graph/depend"
-
 local parseError = require "../core-logging/parseError"
 
 local dissolvingUse = require "../core-use/dissolvingUse"
-local peek = require "../core-use/peek"
+local genericUse = require "../core-use/genericUse"
 
 local deriveScope = require "../core-memory/deriveScope"
 local destructor = require "../core-memory/destructor"
 local doCleanup = require "../core-memory/doCleanup"
 local innerScope = require "../core-memory/innerScope"
 
-local castToState = require "./castToState"
 local isSimilar = require "./isSimilar"
 
 type Self<T, S> = calc.Computed<T> & {
@@ -67,15 +64,7 @@ local class = table.freeze {
 		local outer_scope = self.scope
 		local inner_scope = deriveScope(outer_scope)
 
-		local function use<V>(target: calc.UsedAs<V>): V
-			if castToState(target) then
-				depend(self, target)
-			end
-
-			return peek(target)
-		end
-
-		local ok, new_value = xpcall(self._processor, parseError, use, inner_scope)
+		local ok, new_value = xpcall(self._processor, parseError, self._use, inner_scope)
 
 		if ok then
 			local similar = isSimilar(self._internalValue, new_value)
@@ -111,7 +100,7 @@ local function Computed<T, S>(
 		return constant
 	end
 
-	local newComputed: Self<T, S> = setmetatable({
+	local new_computed: Self<T, S> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = nil,
@@ -123,9 +112,11 @@ local function Computed<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newComputed, auxiliaryDestructor))
+	new_computed._use = genericUse(new_computed)
 
-	return newComputed
+	table.insert(scope, destructor(new_computed, auxiliaryDestructor))
+
+	return new_computed
 end
 
 return Computed
