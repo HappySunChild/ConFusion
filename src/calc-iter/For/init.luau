@@ -2,18 +2,17 @@ local calc = require "../core-calc/types"
 local iter = require "./types"
 local memory = require "../core-memory/types"
 
-local castToState = require "../core-calc/castToState"
-
 local destructor = require "../core-memory/destructor"
 
 local depend = require "../core-graph/depend"
 
-local peek = require "../core-use/peek"
+local genericUse = require "../core-use/genericUse"
 
 local Disassembly = require "@self/Disassembly"
 
 type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
 	_disassembly: iter.Disassembly<S, IK, IV, OK, OV>,
+	_use: calc.Use,
 }
 
 local class = table.freeze {
@@ -33,13 +32,7 @@ local class = table.freeze {
 
 		table.clear(output)
 
-		disassembly:populate(function(target)
-			if castToState(target) then
-				depend(self, target)
-			end
-
-			return peek(target)
-		end, output)
+		disassembly:populate(self._use, output)
 
 		return true
 	end,
@@ -55,7 +48,7 @@ local function For<S, IK, IV, OK, OV>(
 		initialValue: IV
 	) -> iter.SubObject<S, IK, IV, OK, OV>
 ): iter.For<OK, OV>
-	local newFor = setmetatable({
+	local new_for = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = {},
@@ -66,9 +59,11 @@ local function For<S, IK, IV, OK, OV>(
 		_disassembly = Disassembly(scope, input, constructor),
 	}, METATABLE) :: Self<S, IK, IV, OK, OV>
 
-	table.insert(scope, destructor(newFor))
+	new_for._use = genericUse(new_for)
 
-	return newFor
+	table.insert(scope, destructor(new_for))
+
+	return new_for
 end
 
 return For

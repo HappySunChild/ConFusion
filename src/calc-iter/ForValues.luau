@@ -35,7 +35,7 @@ local function SubObject<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
 	initialKey: IK,
 	initialValue: IV,
-	processor: (calc.Use, memory.Scope<S>, IK) -> OV
+	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.SubObject<S, IK, IV, IK, OV>
 	local object = setmetatable({
 		scope = scope,
@@ -69,7 +69,7 @@ end
 local function ForValues<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
 	inputTable: calc.UsedAs<{ [IK]: IV }>,
-	processor: (calc.Use, memory.Scope<S>, IV) -> OV
+	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.For<IK, OV> | { [IK]: OV }
 	local can_dissolve, constant = checkDissolvable(
 		scope,

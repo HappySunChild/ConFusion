@@ -26,9 +26,11 @@ export type Computed<T> = {
 	type: "Computed",
 	timeliness: "eager",
 } & StateObject<T>
+
+export type ComputedProcessor<S, T> = (use: Use, scope: memory.Scope<S>) -> T
 export type ComputedConstructor = <S, T>(
 	scope: memory.Scope<S>,
-	processor: (Use, memory.Scope<S>) -> T
+	processor: ComputedProcessor<S, T>
 ) -> Computed<T> | T
 
 return nil
