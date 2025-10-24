@@ -1,5 +1,5 @@
 local calc = require "../core-calc/types"
-local fort = require "./types"
+local iter = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
@@ -42,7 +42,7 @@ local function SubObject<S, IK, IV, OK, OV>(
 		IK,
 		IV
 	) -> (OK, OV)
-): fort.SubObject<S, IK, IV, OK, OV>
+): iter.SubObject<S, IK, IV, OK, OV>
 	local object = setmetatable({
 		scope = scope,
 		inputKey = initialKey,
@@ -84,7 +84,7 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		IK,
 		IV
 	) -> (OK, OV)
-): calc.For<OK, OV> | { [OK]: OV }
+): iter.For<OK, OV> | { [OK]: OV }
 	local can_dissolve, constant = checkDissolvable(scope, inputTable, processor)
 
 	if can_dissolve then

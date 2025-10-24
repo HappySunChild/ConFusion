@@ -1,5 +1,5 @@
 local calc = require "../core-calc/types"
-local fort = require "./types"
+local iter = require "./types"
 local memory = require "../core-memory/types"
 
 local castToState = require "../core-calc/castToState"
@@ -12,8 +12,8 @@ local peek = require "../core-use/peek"
 
 local Disassembly = require "@self/Disassembly"
 
-type Self<S, IK, IV, OK, OV> = calc.For<OK, OV> & {
-	_disassembly: fort.Disassembly<S, IK, IV, OK, OV>,
+type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
+	_disassembly: iter.Disassembly<S, IK, IV, OK, OV>,
 }
 
 local class = table.freeze {
@@ -53,8 +53,8 @@ local function For<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initialKey: IK,
 		initialValue: IV
-	) -> fort.SubObject<S, IK, IV, OK, OV>
-): calc.For<OK, OV>
+	) -> iter.SubObject<S, IK, IV, OK, OV>
+): iter.For<OK, OV>
 	local newFor = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),

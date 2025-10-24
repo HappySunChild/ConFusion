@@ -1,5 +1,5 @@
 local calc = require "../../core-calc/types"
-local fort = require "../types"
+local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
@@ -41,7 +41,7 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		if outputKey == nil or outputValue == nil then
 			continue
 		elseif output[outputKey] ~= nil then
-			External.logErrorNonFatal(fort.forKeyCollision, nil, tostring(outputKey))
+			External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
 
 			continue
 		end

@@ -1,5 +1,5 @@
 local calc = require "../../core-calc/types"
-local fort = require "../types"
+local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
@@ -14,14 +14,14 @@ local depend = require "../../core-graph/depend"
 
 local castToState = require "../../core-calc/castToState"
 
-type Self<S, IK, IV, OK, OV> = fort.Disassembly<S, IK, IV, OK, OV> & {
+type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_objects: { [fort.SubObject<S, IK, IV, OK, OV>]: boolean },
+	_objects: { [iter.SubObject<S, IK, IV, OK, OV>]: boolean },
 	_constructor: (
 		memory.Scope<S>,
 		initialKey: IK,
 		initialValue: IV
-	) -> fort.SubObject<S, IK, IV, OK, OV>,
+	) -> iter.SubObject<S, IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
@@ -55,7 +55,7 @@ local class = table.freeze {
 				hasHoles = true
 				continue
 			elseif output[outputKey] ~= nil then
-				External.logErrorNonFatal(fort.forKeyCollision, nil, tostring(outputKey))
+				External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
 
 				continue
 			end
@@ -165,8 +165,8 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initialKey: IK,
 		initialValue: IV
-	) -> fort.SubObject<S, IK, IV, OK, OV>
-): fort.Disassembly<S, IK, IV, OK, OV>
+	) -> iter.SubObject<S, IK, IV, OK, OV>
+): iter.Disassembly<S, IK, IV, OK, OV>
 	local newDisassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
