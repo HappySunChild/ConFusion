@@ -91,6 +91,9 @@ type ConFusion = {
 	-- Chrono
 	read Timer: chrono.TimerConstructor,
 
+	-- Safe
+	read Safe: <Ok, Err>(callbacks: { try: () -> Ok, fallback: () -> Err }) -> Ok | Err,
+
 	-- Motion
 	read Animated: motion.AnimatedConstructor,
 
@@ -175,6 +178,9 @@ local ConFusion = table.freeze {
 
 	-- Chrono
 	Timer = require "@self/chrono/Timer",
+
+	-- Safe
+	Safe = require "@self/safe/Safe",
 
 	-- Motion
 	Animated = require "@self/motion/Animated",
