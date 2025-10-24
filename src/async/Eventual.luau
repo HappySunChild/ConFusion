@@ -20,10 +20,9 @@ local doCleanup = require "../core-memory/doCleanup"
 
 local parseError = require "../core-logging/parseError"
 
-type processor<S, T> = (use: calc.Use, scope: memory.Scope<S>, become: (T) -> ()) -> ()
 type Self<T, S> = async.Eventual<T> & {
 	_innerScope: memory.Scope<S>,
-	_processor: processor<S, T>,
+	_processor: async.EventualProcessor<S, T>,
 
 	_pendingValue: T,
 	_becomeValue: T?,
@@ -161,7 +160,7 @@ local METATABLE = table.freeze { __index = class }
 
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,
-	processor: processor<S, T>,
+	processor: async.EventualProcessor<S, T>,
 	pendingValue: T
 ): async.Eventual<T>
 	local newEventual: Self<T, S> = setmetatable({

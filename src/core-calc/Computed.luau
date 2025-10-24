@@ -19,10 +19,10 @@ local innerScope = require "../core-memory/innerScope"
 local castToState = require "./castToState"
 local isSimilar = require "./isSimilar"
 
-type ComputedProcessor<S, T> = (use: calc.Use, scope: memory.Scope<S>) -> T
 type Self<T, S> = calc.Computed<T> & {
 	_innerScope: memory.Scope<S>?,
-	_processor: ComputedProcessor<S, T>,
+	_processor: calc.ComputedProcessor<S, T>,
+	_use: calc.Use,
 }
 
 local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
@@ -35,7 +35,7 @@ end
 
 local function checkDissolvable<T, S>(
 	scope: memory.Scope<S>,
-	processor: ComputedProcessor<S, T>
+	processor: calc.ComputedProcessor<S, T>
 ): (boolean, T?)
 	local dissolvingScope = innerScope(scope)
 	local success, value = pcall(processor, dissolvingUse, dissolvingScope)
@@ -103,7 +103,7 @@ local METATABLE = table.freeze { __index = class }
 
 local function Computed<T, S>(
 	scope: memory.Scope<S>,
-	processor: ComputedProcessor<S, T>
+	processor: calc.ComputedProcessor<S, T>
 ): calc.Computed<T>
 	local can_dissolve, constant = checkDissolvable(scope, processor)
 
