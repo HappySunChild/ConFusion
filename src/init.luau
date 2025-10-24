@@ -11,6 +11,8 @@ local calc = require "@self/core-calc/types"
 local graph = require "@self/core-graph/types"
 local memory = require "@self/core-memory/types"
 
+local iter = require "@self/calc-iter/types"
+
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
@@ -31,9 +33,10 @@ export type GraphObject = graph.GraphObject
 export type StateObject<T> = calc.StateObject<T>
 export type Value<V> = calc.Value<V>
 export type Computed<V> = calc.Computed<V>
-export type For<OK, OV> = calc.For<OK, OV>
 export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
+
+export type For<OK, OV> = iter.For<OK, OV>
 
 export type Animated<T> = motion.Animated<T>
 export type TweenInfo = tweens.TweenInfo
@@ -65,9 +68,6 @@ type ConFusion = {
 	-- Core: State
 	read Computed: calc.ComputedConstructor,
 	read Value: calc.ValueConstructor,
-	read ForPairs: calc.ForPairsConstructor,
-	read ForKeys: calc.ForKeysConstructor,
-	read ForValue: calc.ForValuesConstructor,
 
 	-- Core: Graph
 	read observe: (
@@ -80,6 +80,11 @@ type ConFusion = {
 	-- Core: Use
 	read peek: calc.Use,
 	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
+
+	-- Calc: Iter
+	read ForPairs: iter.ForPairsConstructor,
+	read ForKeys: iter.ForKeysConstructor,
+	read ForValue: iter.ForValuesConstructor,
 
 	-- Async
 	read Eventual: async.EventualConstructor,

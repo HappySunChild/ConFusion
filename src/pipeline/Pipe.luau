@@ -1,4 +1,5 @@
 local calc = require "../core-calc/types"
+local iter = require "../calc-iter/types"
 local memory = require "../core-memory/types"
 local pipeline = require "./types"
 local tweens = require "../motion-tweens/types"
@@ -6,9 +7,10 @@ local tweens = require "../motion-tweens/types"
 local innerScope = require "../core-memory/innerScope"
 
 local Computed = require "../core-calc/Computed"
-local ForKeys = require "../core-calc/ForKeys"
-local ForPairs = require "../core-calc/ForPairs"
-local ForValues = require "../core-calc/ForValues"
+
+local ForKeys = require "../calc-iter/ForKeys"
+local ForPairs = require "../calc-iter/ForPairs"
+local ForValues = require "../calc-iter/ForValues"
 
 local Spring = require "../motion-springs/Spring"
 local Tween = require "../motion-tweens/Tween"
@@ -51,7 +53,7 @@ local class = table.freeze {
 
 	forPairs = function<S, IK, IV, OK, OV>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForPairsProcessor<
+		processor: iter.ForPairsProcessor<
 			unknown,
 			IK,
 			IV,
@@ -65,7 +67,7 @@ local class = table.freeze {
 	end,
 	forValues = function<S, IK, IV, OV>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForValuesProcessor<S, IV, OV>
+		processor: iter.ForValuesProcessor<S, IV, OV>
 	): Self<S, { [IK]: OV }>
 		self._latest = ForValues(self._internalScope, self._latest, processor)
 
@@ -73,7 +75,7 @@ local class = table.freeze {
 	end,
 	forKeys = function<S, IK, IV, OK>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForKeysProcessor<S, IK, OK>
+		processor: iter.ForKeysProcessor<S, IK, OK>
 	): Self<S, { [OK]: IV }>
 		self._latest = ForKeys(self._internalScope, self._latest, processor)
 

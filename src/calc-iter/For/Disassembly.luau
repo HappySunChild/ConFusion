@@ -1,5 +1,5 @@
-local calc = require "../types"
-local fort = require "./types"
+local calc = require "../../core-calc/types"
+local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
@@ -12,16 +12,16 @@ local peek = require "../../core-use/peek"
 
 local depend = require "../../core-graph/depend"
 
-local castToState = require "../castToState"
+local castToState = require "../../core-calc/castToState"
 
-type Self<S, IK, IV, OK, OV> = fort.Disassembly<S, IK, IV, OK, OV> & {
+type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_objects: { [fort.SubObject<S, IK, IV, OK, OV>]: boolean },
+	_objects: { [iter.SubObject<S, IK, IV, OK, OV>]: boolean },
 	_constructor: (
 		memory.Scope<S>,
 		initialKey: IK,
 		initialValue: IV
-	) -> fort.SubObject<S, IK, IV, OK, OV>,
+	) -> iter.SubObject<S, IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
@@ -55,25 +55,14 @@ local class = table.freeze {
 				hasHoles = true
 				continue
 			elseif output[outputKey] ~= nil then
-				External.logErrorNonFatal(fort.forKeyCollision, nil, tostring(outputKey))
+				External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
+
 				continue
 			end
 
 			output[outputKey] = outputValue
 
-			-- TypeError: Type 'nil' could not be converted into 'number'
-			-- why did I have to explicity say that outputKey shouldn't be nil to make this type error go away?
-			-- even with this completely unnecessary check it still gets resolved as 'never'.
-			-- i'm already checking this at line 85, which skips over this if it is nil.
-
-			-- i would really like to know why the type solver believes that this specific variable is still nil, even after multiple checks
-			-- and then it has the AUDACITY to give me a 'never'...
-
-			-- when i replaced the continue with a break/return it worked fine, and no type error was shown.
-			-- now i don't mean to put down the Luau engineers, most of the time the type solver is amazing,
-			-- but simple problems like these actually make me want to throw my monitor out the window
-
-			if type(outputKey) == "number" and outputKey ~= nil then
+			if type(outputKey) == "number" then
 				minArrayIndex = math.min(minArrayIndex, outputKey :: number)
 				maxArrayIndex = math.max(maxArrayIndex, outputKey :: number)
 			end
@@ -176,8 +165,8 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initialKey: IK,
 		initialValue: IV
-	) -> fort.SubObject<S, IK, IV, OK, OV>
-): fort.Disassembly<S, IK, IV, OK, OV>
+	) -> iter.SubObject<S, IK, IV, OK, OV>
+): iter.Disassembly<S, IK, IV, OK, OV>
 	local newDisassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),

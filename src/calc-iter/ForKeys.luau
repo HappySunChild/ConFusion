@@ -1,19 +1,19 @@
-local calc = require "./types"
-local fort = require "./For/types"
+local calc = require "../core-calc/types"
+local iter = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
+local Computed = require "../core-calc/Computed"
+local Value = require "../core-calc/Value"
+
 local doCleanup = require "../core-memory/doCleanup"
 
 local parseError = require "../core-logging/parseError"
 
-local checkDissolvable = require "./For/checkDissolvable"
-
-local Computed = require "./Computed"
 local For = require "./For"
-local Value = require "./Value"
+local checkDissolvable = require "./For/checkDissolvable"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {
@@ -36,7 +36,7 @@ local function SubObject<S, IK, IV, OK>(
 	initialKey: IK,
 	initialValue: IV,
 	processor: (calc.Use, memory.Scope<S>, IK) -> OK
-): fort.SubObject<S, IK, IV, OK, IV>
+): iter.SubObject<S, IK, IV, OK, IV>
 	local object = setmetatable({
 		scope = scope,
 		inputKey = initialKey,
@@ -70,7 +70,7 @@ local function ForKeys<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	inputTable: calc.UsedAs<{ [IK]: IV }>,
 	processor: (calc.Use, memory.Scope<S>, IK) -> OK
-): calc.For<OK, IV> | { [OK]: IV }
+): iter.For<OK, IV> | { [OK]: IV }
 	local can_dissolve, constant = checkDissolvable(scope, inputTable, processor)
 
 	if can_dissolve then

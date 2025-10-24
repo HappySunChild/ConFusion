@@ -1,5 +1,5 @@
-local calc = require "../types"
-local fort = require "./types"
+local calc = require "../../core-calc/types"
+local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
@@ -9,7 +9,7 @@ local innerScope = require "../../core-memory/innerScope"
 
 local dissolvingUse = require "../../core-use/dissolvingUse"
 
-local castToState = require "../castToState"
+local castToState = require "../../core-calc/castToState"
 
 local function checkDissolvable<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
@@ -41,7 +41,7 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		if outputKey == nil or outputValue == nil then
 			continue
 		elseif output[outputKey] ~= nil then
-			External.logErrorNonFatal(fort.forKeyCollision, nil, tostring(outputKey))
+			External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
 
 			continue
 		end
