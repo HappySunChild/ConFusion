@@ -1,7 +1,7 @@
 local external = require "./types"
 local memory = require "../core-memory/types"
 
-local nameOf = require "../logging/nameOf"
+local nameOf = require "../core-logging/nameOf"
 
 local active_debugger: external.ExternalDebugger? = nil
 
