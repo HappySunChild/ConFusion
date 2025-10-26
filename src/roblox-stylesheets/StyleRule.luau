@@ -7,14 +7,12 @@ local Rules = require "./keys/Rules"
 local applyProperties = require "../roblox-instances/applyProperties"
 
 local function StyleRule(scope: memory.Scope, selector: string)
-	local newRule = Instance.new "StyleRule"
-	newRule.Name = selector
-	newRule.Selector = selector
+	local new_rule = Instance.new "StyleRule"
 
 	return function(props: style.StyleRuleProperties): StyleRule
-		table.insert(scope, newRule)
+		table.insert(scope, new_rule)
 
-		local ruleProperties = {}
+		local rule_properties = {}
 
 		for property, value in props do
 			-- this feels awful, but the other alternative was a "properties" table within the properties table, which already sounds weird
@@ -23,15 +21,18 @@ local function StyleRule(scope: memory.Scope, selector: string)
 				continue
 			end
 
-			ruleProperties[property] = value
+			rule_properties[property] = value
 		end
 
-		applyProperties(scope, newRule, {
+		applyProperties(scope, new_rule, {
+			Selector = selector,
+			Name = selector,
+
 			[Rules] = props.rules,
-			[RuleProperties] = ruleProperties,
+			[RuleProperties] = rule_properties,
 		})
 
-		return newRule
+		return new_rule
 	end
 end
 

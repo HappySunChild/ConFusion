@@ -12,11 +12,11 @@ local function StyleSheet(
 	scope: memory.Scope,
 	properties: style.StyleSheetProperties
 ): StyleSheet
-	local newSheet = Instance.new "StyleSheet"
+	local new_sheet = Instance.new "StyleSheet"
 
-	table.insert(scope, newSheet)
+	table.insert(scope, new_sheet)
 
-	local actualProperties = {
+	local actual_properties = {
 		Parent = properties.parent,
 
 		[Derives] = properties.derives,
@@ -27,13 +27,13 @@ local function StyleSheet(
 
 	if tokens then
 		for name, value in tokens do
-			actualProperties[Attribute(name)] = value
+			actual_properties[Attribute(name)] = value
 		end
 	end
 
-	applyProperties(scope, newSheet, actualProperties)
+	applyProperties(scope, new_sheet, actual_properties)
 
-	return newSheet
+	return new_sheet
 end
 
 return StyleSheet
