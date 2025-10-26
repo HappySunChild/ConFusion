@@ -1,4 +1,4 @@
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 local style = require "./types"
 
 local RuleProperties = require "./keys/RuleProperties"
