@@ -27,14 +27,91 @@ export type Child =
 	| { Child }
 	| calc.StateObject<Child>
 
-export type NewConstructor = (
+type function PropertiesOf(class: type)
+	local BLACKLISTED_PROPERTIES = {
+		"RobloxLocked",
+		"GuiState",
+		"AbsolutePosition",
+		"AbsoluteRotation",
+		"AbsoluteSize",
+	}
+
+	local output = {}
+
+	local current = class
+
+	-- max depth
+	for _ = 1, 5 do
+		if current == nil then
+			break
+		end
+
+		for key, value in current:properties() do
+			local v_write = value.write
+
+			if
+				v_write == nil
+				or v_write:is "function"
+				or v_write:is "table"
+				or v_write:is "intersection"
+			then
+				continue
+			end
+
+			if table.find(BLACKLISTED_PROPERTIES, key:value()) then
+				continue
+			end
+
+			output[key] = types.any
+		end
+
+		current = current:readparent()
+	end
+
+	return types.newtable(output)
+end
+
+type Hydrate<Class> = (
 	scope: memory.Scope,
-	className: string
-) -> (Properties) -> Instance
-export type HydrateConstructor = <InstanceT>(
+	instance: Class
+) -> (props: Properties) -> Class
+type New<Name, Class> = (
 	scope: memory.Scope,
-	instance: InstanceT
-) -> (Properties) -> InstanceT
+	class_name: Name
+) -> (props: PropertiesOf<Class>) -> Class
+
+export type NewConstructor =
+	& New<"CanvasGroup", CanvasGroup>
+	& New<"Frame", Frame>
+	& New<"ScrollingFrame", ScrollingFrame>
+	& New<"TextBox", TextBox>
+	& New<"TextLabel", TextLabel>
+	& New<"TextButton", TextButton>
+	& New<"ImageLabel", ImageLabel>
+	& New<"ImageButton", ImageButton>
+	-- & New<"VideoDisplay", VideoDisplay>
+	-- & New<"VideoFrame", VideoFrame>
+	& New<"ViewportFrame", ViewportFrame>
+	& New<"ScreenGui", ScreenGui>
+	& New<"SurfaceGui", SurfaceGui>
+	& New<"BillboardGui", BillboardGui>
+	-- & New<"AdGui", AdGui>
+	& New<"UIAspectRatioConstraint", UIAspectRatioConstraint>
+	& New<"UISizeConstraint", UISizeConstraint>
+	& New<"UITextSizeConstraint", UITextSizeConstraint>
+	& New<"UICorner", UICorner>
+	-- & New<"UIDragDetector", UIDragDetector>
+	& New<"UIFlexItem", UIFlexItem>
+	& New<"UIGradient", UIGradient>
+	& New<"UIGridLayout", UIGridLayout>
+	& New<"UIListLayout", UIListLayout>
+	& New<"UIPageLayout", UIPageLayout>
+	& New<"UITableLayout", UITableLayout>
+	& New<"UIPadding", UIPadding>
+	& New<"UIScale", UIScale>
+	& New<"UIStroke", UIStroke>
+	& New<string, Instance>
+export type HydrateConstructor = & Hydrate<Instance>
 
 return {
 	cannotCreateClass = "Unable to create instance of type '%s'.",
