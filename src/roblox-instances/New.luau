@@ -1,7 +1,7 @@
 local instances = require "./types"
-local memory = require "../memory/types"
+local memory = require "../core-memory/types"
 
-local External = require "../External"
+local External = require "../core-external/External"
 
 local Hydrate = require "./Hydrate"
 local defaultProperties = require "./defaultProperties"
@@ -13,7 +13,7 @@ local function New(
 	local success, newInstance = pcall(Instance.new, className, nil) -- ok
 
 	if not success then
-		External.logError("cannotCreateClass", nil, className)
+		External.logError(instances.cannotCreateClass, nil, className)
 	end
 
 	local classProps = defaultProperties[className]

@@ -1,12 +1,12 @@
-local calc = require "../../calc/types"
+local calc = require "../../core-calc/types"
 local instances = require "../types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local observe = require "../../graph/observe"
+local observe = require "../../core-graph/observe"
 
-local castToState = require "../../calc/castToState"
+local castToState = require "../../core-calc/castToState"
 
-local peek = require "../../use/peek"
+local peek = require "../../core-use/peek"
 
 local SpecialKey = require "./SpecialKey"
 

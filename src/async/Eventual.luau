@@ -1,34 +1,37 @@
 local async = require "./types"
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local logging = require "../core-logging/types"
+local memory = require "../core-memory/types"
 
-local External = require "../External"
+local External = require "../core-external/External"
 
-local change = require "../graph/change"
-local depend = require "../graph/depend"
-local evaluate = require "../graph/evaluate"
+local change = require "../core-graph/change"
+local depend = require "../core-graph/depend"
+local evaluate = require "../core-graph/evaluate"
 
-local castToState = require "../calc/castToState"
-local isSimilar = require "../calc/isSimilar"
+local castToState = require "../core-calc/castToState"
+local isSimilar = require "../core-calc/isSimilar"
 
-local peek = require "../use/peek"
+local peek = require "../core-use/peek"
 
-local deriveScope = require "../memory/deriveScope"
-local destructor = require "../memory/destructor"
-local doCleanup = require "../memory/doCleanup"
+local deriveScope = require "../core-memory/deriveScope"
+local destructor = require "../core-memory/destructor"
+local doCleanup = require "../core-memory/doCleanup"
 
-local parseError = require "../logging/parseError"
+local parseError = require "../core-logging/parseError"
 
-type processor<S, T> = (use: calc.Use, scope: memory.Scope<S>, become: (T) -> ()) -> ()
 type Self<T, S> = async.Eventual<T> & {
 	_innerScope: memory.Scope<S>,
-	_processor: processor<S, T>,
+	_processor: async.EventualProcessor<S, T>,
 
 	_pendingValue: T,
 	_becomeValue: T?,
 
 	_isBecoming: boolean?,
 	_activeThread: thread?,
+
+	_become: (any) -> (),
+	_use: calc.Use,
 }
 
 local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
@@ -41,6 +44,41 @@ local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
 
 		eventual._innerScope = nil
 	end
+end
+
+local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
+	local session_used = {}
+
+	local function use<T>(target: calc.UsedAs<T>): T
+		if castToState(target) then
+			depend(eventual, target)
+
+			session_used[target] = true
+		end
+
+		return peek(target)
+	end
+
+	local function become(targetValue: T)
+		local becomeValue = eventual._internalValue
+
+		eventual._internalValue = targetValue
+
+		if eventual.validity ~= "busy" then
+			eventual._becomeValue = becomeValue
+			eventual._isBecoming = true
+
+			change(eventual)
+
+			eventual._becomeValue = nil
+
+			for target in session_used do
+				depend(eventual, target)
+			end
+		end
+	end
+
+	return use, become
 end
 
 local class = table.freeze {
@@ -79,57 +117,13 @@ local class = table.freeze {
 		local outerScope = self.scope
 		local innerScope = deriveScope(outerScope)
 
-		local sessionUsed = {}
-
-		local function use<V>(target: calc.UsedAs<V>): V
-			if castToState(target) then
-				depend(self, target)
-
-				sessionUsed[target] = true
-			end
-
-			return peek(target)
-		end
-
-		local function become(targetValue: T)
-			-- becomeValue is not the value it's becoming! it is the value the Eventual was at the time of becoming another value!!
-			-- should probably give this a better name...
-			local becomeValue = self._internalValue
-
-			self._internalValue = targetValue
-
-			if self.validity ~= "busy" then
-				-- i just realized how unsafe it is to call `change` on a object in a seperate thread.
-				-- this will lead to some very weird and confusing errors that will be impossible to debug.
-				-- maybe i could add a parameter to `change` that allows you to skip the busy checks, but that already
-				-- sounds like a very, very bad idea and will probably lead to pain and suffering later on.
-
-				-- actually if we're already busy then that means that we haven't yielded yet during our processor, which is totally fine
-				-- we don't need to call change since we're already being evaluated...
-
-				-- ignore everything, this is actually completely safe (i think???) and i was just overreacting...
-
-				self._becomeValue = becomeValue
-				self._isBecoming = true
-
-				change(self)
-
-				-- release value, i think this reduces memoization??
-				self._becomeValue = nil
-
-				-- re-depend on everything we've used in this computation session
-				for target in sessionUsed do
-					depend(self, target)
-				end
-			end
-		end
-
 		self._internalValue = self._pendingValue
 
-		local didYield = true
+		local completed = false
 
 		local activeThread = External.doTaskImmediate(function()
-			local ok, err = xpcall(self._processor, parseError, use, innerScope, become)
+			local ok, err =
+				xpcall(self._processor, parseError, self._use, innerScope, self._become)
 
 			if ok then
 				if self._innerScope ~= nil then
@@ -140,17 +134,16 @@ local class = table.freeze {
 			else
 				doCleanup(innerScope)
 
-				External.logErrorNonFatal("callbackError", err)
+				External.logErrorNonFatal(logging.callbackError, err :: logging.Error)
 			end
 
 			self._activeThread = nil
 
-			didYield = false
+			completed = true
 		end)
 
-		-- if we yielded then update _activeThread
-		-- this was false for some reason???? i think i was very sleep deprived when i wrote this...
-		if didYield == true then
+		-- if we didn't complete the task then update keep track of the thread
+		if completed == false then
 			self._activeThread = activeThread
 		end
 
@@ -161,10 +154,10 @@ local METATABLE = table.freeze { __index = class }
 
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,
-	processor: processor<S, T>,
+	processor: async.EventualProcessor<S, T>,
 	pendingValue: T
 ): async.Eventual<T>
-	local newEventual: Self<T, S> = setmetatable({
+	local new_eventual: Self<T, S> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -178,11 +171,13 @@ local function Eventual<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newEventual, auxiliaryDestructor))
+	new_eventual._use, new_eventual._become = generateCallbacks(new_eventual)
 
-	evaluate(newEventual, true)
+	table.insert(scope, destructor(new_eventual, auxiliaryDestructor))
 
-	return newEventual
+	evaluate(new_eventual, true)
+
+	return new_eventual
 end
 
 return Eventual

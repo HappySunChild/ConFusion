@@ -1,16 +1,19 @@
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local iter = require "../calc-iter/types"
+local memory = require "../core-memory/types"
 local pipeline = require "./types"
+local tweens = require "../motion-tweens/types"
 
-local Computed = require "../calc/Computed"
-local ForKeys = require "../calc/ForKeys"
-local ForPairs = require "../calc/ForPairs"
-local ForValues = require "../calc/ForValues"
+local innerScope = require "../core-memory/innerScope"
 
-local Spring = require "../motion/Spring"
-local Tween = require "../motion/Tween"
+local Computed = require "../core-calc/Computed"
 
-local innerScope = require "../memory/innerScope"
+local ForKeys = require "../calc-iter/ForKeys"
+local ForPairs = require "../calc-iter/ForPairs"
+local ForValues = require "../calc-iter/ForValues"
+
+local Spring = require "../motion-springs/Spring"
+local Tween = require "../motion-tweens/Tween"
 
 type Self<S, T> = pipeline.Pipe<S, T> & {
 	_latest: calc.UsedAs<T>,
@@ -30,7 +33,7 @@ local class = table.freeze {
 
 		return self
 	end,
-	tween = function<S, T>(self: Self<S, T>, info: calc.UsedAs<TweenInfo>): Self<S, T>
+	tween = function<S, T>(self: Self<S, T>, info: calc.UsedAs<tweens.TweenInfo>): Self<S, T>
 		self._latest = Tween(self._internalScope, self._latest, info)
 
 		return self
@@ -50,7 +53,7 @@ local class = table.freeze {
 
 	forPairs = function<S, IK, IV, OK, OV>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForPairsProcessor<
+		processor: iter.ForPairsProcessor<
 			unknown,
 			IK,
 			IV,
@@ -64,7 +67,7 @@ local class = table.freeze {
 	end,
 	forValues = function<S, IK, IV, OV>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForValuesProcessor<S, IV, OV>
+		processor: iter.ForValuesProcessor<S, IV, OV>
 	): Self<S, { [IK]: OV }>
 		self._latest = ForValues(self._internalScope, self._latest, processor)
 
@@ -72,7 +75,7 @@ local class = table.freeze {
 	end,
 	forKeys = function<S, IK, IV, OK>(
 		self: Self<S, { [IK]: IV }>,
-		processor: calc.ForKeysProcessor<S, IK, OK>
+		processor: iter.ForKeysProcessor<S, IK, OK>
 	): Self<S, { [OK]: IV }>
 		self._latest = ForKeys(self._internalScope, self._latest, processor)
 

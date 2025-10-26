@@ -1,5 +1,5 @@
-local calc = require "../calc/types"
-local memory = require "../memory/types"
+local calc = require "../core-calc/types"
+local memory = require "../core-memory/types"
 
 export type AnimationCurve<V> = (elapsed: number) -> (boolean, V, ...any)
 export type CurveGenerator<V> = (goal: V, start: V, ...any) -> AnimationCurve<V>
@@ -17,16 +17,7 @@ export type AnimatedConstructor = <V>(
 	mover: calc.UsedAs<CurveGenerator<V>>
 ) -> Animated<V>
 
-export type TweenConstructor = <V>(
-	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
-	info: calc.UsedAs<TweenInfo>
-) -> Animated<V> | V
-export type SpringConstructor = <V>(
-	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
-	speed: calc.UsedAs<number>?,
-	damping: calc.UsedAs<number>?
-) -> Animated<V>
-
-return nil
+return {
+	animatedInvalidGoal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
+	animatedInvalidMotion = "An Animated encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
+}

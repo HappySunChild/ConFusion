@@ -1,8 +1,9 @@
-local calc = require "../../calc/types"
+local calc = require "../../core-calc/types"
 local instances = require "../types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../External"
+local External = require "../../core-external/External"
+
 local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
@@ -21,7 +22,12 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
-					External.logError("expectedType", nil, "Value", xtypeof(value))
+					External.logError(
+						instances.expectedType,
+						nil,
+						"Value",
+						xtypeof(value)
+					)
 				end
 
 				local event = applyTo:GetAttributeChangedSignal(attribute)

@@ -1,8 +1,9 @@
 local context = require "./types"
+local logging = require "../core-logging/types"
 
-local External = require "../External"
+local External = require "../core-external/External"
 
-local parseError = require "../logging/parseError"
+local parseError = require "../core-logging/parseError"
 
 type Self<T> = context.Contextual<T> & {
 	_default: T,
@@ -34,7 +35,7 @@ local class = table.freeze {
 		self._values[thread] = original
 
 		if not ok then
-			External.logError("callbackError", value)
+			External.logError(logging.callbackError, value)
 		end
 
 		return value

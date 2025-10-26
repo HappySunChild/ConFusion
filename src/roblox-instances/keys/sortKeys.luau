@@ -1,6 +1,6 @@
 local instances = require "../types"
 
-local External = require "../../External"
+local External = require "../../core-external/External"
 
 local STAGE_ORDER = table.freeze {
 	"self",
@@ -12,20 +12,24 @@ local STAGE_ORDER = table.freeze {
 }
 
 local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
-	local aIndex = table.find(STAGE_ORDER, a.stage)
-	local bIndex = table.find(STAGE_ORDER, b.stage)
+	local a_index = table.find(STAGE_ORDER, a.stage)
+	local b_index = table.find(STAGE_ORDER, b.stage)
 
-	if not aIndex then
+	if not a_index then
 		External.logWarn(
-			if a.stage == nil then "missingSpecialKeyStage" else "invalidSpecialKeyStage",
+			if a.stage == nil
+				then instances.missingSpecialKeyStage
+				else instances.invalidSpecialKeyStage,
 			a.type,
 			a.stage
 		)
 
 		return true
-	elseif not bIndex then
+	elseif not b_index then
 		External.logWarn(
-			if b.stage == nil then "missingSpecialKeyStage" else "invalidSpecialKeyStage",
+			if b.stage == nil
+				then instances.missingSpecialKeyStage
+				else instances.invalidSpecialKeyStage,
 			b.type,
 			b.stage
 		)
@@ -33,7 +37,7 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 		return false
 	end
 
-	return aIndex < bIndex
+	return a_index < b_index
 end
 
 return sortKeys

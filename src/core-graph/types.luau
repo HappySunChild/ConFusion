@@ -1,0 +1,30 @@
+local memory = require "../core-memory/types"
+
+export type Validity = "busy" | "invalid" | "valid"
+export type Timeliness = "lazy" | "eager"
+
+export type GraphObject = {
+	type: string?,
+	kind: string?,
+
+	createdAt: number?,
+	validity: Validity?,
+	timeliness: Timeliness,
+
+	_lastChange: number?,
+	_lastCompute: number?,
+	_users: { [GraphObject]: true },
+	_using: { [GraphObject]: true },
+	_observers: { [{}]: () -> () }?,
+
+	_evaluate: (GraphObject) -> boolean,
+} & memory.ScopedObject
+
+return {
+	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
+
+	cannotDepend = "%s (%s) cannot depend on %s (%s).",
+
+	invalidEvaluateType = "Invalid evaluate argument, got '%s'.",
+	invalidChangeType = "Can't change non-state value, got '%s'.",
+}

@@ -1,7 +1,7 @@
 local instances = require "../types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../External"
+local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 
@@ -22,7 +22,7 @@ local function OnEvent(eventName: string): instances.SpecialKey<"OnEvent">
 
 				if not ok or typeof(event) ~= "RBXScriptSignal" then
 					External.logError(
-						"cannotConnectEvent",
+						instances.cannotConnectEvent,
 						nil,
 						applyTo.ClassName,
 						eventName

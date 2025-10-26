@@ -1,7 +1,7 @@
 local instances = require "../types"
-local memory = require "../../memory/types"
+local memory = require "../../core-memory/types"
 
-local External = require "../../External"
+local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 
@@ -23,7 +23,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 
 				if not ok then
 					External.logError(
-						"cannotConnectChange",
+						instances.cannotConnectChange,
 						nil,
 						applyTo.ClassName,
 						property
