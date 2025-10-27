@@ -17,10 +17,7 @@ export type SpecialKey<T = string> = {
 	apply: (scope: memory.Scope, instance: Instance, value: any) -> (),
 }
 
-export type Properties = {
-	[SpecialKey]: any,
-}
-
+export type Properties = { [any]: any }
 export type Child =
 	Instance
 	| ((Instance) -> Instance?)
