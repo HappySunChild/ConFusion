@@ -1,6 +1,9 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
+local properties = require "./properties"
+local properties_fancy = require "./properties_fancy"
+
 export type SpecialKeyStage =
 	"self"
 	| "descendants"
@@ -27,91 +30,73 @@ export type Child =
 	| { Child }
 	| calc.StateObject<Child>
 
-type function PropertiesOf(class: type)
-	local BLACKLISTED_PROPERTIES = {
-		"RobloxLocked",
-		"GuiState",
-		"AbsolutePosition",
-		"AbsoluteRotation",
-		"AbsoluteSize",
-	}
-
-	local output = {}
-
-	local current = class
-
-	-- max depth
-	for _ = 1, 5 do
-		if current == nil then
-			break
-		end
-
-		for key, value in current:properties() do
-			local v_write = value.write
-
-			if
-				v_write == nil
-				or v_write:is "function"
-				or v_write:is "table"
-				or v_write:is "intersection"
-			then
-				continue
-			end
-
-			if table.find(BLACKLISTED_PROPERTIES, key:value()) then
-				continue
-			end
-
-			output[key] = types.any
-		end
-
-		current = current:readparent()
-	end
-
-	return types.newtable(output)
-end
-
-type Hydrate<Class> = (
-	scope: memory.Scope,
-	instance: Class
-) -> (props: Properties) -> Class
-type New<Name, Class> = (
-	scope: memory.Scope,
-	class_name: Name
-) -> (props: PropertiesOf<Class>) -> Class
+type New<Name, Class, Properties> = properties.New<Name, Class, Properties>
 
 export type NewConstructor =
-	& New<"CanvasGroup", CanvasGroup>
-	& New<"Frame", Frame>
-	& New<"ScrollingFrame", ScrollingFrame>
-	& New<"TextBox", TextBox>
-	& New<"TextLabel", TextLabel>
-	& New<"TextButton", TextButton>
-	& New<"ImageLabel", ImageLabel>
-	& New<"ImageButton", ImageButton>
-	-- & New<"VideoDisplay", VideoDisplay>
-	-- & New<"VideoFrame", VideoFrame>
-	& New<"ViewportFrame", ViewportFrame>
-	& New<"ScreenGui", ScreenGui>
-	& New<"SurfaceGui", SurfaceGui>
-	& New<"BillboardGui", BillboardGui>
-	-- & New<"AdGui", AdGui>
-	& New<"UIAspectRatioConstraint", UIAspectRatioConstraint>
-	& New<"UISizeConstraint", UISizeConstraint>
-	& New<"UITextSizeConstraint", UITextSizeConstraint>
-	& New<"UICorner", UICorner>
-	-- & New<"UIDragDetector", UIDragDetector>
-	& New<"UIFlexItem", UIFlexItem>
-	& New<"UIGradient", UIGradient>
-	& New<"UIGridLayout", UIGridLayout>
-	& New<"UIListLayout", UIListLayout>
-	& New<"UIPageLayout", UIPageLayout>
-	& New<"UITableLayout", UITableLayout>
-	& New<"UIPadding", UIPadding>
-	& New<"UIScale", UIScale>
-	& New<"UIStroke", UIStroke>
-	& New<string, Instance>
-export type HydrateConstructor = & Hydrate<Instance>
+	& New<"Frame", Frame, properties.Frame>
+	& New<"ScrollingFrame", ScrollingFrame, properties.ScrollingFrame>
+	& New<"TextBox", TextBox, properties.TextBox>
+	& New<"TextLabel", TextLabel, properties.TextLabel>
+	& New<"TextButton", TextButton, properties.TextButton>
+	& New<"ImageLabel", ImageLabel, properties.ImageLabel>
+	& New<"ImageButton", ImageButton, properties.ImageButton>
+	& New<"ViewportFrame", ViewportFrame, properties.ViewportFrame>
+	& New<"CanvasGroup", CanvasGroup, properties.CanvasGroup>
+	& New<
+		"UIAspectRatioConstraint",
+		UIAspectRatioConstraint,
+		properties.UIAspectRatioConstraint
+	>
+	& New<"UISizeConstraint", UISizeConstraint, properties.UISizeConstraint>
+	& New<"UITextSizeConstraint", UITextSizeConstraint, properties.UITextSizeConstraint>
+	& New<"UICorner", UICorner, properties.UICorner>
+	& New<"UIFlexItem", UIFlexItem, properties.UIFlexItem>
+	& New<"UIGradient", UIGradient, properties.UIGradient>
+	& New<"UIPadding", UIPadding, properties.UIPadding>
+	& New<"UIScale", UIScale, properties.UIScale>
+	& New<"UIStroke", UIStroke, properties.UIStroke>
+	& New<"UIGridLayout", UIGridLayout, properties.UIGridLayout>
+	& New<"UIListLayout", UIListLayout, properties.UIListLayout>
+	& New<"UIPageLayout", UIPageLayout, properties.UIPageLayout>
+	& New<"UITableLayout", UITableLayout, properties.UITableLayout>
+	& New<string, Instance, properties._Instance>
+
+-- export type NewConstructor =
+-- & New<"CanvasGroup", CanvasGroup>
+-- & New<"Frame", Frame>
+-- & New<"ScrollingFrame", ScrollingFrame>
+-- & New<"TextBox", TextBox>
+-- & New<"TextLabel", TextLabel>
+-- & New<"TextButton", TextButton>
+-- & New<"ImageLabel", ImageLabel>
+-- & New<"ImageButton", ImageButton>
+-- & New<"VideoDisplay", VideoDisplay>
+-- & New<"VideoFrame", VideoFrame>
+-- & New<"ViewportFrame", ViewportFrame>
+-- & New<"ScreenGui", ScreenGui>
+-- & New<"SurfaceGui", SurfaceGui>
+-- & New<"BillboardGui", BillboardGui>
+-- & New<"AdGui", AdGui>
+-- & New<"UIAspectRatioConstraint", UIAspectRatioConstraint>
+-- & New<"UISizeConstraint", UISizeConstraint>
+-- & New<"UITextSizeConstraint", UITextSizeConstraint>
+-- & New<"UICorner", UICorner>
+-- & New<"UIDragDetector", UIDragDetector>
+-- & New<"UIFlexItem", UIFlexItem>
+-- & New<"UIGradient", UIGradient>
+-- & New<"UIGridLayout", UIGridLayout>
+-- & New<"UIListLayout", UIListLayout>
+-- & New<"UIPageLayout", UIPageLayout>
+-- & New<"UITableLayout", UITableLayout>
+-- & New<"UIPadding", UIPadding>
+-- & New<"UIScale", UIScale>
+-- & New<"UIStroke", UIStroke>
+-- & New<string, Instance>
+
+export type HydrateConstructor = <T>(
+	scope: memory.Scope,
+	instance: T & Instance
+) -> (props: Properties) -> T
 
 return {
 	cannotCreateClass = "Unable to create instance of type '%s'.",
