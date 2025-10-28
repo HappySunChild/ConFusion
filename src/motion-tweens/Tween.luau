@@ -1,4 +1,3 @@
---!strict
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local motion = require "../motion/types"
