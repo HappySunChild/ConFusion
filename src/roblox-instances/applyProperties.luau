@@ -6,8 +6,6 @@ local External = require "../core-external/External"
 
 local parseError = require "../core-logging/parseError"
 
-local castToState = require "../core-calc/castToState"
-
 local observe = require "../core-graph/observe"
 
 local peek = require "../core-use/peek"
@@ -63,15 +61,9 @@ local function applyProperty(
 	property: string,
 	value: calc.UsedAs<any>
 )
-	if castToState(value) then
-		observe(scope, value, function()
-			setProperty(instance, property, peek(value))
-		end, true)
-
-		return
-	end
-
-	setProperty(instance, property, value)
+	observe(scope, value, function()
+		setProperty(instance, property, peek(value))
+	end, true)
 end
 
 local function applyProperties<T>(
