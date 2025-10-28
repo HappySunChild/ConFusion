@@ -9,18 +9,18 @@ local class = table.freeze {
 local METATABLE = table.freeze { __index = class }
 
 local function TweenInfo(info: {
-	easing_style: ((number) -> number)?,
+	easingStyle: ((number) -> number)?,
 	time: number?,
-	delay_time: number?,
+	delayTime: number?,
 	reverses: boolean?,
-	repeat_count: number?,
+	repeatCount: number?,
 }): tweens.TweenInfo
 	return setmetatable({
 		easing = info.easing_style or EasingStyles.Linear.Out,
 		time = info.time or 1,
-		delay_time = info.delay_time or 0,
+		delayTime = info.delay_time or 0,
 		reverses = info.reverses or false,
-		repeat_count = info.repeat_count or 0,
+		repeatCount = info.repeat_count or 0,
 	}, METATABLE) :: any
 end
 
