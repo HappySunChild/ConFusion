@@ -90,14 +90,14 @@ local METATABLE = table.freeze { __index = class }
 
 local function Pipe<S, T>(
 	scope: memory.Scope<S>,
-	initialValue: calc.UsedAs<T>
+	initial_value: calc.UsedAs<T>
 ): pipeline.Pipe<S, T>
-	local newPipe: Self<S, T> = setmetatable({
+	local new_pipe: Self<S, T> = setmetatable({
 		_internalScope = innerScope(scope),
-		_latest = initialValue,
+		_latest = initial_value,
 	}, METATABLE) :: any
 
-	return newPipe
+	return new_pipe
 end
 
 return Pipe

@@ -24,7 +24,7 @@ local function AttributeOf(
 ): instances.AttributeOf<unknown>
 	local event = instance:GetAttributeChangedSignal(attribute)
 
-	local newAttribute: instances.AttributeOf<unknown> = setmetatable({
+	local new_attribute: instances.AttributeOf<unknown> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -34,15 +34,15 @@ local function AttributeOf(
 	}, METATABLE) :: any
 
 	table.insert(scope, {
-		destructor(newAttribute),
+		destructor(new_attribute),
 		event:Connect(function()
-			newAttribute._internalValue = instance:GetAttribute(attribute)
+			new_attribute._internalValue = instance:GetAttribute(attribute)
 
-			change(newAttribute)
+			change(new_attribute)
 		end),
 	})
 
-	return newAttribute
+	return new_attribute
 end
 
 return AttributeOf

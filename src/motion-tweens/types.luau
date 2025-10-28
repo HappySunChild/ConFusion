@@ -2,11 +2,11 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 
-export type TweenConstructor = <V>(
+export type TweenConstructor = <T>(
 	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
+	goal: calc.UsedAs<T>,
 	info: calc.UsedAs<TweenInfo>
-) -> motion.Animated<V> | V
+) -> motion.Animated<T> | T
 
 export type EasingStyle = {
 	read Out: (number) -> number,

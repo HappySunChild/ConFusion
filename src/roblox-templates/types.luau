@@ -6,13 +6,13 @@ export type FromTemplateConstructor = <InstanceT>(
 	template: InstanceT
 ) -> (instances.Properties) -> InstanceT
 
-export type WithChildConstructor = (
+export type OfChildConstructor = (
 	scope: memory.Scope,
 	name: string
 ) -> (instances.Properties) -> (parent: Instance) -> Instance?
-export type WithChildOfClassConstructor = (
+export type OfClassConstructor = (
 	scope: memory.Scope,
-	className: string
+	class_name: string
 ) -> (instances.Properties) -> (parent: Instance) -> Instance?
 
 return {

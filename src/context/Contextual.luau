@@ -45,12 +45,12 @@ local METATABLE = table.freeze { __index = class }
 local WEAK_KEYS_METATABLE = table.freeze { __mode = "k" }
 
 local function Contextual<T>(default: T): context.Contextual<T>
-	local newContextual: Self<T> = setmetatable({
+	local new_contextual: Self<T> = setmetatable({
 		_default = default,
 		_values = setmetatable({}, WEAK_KEYS_METATABLE),
 	}, METATABLE) :: any
 
-	return newContextual
+	return new_contextual
 end
 
 return Contextual

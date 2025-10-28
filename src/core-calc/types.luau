@@ -1,15 +1,15 @@
 local graph = require "../core-graph/types"
 local memory = require "../core-memory/types"
 
-export type StateObject<V> = {
-	_internalValue: V,
+export type StateObject<T> = {
+	_internalValue: T,
 
 	kind: "state",
 	type: string,
 } & graph.GraphObject
 
-export type UsedAs<V> = V | StateObject<V>
-export type Use = <V>(target: UsedAs<V>) -> V
+export type UsedAs<T> = T | StateObject<T>
+export type Use = <T>(target: UsedAs<T>) -> T
 
 -- A state object whose value can be set by the user at any time.
 export type Value<T> = {

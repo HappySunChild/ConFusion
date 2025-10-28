@@ -1,17 +1,17 @@
 local tweens = require "./types"
 
-local function getTweenDuration(tweenInfo: tweens.TweenInfo)
-	if tweenInfo.repeat_count == -1 then
+local function getTweenDuration(info: tweens.TweenInfo)
+	if info.repeat_count == -1 then
 		return math.huge
 	end
 
-	local duration = tweenInfo.delay_time + tweenInfo.time
+	local duration = info.delay_time + info.time
 
-	if tweenInfo.reverses then
-		duration += tweenInfo.time
+	if info.reverses then
+		duration += info.time
 	end
 
-	duration *= tweenInfo.repeat_count + 1
+	duration *= info.repeat_count + 1
 
 	return duration
 end

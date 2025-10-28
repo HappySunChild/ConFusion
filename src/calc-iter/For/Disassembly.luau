@@ -44,98 +44,98 @@ local class = table.freeze {
 		use: calc.Use,
 		output: { [OK]: OV? }
 	)
-		local minArrayIndex = math.huge
-		local maxArrayIndex = -math.huge
-		local hasHoles = false
+		local min_array_index = math.huge
+		local max_array_index = -math.huge
+		local has_holes = false
 
 		for object in self._objects do
-			local outputKey, outputValue = object:useOutputPair(use)
+			local output_key, output_value = object:useOutputPair(use)
 
-			if outputKey == nil or outputValue == nil then
-				hasHoles = true
+			if output_key == nil or output_value == nil then
+				has_holes = true
 				continue
-			elseif output[outputKey] ~= nil then
-				External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
+			elseif output[output_key] ~= nil then
+				External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(output_key))
 
 				continue
 			end
 
-			output[outputKey] = outputValue
+			output[output_key] = output_value
 
-			if type(outputKey) == "number" then
-				minArrayIndex = math.min(minArrayIndex, outputKey :: number)
-				maxArrayIndex = math.max(maxArrayIndex, outputKey :: number)
+			if type(output_key) == "number" then
+				min_array_index = math.min(min_array_index, output_key :: number)
+				max_array_index = math.max(max_array_index, output_key :: number)
 			end
 		end
 
-		if hasHoles and maxArrayIndex < minArrayIndex then
-			local moveToIndex = minArrayIndex
+		if has_holes and max_array_index < min_array_index then
+			local move_to_index = min_array_index
 
-			for moveFromIndex = minArrayIndex, maxArrayIndex do
-				local outputValue = output[moveFromIndex] :: any
+			for move_from_index = min_array_index, max_array_index do
+				local output_value = output[move_from_index] :: any
 
-				if outputValue == nil then
+				if output_value == nil then
 					continue
 				end
 
-				output[moveFromIndex] = nil
-				output[moveToIndex] = outputValue
-				moveToIndex += 1
+				output[move_from_index] = nil
+				output[move_to_index] = output_value
+				move_to_index += 1
 			end
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		local outerScope = self.scope :: memory.Scope
+		local outer_scope = self.scope :: memory.Scope
 
 		if castToState(self._input) then
 			depend(self, self._input)
 		end
 
-		local pendingPairs = table.clone(peek(self._input)) :: { [any]: any }
-		local newObjects = {}
+		local pending_pairs = table.clone(peek(self._input)) :: { [any]: any }
+		local new_objects = {}
 
 		for object in self._objects do
 			local reused = false
 
 			-- casting these to unknown because the type solver doesn't know how to handle generics, apparently.
-			local oldInputKey = object.inputKey :: unknown
-			local oldInputValue = object.inputValue :: unknown
+			local old_input_key = object.inputKey :: unknown
+			local old_input_value = object.inputValue :: unknown
 
-			local newInputKey
+			local new_input_key
 
-			if not object.roamKeys and pendingPairs[oldInputKey] ~= nil then
+			if not object.roamKeys and pending_pairs[old_input_key] ~= nil then
 				reused = true
-				newInputKey = oldInputKey
+				new_input_key = old_input_key
 			else
-				for pendingKey, pendingValue in pendingPairs do
+				for pending_key, pending_value in pending_pairs do
 					reused = true
-					newInputKey = pendingKey
+					new_input_key = pending_key
 
 					if object.roamValues then
 						break
 					end
 
-					if pendingValue == oldInputValue then
+					if pending_value == old_input_value then
 						break
 					end
 				end
 			end
 
 			if reused then
-				local newInputValue = pendingPairs[newInputKey]
-				newObjects[object] = true
+				local new_input_value = pending_pairs[new_input_key]
+				new_objects[object] = true
 
-				if newInputKey ~= oldInputKey then
-					object.inputKey = newInputKey
+				if new_input_key ~= old_input_key then
+					object.inputKey = new_input_key
 					object:invalidateInputKey()
 				end
 
-				if newInputValue ~= oldInputValue then
-					object.inputValue = newInputValue
+				if new_input_value ~= old_input_value then
+					object.inputValue = new_input_value
 					object:invalidateInputValue()
 				end
 
-				pendingPairs[newInputKey] = nil
+				pending_pairs[new_input_key] = nil
 			else
 				if object.scope ~= nil then
 					doCleanup(object.scope)
@@ -145,13 +145,13 @@ local class = table.freeze {
 			end
 		end
 
-		for pendingKey, pendingValue in pendingPairs do
+		for pending_key, pending_value in pending_pairs do
 			local object =
-				self._constructor(deriveScope(outerScope), pendingKey, pendingValue)
-			newObjects[object] = true
+				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
+			new_objects[object] = true
 		end
 
-		self._objects = newObjects
+		self._objects = new_objects
 
 		return true
 	end,
@@ -163,11 +163,11 @@ local function Disassembly<S, IK, IV, OK, OV>(
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
-		initialKey: IK,
-		initialValue: IV
+		initial_key: IK,
+		initial_value: IV
 	) -> iter.SubObject<S, IK, IV, OK, OV>
 ): iter.Disassembly<S, IK, IV, OK, OV>
-	local newDisassembly: Self<S, IK, IV, OK, OV> = setmetatable({
+	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -179,9 +179,9 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		_objects = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newDisassembly, auxiliaryDestructor))
+	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
 
-	return newDisassembly
+	return new_disassembly
 end
 
 return Disassembly

@@ -25,34 +25,34 @@ export type For<OK, OV> = {
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
 	scope: memory.Scope<S>,
-	inputKey: IK,
-	inputValue: IV
+	input_key: IK,
+	input_value: IV
 ) -> (OK, OV)
 export type ForPairsConstructor = <S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForPairsProcessor<S, IK, IV, OK, OV>
 ) -> For<OK, OV> | { [OK]: OV }
 
 export type ForKeysProcessor<S, IK, OK> = (
 	use: calc.Use,
 	scope: memory.Scope<S>,
-	inputKey: IK
+	input_key: IK
 ) -> OK
 export type ForKeysConstructor = <S, IK, IV, OK>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForKeysProcessor<S, IK, OK>
 ) -> For<OK, IV> | { [OK]: IV }
 
 export type ForValuesProcessor<S, IV, OV> = (
 	use: calc.Use,
 	scope: memory.Scope<S>,
-	inputValue: IV
+	input_value: IV
 ) -> OV
 export type ForValuesConstructor = <S, IK, IV, OV>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForValuesProcessor<S, IV, OV>
 ) -> For<IK, OV> | { [IK]: OV }
 

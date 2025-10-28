@@ -48,16 +48,16 @@ local function SubObject<S, IK, IV, OK, OV>(
 	}, SUB_OBJECT_META)
 
 	object._outputPairState = Computed(scope, function(use, scope)
-		local inputKey = use(object._inputKeyState)
-		local inputValue = use(object._inputValueState)
-		local ok, outputKey, outputValue =
-			xpcall(processor, parseError, use, scope, inputKey, inputValue)
+		local input_key = use(object._inputKeyState)
+		local input_value = use(object._inputValueState)
+		local ok, output_key, output_value =
+			xpcall(processor, parseError, use, scope, input_key, input_value)
 
 		if ok then
-			return { key = outputKey, value = outputValue }
+			return { key = output_key, value = output_value }
 		end
 
-		local err: logging.Error = outputKey
+		local err: logging.Error = output_key
 		External.logErrorNonFatal(logging.callbackError, err)
 
 		doCleanup(scope)
@@ -72,17 +72,17 @@ end
 
 local function ForPairs<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: iter.ForPairsProcessor<S, IK, IV, OK, OV>
 ): iter.For<OK, OV> | { [OK]: OV }
-	local can_dissolve, constant = checkDissolvable(scope, inputTable, processor)
+	local can_dissolve, constant = checkDissolvable(scope, input_table, processor)
 
 	if can_dissolve then
 		return constant
 	end
 
-	return For(scope, inputTable, function(scope, initialKey, initialValue)
-		return SubObject(scope, initialKey, initialValue, processor)
+	return For(scope, input_table, function(scope, initial_key, initial_value)
+		return SubObject(scope, initial_key, initial_value, processor)
 	end)
 end
 

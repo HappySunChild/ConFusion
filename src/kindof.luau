@@ -1,7 +1,7 @@
-local function xkindof(value: any): string?
-	local vType = typeof(value)
+local function kindof(value: any): string?
+	local value_type = typeof(value)
 
-	if vType == "table" then
+	if value_type == "table" then
 		if value.kind then
 			return value.kind
 		end
@@ -10,4 +10,4 @@ local function xkindof(value: any): string?
 	return nil
 end
 
-return xkindof
+return kindof

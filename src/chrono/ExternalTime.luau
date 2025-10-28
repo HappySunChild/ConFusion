@@ -41,7 +41,7 @@ local class = {
 local METATABLE = table.freeze { __index = class }
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
-	local newExternalTime = setmetatable({
+	local new_externaltime = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -49,10 +49,10 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 		_active = true,
 	}, METATABLE) :: Self
 
-	table.insert(ALL_TIMERS, newExternalTime)
-	table.insert(scope, destructor(newExternalTime, auxiliaryDestructor))
+	table.insert(ALL_TIMERS, new_externaltime)
+	table.insert(scope, destructor(new_externaltime, auxiliaryDestructor))
 
-	return newExternalTime
+	return new_externaltime
 end
 
 External.bindToUpdateStep(function(now: number)

@@ -33,27 +33,27 @@ local SUB_OBJECT_META = table.freeze {
 
 local function SubObject<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
-	initialKey: IK,
-	initialValue: IV,
+	initial_key: IK,
+	initial_value: IV,
 	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.SubObject<S, IK, IV, IK, OV>
 	local object = setmetatable({
 		scope = scope,
-		inputKey = initialKey,
-		inputValue = initialValue,
+		inputKey = initial_key,
+		inputValue = initial_value,
 
-		_inputValueState = Value(scope, initialValue),
+		_inputValueState = Value(scope, initial_value),
 	}, SUB_OBJECT_META)
 
 	object._outputValueState = Computed(scope, function(use, scope)
-		local inputValue = use(object._inputValueState)
-		local ok, outputValue = xpcall(processor, parseError, use, scope, inputValue)
+		local input_value = use(object._inputValueState)
+		local ok, output_value = xpcall(processor, parseError, use, scope, input_value)
 
 		if ok then
-			return outputValue
+			return output_value
 		end
 
-		local error: logging.Error = outputValue
+		local error: logging.Error = output_value
 		External.logErrorNonFatal(logging.callbackError, error)
 
 		doCleanup(scope)
@@ -68,16 +68,16 @@ end
 
 local function ForValues<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.For<IK, OV> | { [IK]: OV }
 	local can_dissolve, constant = checkDissolvable(
 		scope,
-		inputTable,
-		function(use, scope, inputKey, inputValue)
-			local newValue = processor(use, scope, inputValue)
+		input_table,
+		function(use, scope, input_key, input_value)
+			local new_value = processor(use, scope, input_value)
 
-			return inputKey, newValue
+			return input_key, new_value
 		end
 	)
 
@@ -85,8 +85,8 @@ local function ForValues<S, IK, IV, OV>(
 		return constant
 	end
 
-	return For(scope, inputTable, function(scope, initialKey, initialValue)
-		return SubObject(scope, initialKey, initialValue, processor)
+	return For(scope, input_table, function(scope, initial_key, initial_value)
+		return SubObject(scope, initial_key, initial_value, processor)
 	end)
 end
 

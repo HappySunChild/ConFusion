@@ -32,8 +32,8 @@ local UNPACK_METHODS = table.freeze {
 } :: { [string]: (value: any) -> { number } }
 
 local function unpackType(value: any): { number }
-	local typeString = typeof(value)
-	local unpacker = UNPACK_METHODS[typeString]
+	local data_type = typeof(value)
+	local unpacker = UNPACK_METHODS[data_type]
 
 	if type(unpacker) == "function" then
 		return unpacker(value)

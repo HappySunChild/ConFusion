@@ -26,7 +26,7 @@ export type Child =
 
 export type NewConstructor = (
 	scope: memory.Scope,
-	className: string
+	class_name: string
 ) -> (Properties) -> Instance
 export type HydrateConstructor = <InstanceT>(
 	scope: memory.Scope,

@@ -7,7 +7,7 @@ local External = require "../core-external/External"
 local applyProperties = require "../roblox-instances/applyProperties"
 
 local function OfName(scope: memory.Scope, name: string)
-	return function(props: instances.Properties)
+	return function(properties: instances.Properties)
 		return function(parent: Instance)
 			local child = parent:FindFirstChild(name)
 
@@ -17,7 +17,7 @@ local function OfName(scope: memory.Scope, name: string)
 				return
 			end
 
-			applyProperties(scope, child, props)
+			applyProperties(scope, child, properties)
 
 			return child
 		end

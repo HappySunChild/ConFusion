@@ -12,95 +12,95 @@ local unpackType = require "./unpackType"
 
 local EPSILON = 0.0001
 
-local function springMover<V>(
+local function springMover<T>(
 	speed: calc.UsedAs<number>,
 	damping: calc.UsedAs<number>
-): motion.CurveGenerator<V>
-	local currentV = {}
+): motion.CurveGenerator<T>
+	local current_v = {}
 
-	local activeType = ""
+	local active_type = ""
 
 	return function(
-		targetPosition: V,
-		initialPosition: V,
-		initialVelocity: { number }?
-	): motion.AnimationCurve<V>
-		local discontinuous = typeof(targetPosition) ~= activeType
+		target_position: T,
+		initial_position: T,
+		initial_velocity: { number }?
+	): motion.AnimationCurve<T>
+		local discontinuous = typeof(target_position) ~= active_type
 
-		activeType = typeof(targetPosition)
+		active_type = typeof(target_position)
 
-		local startP = unpackType(initialPosition)
-		local targetP = unpackType(targetPosition)
+		local start_p = unpackType(initial_position)
+		local target_p = unpackType(target_position)
 
-		local numSprings = #targetP
+		local spring_count = #target_p
 
 		if discontinuous then
-			startP = table.clone(targetP)
+			start_p = table.clone(target_p)
 
-			initialVelocity = table.create(numSprings, 0)
-			currentV = table.create(numSprings, 0)
+			initial_velocity = table.create(spring_count, 0)
+			current_v = table.create(spring_count, 0)
 		end
 
-		local currentP = table.clone(startP)
+		local current_p = table.clone(start_p)
 
 		-- spring stepper
-		return function(elapsed: number): (boolean, V, { number })
-			local shouldSleep = false
-			local newValue
+		return function(elapsed: number): (boolean, T, { number })
+			local should_sleep = false
+			local new_value
 
 			if elapsed <= 0 then
-				newValue = initialPosition
+				new_value = initial_position
 			else
-				local posPos, posVel, velPos, velVel =
+				local pos_pos, pos_vel, vel_pos, vel_vel =
 					springCoefficients(elapsed, peek(damping), peek(speed))
 
-				local isMoving = false
+				local is_moving = false
 
-				for index = 1, numSprings do
-					local startP = startP[index] :: number
-					local targetP = targetP[index] :: number
+				for index = 1, spring_count do
+					local start_p = start_p[index] :: number
+					local target_p = target_p[index] :: number
 
-					local startV = initialVelocity[index] :: number
-					local startD = startP - targetP
+					local start_v = initial_velocity[index] :: number
+					local start_d = start_p - target_p
 
-					local latestD = startD * posPos + startV * posVel
-					local latestV = startD * velPos + startV * velVel
+					local latest_d = start_d * pos_pos + start_v * pos_vel
+					local latest_v = start_d * vel_pos + start_v * vel_vel
 
-					if latestD ~= latestD or latestV ~= latestV then
-						latestD, latestV = 0, 0
+					if latest_d ~= latest_d or latest_v ~= latest_v then
+						latest_d, latest_v = 0, 0
 					end
 
-					if math.abs(latestD) > EPSILON or math.abs(latestV) > EPSILON then
-						isMoving = true
+					if math.abs(latest_d) > EPSILON or math.abs(latest_v) > EPSILON then
+						is_moving = true
 					end
 
-					local latestP = latestD + targetP
+					local latestP = latest_d + target_p
 
-					currentP[index] = latestP
-					currentV[index] = latestV
+					current_p[index] = latestP
+					current_v[index] = latest_v
 				end
 
-				if not isMoving then
-					for index = 1, numSprings do
-						currentP[index] = targetP[index]
+				if not is_moving then
+					for index = 1, spring_count do
+						current_p[index] = target_p[index]
 					end
 				end
 
-				shouldSleep = not isMoving
-				newValue = packType(activeType, currentP)
+				should_sleep = not is_moving
+				new_value = packType(active_type, current_p)
 			end
 
-			return shouldSleep, newValue, currentV
+			return should_sleep, new_value, current_v
 		end
 	end
 end
 
-local function Spring<V>(
+local function Spring<T>(
 	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
+	goal: calc.UsedAs<T>,
 	speed: calc.UsedAs<number>?,
 	damping: calc.UsedAs<number>?
-): motion.Animated<V>
+): motion.Animated<T>
 	return Animated(scope, goal, springMover(speed or 10, damping or 1))
 end
 

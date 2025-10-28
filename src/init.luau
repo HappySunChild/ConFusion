@@ -31,8 +31,8 @@ export type Scope<T = ConFusion> = memory.Scope<T>
 export type GraphObject = graph.GraphObject
 
 export type StateObject<T> = calc.StateObject<T>
-export type Value<V> = calc.Value<V>
-export type Computed<V> = calc.Computed<V>
+export type Value<T> = calc.Value<T>
+export type Computed<T> = calc.Computed<T>
 export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
@@ -132,10 +132,10 @@ type ConFusion = {
 
 	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
-	read OfName: templates.WithChildConstructor,
-	read OfClass: templates.WithChildOfClassConstructor,
-	read DescendantOfName: templates.WithChildConstructor,
-	read DescendantOfClass: templates.WithChildOfClassConstructor,
+	read OfName: templates.OfChildConstructor,
+	read OfClass: templates.OfClassConstructor,
+	read DescendantOfName: templates.OfChildConstructor,
+	read DescendantOfClass: templates.OfClassConstructor,
 
 	-- Roblox: Binds
 	read PropertyOf: binds.PropertyOfConstructor,

@@ -7,7 +7,7 @@ local destructor = require "../core-memory/destructor"
 
 local isSimilar = require "./isSimilar"
 
-type Self<V> = calc.Value<V>
+type Self<T> = calc.Value<T>
 
 local class = table.freeze {
 	type = "Value",
@@ -16,16 +16,16 @@ local class = table.freeze {
 
 	_using = table.freeze {},
 
-	set = function<V>(self: Self<V>, newValue: V): V
-		if not isSimilar(newValue, self._internalValue) then
-			self._internalValue = newValue
+	set = function<T>(self: Self<T>, new_value: T): T
+		if not isSimilar(new_value, self._internalValue) then
+			self._internalValue = new_value
 
 			change(self)
 		end
 
-		return newValue
+		return new_value
 	end,
-	update = function<V>(self: Self<V>, updater: (V) -> V): V
+	update = function<T>(self: Self<T>, updater: (T) -> T): T
 		return self:set(updater(self._internalValue))
 	end,
 	_evaluate = function()
@@ -34,12 +34,12 @@ local class = table.freeze {
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Value<V>(scope: memory.Scope, initialValue: V): calc.Value<V>
-	local newValue: Self<V> = setmetatable({
+local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
+	local newValue: Self<T> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
-		_internalValue = initialValue,
+		_internalValue = initial_value,
 
 		_users = {},
 	}, METATABLE) :: any

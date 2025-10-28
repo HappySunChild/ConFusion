@@ -10,7 +10,7 @@ local function New(
 	scope: memory.Scope,
 	className: string
 ): (props: instances.Properties) -> Instance
-	local success, newInstance = pcall(Instance.new, className, nil) -- ok
+	local success, new_instance = pcall(Instance.new, className, nil) -- ok
 
 	if not success then
 		External.logError(instances.cannotCreateClass, nil, className)
@@ -20,11 +20,11 @@ local function New(
 
 	if classProps then
 		for key, value in classProps do
-			newInstance[key] = value
+			new_instance[key] = value
 		end
 	end
 
-	return Hydrate(scope, newInstance)
+	return Hydrate(scope, new_instance)
 end
 
 return New

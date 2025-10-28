@@ -60,12 +60,12 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 	end
 
 	local function become(targetValue: T)
-		local becomeValue = eventual._internalValue
+		local become_value = eventual._internalValue
 
 		eventual._internalValue = targetValue
 
 		if eventual.validity ~= "busy" then
-			eventual._becomeValue = becomeValue
+			eventual._becomeValue = become_value
 			eventual._isBecoming = true
 
 			change(eventual)
@@ -114,25 +114,25 @@ local class = table.freeze {
 			self._activeThread = nil
 		end
 
-		local outerScope = self.scope
-		local innerScope = deriveScope(outerScope)
+		local outer_scope = self.scope
+		local inner_scope = deriveScope(outer_scope)
 
 		self._internalValue = self._pendingValue
 
 		local completed = false
 
-		local activeThread = External.doTaskImmediate(function()
+		local active_thread = External.doTaskImmediate(function()
 			local ok, err =
-				xpcall(self._processor, parseError, self._use, innerScope, self._become)
+				xpcall(self._processor, parseError, self._use, inner_scope, self._become)
 
 			if ok then
 				if self._innerScope ~= nil then
 					doCleanup(self._innerScope)
 				end
 
-				self._innerScope = innerScope
+				self._innerScope = inner_scope
 			else
-				doCleanup(innerScope)
+				doCleanup(inner_scope)
 
 				External.logErrorNonFatal(logging.callbackError, err :: logging.Error)
 			end
@@ -144,7 +144,7 @@ local class = table.freeze {
 
 		-- if we didn't complete the task then update keep track of the thread
 		if completed == false then
-			self._activeThread = activeThread
+			self._activeThread = active_thread
 		end
 
 		return not isSimilar(self._internalValue, self._pendingValue)

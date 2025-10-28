@@ -17,33 +17,33 @@ local peek = require "../core-use/peek"
 
 local Timer = require "../chrono/Timer"
 
-type Self<V> = motion.Animated<V> & {
-	_goal: calc.UsedAs<V>,
-	_activeGoal: V,
+type Self<T> = motion.Animated<T> & {
+	_goal: calc.UsedAs<T>,
+	_activeGoal: T,
 
 	_activeDynamics: { any },
 	_regenerate: boolean?,
 
-	_generator: calc.UsedAs<motion.CurveGenerator<V>>,
-	_activeGenerator: motion.CurveGenerator<V>,
-	_activeCurve: motion.AnimationCurve<V>,
+	_generator: calc.UsedAs<motion.CurveGenerator<T>>,
+	_activeGenerator: motion.CurveGenerator<T>,
+	_activeCurve: motion.AnimationCurve<T>,
 
 	_timer: chrono.Timer,
 }
 
-local function _syncFromCurve<V>(
+local function syncFromCurve<T>(
 	dynamics: { any },
-	shouldSleep: boolean,
-	outputValue: V,
+	should_sleep: boolean,
+	output: T,
 	...: any
-): (V, boolean)
+): (T, boolean)
 	table.clear(dynamics)
 
 	for i = 1, select("#", ...) do
 		dynamics[i + 1] = select(i, ...)
 	end
 
-	return outputValue, shouldSleep
+	return output, should_sleep
 end
 
 local class = table.freeze {
@@ -51,35 +51,35 @@ local class = table.freeze {
 	kind = "state",
 	timeliness = "eager",
 
-	setDynamic = function<V>(self: Self<V>, index: number, value: any)
+	setDynamic = function<T>(self: Self<T>, index: number, value: any)
 		self._activeDynamics[index] = value
 		self._regenerate = true
 
 		change(self)
 	end,
-	getDynamic = function<V>(self: Self<V>, index: number)
+	getDynamic = function<T>(self: Self<T>, index: number)
 		return self._activeDynamics[index]
 	end,
-	_evaluate = function<V>(self: Self<V>)
+	_evaluate = function<T>(self: Self<T>)
 		local goal = self._goal
 
 		local generator = self._generator
 		local timer = self._timer
 
-		local nextGoal = peek(goal)
+		local next_goal = peek(goal)
 
 		if castToState(goal) then
 			depend(self, goal)
 		end
 
 		-- protect against NaN goals
-		if nextGoal ~= nextGoal then
-			External.logWarn(motion.animatedInvalidGoal, nextGoal)
+		if next_goal ~= next_goal then
+			External.logWarn(motion.animatedInvalidGoal, next_goal)
 
 			return false
 		end
 
-		local nextGenerator = peek(generator) :: motion.CurveGenerator<V>
+		local next_generator = peek(generator) :: motion.CurveGenerator<T>
 
 		if castToState(generator) then
 			depend(self, generator :: any)
@@ -89,17 +89,17 @@ local class = table.freeze {
 
 		-- wake
 		if
-			nextGoal ~= self._activeGoal :: any
-			or nextGenerator ~= self._activeGenerator
+			next_goal ~= self._activeGoal :: any
+			or next_generator ~= self._activeGenerator
 			or self._regenerate == true
 		then
 			self._regenerate = nil
 
-			self._activeGoal = nextGoal
+			self._activeGoal = next_goal
 
-			self._activeGenerator = nextGenerator
+			self._activeGenerator = next_generator
 			self._activeCurve =
-				nextGenerator(self._activeGoal, unpack(self._activeDynamics))
+				next_generator(self._activeGoal, unpack(self._activeDynamics))
 
 			timer:reset()
 			timer:unpause()
@@ -112,35 +112,34 @@ local class = table.freeze {
 			elapsed = External.getDeltaTime()
 		end
 
-		local oldValue = self._internalValue :: any
-		local newValue, shouldSleep =
-			_syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
+		local old_value = self._internalValue :: any
+		local new_value, should_sleep =
+			syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
 
-		if (newValue :: any) ~= (newValue :: any) then
-			External.logWarn(motion.animatedInvalidMotion, newValue, self._activeGoal)
+		if (new_value :: any) ~= (new_value :: any) then
+			External.logWarn(motion.animatedInvalidMotion, new_value, self._activeGoal)
 
-			newValue = self._activeGoal
+			new_value = self._activeGoal
 		end
 
-		self._activeDynamics[1] = newValue
-		self._internalValue = newValue
+		self._activeDynamics[1] = new_value
+		self._internalValue = new_value
 
-		if shouldSleep then
+		if should_sleep then
 			timer:pause()
 		end
 
-		return (oldValue :: any) ~= (newValue :: any)
+		return (old_value :: any) ~= (new_value :: any)
 	end,
 }
 local METATABLE = table.freeze { __index = class }
 
-local function Animated<V>(
+local function Animated<T>(
 	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
-	mover: calc.UsedAs<motion.CurveGenerator<V>>
-): motion.Animated<V>
-	local timer = Timer(scope)
-	local newAnimated: Self<V> = setmetatable({
+	goal: calc.UsedAs<T>,
+	mover: calc.UsedAs<motion.CurveGenerator<T>>
+): motion.Animated<T>
+	local new_animated: Self<T> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -158,14 +157,14 @@ local function Animated<V>(
 		_activeGenerator = nil,
 		_activeCurve = nil,
 
-		_timer = timer,
+		_timer = Timer(scope),
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newAnimated))
+	table.insert(scope, destructor(new_animated))
 
-	evaluate(newAnimated, true)
+	evaluate(new_animated, true)
 
-	return newAnimated
+	return new_animated
 end
 
 return Animated

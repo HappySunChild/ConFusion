@@ -37,7 +37,7 @@ export type Pipe<S, T> = {
 
 export type PipeConstructor = <S, T>(
 	scope: memory.Scope<S>,
-	initialValue: calc.UsedAs<T>
+	initial_value: calc.UsedAs<T>
 ) -> Pipe<S, T>
 
 return nil

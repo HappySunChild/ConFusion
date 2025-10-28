@@ -15,28 +15,28 @@ local function evaluate(target: graph.GraphObject, forceComputation: boolean?)
 		return External.logError(graph.infiniteLoop)
 	end
 
-	local firstEvaluation = target._lastChange == nil or target._lastCompute == nil
-	local isInvalid = target.validity == "invalid"
+	local first_evaluation = target._lastChange == nil or target._lastCompute == nil
+	local is_invalid = target.validity == "invalid"
 
-	if firstEvaluation or isInvalid or forceComputation then
-		local needsComputation = firstEvaluation or forceComputation
+	if first_evaluation or is_invalid or forceComputation then
+		local needs_computation = first_evaluation or forceComputation
 
 		-- check if computation is actually needed
-		if not needsComputation then
+		if not needs_computation then
 			for dependency in target._using do
 				evaluate(dependency, false)
 
 				if dependency._lastChange > target._lastCompute then
-					needsComputation = true
+					needs_computation = true
 
 					break
 				end
 			end
 		end
 
-		local targetMeaningfullyChanged = false
+		local meaningfully_changed = false
 
-		if needsComputation then
+		if needs_computation then
 			-- remove dependencies
 			for dependency in target._using do
 				dependency._users[target] = nil
@@ -45,18 +45,18 @@ local function evaluate(target: graph.GraphObject, forceComputation: boolean?)
 
 			target.validity = "busy"
 
-			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
+			meaningfully_changed = target:_evaluate() or first_evaluation
 
 			target._lastCompute = os.clock()
 		end
 
-		if targetMeaningfullyChanged then
+		if meaningfully_changed then
 			target._lastChange = os.clock()
 		end
 
 		target.validity = "valid"
 
-		return targetMeaningfullyChanged
+		return meaningfully_changed
 	end
 
 	return false

@@ -33,27 +33,27 @@ local SUB_OBJECT_META = table.freeze {
 
 local function SubObject<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
-	initialKey: IK,
-	initialValue: IV,
+	initial_key: IK,
+	initial_value: IV,
 	processor: iter.ForKeysProcessor<S, IK, OK>
 ): iter.SubObject<S, IK, IV, OK, IV>
 	local object = setmetatable({
 		scope = scope,
-		inputKey = initialKey,
-		inputValue = initialValue,
+		inputKey = initial_key,
+		inputValue = initial_value,
 
-		_inputKeyState = Value(scope, initialKey),
+		_inputKeyState = Value(scope, initial_key),
 	}, SUB_OBJECT_META)
 
 	object._outputKeyState = Computed(scope, function(use, scope)
-		local inputKey = use(object._inputKeyState)
-		local ok, outputKey = xpcall(processor, parseError, use, scope, inputKey)
+		local input_key = use(object._inputKeyState)
+		local ok, output_key = xpcall(processor, parseError, use, scope, input_key)
 
 		if ok then
-			return outputKey
+			return output_key
 		end
 
-		local error: logging.Error = outputKey
+		local error: logging.Error = output_key
 		External.logErrorNonFatal(logging.callbackError, error)
 
 		doCleanup(scope)
@@ -68,17 +68,17 @@ end
 
 local function ForKeys<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: iter.ForKeysProcessor<S, IK, OK>
 ): iter.For<OK, IV> | { [OK]: IV }
-	local can_dissolve, constant = checkDissolvable(scope, inputTable, processor)
+	local can_dissolve, constant = checkDissolvable(scope, input_table, processor)
 
 	if can_dissolve then
 		return constant
 	end
 
-	return For(scope, inputTable, function(scope, initialKey, initialValue)
-		return SubObject(scope, initialKey, initialValue, processor)
+	return For(scope, input_table, function(scope, initial_key, initial_value)
+		return SubObject(scope, initial_key, initial_value, processor)
 	end)
 end
 
