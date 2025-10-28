@@ -13,35 +13,35 @@ local doCleanup = require "../../core-memory/doCleanup"
 
 local SpecialKey = require "./SpecialKey"
 
-local Children = SpecialKey "Children" {
-	stage = "descendants",
-	apply = function(scope: memory.Scope, applyTo: Instance, children: instances.Child?)
-		local newChildren, oldChildren = {}, {}
-		local newScopes, oldScopes = {}, {}
+local Children = SpecialKey "descendants" {
+	name = "Children",
+	apply = function(scope: memory.Scope, apply_to: Instance, children: instances.Child?)
+		local new_children, old_children = {}, {}
+		local new_scopes, old_scopes = {}, {}
 
 		local function updateChildren()
-			oldChildren, newChildren = newChildren, oldChildren
-			oldScopes, newScopes = newScopes, oldScopes
+			old_children, new_children = new_children, old_children
+			old_scopes, new_scopes = new_scopes, old_scopes
 
 			local function processChild(child: instances.Child, name: string?)
 				local childType = typeof(child)
 
 				if childType == "Instance" then
-					newChildren[child] = true
+					new_children[child] = true
 
-					if not oldChildren[child] then
+					if not old_children[child] then
 						if child.Parent == nil then
-							child.Parent = applyTo
+							child.Parent = apply_to
 						end
 					else
-						oldChildren[child] = nil
+						old_children[child] = nil
 					end
 
 					if name and tonumber(name) == nil then
 						child.Name = name
 					end
 				elseif childType == "function" then
-					local childInstance = child(applyTo, name)
+					local childInstance = child(apply_to, name)
 
 					if childInstance then
 						processChild(childInstance, name)
@@ -53,16 +53,16 @@ local Children = SpecialKey "Children" {
 						processChild(value, name)
 					end
 
-					local childScope = oldScopes[child]
+					local childScope = old_scopes[child]
 
 					if childScope == nil then
 						childScope = {}
 						observe(childScope, child, updateChildren)
 					else
-						oldScopes[child] = nil
+						old_scopes[child] = nil
 					end
 
-					newScopes[child] = childScope
+					new_scopes[child] = childScope
 				elseif childType == "table" then
 					for key, subChild in child do
 						processChild(subChild, key)
@@ -80,17 +80,17 @@ local Children = SpecialKey "Children" {
 				processChild(children)
 			end
 
-			for instance in oldChildren do
+			for instance in old_children do
 				instance.Parent = nil
 			end
 
-			table.clear(oldChildren)
+			table.clear(old_children)
 
-			for _, childScope in oldScopes do
+			for _, childScope in old_scopes do
 				doCleanup(childScope)
 			end
 
-			table.clear(oldScopes)
+			table.clear(old_scopes)
 		end
 
 		table.insert(scope, function()

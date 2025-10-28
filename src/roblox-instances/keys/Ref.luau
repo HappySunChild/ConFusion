@@ -7,16 +7,16 @@ local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
 
-local Ref = SpecialKey "Ref" {
-	stage = "self",
+local Ref = SpecialKey "self" {
+	name = "Ref",
 	apply = function(
 		_,
-		applyTo: Instance,
+		apply_to: Instance,
 		refs: { calc.Value<Instance> } | calc.Value<Instance>
 	)
 		if xtypeof(refs) == "Value" then
 			refs = refs :: calc.Value<Instance>
-			refs:set(applyTo)
+			refs:set(apply_to)
 
 			return
 		end
@@ -27,7 +27,7 @@ local Ref = SpecialKey "Ref" {
 				External.logError(instances.expectedType, nil, "Value", xtypeof(ref))
 			end
 
-			ref:set(applyTo)
+			ref:set(apply_to)
 		end
 	end,
 }

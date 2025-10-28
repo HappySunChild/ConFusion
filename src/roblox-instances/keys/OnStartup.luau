@@ -1,8 +1,8 @@
 local SpecialKey = require "./SpecialKey"
 
-return SpecialKey "OnStartup" {
-	stage = "last",
-	apply = function(_, parent: Instance, callback: (Instance) -> ())
-		callback(parent)
+return SpecialKey "last" {
+	name = "OnStartup",
+	apply = function(_, apply_to: Instance, callback: (Instance) -> ())
+		callback(apply_to)
 	end,
 }

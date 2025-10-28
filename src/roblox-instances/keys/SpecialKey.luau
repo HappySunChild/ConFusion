@@ -2,17 +2,17 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 type SpecialKeyProperties = {
-	stage: instances.SpecialKeyStage,
+	name: string?,
 	apply: (scope: memory.Scope, applyTo: Instance, ...any) -> (),
 }
 
-local function SpecialKey(name: string)
+local function SpecialKey(stage: instances.SpecialKeyStage)
 	return function(props: SpecialKeyProperties): instances.SpecialKey
 		local newKey = table.freeze {
-			type = name,
+			stage = stage,
 			kind = "key",
 
-			stage = props.stage,
+			type = props.name or "SpecialKey",
 			apply = props.apply,
 		}
 

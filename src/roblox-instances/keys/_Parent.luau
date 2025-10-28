@@ -20,20 +20,20 @@ local function setParent(instance: Instance, parent: Instance?)
 	end
 end
 
-local Parent = SpecialKey "Parent" {
-	stage = "ancestor",
+local Parent = SpecialKey "ancestor" {
+	name = "Parent",
 	apply = function(
 		scope: memory.Scope,
-		applyTo: Instance,
+		apply_to: Instance,
 		parent: calc.UsedAs<Instance?>
 	)
 		if castToState(parent) then
 			observe(scope, parent, function()
-				setParent(applyTo, peek(parent))
+				setParent(apply_to, peek(parent))
 			end)
 		end
 
-		setParent(applyTo, peek(parent))
+		setParent(apply_to, peek(parent))
 	end,
 } :: instances.SpecialKey<"Parent">
 

@@ -9,19 +9,19 @@ local function AttributeChange(attribute: string): instances.SpecialKey<"Attribu
 	local key = keyCache[attribute]
 
 	if not key then
-		key = SpecialKey "AttributeChanged" {
-			stage = "observer",
+		key = SpecialKey "observer" {
+			name = `AttributeChanged_{attribute}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				callback: (any) -> ()
 			)
-				local event = applyTo:GetAttributeChangedSignal(attribute)
+				local event = apply_to:GetAttributeChangedSignal(attribute)
 
 				table.insert(
 					scope,
 					event:Connect(function()
-						callback(applyTo:GetAttribute(attribute))
+						callback(apply_to:GetAttribute(attribute))
 					end)
 				)
 			end,

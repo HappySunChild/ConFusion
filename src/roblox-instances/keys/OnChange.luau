@@ -11,21 +11,21 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 	local key = keyCache[property]
 
 	if not key then
-		key = SpecialKey "OnChange" {
-			stage = "observer",
+		key = SpecialKey "observer" {
+			name = `OnChange_{property}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				callback: (any) -> ()
 			)
 				local ok, event =
-					pcall(applyTo.GetPropertyChangedSignal, applyTo, property)
+					pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
 
 				if not ok then
 					External.logError(
 						instances.cannotConnectChange,
 						nil,
-						applyTo.ClassName,
+						apply_to.ClassName,
 						property
 					)
 				end
@@ -33,7 +33,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 				table.insert(
 					scope,
 					event:Connect(function()
-						callback(applyTo[property])
+						callback(apply_to[property])
 					end)
 				)
 			end,

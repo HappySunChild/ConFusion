@@ -16,20 +16,20 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 	local key = keyCache[attribute]
 
 	if not key then
-		key = SpecialKey "Attribute" {
-			stage = "self",
+		key = SpecialKey "self" {
+			name = `Attribute_{attribute}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				value: calc.UsedAs<any>
 			)
 				if castToState(value) then
 					observe(scope, value, function()
-						applyTo:SetAttribute(attribute, peek(value))
+						apply_to:SetAttribute(attribute, peek(value))
 					end)
 				end
 
-				applyTo:SetAttribute(attribute, peek(value))
+				apply_to:SetAttribute(attribute, peek(value))
 			end,
 		}
 

@@ -11,21 +11,25 @@ end
 
 local keyCache = {}
 
-local function OnEvent(eventName: string): instances.SpecialKey<"OnEvent">
-	local key = keyCache[eventName]
+local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
+	local key = keyCache[event_name]
 
 	if not key then
-		key = SpecialKey "OnEvent" {
-			stage = "observer",
-			apply = function(scope: memory.Scope, applyTo: Instance, callback)
-				local ok, event = pcall(getProperty, applyTo, eventName)
+		key = SpecialKey "observer" {
+			name = `OnEvent_{event_name}`,
+			apply = function(
+				scope: memory.Scope,
+				apply_to: Instance,
+				callback: (...unknown) -> ()
+			)
+				local ok, event = pcall(getProperty, apply_to, event_name)
 
 				if not ok or typeof(event) ~= "RBXScriptSignal" then
 					External.logError(
 						instances.cannotConnectEvent,
 						nil,
-						applyTo.ClassName,
-						eventName
+						apply_to.ClassName,
+						event_name
 					)
 				end
 
@@ -33,7 +37,7 @@ local function OnEvent(eventName: string): instances.SpecialKey<"OnEvent">
 			end,
 		}
 
-		keyCache[eventName] = key
+		keyCache[event_name] = key
 	end
 
 	return key

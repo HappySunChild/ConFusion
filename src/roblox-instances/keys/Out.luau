@@ -14,8 +14,8 @@ local function Out(property: string): instances.SpecialKey<"Out">
 	local key = keyCache[property]
 
 	if not key then
-		key = SpecialKey "Out" {
-			stage = "observer",
+		key = SpecialKey "observer" {
+			name = `Out_{property}`,
 			apply = function(
 				scope: memory.Scope,
 				applyTo: Instance,

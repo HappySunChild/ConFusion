@@ -14,8 +14,8 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 	local key = keyCache[attribute]
 
 	if not key then
-		key = SpecialKey "AttributeOut" {
-			stage = "observer",
+		key = SpecialKey "observer" {
+			name = `AttributeOut_{attribute}`,
 			apply = function(
 				scope: memory.Scope,
 				applyTo: Instance,
