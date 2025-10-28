@@ -7,6 +7,25 @@ local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
 
+local function applyRef(ref: unknown, instance: Instance)
+	local ref_type = xtypeof(ref)
+
+	if ref_type == "Value" then
+		ref = ref :: calc.Value<Instance>
+		ref:set(instance)
+
+		return
+	elseif ref_type == "table" then
+		for _, sub_ref in ref do
+			applyRef(sub_ref, instance)
+		end
+
+		return
+	end
+
+	External.logError(instances.expectedType, nil, "Value", ref_type)
+end
+
 local Ref = SpecialKey "self" {
 	name = "Ref",
 	apply = function(
@@ -14,21 +33,7 @@ local Ref = SpecialKey "self" {
 		apply_to: Instance,
 		refs: { calc.Value<Instance> } | calc.Value<Instance>
 	)
-		if xtypeof(refs) == "Value" then
-			refs = refs :: calc.Value<Instance>
-			refs:set(apply_to)
-
-			return
-		end
-
-		refs = refs :: { calc.Value<Instance> }
-		for _, ref in refs do
-			if xtypeof(ref) ~= "Value" then
-				External.logError(instances.expectedType, nil, "Value", xtypeof(ref))
-			end
-
-			ref:set(apply_to)
-		end
+		applyRef(refs, apply_to)
 	end,
 }
 
