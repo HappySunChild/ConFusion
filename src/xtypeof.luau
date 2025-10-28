@@ -1,7 +1,7 @@
 local function xtypeof(value: any): string
 	local value_type = typeof(value)
 
-	if value_type == "table" then
+	if value_type == "table" and value.type ~= nil then
 		return value.type
 	end
 
