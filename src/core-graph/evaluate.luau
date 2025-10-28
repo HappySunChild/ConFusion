@@ -6,7 +6,7 @@ local xtypeof = require "../xtypeof"
 
 local castToGraph = require "./castToGraph"
 
-local function evaluate(target: graph.GraphObject, forceComputation: boolean?)
+local function evaluate(target: graph.GraphObject, force_computation: boolean?)
 	if not castToGraph(target) then
 		return External.logErrorNonFatal(graph.invalidEvaluateType, nil, xtypeof(target))
 	end
@@ -18,8 +18,8 @@ local function evaluate(target: graph.GraphObject, forceComputation: boolean?)
 	local first_evaluation = target._lastChange == nil or target._lastCompute == nil
 	local is_invalid = target.validity == "invalid"
 
-	if first_evaluation or is_invalid or forceComputation then
-		local needs_computation = first_evaluation or forceComputation
+	if first_evaluation or is_invalid or force_computation then
+		local needs_computation = first_evaluation or force_computation
 
 		-- check if computation is actually needed
 		if not needs_computation then

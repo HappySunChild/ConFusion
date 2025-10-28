@@ -34,19 +34,19 @@ local function checkDissolvable<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): (boolean, T?)
-	local dissolvingScope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolvingScope)
+	local dissolving_scope = innerScope(scope)
+	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
 
 	if success then
 		-- scope went unused, we can clean it up
-		if #dissolvingScope == 1 then
-			doCleanup(dissolvingScope)
+		if #dissolving_scope == 1 then
+			doCleanup(dissolving_scope)
 		end
 
 		return true, value
 	end
 
-	doCleanup(dissolvingScope)
+	doCleanup(dissolving_scope)
 
 	return false
 end

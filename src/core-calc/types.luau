@@ -16,10 +16,10 @@ export type Value<T> = {
 	type: "Value",
 	timeliness: "lazy",
 
-	set: (Value<T>, newValue: T) -> T,
+	set: (Value<T>, new_value: T) -> T,
 	update: (Value<T>, predicate: (T) -> T) -> T,
 } & StateObject<T>
-export type ValueConstructor = <T>(scope: memory.Scope, initialValue: T) -> Value<T>
+export type ValueConstructor = <T>(scope: memory.Scope, initial_value: T) -> Value<T>
 
 -- A state object whose value is derived from other objects using a callback.
 export type Computed<T> = {

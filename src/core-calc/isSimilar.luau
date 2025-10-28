@@ -1,4 +1,4 @@
-local function isSimilar(a: unknown, b: unknown)
+local function isSimilar(a: unknown, b: unknown): boolean
 	local type_a = typeof(a)
 	local is_table = type_a == "table"
 	local is_userdata = type_a == "userdata"

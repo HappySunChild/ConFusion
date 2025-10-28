@@ -68,8 +68,7 @@ local METATABLE = table.freeze { __index = class }
 
 local function Timer(scope: memory.Scope): chrono.Timer
 	local externaltime = ExternalTime(scope)
-
-	local newTimer = setmetatable({
+	local new_timer = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 		_internalValue = 0,
@@ -82,11 +81,11 @@ local function Timer(scope: memory.Scope): chrono.Timer
 		_timer = externaltime,
 	}, METATABLE) :: Self
 
-	table.insert(scope, destructor(newTimer))
+	table.insert(scope, destructor(new_timer))
 
-	depend(newTimer, externaltime)
+	depend(new_timer, externaltime)
 
-	return newTimer
+	return new_timer
 end
 
 return Timer

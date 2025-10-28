@@ -35,7 +35,7 @@ local class = table.freeze {
 local METATABLE = table.freeze { __index = class }
 
 local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
-	local newValue: Self<T> = setmetatable({
+	local new_value: Self<T> = setmetatable({
 		scope = scope,
 		createdAt = os.clock(),
 
@@ -44,9 +44,9 @@ local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 		_users = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newValue))
+	table.insert(scope, destructor(new_value))
 
-	return newValue
+	return new_value
 end
 
 return Value
