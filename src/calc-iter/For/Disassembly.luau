@@ -87,7 +87,7 @@ local class = table.freeze {
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
 		local outer_scope = self.scope :: memory.Scope
 
-		if castToState(self._input) then
+		if castToState(self._input) ~= nil then
 			depend(self, self._input)
 		end
 

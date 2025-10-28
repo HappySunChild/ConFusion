@@ -68,7 +68,7 @@ local class = table.freeze {
 
 		local next_goal = peek(goal)
 
-		if castToState(goal) then
+		if castToState(goal) ~= nil then
 			depend(self, goal)
 		end
 
@@ -81,7 +81,7 @@ local class = table.freeze {
 
 		local next_generator = peek(generator) :: motion.CurveGenerator<T>
 
-		if castToState(generator) then
+		if castToState(generator) ~= nil then
 			depend(self, generator :: any)
 		end
 

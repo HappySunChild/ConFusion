@@ -46,7 +46,7 @@ local Children = SpecialKey "descendants" {
 					if childInstance then
 						processChild(childInstance, name)
 					end
-				elseif castToState(child) then
+				elseif castToState(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then

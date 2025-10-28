@@ -50,7 +50,7 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 	local session_used = {}
 
 	local function use<T>(target: calc.UsedAs<T>): T
-		if castToState(target) then
+		if castToState(target) ~= nil then
 			depend(eventual, target)
 
 			session_used[target] = true

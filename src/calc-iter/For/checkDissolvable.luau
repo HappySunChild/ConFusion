@@ -21,7 +21,7 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		IV
 	) -> (OK?, OV?)
 ): (boolean, { [OK]: OV }?)
-	if castToState(input) then
+	if castToState(input) ~= nil then
 		return false, nil
 	end
 

@@ -8,7 +8,7 @@ local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
-	if castToGraph(dependency) then
+	if castToGraph(dependency) ~= nil then
 		evaluate(dependency)
 
 		if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
