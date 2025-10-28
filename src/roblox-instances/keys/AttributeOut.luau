@@ -8,12 +8,12 @@ local xtypeof = require "../../xtypeof"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeOut">
-	local key = keyCache[attribute]
+	local key = KEY_CACHE[attribute]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `AttributeOut_{attribute}`,
 			apply = function(
@@ -43,7 +43,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 			end,
 		}
 
-		keyCache[attribute] = key
+		KEY_CACHE[attribute] = key
 	end
 
 	return key

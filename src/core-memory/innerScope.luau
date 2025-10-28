@@ -12,7 +12,7 @@ local function innerScope<T>(
 	table.insert(inner, function()
 		local index = table.find(existing, inner)
 
-		if index then
+		if index ~= nil then
 			table.remove(existing, index)
 		end
 	end)

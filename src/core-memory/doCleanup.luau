@@ -3,14 +3,14 @@ local memory = require "./types"
 local External = require "../core-external/External"
 local ExternalDebug = require "../core-external/ExternalDebug"
 
-local active = {}
+local ACTIVE_TASKS = {}
 
 local function doCleanup(cleanup_task: memory.CleanupTask)
-	if active[cleanup_task] then
+	if ACTIVE_TASKS[cleanup_task] ~= nil then
 		External.logError(memory.destroyedTwice)
 	end
 
-	active[cleanup_task] = true
+	ACTIVE_TASKS[cleanup_task] = true
 
 	local task_type = typeof(cleanup_task)
 
@@ -34,7 +34,7 @@ local function doCleanup(cleanup_task: memory.CleanupTask)
 		end
 	end
 
-	active[cleanup_task] = nil
+	ACTIVE_TASKS[cleanup_task] = nil
 end
 
 return doCleanup

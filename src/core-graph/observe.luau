@@ -37,7 +37,7 @@ local function observe(
 
 		local index = table.find(scope, disconnect)
 
-		if index then
+		if index ~= nil then
 			table.remove(scope, index)
 		end
 	end

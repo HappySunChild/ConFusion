@@ -8,18 +8,18 @@ local defaultProperties = require "./defaultProperties"
 
 local function New(
 	scope: memory.Scope,
-	className: string
-): (props: instances.Properties) -> Instance
-	local success, new_instance = pcall(Instance.new, className, nil) -- ok
+	class_name: string
+): (instances.Properties) -> Instance
+	local success, new_instance = pcall(Instance.new, class_name, nil) -- ok
 
 	if not success then
-		External.logError(instances.cannotCreateClass, nil, className)
+		External.logError(instances.cannotCreateClass, nil, class_name)
 	end
 
-	local classProps = defaultProperties[className]
+	local default_class_properties = defaultProperties[class_name]
 
-	if classProps then
-		for key, value in classProps do
+	if default_class_properties ~= nil then
+		for key, value in default_class_properties do
 			new_instance[key] = value
 		end
 	end

@@ -14,7 +14,7 @@ local function FromTemplate<InstanceT>(
 
 	local new_instance = template:Clone()
 
-	if not new_instance then
+	if new_instance == nil then
 		External.logError(templates.cannotCreateTemplate, nil, template:GetFullName())
 	end
 

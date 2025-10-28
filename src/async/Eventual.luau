@@ -64,17 +64,19 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 
 		eventual._internalValue = targetValue
 
-		if eventual.validity ~= "busy" then
-			eventual._becomeValue = become_value
-			eventual._isBecoming = true
+		if eventual.validity == "busy" then
+			return
+		end
 
-			change(eventual)
+		eventual._becomeValue = become_value
+		eventual._isBecoming = true
 
-			eventual._becomeValue = nil
+		change(eventual)
 
-			for target in session_used do
-				depend(eventual, target)
-			end
+		eventual._becomeValue = nil
+
+		for target in session_used do
+			depend(eventual, target)
 		end
 	end
 

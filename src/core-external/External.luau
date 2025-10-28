@@ -21,7 +21,7 @@ return table.freeze {
 			old_provider.stopScheduler()
 		end
 
-		if new_provider then
+		if new_provider ~= nil then
 			new_provider.startScheduler()
 		end
 
@@ -56,14 +56,14 @@ return table.freeze {
 	end,
 
 	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
-		if not active_provider then
+		if active_provider == nil then
 			logError(external.missingProvider)
 		end
 
 		return active_provider.doTaskImmediate(resume, ...)
 	end,
 	doTaskDeferred = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
-		if not active_provider then
+		if active_provider == nil then
 			logError(external.missingProvider)
 		end
 
@@ -74,14 +74,14 @@ return table.freeze {
 		resume: (A...) -> () | thread,
 		...: A...
 	): thread?
-		if not active_provider then
+		if active_provider == nil then
 			logError(external.missingProvider)
 		end
 
 		return active_provider.doTaskDelayed(sec, resume, ...)
 	end,
 	cancelTask = function(task: thread): boolean
-		if not active_provider then
+		if active_provider == nil then
 			logError(external.missingProvider)
 		end
 
@@ -92,7 +92,7 @@ return table.freeze {
 	logErrorNonFatal = function(message: string, err: logging.Error?, ...: any?)
 		local formatted_message = formatError(message, err, ...)
 
-		if active_provider then
+		if active_provider ~= nil then
 			active_provider.logErrorNonFatal(formatted_message)
 		else
 			print(formatted_message)
@@ -101,7 +101,7 @@ return table.freeze {
 	logWarn = function(message: string, ...: any?)
 		local formatted_message = formatError(message, debug.traceback(nil, 2), ...)
 
-		if active_provider then
+		if active_provider ~= nil then
 			active_provider.logWarn(formatted_message)
 		else
 			print(formatted_message)

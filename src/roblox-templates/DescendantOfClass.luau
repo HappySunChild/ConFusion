@@ -11,7 +11,7 @@ local function DescendantOfClass(scope: memory.Scope, class_name: string)
 		return function(parent: Instance)
 			local child = parent:FindFirstChildWhichIsA(class_name, true)
 
-			if not child then
+			if child == nil then
 				External.logErrorNonFatal(
 					templates.missingDescendantClass,
 					nil,

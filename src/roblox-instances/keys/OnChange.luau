@@ -5,12 +5,12 @@ local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function OnChange(property: string): instances.SpecialKey<"OnChange">
-	local key = keyCache[property]
+	local key = KEY_CACHE[property]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `OnChange_{property}`,
 			apply = function(
@@ -39,7 +39,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 			end,
 		}
 
-		keyCache[property] = key
+		KEY_CACHE[property] = key
 	end
 
 	return key

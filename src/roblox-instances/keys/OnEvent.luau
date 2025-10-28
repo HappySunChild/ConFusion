@@ -9,12 +9,12 @@ local function getProperty(instance: Instance, key: string)
 	return instance[key]
 end
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
-	local key = keyCache[event_name]
+	local key = KEY_CACHE[event_name]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `OnEvent_{event_name}`,
 			apply = function(
@@ -37,7 +37,7 @@ local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
 			end,
 		}
 
-		keyCache[event_name] = key
+		KEY_CACHE[event_name] = key
 	end
 
 	return key

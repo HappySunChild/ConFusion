@@ -31,7 +31,7 @@ local function setProperty(instance: Instance, property: string, value: any)
 		return
 	end
 
-	if not pcall(testPropertyAssignable, instance, property) then
+	if pcall(testPropertyAssignable, instance, property) == false then
 		External.logErrorNonFatal(
 			instances.propertyCannotAssign,
 			nil,

@@ -3,12 +3,12 @@ local memory = require "../../core-memory/types"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function AttributeChange(attribute: string): instances.SpecialKey<"AttributeChange">
-	local key = keyCache[attribute]
+	local key = KEY_CACHE[attribute]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `AttributeChanged_{attribute}`,
 			apply = function(
@@ -27,7 +27,7 @@ local function AttributeChange(attribute: string): instances.SpecialKey<"Attribu
 			end,
 		}
 
-		keyCache[attribute] = key
+		KEY_CACHE[attribute] = key
 	end
 
 	return key

@@ -11,7 +11,7 @@ local function OfName(scope: memory.Scope, name: string)
 		return function(parent: Instance)
 			local child = parent:FindFirstChild(name)
 
-			if not child then
+			if child == nil then
 				External.logErrorNonFatal(templates.missingChild, nil, name, parent.Name)
 
 				return

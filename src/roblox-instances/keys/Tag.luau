@@ -8,12 +8,12 @@ local peek = require "../../core-use/peek"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function Tag(tag: string): instances.SpecialKey<"Tag">
-	local key = keyCache[tag]
+	local key = KEY_CACHE[tag]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "self" {
 			name = `Tag_{tag}`,
 			apply = function(
@@ -33,7 +33,7 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 			end,
 		}
 
-		keyCache[tag] = key
+		KEY_CACHE[tag] = key
 	end
 
 	return key

@@ -11,7 +11,7 @@ local function OfClass(scope: memory.Scope, class_name: string)
 		return function(parent: Instance)
 			local child = parent:FindFirstChildWhichIsA(class_name)
 
-			if not child then
+			if child == nil then
 				External.logErrorNonFatal(
 					templates.missingChildClass,
 					nil,
