@@ -13,7 +13,7 @@ local peek = require "../core-use/peek"
 local kindof = require "../kindof"
 local xtypeof = require "../xtypeof"
 
-local Parent = require "./keys/_Parent"
+local Parent = require "./keys/Parent"
 local sortKeys = require "./keys/sortKeys"
 
 local function rawSetProperty(instance: Instance, property: string, value: any)
