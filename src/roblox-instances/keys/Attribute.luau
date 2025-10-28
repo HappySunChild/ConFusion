@@ -4,8 +4,6 @@ local memory = require "../../core-memory/types"
 
 local observe = require "../../core-graph/observe"
 
-local castToState = require "../../core-calc/castToState"
-
 local peek = require "../../core-use/peek"
 
 local SpecialKey = require "./SpecialKey"
@@ -23,13 +21,9 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 				apply_to: Instance,
 				value: calc.UsedAs<any>
 			)
-				if castToState(value) then
-					observe(scope, value, function()
-						apply_to:SetAttribute(attribute, peek(value))
-					end)
-				end
-
-				apply_to:SetAttribute(attribute, peek(value))
+				observe(scope, value, function()
+					apply_to:SetAttribute(attribute, peek(value))
+				end, true)
 			end,
 		}
 
