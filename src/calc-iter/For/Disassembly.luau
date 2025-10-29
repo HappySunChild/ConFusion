@@ -34,7 +34,7 @@ local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, I
 	end
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Disassembly",
 	kind = "graph",
 	timeliness = "eager",
@@ -156,7 +156,7 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Disassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,

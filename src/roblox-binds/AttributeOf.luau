@@ -5,7 +5,7 @@ local destructor = require "../core-memory/destructor"
 
 local change = require "../core-graph/change"
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "AttributeOf",
 	kind = "state",
 	timeliness = "lazy",
@@ -15,7 +15,7 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function AttributeOf(
 	scope: memory.Scope,

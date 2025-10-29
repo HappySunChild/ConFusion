@@ -51,7 +51,7 @@ local function checkDissolvable<T, S>(
 	return false
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Computed",
 	kind = "state",
 	timeliness = "lazy",
@@ -88,7 +88,7 @@ local class = table.freeze {
 		return false
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Computed<T, S>(
 	scope: memory.Scope<S>,

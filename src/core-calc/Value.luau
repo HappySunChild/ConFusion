@@ -9,7 +9,7 @@ local isSimilar = require "./isSimilar"
 
 type Self<T> = calc.Value<T>
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Value",
 	kind = "state",
 	timeliness = "lazy",
@@ -32,7 +32,7 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 	local new_value: Self<T> = setmetatable({

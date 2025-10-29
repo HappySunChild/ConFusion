@@ -10,8 +10,8 @@ type Self<T> = context.Contextual<T> & {
 	_values: { [thread]: { T } },
 }
 
-local class = table.freeze {
-	class = "Contextual",
+local CLASS = table.freeze {
+	type = "Contextual",
 	kind = "contextual",
 
 	now = function<T>(self: Self<T>): T
@@ -41,7 +41,7 @@ local class = table.freeze {
 		return value
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 local WEAK_KEYS_METATABLE = table.freeze { __mode = "k" }
 
 local function Contextual<T>(default: T): context.Contextual<T>

@@ -21,7 +21,7 @@ local function auxiliaryDestructor(externalTime: Self)
 	end
 end
 
-local class = {
+local CLASS = {
 	type = "ExternalTime",
 	kind = "state",
 	timeliness = "lazy",
@@ -38,7 +38,7 @@ local class = {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({
@@ -56,7 +56,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 end
 
 External.bindToUpdateStep(function(now: number)
-	class._internalValue = now
+	CLASS._internalValue = now
 
 	for _, timer in ALL_TIMERS do
 		if timer:isActive() then

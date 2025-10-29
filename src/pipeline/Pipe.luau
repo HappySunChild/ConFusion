@@ -20,7 +20,7 @@ type Self<S, T> = pipeline.Pipe<S, T> & {
 	_internalScope: memory.Scope<S>,
 }
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Pipe",
 	kind = "pipe",
 
@@ -86,7 +86,7 @@ local class = table.freeze {
 		return self._latest
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Pipe<S, T>(
 	scope: memory.Scope<S>,

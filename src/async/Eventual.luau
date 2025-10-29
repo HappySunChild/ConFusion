@@ -83,7 +83,7 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 	return use, become
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Eventual",
 	kind = "state",
 	timeliness = "eager",
@@ -152,7 +152,7 @@ local class = table.freeze {
 		return not isSimilar(self._internalValue, self._pendingValue)
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,

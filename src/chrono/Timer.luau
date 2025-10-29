@@ -16,7 +16,7 @@ type Self = chrono.Timer & {
 	_timer: chrono.ExternalTime,
 }
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Timer",
 	kind = "state",
 	timeliness = "lazy",
@@ -64,7 +64,7 @@ local class = table.freeze {
 		return old_value ~= new_value
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Timer(scope: memory.Scope): chrono.Timer
 	local externaltime = ExternalTime(scope)

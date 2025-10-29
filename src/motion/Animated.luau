@@ -46,7 +46,7 @@ local function syncFromCurve<T>(
 	return output, should_sleep
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Animated",
 	kind = "state",
 	timeliness = "eager",
@@ -132,7 +132,7 @@ local class = table.freeze {
 		return (old_value :: any) ~= (new_value :: any)
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Animated<T>(
 	scope: memory.Scope,

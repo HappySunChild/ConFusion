@@ -15,7 +15,7 @@ type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
 	_use: calc.Use,
 }
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "For",
 	kind = "state",
 	timeliness = "lazy",
@@ -37,7 +37,7 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function For<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,

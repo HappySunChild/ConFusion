@@ -2,11 +2,11 @@ local tweens = require "./types"
 
 local EasingStyles = require "./EasingStyles"
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "TweenInfo",
 	kind = "tweeninfo",
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function TweenInfo(info: {
 	easingStyle: ((number) -> number)?,
