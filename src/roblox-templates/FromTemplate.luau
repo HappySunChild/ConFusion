@@ -3,7 +3,6 @@ local memory = require "../core-memory/types"
 local templates = require "./types"
 
 local External = require "../core-external/External"
-
 local Hydrate = require "../roblox-instances/Hydrate"
 
 local function FromTemplate<InstanceT>(

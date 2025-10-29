@@ -4,18 +4,13 @@ local memory = require "../core-memory/types"
 local motion = require "./types"
 
 local External = require "../core-external/External"
-
+local Timer = require "../chrono/Timer"
+local castToState = require "../core-calc/castToState"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
-
 local destructor = require "../core-memory/destructor"
-
-local castToState = require "../core-calc/castToState"
-
+local evaluate = require "../core-graph/evaluate"
 local peek = require "../core-use/peek"
-
-local Timer = require "../chrono/Timer"
 
 type Self<T> = motion.Animated<T> & {
 	_goal: calc.UsedAs<T>,

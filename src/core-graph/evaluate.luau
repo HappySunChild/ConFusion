@@ -1,10 +1,8 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-
-local xtypeof = require "../xtypeof"
-
 local castToGraph = require "./castToGraph"
+local xtypeof = require "../xtypeof"
 
 local function evaluate(target: graph.GraphObject, force_computation: boolean?)
 	if not castToGraph(target) then

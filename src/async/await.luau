@@ -2,7 +2,6 @@ local async = require "./types"
 local graph = require "../core-graph/types"
 
 local External = require "../core-external/External"
-
 local castToGraph = require "../core-graph/castToGraph"
 local observe = require "../core-graph/observe"
 

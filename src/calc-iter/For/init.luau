@@ -2,13 +2,10 @@ local calc = require "../core-calc/types"
 local iter = require "./types"
 local memory = require "../core-memory/types"
 
-local destructor = require "../core-memory/destructor"
-
-local depend = require "../core-graph/depend"
-
-local genericUse = require "../core-use/genericUse"
-
 local Disassembly = require "@self/Disassembly"
+local depend = require "../core-graph/depend"
+local destructor = require "../core-memory/destructor"
+local genericUse = require "../core-use/genericUse"
 
 type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
 	_disassembly: iter.Disassembly<S, IK, IV, OK, OV>,

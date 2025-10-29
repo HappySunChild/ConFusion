@@ -3,17 +3,13 @@ local iter = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local External = require "../core-external/External"
-
 local Computed = require "../core-calc/Computed"
-local Value = require "../core-calc/Value"
-
-local doCleanup = require "../core-memory/doCleanup"
-
-local parseError = require "../core-logging/parseError"
-
+local External = require "../core-external/External"
 local For = require "./For"
+local Value = require "../core-calc/Value"
 local checkDissolvable = require "./For/checkDissolvable"
+local doCleanup = require "../core-memory/doCleanup"
+local parseError = require "../core-logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {

@@ -2,9 +2,7 @@ local chrono = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
 local change = require "../core-graph/change"
-
 local destructor = require "../core-memory/destructor"
 
 type Self = chrono.ExternalTime & {

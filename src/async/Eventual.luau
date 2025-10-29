@@ -4,21 +4,16 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
+local castToState = require "../core-calc/castToState"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
-
-local castToState = require "../core-calc/castToState"
-local isSimilar = require "../core-calc/isSimilar"
-
-local peek = require "../core-use/peek"
-
 local deriveScope = require "../core-memory/deriveScope"
 local destructor = require "../core-memory/destructor"
 local doCleanup = require "../core-memory/doCleanup"
-
+local evaluate = require "../core-graph/evaluate"
+local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
+local peek = require "../core-use/peek"
 
 type Self<T, S> = async.Eventual<T> & {
 	_innerScope: memory.Scope<S>,

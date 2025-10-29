@@ -1,9 +1,8 @@
 local instances = require "./types"
 local memory = require "../core-memory/types"
 
-local destructor = require "../core-memory/destructor"
-
 local change = require "../core-graph/change"
+local destructor = require "../core-memory/destructor"
 
 local CLASS = table.freeze {
 	type = "AttributeOf",

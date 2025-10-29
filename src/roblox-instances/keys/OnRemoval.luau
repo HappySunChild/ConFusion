@@ -1,8 +1,7 @@
 local memory = require "../../core-memory/types"
 
-local doCleanup = require "../../core-memory/doCleanup"
-
 local SpecialKey = require "./SpecialKey"
+local doCleanup = require "../../core-memory/doCleanup"
 
 return SpecialKey "observer" {
 	name = "OnRemoval",

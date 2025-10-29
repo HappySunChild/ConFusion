@@ -1,11 +1,9 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-
-local nameOf = require "../core-logging/nameOf"
-
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
+local nameOf = require "../core-logging/nameOf"
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
 	if castToGraph(dependency) ~= nil then

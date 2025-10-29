@@ -3,7 +3,6 @@ local memory = require "../core-memory/types"
 local templates = require "./types"
 
 local External = require "../core-external/External"
-
 local applyProperties = require "../roblox-instances/applyProperties"
 
 local function OfName(scope: memory.Scope, name: string)

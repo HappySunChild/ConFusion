@@ -3,18 +3,14 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
-local parseError = require "../core-logging/parseError"
-
-local dissolvingUse = require "../core-use/dissolvingUse"
-local genericUse = require "../core-use/genericUse"
-
 local deriveScope = require "../core-memory/deriveScope"
 local destructor = require "../core-memory/destructor"
+local dissolvingUse = require "../core-use/dissolvingUse"
 local doCleanup = require "../core-memory/doCleanup"
+local genericUse = require "../core-use/genericUse"
 local innerScope = require "../core-memory/innerScope"
-
 local isSimilar = require "./isSimilar"
+local parseError = require "../core-logging/parseError"
 
 type Self<T, S> = calc.Computed<T> & {
 	_innerScope: memory.Scope<S>?,

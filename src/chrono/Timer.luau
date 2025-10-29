@@ -1,14 +1,11 @@
 local chrono = require "./types"
 local memory = require "../core-memory/types"
 
-local peek = require "../core-use/peek"
-
+local ExternalTime = require "./ExternalTime"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-
 local destructor = require "../core-memory/destructor"
-
-local ExternalTime = require "./ExternalTime"
+local peek = require "../core-use/peek"
 
 type Self = chrono.Timer & {
 	_paused: boolean,

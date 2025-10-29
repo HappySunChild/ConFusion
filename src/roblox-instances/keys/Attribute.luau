@@ -2,11 +2,9 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 local memory = require "../../core-memory/types"
 
-local observe = require "../../core-graph/observe"
-
-local peek = require "../../core-use/peek"
-
 local SpecialKey = require "./SpecialKey"
+local observe = require "../../core-graph/observe"
+local peek = require "../../core-use/peek"
 
 local KEY_CACHE = {}
 

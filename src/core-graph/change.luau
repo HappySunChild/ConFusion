@@ -1,7 +1,6 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 

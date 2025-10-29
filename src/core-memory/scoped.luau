@@ -1,7 +1,6 @@
 local memory = require "./types"
 
 local ExternalDebug = require "../core-external/ExternalDebug"
-
 local merge = require "./merge"
 
 local function scoped(

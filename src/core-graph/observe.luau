@@ -2,12 +2,10 @@ local graph = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
-local nameOf = require "../core-logging/nameOf"
-local nicknames = require "../core-logging/nicknames"
-
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
+local nameOf = require "../core-logging/nameOf"
+local nicknames = require "../core-logging/nicknames"
 
 local function observe(
 	scope: memory.Scope,

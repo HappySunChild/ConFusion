@@ -3,12 +3,9 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
-local observe = require "../../core-graph/observe"
-
-local peek = require "../../core-use/peek"
-
 local SpecialKey = require "./SpecialKey"
+local observe = require "../../core-graph/observe"
+local peek = require "../../core-use/peek"
 
 local function setParent(instance: Instance, parent: Instance?)
 	local success, err = pcall(function()

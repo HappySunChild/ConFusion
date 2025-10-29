@@ -3,16 +3,12 @@ local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
+local castToState = require "../../core-calc/castToState"
+local depend = require "../../core-graph/depend"
 local deriveScope = require "../../core-memory/deriveScope"
 local destructor = require "../../core-memory/destructor"
 local doCleanup = require "../../core-memory/doCleanup"
-
 local peek = require "../../core-use/peek"
-
-local depend = require "../../core-graph/depend"
-
-local castToState = require "../../core-calc/castToState"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,

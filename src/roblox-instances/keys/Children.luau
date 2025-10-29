@@ -2,16 +2,11 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
-local observe = require "../../core-graph/observe"
-
-local castToState = require "../../core-calc/castToState"
-
-local peek = require "../../core-use/peek"
-
-local doCleanup = require "../../core-memory/doCleanup"
-
 local SpecialKey = require "./SpecialKey"
+local castToState = require "../../core-calc/castToState"
+local doCleanup = require "../../core-memory/doCleanup"
+local observe = require "../../core-graph/observe"
+local peek = require "../../core-use/peek"
 
 local Children = SpecialKey "descendants" {
 	name = "Children",
