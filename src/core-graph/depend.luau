@@ -6,25 +6,25 @@ local evaluate = require "./evaluate"
 local nameOf = require "../core-logging/nameOf"
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
-	if castToGraph(dependency) ~= nil then
-		evaluate(dependency)
-
-		if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
-			return External.logError(
-				graph.cannotDepend,
-				nil,
-				nameOf(user, "User"),
-				table.isfrozen(user._using) and "FROZEN" or "NOT FROZEN",
-				nameOf(dependency, "Dependency"),
-				table.isfrozen(dependency._users) and "FROZEN" or "NOT FROZEN"
-			)
-		end
-
-		user._using[dependency] = true
-		dependency._users[user] = true
+	if castToGraph(dependency) == nil then
+		return
 	end
 
-	return dependency
+	evaluate(dependency)
+
+	if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
+		External.logError(
+			graph.cannotDepend,
+			nil,
+			nameOf(user, "User"),
+			table.isfrozen(user._using) and "FROZEN" or "NOT FROZEN",
+			nameOf(dependency, "Dependency"),
+			table.isfrozen(dependency._users) and "FROZEN" or "NOT FROZEN"
+		)
+	end
+
+	user._using[dependency] = true
+	dependency._users[user] = true
 end
 
 return depend
