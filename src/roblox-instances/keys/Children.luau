@@ -24,7 +24,7 @@ local Children = SpecialKey "descendants" {
 				if child_type == "Instance" then
 					new_children[child] = true
 
-					if old_children[child] ~= nil then
+					if old_children[child] == nil then
 						if child.Parent == nil then
 							child.Parent = apply_to
 						end
@@ -71,7 +71,7 @@ local Children = SpecialKey "descendants" {
 				end
 			end
 
-			if children then
+			if children ~= nil then
 				processChild(children)
 			end
 
