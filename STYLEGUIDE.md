@@ -32,6 +32,8 @@ local someOtherUtility = require "..."
 -- rest of the file...
 ```
 
+> [!NOTE]
+> Files that utilize Roblox services should define the services before any requires! Services take precedence over requires, in terms of where they are in the file structure.
 
 ## Structuring Classes
 Classes should always be structured like so:
