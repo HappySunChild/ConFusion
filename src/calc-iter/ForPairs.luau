@@ -13,16 +13,16 @@ local parseError = require "../core-logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {
-		roamKeys = false,
-		roamValues = false,
+		roam_keys = false,
+		roam_values = false,
 		invalidateInputKey = function(self): ()
-			self._inputKeyState:set(self.inputKey)
+			self._input_key_state:set(self.input_key)
 		end,
 		invalidateInputValue = function(self): ()
-			self._inputValueState:set(self.inputValue)
+			self._input_value_state:set(self.input_value)
 		end,
 		useOutputPair = function(self, use)
-			local pair = use(self._outputPairState)
+			local pair = use(self._output_pair_state)
 			return pair.key, pair.value
 		end,
 	},
@@ -30,22 +30,22 @@ local SUB_OBJECT_META = table.freeze {
 
 local function SubObject<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
-	initialKey: IK,
-	initialValue: IV,
+	initial_key: IK,
+	initial_value: IV,
 	processor: iter.ForPairsProcessor<S, IK, IV, OK, OV>
 ): iter.SubObject<S, IK, IV, OK, OV>
 	local object = setmetatable({
 		scope = scope,
-		inputKey = initialKey,
-		inputValue = initialValue,
+		input_key = initial_key,
+		input_value = initial_value,
 
-		_inputValueState = Value(scope, initialValue),
-		_inputKeyState = Value(scope, initialKey),
+		_input_value_state = Value(scope, initial_value),
+		_input_key_state = Value(scope, initial_key),
 	}, SUB_OBJECT_META)
 
-	object._outputPairState = Computed(scope, function(use, scope)
-		local input_key = use(object._inputKeyState)
-		local input_value = use(object._inputValueState)
+	object._output_pair_state = Computed(scope, function(use, scope)
+		local input_key = use(object._input_key_state)
+		local input_value = use(object._input_value_state)
 		local ok, output_key, output_value =
 			xpcall(processor, parseError, use, scope, input_key, input_value)
 

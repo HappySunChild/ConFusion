@@ -14,14 +14,15 @@ local peek = require "../core-use/peek"
 
 type Self<T> = motion.Animated<T> & {
 	_goal: calc.UsedAs<T>,
-	_activeGoal: T,
+	_generator: calc.UsedAs<motion.CurveGenerator<T>>,
 
-	_activeDynamics: { any },
 	_regenerate: boolean?,
 
-	_generator: calc.UsedAs<motion.CurveGenerator<T>>,
-	_activeGenerator: motion.CurveGenerator<T>,
-	_activeCurve: motion.AnimationCurve<T>,
+	_active_goal: T,
+	_active_dynamics: { any },
+
+	_active_generator: motion.CurveGenerator<T>,
+	_active_curve: motion.AnimationCurve<T>,
 
 	_timer: chrono.Timer,
 }
@@ -47,13 +48,13 @@ local CLASS = table.freeze {
 	timeliness = "eager",
 
 	setDynamic = function<T>(self: Self<T>, index: number, value: any)
-		self._activeDynamics[index] = value
+		self._active_dynamics[index] = value
 		self._regenerate = true
 
 		change(self)
 	end,
 	getDynamic = function<T>(self: Self<T>, index: number)
-		return self._activeDynamics[index]
+		return self._active_dynamics[index]
 	end,
 	_evaluate = function<T>(self: Self<T>)
 		local goal = self._goal
@@ -84,17 +85,17 @@ local CLASS = table.freeze {
 
 		-- wake
 		if
-			next_goal ~= self._activeGoal :: any
-			or next_generator ~= self._activeGenerator
+			next_goal ~= self._active_goal :: any
+			or next_generator ~= self._active_generator
 			or self._regenerate == true
 		then
 			self._regenerate = nil
 
-			self._activeGoal = next_goal
+			self._active_goal = next_goal
 
-			self._activeGenerator = next_generator
-			self._activeCurve =
-				next_generator(self._activeGoal, unpack(self._activeDynamics))
+			self._active_generator = next_generator
+			self._active_curve =
+				next_generator(self._active_goal, unpack(self._active_dynamics))
 
 			timer:reset()
 			timer:unpause()
@@ -107,18 +108,18 @@ local CLASS = table.freeze {
 			elapsed = External.getDeltaTime()
 		end
 
-		local old_value = self._internalValue :: any
+		local old_value = self._internal_value :: any
 		local new_value, should_sleep =
-			syncFromCurve(self._activeDynamics, self._activeCurve(elapsed))
+			syncFromCurve(self._active_dynamics, self._active_curve(elapsed))
 
 		if (new_value :: any) ~= (new_value :: any) then
-			External.logWarn(motion.animatedInvalidMotion, new_value, self._activeGoal)
+			External.logWarn(motion.animatedInvalidMotion, new_value, self._active_goal)
 
-			new_value = self._activeGoal
+			new_value = self._active_goal
 		end
 
-		self._activeDynamics[1] = new_value
-		self._internalValue = new_value
+		self._active_dynamics[1] = new_value
+		self._internal_value = new_value
 
 		if should_sleep then
 			timer:pause()
@@ -136,21 +137,21 @@ local function Animated<T>(
 ): motion.Animated<T>
 	local new_animated: Self<T> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
-		_internalValue = nil,
+		_internal_value = nil,
 
 		_using = {},
 		_users = {},
 
 		_goal = goal,
-		_activeGoal = nil,
+		_active_goal = nil,
 
-		_activeDynamics = { peek(goal) },
+		_active_dynamics = { peek(goal) },
 
 		_generator = mover,
-		_activeGenerator = nil,
-		_activeCurve = nil,
+		_active_generator = nil,
+		_active_curve = nil,
 
 		_timer = Timer(scope),
 	}, METATABLE) :: any

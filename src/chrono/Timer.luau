@@ -40,7 +40,7 @@ local CLASS = table.freeze {
 	end,
 	reset = function(self: Self)
 		self._start = peek(self._timer) :: number
-		self._internalValue = 0
+		self._internal_value = 0
 
 		change(self)
 	end,
@@ -53,10 +53,10 @@ local CLASS = table.freeze {
 
 		local now = peek(self._timer) :: number
 
-		local old_value = self._internalValue
+		local old_value = self._internal_value
 		local new_value = now - self._start
 
-		self._internalValue = new_value
+		self._internal_value = new_value
 
 		return old_value ~= new_value
 	end,
@@ -67,8 +67,8 @@ local function Timer(scope: memory.Scope): chrono.Timer
 	local externaltime = ExternalTime(scope)
 	local new_timer = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
-		_internalValue = 0,
+		created_at = os.clock(),
+		_internal_value = 0,
 
 		_paused = false,
 		_start = peek(externaltime),

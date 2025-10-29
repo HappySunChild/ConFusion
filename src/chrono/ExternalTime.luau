@@ -24,7 +24,7 @@ local CLASS = {
 	kind = "state",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internalValue = External.getLastUpdate(),
+	_internal_value = External.getLastUpdate(),
 
 	setActive = function(self: Self, active: boolean)
 		self._active = active
@@ -41,7 +41,7 @@ local METATABLE = table.freeze { __index = CLASS }
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 		_active = true,
@@ -54,7 +54,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 end
 
 External.bindToUpdateStep(function(now: number)
-	CLASS._internalValue = now
+	CLASS._internal_value = now
 
 	for _, timer in ALL_TIMERS do
 		if timer:isActive() then

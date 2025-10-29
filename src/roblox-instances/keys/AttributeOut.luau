@@ -16,7 +16,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 			name = `AttributeOut_{attribute}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
@@ -28,12 +28,12 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 					)
 				end
 
-				local event = applyTo:GetAttributeChangedSignal(attribute)
+				local event = apply_to:GetAttributeChangedSignal(attribute)
 
 				table.insert(
 					scope,
 					event:Connect(function()
-						value:set(applyTo:GetAttribute(attribute))
+						value:set(apply_to:GetAttribute(attribute))
 					end)
 				)
 

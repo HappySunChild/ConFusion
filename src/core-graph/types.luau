@@ -7,12 +7,12 @@ export type GraphObject = {
 	type: string?,
 	kind: string?,
 
-	createdAt: number?,
+	created_at: number?,
 	validity: Validity?,
 	timeliness: Timeliness,
 
-	_lastChange: number?,
-	_lastCompute: number?,
+	_last_change: number?,
+	_last_compute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
 	_observers: { [{}]: () -> () }?,

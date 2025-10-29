@@ -18,7 +18,7 @@ local function springMover<T>(
 
 	local active_type = ""
 
-	return function(
+	local curve_generator = function(
 		target_position: T,
 		initial_position: T,
 		initial_velocity: { number }?
@@ -41,8 +41,7 @@ local function springMover<T>(
 
 		local current_p = table.clone(start_p)
 
-		-- spring stepper
-		return function(elapsed: number): (boolean, T, { number })
+		local new_curve = function(elapsed: number): (boolean, T, { number })
 			local should_sleep = false
 			local new_value
 
@@ -72,9 +71,9 @@ local function springMover<T>(
 						is_moving = true
 					end
 
-					local latestP = latest_d + target_p
+					local latest_p = latest_d + target_p
 
-					current_p[index] = latestP
+					current_p[index] = latest_p
 					current_v[index] = latest_v
 				end
 
@@ -90,7 +89,11 @@ local function springMover<T>(
 
 			return should_sleep, new_value, current_v
 		end
+
+		return new_curve
 	end
+
+	return curve_generator
 end
 
 local function Spring<T>(

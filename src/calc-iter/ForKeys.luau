@@ -13,16 +13,16 @@ local parseError = require "../core-logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {
-		roamKeys = false,
-		roamValues = true,
+		roam_keys = false,
+		roam_values = true,
 		invalidateInputKey = function(self): ()
-			self._inputKeyState:set(self.inputKey)
+			self._input_key_state:set(self.input_key)
 		end,
 		invalidateInputValue = function(_): ()
 			-- do nothing
 		end,
 		useOutputPair = function(self, use)
-			return use(self._outputKeyState), self.inputValue
+			return use(self._output_key_state), self.input_value
 		end,
 	},
 }
@@ -35,14 +35,14 @@ local function SubObject<S, IK, IV, OK>(
 ): iter.SubObject<S, IK, IV, OK, IV>
 	local object = setmetatable({
 		scope = scope,
-		inputKey = initial_key,
-		inputValue = initial_value,
+		input_key = initial_key,
+		input_value = initial_value,
 
-		_inputKeyState = Value(scope, initial_key),
+		_input_key_state = Value(scope, initial_key),
 	}, SUB_OBJECT_META)
 
-	object._outputKeyState = Computed(scope, function(use, scope)
-		local input_key = use(object._inputKeyState)
+	object._output_key_state = Computed(scope, function(use, scope)
+		local input_key = use(object._input_key_state)
 		local ok, output_key = xpcall(processor, parseError, use, scope, input_key)
 
 		if ok then

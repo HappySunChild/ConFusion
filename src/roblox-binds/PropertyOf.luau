@@ -37,17 +37,17 @@ local function PropertyOf(
 
 	local new_property: binds.PropertyOf<unknown> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 
-		_internalValue = instance[property],
+		_internal_value = instance[property],
 	}, METATABLE) :: any
 
 	table.insert(scope, {
 		destructor(new_property),
 		event:Connect(function()
-			new_property._internalValue = instance[property]
+			new_property._internal_value = instance[property]
 
 			change(new_property)
 		end),

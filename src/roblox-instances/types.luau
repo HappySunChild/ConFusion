@@ -14,7 +14,7 @@ export type SpecialKey<T = string> = {
 	kind: "key",
 	stage: SpecialKeyStage,
 
-	apply: (scope: memory.Scope, instance: Instance, value: any) -> (),
+	apply: (scope: memory.Scope, instance: Instance, value: unknown) -> (),
 }
 
 export type Properties = { [any]: any }

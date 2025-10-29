@@ -69,7 +69,7 @@ local function change(target: graph.GraphObject)
 	until done
 
 	table.sort(eager_users, function(a, b)
-		return a.createdAt < b.createdAt
+		return a.created_at < b.created_at
 	end)
 
 	fireNodeObservers(target)

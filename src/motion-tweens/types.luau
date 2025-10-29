@@ -41,19 +41,19 @@ export type TweenInfo = {
 	type: "TweenInfo",
 	kind: "tweeninfo",
 
-	easingStyle: (number) -> number,
+	easing_style: (number) -> number,
 	time: number,
-	delayTime: number,
+	delay_time: number,
 	reverses: boolean,
-	repeatCount: number,
+	repeat_count: number,
 }
 export type TweenInfoConstructor = (
 	info: {
-		easingStyle: ((number) -> number)?,
+		easing_style: ((number) -> number)?,
 		time: number?,
-		delayTime: number?,
+		delay_time: number?,
 		reverses: boolean?,
-		repeatCount: number?,
+		repeat_count: number?,
 	}
 ) -> TweenInfo
 

@@ -7,7 +7,7 @@ local function peek<T>(target: calc.UsedAs<T>): T
 	if castToState(target) ~= nil then
 		evaluate(target)
 
-		return target._internalValue :: T
+		return target._internal_value :: T
 	end
 
 	return target :: T

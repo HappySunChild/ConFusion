@@ -15,8 +15,8 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_objects: { [iter.SubObject<S, IK, IV, OK, OV>]: boolean },
 	_constructor: (
 		memory.Scope<S>,
-		initialKey: IK,
-		initialValue: IV
+		initial_key: IK,
+		initial_value: IV
 	) -> iter.SubObject<S, IK, IV, OK, OV>,
 }
 
@@ -94,12 +94,12 @@ local CLASS = table.freeze {
 			local reused = false
 
 			-- casting these to unknown because the type solver doesn't know how to handle generics, apparently.
-			local old_input_key = object.inputKey :: unknown
-			local old_input_value = object.inputValue :: unknown
+			local old_input_key = object.input_key :: unknown
+			local old_input_value = object.input_value :: unknown
 
 			local new_input_key
 
-			if not object.roamKeys and pending_pairs[old_input_key] ~= nil then
+			if not object.roam_keys and pending_pairs[old_input_key] ~= nil then
 				reused = true
 				new_input_key = old_input_key
 			else
@@ -107,7 +107,7 @@ local CLASS = table.freeze {
 					reused = true
 					new_input_key = pending_key
 
-					if object.roamValues then
+					if object.roam_values then
 						break
 					end
 
@@ -122,12 +122,12 @@ local CLASS = table.freeze {
 				new_objects[object] = true
 
 				if new_input_key ~= old_input_key then
-					object.inputKey = new_input_key
+					object.input_key = new_input_key
 					object:invalidateInputKey()
 				end
 
 				if new_input_value ~= old_input_value then
-					object.inputValue = new_input_value
+					object.input_value = new_input_value
 					object:invalidateInputValue()
 				end
 
@@ -165,7 +165,7 @@ local function Disassembly<S, IK, IV, OK, OV>(
 ): iter.Disassembly<S, IK, IV, OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 		_using = {},

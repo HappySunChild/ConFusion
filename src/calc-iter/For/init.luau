@@ -22,7 +22,7 @@ local CLASS = table.freeze {
 			return false
 		end
 
-		local output = self._internalValue
+		local output = self._internal_value
 		local disassembly = self._disassembly
 
 		depend(self, disassembly)
@@ -41,14 +41,14 @@ local function For<S, IK, IV, OK, OV>(
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
-		initialKey: IK,
-		initialValue: IV
+		initial_key: IK,
+		initial_value: IV
 	) -> iter.SubObject<S, IK, IV, OK, OV>
 ): iter.For<OK, OV>
 	local new_for = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
-		_internalValue = {},
+		created_at = os.clock(),
+		_internal_value = {},
 
 		_using = {},
 		_users = {},

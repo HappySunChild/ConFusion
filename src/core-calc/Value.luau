@@ -15,8 +15,8 @@ local CLASS = table.freeze {
 	_using = table.freeze {},
 
 	set = function<T>(self: Self<T>, new_value: T): T
-		if not isSimilar(new_value, self._internalValue) then
-			self._internalValue = new_value
+		if not isSimilar(new_value, self._internal_value) then
+			self._internal_value = new_value
 
 			change(self)
 		end
@@ -24,7 +24,7 @@ local CLASS = table.freeze {
 		return new_value
 	end,
 	update = function<T>(self: Self<T>, updater: (T) -> T): T
-		return self:set(updater(self._internalValue))
+		return self:set(updater(self._internal_value))
 	end,
 	_evaluate = function()
 		return true
@@ -35,9 +35,9 @@ local METATABLE = table.freeze { __index = CLASS }
 local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 	local new_value: Self<T> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
-		_internalValue = initial_value,
+		_internal_value = initial_value,
 
 		_users = {},
 	}, METATABLE) :: any

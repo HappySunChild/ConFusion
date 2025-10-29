@@ -11,17 +11,20 @@ local lerp = require "./lerp"
 local peek = require "../core-use/peek"
 
 local function tweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
-	return function(target: T, start: T): motion.AnimationCurve<T>
+	local curve_generator = function(target: T, start: T): motion.AnimationCurve<T>
 		local active_info = peek(info) :: tweens.TweenInfo
 		local duration = getTweenDuration(active_info)
 
-		-- tween stepper
-		return function(elapsed: number): (boolean, T)
+		local new_curve = function(elapsed: number): (boolean, T)
 			local alpha = getTweenAlpha(active_info, elapsed)
 
 			return elapsed >= duration, lerp(start, target, alpha)
 		end
+
+		return new_curve
 	end
+
+	return curve_generator
 end
 
 local function Tween<T>(

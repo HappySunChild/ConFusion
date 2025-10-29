@@ -3,7 +3,7 @@ local memory = require "../../core-memory/types"
 
 type SpecialKeyProperties = {
 	name: string?,
-	apply: (scope: memory.Scope, applyTo: Instance, ...any) -> (),
+	apply: (scope: memory.Scope, apply_to: Instance, value: unknown) -> (),
 }
 
 local function SpecialKey(stage: instances.SpecialKeyStage)

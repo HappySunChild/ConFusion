@@ -2,7 +2,7 @@ local graph = require "../core-graph/types"
 local memory = require "../core-memory/types"
 
 export type StateObject<T> = {
-	_internalValue: T,
+	_internal_value: T,
 
 	kind: "state",
 	type: string,
