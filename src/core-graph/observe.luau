@@ -25,13 +25,13 @@ local function observe(
 		subject._observers = {}
 	end
 
-	local uniqueId = {}
-	subject._observers[uniqueId] = callback
+	local unique_identifier = {}
+	subject._observers[unique_identifier] = callback
 
 	evaluate(subject)
 
 	local function disconnect()
-		subject._observers[uniqueId] = nil
+		subject._observers[unique_identifier] = nil
 
 		local index = table.find(scope, disconnect)
 
