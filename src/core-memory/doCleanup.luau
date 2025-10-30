@@ -5,7 +5,11 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 
 local ACTIVE_TASKS = {}
 
-local function doCleanup(cleanup_task: memory.CleanupTask)
+local function doCleanup(cleanup_task: memory.CleanupTask?)
+	if cleanup_task == nil then
+		return
+	end
+
 	if ACTIVE_TASKS[cleanup_task] ~= nil then
 		External.logError(memory.destroyed_twice)
 	end
