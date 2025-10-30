@@ -33,4 +33,6 @@ export type ComputedConstructor = <S, T>(
 	processor: ComputedProcessor<S, T>
 ) -> Computed<T> | T
 
-return nil
+return {
+	callback_error = "Error in callback:\nERROR_MESSAGE",
+}

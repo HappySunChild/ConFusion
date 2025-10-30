@@ -54,7 +54,7 @@ local function SubObject<S, IK, IV, OK, OV>(
 		end
 
 		local err: logging.Error = output_key
-		External.logErrorNonFatal(logging.callback_error, err)
+		External.logErrorNonFatal(calc.callback_error, err)
 
 		doCleanup(scope)
 

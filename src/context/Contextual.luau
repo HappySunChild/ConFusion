@@ -1,5 +1,5 @@
+local calc = require "../core-calc/types"
 local context = require "./types"
-local logging = require "../core-logging/types"
 
 local External = require "../core-external/External"
 local parseError = require "../core-logging/parseError"
@@ -34,7 +34,7 @@ local CLASS = table.freeze {
 		self._values[thread] = original
 
 		if not ok then
-			External.logError(logging.callback_error, value)
+			External.logError(calc.callback_error, value)
 		end
 
 		return value
