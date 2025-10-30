@@ -28,7 +28,7 @@ end
 
 local function change(target: graph.GraphObject)
 	if castToGraph(target) == nil then
-		return External.logError(graph.invalidChangeType, nil, typeof(target))
+		return External.logError(graph.invalid_change_type, nil, typeof(target))
 	end
 
 	if not evaluate(target, true) then
@@ -46,7 +46,7 @@ local function change(target: graph.GraphObject)
 		for _, search_target: graph.GraphObject in search_now do
 			for user in search_target._users do
 				if user.validity == "busy" then
-					External.logError(graph.infiniteLoop)
+					External.logError(graph.infinite_loop)
 				end
 
 				if user.validity == "valid" then

@@ -131,7 +131,7 @@ local CLASS = table.freeze {
 			else
 				doCleanup(inner_scope)
 
-				External.logErrorNonFatal(logging.callbackError, err :: logging.Error)
+				External.logErrorNonFatal(logging.callback_error, err :: logging.Error)
 			end
 
 			self._active_thread = nil

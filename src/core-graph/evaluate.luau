@@ -6,13 +6,13 @@ local xtypeof = require "../xtypeof"
 
 local function evaluate(target: graph.GraphObject, force_computation: boolean?)
 	if castToGraph(target) == nil then
-		External.logErrorNonFatal(graph.invalidEvaluateType, nil, xtypeof(target))
+		External.logErrorNonFatal(graph.invalid_evaluate_type, nil, xtypeof(target))
 
 		return
 	end
 
 	if target.validity == "busy" then
-		External.logError(graph.infiniteLoop)
+		External.logError(graph.infinite_loop)
 	end
 
 	local first_evaluation = target._last_change == nil or target._last_compute == nil

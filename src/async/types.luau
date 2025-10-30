@@ -20,5 +20,5 @@ export type EventualConstructor = <S, T>(
 ) -> Eventual<T>
 
 return {
-	awaitNonGraph = "Can't await non-graph values.",
+	await_non_graph = "Can't await non-graph values.",
 }

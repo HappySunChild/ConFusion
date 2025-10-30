@@ -6,5 +6,5 @@ export type Error = {
 }
 
 return {
-	callbackError = "Error in callback:\nERROR_MESSAGE",
+	callback_error = "Error in callback:\nERROR_MESSAGE",
 }

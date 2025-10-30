@@ -57,5 +57,5 @@ export type ForValuesConstructor = <S, IK, IV, OV>(
 ) -> For<IK, OV> | { [IK]: OV }
 
 return {
-	forKeyCollision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
+	for_key_collision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
 }

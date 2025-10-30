@@ -21,10 +21,10 @@ export type GraphObject = {
 } & memory.ScopedObject
 
 return {
-	infiniteLoop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
+	infinite_loop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
 
-	cannotDepend = "%s (%s) cannot depend on %s (%s).",
+	cannot_depend = "%s (%s) cannot depend on %s (%s).",
 
-	invalidEvaluateType = "Invalid evaluate argument, got '%s'.",
-	invalidChangeType = "Can't change non-state value, got '%s'.",
+	invalid_evaluate_type = "Invalid evaluate argument, got '%s'.",
+	invalid_change_type = "Can't change non-state value, got '%s'.",
 }

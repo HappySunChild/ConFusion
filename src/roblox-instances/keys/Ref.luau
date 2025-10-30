@@ -21,7 +21,7 @@ local function applyRef(ref: unknown, instance: Instance)
 		return
 	end
 
-	External.logError(instances.expectedType, nil, "Value", ref_type)
+	External.logError(instances.expected_type, nil, "Value", ref_type)
 end
 
 local Ref = SpecialKey "self" {

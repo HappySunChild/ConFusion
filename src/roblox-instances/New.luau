@@ -12,7 +12,7 @@ local function New(
 	local success, new_instance = pcall(Instance.new, class_name, nil) -- ok
 
 	if not success then
-		External.logError(instances.cannotCreateClass, nil, class_name)
+		External.logError(instances.cannot_create_class, nil, class_name)
 	end
 
 	local default_class_properties = defaultProperties[class_name]

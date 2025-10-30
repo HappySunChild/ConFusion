@@ -12,7 +12,7 @@ local function DescendantOfName(scope: memory.Scope, name: string)
 
 			if child == nil then
 				External.logErrorNonFatal(
-					templates.missingDescendant,
+					templates.missing_descendant,
 					nil,
 					name,
 					parent.Name

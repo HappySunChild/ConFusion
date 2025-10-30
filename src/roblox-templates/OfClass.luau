@@ -12,7 +12,7 @@ local function OfClass(scope: memory.Scope, class_name: string)
 
 			if child == nil then
 				External.logErrorNonFatal(
-					templates.missingChildClass,
+					templates.missing_child_class,
 					nil,
 					class_name,
 					parent.Name

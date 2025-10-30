@@ -16,10 +16,10 @@ export type OfClassConstructor = (
 ) -> (instances.Properties) -> (parent: Instance) -> Instance?
 
 return {
-	cannotCreateTemplate = "Unable to create template of instance '%s'.",
+	cannot_create_template = "Unable to create template of instance '%s'.",
 
-	missingChild = "Could not find child '%s' in '%s'.",
-	missingChildClass = "Could not find child of class '%s' in '%s'.",
-	missingDescendant = "Could not find descendant '%s' in '%s'.",
-	missingDescendantClass = "Could not find descendant of class '%s' in '%s'.",
+	missing_child = "Could not find child '%s' in '%s'.",
+	missing_child_class = "Could not find child of class '%s' in '%s'.",
+	missing_descendant = "Could not find descendant '%s' in '%s'.",
+	missing_descendant_class = "Could not find descendant of class '%s' in '%s'.",
 }

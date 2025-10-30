@@ -22,7 +22,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 
 				if not ok then
 					External.logError(
-						instances.cannotConnectChange,
+						instances.cannot_connect_change,
 						nil,
 						apply_to.ClassName,
 						property

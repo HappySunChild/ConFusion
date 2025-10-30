@@ -21,7 +21,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 			)
 				if xtypeof(value) ~= "Value" then
 					External.logError(
-						instances.expectedType,
+						instances.expected_type,
 						nil,
 						"Value",
 						xtypeof(value)

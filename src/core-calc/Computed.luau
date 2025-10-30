@@ -78,7 +78,7 @@ local CLASS = table.freeze {
 		else
 			doCleanup(inner_scope)
 
-			External.logErrorNonFatal(logging.callbackError, new_value :: logging.Error)
+			External.logErrorNonFatal(logging.callback_error, new_value :: logging.Error)
 		end
 
 		return false

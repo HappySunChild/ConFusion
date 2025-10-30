@@ -64,7 +64,7 @@ local Children = SpecialKey "descendants" {
 					end
 				else
 					External.logErrorNonFatal(
-						instances.invalidChildType,
+						instances.invalid_child_type,
 						debug.traceback(nil, 2),
 						child_type
 					)

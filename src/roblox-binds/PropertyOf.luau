@@ -28,7 +28,7 @@ local function PropertyOf(
 
 	if not ok then
 		External.logError(
-			instances.cannotConnectChange,
+			instances.cannot_connect_change,
 			nil,
 			instance.ClassName,
 			tostring(property)

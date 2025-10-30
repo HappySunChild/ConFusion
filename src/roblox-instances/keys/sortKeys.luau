@@ -18,8 +18,8 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 	if not a_index then
 		External.logWarn(
 			if a.stage == nil
-				then instances.missingSpecialKeyStage
-				else instances.invalidSpecialKeyStage,
+				then instances.missing_specialkey_stage
+				else instances.invalid_specialkey_stage,
 			a.type,
 			a.stage
 		)
@@ -28,8 +28,8 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 	elseif not b_index then
 		External.logWarn(
 			if b.stage == nil
-				then instances.missingSpecialKeyStage
-				else instances.invalidSpecialKeyStage,
+				then instances.missing_specialkey_stage
+				else instances.invalid_specialkey_stage,
 			b.type,
 			b.stage
 		)

@@ -28,7 +28,7 @@ local function setProperty(instance: Instance, property: string, value: any)
 
 	if pcall(testPropertyAssignable, instance, property) == false then
 		External.logErrorNonFatal(
-			instances.propertyCannotAssign,
+			instances.property_cannot_assign,
 			nil,
 			instance.ClassName,
 			property
@@ -41,10 +41,10 @@ local function setProperty(instance: Instance, property: string, value: any)
 	local expected_type = typeof(instance[property])
 
 	if given_type == expected_type then
-		External.logErrorNonFatal(instances.propertyAssignError, err)
+		External.logErrorNonFatal(instances.property_assign_error, err)
 	else
 		External.logErrorNonFatal(
-			instances.propertyInvalidType,
+			instances.property_invalid_type,
 			nil,
 			instance.ClassName,
 			property,

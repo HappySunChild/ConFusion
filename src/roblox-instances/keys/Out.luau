@@ -21,7 +21,7 @@ local function Out(property: string): instances.SpecialKey<"Out">
 			)
 				if xtypeof(value) ~= "Value" then
 					External.logError(
-						instances.expectedType,
+						instances.expected_type,
 						nil,
 						"Value",
 						xtypeof(value)

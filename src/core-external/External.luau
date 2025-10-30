@@ -57,14 +57,14 @@ return table.freeze {
 
 	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
 		if active_provider == nil then
-			logError(external.missingProvider)
+			logError(external.missing_provider)
 		end
 
 		return active_provider.doTaskImmediate(resume, ...)
 	end,
 	doTaskDeferred = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
 		if active_provider == nil then
-			logError(external.missingProvider)
+			logError(external.missing_provider)
 		end
 
 		return active_provider.doTaskDeferred(resume, ...)
@@ -75,14 +75,14 @@ return table.freeze {
 		...: A...
 	): thread?
 		if active_provider == nil then
-			logError(external.missingProvider)
+			logError(external.missing_provider)
 		end
 
 		return active_provider.doTaskDelayed(sec, resume, ...)
 	end,
 	cancelTask = function(task: thread): boolean
 		if active_provider == nil then
-			logError(external.missingProvider)
+			logError(external.missing_provider)
 		end
 
 		return active_provider.cancelTask(task)

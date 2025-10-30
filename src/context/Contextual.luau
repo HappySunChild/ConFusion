@@ -34,7 +34,7 @@ local CLASS = table.freeze {
 		self._values[thread] = original
 
 		if not ok then
-			External.logError(logging.callbackError, value)
+			External.logError(logging.callback_error, value)
 		end
 
 		return value
