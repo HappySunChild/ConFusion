@@ -3,13 +3,10 @@ local iter = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
+local castToState = require "../../core-calc/castToState"
+local dissolvingUse = require "../../core-use/dissolvingUse"
 local doCleanup = require "../../core-memory/doCleanup"
 local innerScope = require "../../core-memory/innerScope"
-
-local dissolvingUse = require "../../core-use/dissolvingUse"
-
-local castToState = require "../../core-calc/castToState"
 
 local function checkDissolvable<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
@@ -21,32 +18,32 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		IV
 	) -> (OK?, OV?)
 ): (boolean, { [OK]: OV }?)
-	if castToState(input) then
+	if castToState(input) ~= nil then
 		return false, nil
 	end
 
-	local dissolvingScope = innerScope(scope)
+	local dissolving_scope = innerScope(scope)
 	local output = {}
 
 	for key, value in input do
-		local ok, outputKey, outputValue =
-			pcall(processor, dissolvingUse, dissolvingScope, key, value)
+		local ok, output_key, output_value =
+			pcall(processor, dissolvingUse, dissolving_scope, key, value)
 
 		if not ok then
-			doCleanup(dissolvingScope)
+			doCleanup(dissolving_scope)
 
 			return false, nil
 		end
 
-		if outputKey == nil or outputValue == nil then
+		if output_key == nil or output_value == nil then
 			continue
-		elseif output[outputKey] ~= nil then
-			External.logErrorNonFatal(iter.forKeyCollision, nil, tostring(outputKey))
+		elseif output[output_key] ~= nil then
+			External.logErrorNonFatal(iter.for_key_collision, nil, tostring(output_key))
 
 			continue
 		end
 
-		output[outputKey] = outputValue
+		output[output_key] = output_value
 	end
 
 	return true, output

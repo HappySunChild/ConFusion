@@ -2,18 +2,16 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 local memory = require "../../core-memory/types"
 
+local SpecialKey = require "./SpecialKey"
 local observe = require "../../core-graph/observe"
-
 local peek = require "../../core-use/peek"
 
-local SpecialKey = require "./SpecialKey"
-
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
-	local key = keyCache[attribute]
+	local key = KEY_CACHE[attribute]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "self" {
 			name = `Attribute_{attribute}`,
 			apply = function(
@@ -27,7 +25,7 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 			end,
 		}
 
-		keyCache[attribute] = key
+		KEY_CACHE[attribute] = key
 	end
 
 	return key

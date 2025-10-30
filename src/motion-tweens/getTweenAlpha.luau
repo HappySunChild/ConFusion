@@ -28,7 +28,7 @@ local function getTweenAlpha(info: tweens.TweenInfo, current_time: number)
 		tween_progress = 2 - tween_progress
 	end
 
-	return info.easing(tween_progress)
+	return info.easing_style(tween_progress)
 end
 
 return getTweenAlpha

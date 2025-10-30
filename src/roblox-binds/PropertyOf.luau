@@ -3,12 +3,10 @@ local instances = require "../roblox-instances/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
+local change = require "../core-graph/change"
 local destructor = require "../core-memory/destructor"
 
-local change = require "../core-graph/change"
-
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "PropertyOf",
 	kind = "state",
 	timeliness = "lazy",
@@ -18,7 +16,7 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function PropertyOf(
 	scope: memory.Scope,
@@ -30,32 +28,32 @@ local function PropertyOf(
 
 	if not ok then
 		External.logError(
-			instances.cannotConnectChange,
+			instances.cannot_connect_change,
 			nil,
 			instance.ClassName,
 			tostring(property)
 		)
 	end
 
-	local newProperty: binds.PropertyOf<unknown> = setmetatable({
+	local new_property: binds.PropertyOf<unknown> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 
-		_internalValue = instance[property],
+		_internal_value = instance[property],
 	}, METATABLE) :: any
 
 	table.insert(scope, {
-		destructor(newProperty),
+		destructor(new_property),
 		event:Connect(function()
-			newProperty._internalValue = instance[property]
+			new_property._internal_value = instance[property]
 
-			change(newProperty)
+			change(new_property)
 		end),
 	})
 
-	return newProperty
+	return new_property
 end
 
 return PropertyOf

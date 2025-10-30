@@ -32,9 +32,9 @@ local LERP_FUNCTIONS = table.freeze {
 	UDim2 = function(a: UDim2, b: UDim2, alpha: number)
 		return a:Lerp(b, alpha)
 	end,
-} :: { [string]: <V>(a: V, b: V, alpha: number) -> V }
+} :: { [string]: <T>(a: T, b: T, alpha: number) -> T }
 
-local function lerp<V>(from: V, target: V, alpha: number): V
+local function lerp<T>(from: T, target: T, alpha: number): T
 	local data_type = typeof(from)
 
 	if typeof(target) == data_type then

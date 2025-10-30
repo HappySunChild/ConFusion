@@ -3,17 +3,16 @@ local memory = require "../core-memory/types"
 local templates = require "./types"
 
 local External = require "../core-external/External"
-
 local applyProperties = require "../roblox-instances/applyProperties"
 
 local function DescendantOfName(scope: memory.Scope, name: string)
-	return function(props: instances.Properties)
+	return function(properties: instances.Properties)
 		return function(parent: Instance)
 			local child = parent:FindFirstChild(name, true)
 
-			if not child then
+			if child == nil then
 				External.logErrorNonFatal(
-					templates.missingDescendant,
+					templates.missing_descendant,
 					nil,
 					name,
 					parent.Name
@@ -22,7 +21,7 @@ local function DescendantOfName(scope: memory.Scope, name: string)
 				return
 			end
 
-			applyProperties(scope, child, props)
+			applyProperties(scope, child, properties)
 
 			return child
 		end

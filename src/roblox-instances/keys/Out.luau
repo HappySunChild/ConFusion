@@ -3,45 +3,43 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
+local SpecialKey = require "./SpecialKey"
 local xtypeof = require "../../xtypeof"
 
-local SpecialKey = require "./SpecialKey"
-
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function Out(property: string): instances.SpecialKey<"Out">
-	local key = keyCache[property]
+	local key = KEY_CACHE[property]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `Out_{property}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
 					External.logError(
-						instances.expectedType,
+						instances.expected_type,
 						nil,
 						"Value",
 						xtypeof(value)
 					)
 				end
 
-				local event = applyTo:GetPropertyChangedSignal(property)
+				local event = apply_to:GetPropertyChangedSignal(property)
 
 				table.insert(
 					scope,
 					event:Connect(function()
-						value:set(applyTo[property])
+						value:set(apply_to[property])
 					end)
 				)
 			end,
 		}
 
-		keyCache[property] = key
+		KEY_CACHE[property] = key
 	end
 
 	return key

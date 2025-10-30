@@ -4,45 +4,40 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
+local castToState = require "../core-calc/castToState"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
-
-local castToState = require "../core-calc/castToState"
-local isSimilar = require "../core-calc/isSimilar"
-
-local peek = require "../core-use/peek"
-
 local deriveScope = require "../core-memory/deriveScope"
 local destructor = require "../core-memory/destructor"
 local doCleanup = require "../core-memory/doCleanup"
-
+local evaluate = require "../core-graph/evaluate"
+local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
+local peek = require "../core-use/peek"
 
 type Self<T, S> = async.Eventual<T> & {
-	_innerScope: memory.Scope<S>,
+	_inner_scope: memory.Scope<S>,
 	_processor: async.EventualProcessor<S, T>,
 
-	_pendingValue: T,
-	_becomeValue: T?,
+	_pending_value: T,
+	_become_value: T?,
 
-	_isBecoming: boolean?,
-	_activeThread: thread?,
+	_is_becoming: boolean?,
+	_active_thread: thread?,
 
 	_become: (any) -> (),
 	_use: calc.Use,
 }
 
 local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
-	if eventual._activeThread ~= nil then
-		External.cancelTask(eventual._activeThread)
+	if eventual._active_thread ~= nil then
+		External.cancelTask(eventual._active_thread)
 	end
 
-	if eventual._innerScope ~= nil then
-		doCleanup(eventual._innerScope)
+	if eventual._inner_scope ~= nil then
+		doCleanup(eventual._inner_scope)
 
-		eventual._innerScope = nil
+		eventual._inner_scope = nil
 	end
 end
 
@@ -50,7 +45,7 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 	local session_used = {}
 
 	local function use<T>(target: calc.UsedAs<T>): T
-		if castToState(target) then
+		if castToState(target) ~= nil then
 			depend(eventual, target)
 
 			session_used[target] = true
@@ -60,34 +55,36 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 	end
 
 	local function become(targetValue: T)
-		local becomeValue = eventual._internalValue
+		local become_value = eventual._internal_value
 
-		eventual._internalValue = targetValue
+		eventual._internal_value = targetValue
 
-		if eventual.validity ~= "busy" then
-			eventual._becomeValue = becomeValue
-			eventual._isBecoming = true
+		if eventual.validity == "busy" then
+			return
+		end
 
-			change(eventual)
+		eventual._become_value = become_value
+		eventual._is_becoming = true
 
-			eventual._becomeValue = nil
+		change(eventual)
 
-			for target in session_used do
-				depend(eventual, target)
-			end
+		eventual._become_value = nil
+
+		for target in session_used do
+			depend(eventual, target)
 		end
 	end
 
 	return use, become
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Eventual",
 	kind = "state",
 	timeliness = "eager",
 
 	isPending = function<T, S>(self: Self<T, S>)
-		return self._activeThread ~= nil
+		return self._active_thread ~= nil
 	end,
 	_evaluate = function<T, S>(self: Self<T, S>): boolean
 		if self.scope == nil then
@@ -95,79 +92,79 @@ local class = table.freeze {
 		end
 
 		-- calling `become` causes the Eventual to be reevaluated, but we don't want to completely reevaluate everything
-		if self._isBecoming == true then
-			self._isBecoming = false
+		if self._is_becoming == true then
+			self._is_becoming = false
 
-			return not isSimilar(self._becomeValue, self._internalValue)
+			return not isSimilar(self._become_value, self._internal_value)
 		end
 
 		-- cancel any currently active computations
-		if self._activeThread ~= nil then
-			if self._innerScope ~= nil then
-				doCleanup(self._innerScope)
+		if self._active_thread ~= nil then
+			if self._inner_scope ~= nil then
+				doCleanup(self._inner_scope)
 
-				self._innerScope = nil
+				self._inner_scope = nil
 			end
 
-			External.cancelTask(self._activeThread)
+			External.cancelTask(self._active_thread)
 
-			self._activeThread = nil
+			self._active_thread = nil
 		end
 
-		local outerScope = self.scope
-		local innerScope = deriveScope(outerScope)
+		local outer_scope = self.scope
+		local inner_scope = deriveScope(outer_scope)
 
-		self._internalValue = self._pendingValue
+		self._internal_value = self._pending_value
 
 		local completed = false
 
-		local activeThread = External.doTaskImmediate(function()
+		local active_thread = External.doTaskImmediate(function()
 			local ok, err =
-				xpcall(self._processor, parseError, self._use, innerScope, self._become)
+				xpcall(self._processor, parseError, self._use, inner_scope, self._become)
 
 			if ok then
-				if self._innerScope ~= nil then
-					doCleanup(self._innerScope)
+				if self._inner_scope ~= nil then
+					doCleanup(self._inner_scope)
 				end
 
-				self._innerScope = innerScope
+				self._inner_scope = inner_scope
 			else
-				doCleanup(innerScope)
+				doCleanup(inner_scope)
 
-				External.logErrorNonFatal(logging.callbackError, err :: logging.Error)
+				External.logErrorNonFatal(logging.callback_error, err :: logging.Error)
 			end
 
-			self._activeThread = nil
+			self._active_thread = nil
 
 			completed = true
 		end)
 
 		-- if we didn't complete the task then update keep track of the thread
 		if completed == false then
-			self._activeThread = activeThread
+			self._active_thread = active_thread
 		end
 
-		return not isSimilar(self._internalValue, self._pendingValue)
+		return not isSimilar(self._internal_value, self._pending_value)
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,
 	processor: async.EventualProcessor<S, T>,
-	pendingValue: T
+	pending_value: T
 ): async.Eventual<T>
 	local new_eventual: Self<T, S> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
-		_internalValue = pendingValue,
-		_pendingValue = pendingValue,
+		_internal_value = pending_value,
+		_pending_value = pending_value,
 
 		_using = {},
 		_users = {},
 
-		_innerScope = nil,
+		_inner_scope = nil,
 		_processor = processor,
 	}, METATABLE) :: any
 

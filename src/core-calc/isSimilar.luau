@@ -1,13 +1,13 @@
-local function isSimilar(a: unknown, b: unknown)
-	local typeA = typeof(a)
-	local isTable = typeA == "table"
-	local isUserdata = typeA == "userdata"
+local function isSimilar(a: unknown, b: unknown): boolean
+	local type_a = typeof(a)
+	local is_table = type_a == "table"
+	local is_userdata = type_a == "userdata"
 
-	return if not (isTable or isUserdata)
+	return if not (is_table or is_userdata)
 		then a == b or a ~= a and b ~= b
 		elseif
-			typeA == typeof(b)
-			and (isUserdata or table.isfrozen(a :: any) or getmetatable(a :: any) ~= nil)
+			type_a == typeof(b)
+			and (is_userdata or table.isfrozen(a :: any) or getmetatable(a :: any) ~= nil)
 		then a == b
 		else false
 end

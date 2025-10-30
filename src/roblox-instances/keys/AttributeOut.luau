@@ -3,39 +3,37 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
+local SpecialKey = require "./SpecialKey"
 local xtypeof = require "../../xtypeof"
 
-local SpecialKey = require "./SpecialKey"
-
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeOut">
-	local key = keyCache[attribute]
+	local key = KEY_CACHE[attribute]
 
-	if not key then
+	if key == nil then
 		key = SpecialKey "observer" {
 			name = `AttributeOut_{attribute}`,
 			apply = function(
 				scope: memory.Scope,
-				applyTo: Instance,
+				apply_to: Instance,
 				value: calc.Value<any>
 			)
 				if xtypeof(value) ~= "Value" then
 					External.logError(
-						instances.expectedType,
+						instances.expected_type,
 						nil,
 						"Value",
 						xtypeof(value)
 					)
 				end
 
-				local event = applyTo:GetAttributeChangedSignal(attribute)
+				local event = apply_to:GetAttributeChangedSignal(attribute)
 
 				table.insert(
 					scope,
 					event:Connect(function()
-						value:set(applyTo:GetAttribute(attribute))
+						value:set(apply_to:GetAttribute(attribute))
 					end)
 				)
 
@@ -43,7 +41,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 			end,
 		}
 
-		keyCache[attribute] = key
+		KEY_CACHE[attribute] = key
 	end
 
 	return key

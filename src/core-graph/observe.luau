@@ -2,12 +2,10 @@ local graph = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
-local nameOf = require "../core-logging/nameOf"
-local nicknames = require "../core-logging/nicknames"
-
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
+local nameOf = require "../core-logging/nameOf"
+local nicknames = require "../core-logging/nicknames"
 
 local function observe(
 	scope: memory.Scope,
@@ -27,17 +25,17 @@ local function observe(
 		subject._observers = {}
 	end
 
-	local uniqueId = {}
-	subject._observers[uniqueId] = callback
+	local unique_identifier = {}
+	subject._observers[unique_identifier] = callback
 
 	evaluate(subject)
 
 	local function disconnect()
-		subject._observers[uniqueId] = nil
+		subject._observers[unique_identifier] = nil
 
 		local index = table.find(scope, disconnect)
 
-		if index then
+		if index ~= nil then
 			table.remove(scope, index)
 		end
 	end

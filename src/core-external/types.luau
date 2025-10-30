@@ -22,5 +22,5 @@ export type ExternalDebugger = {
 }
 
 return {
-	missingProvider = "ConFusion is not connected to an external provider.",
+	missing_provider = "ConFusion is not connected to an external provider.",
 }

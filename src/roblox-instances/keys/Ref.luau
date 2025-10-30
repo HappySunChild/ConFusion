@@ -2,10 +2,8 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 
 local External = require "../../core-external/External"
-
-local xtypeof = require "../../xtypeof"
-
 local SpecialKey = require "./SpecialKey"
+local xtypeof = require "../../xtypeof"
 
 local function applyRef(ref: unknown, instance: Instance)
 	local ref_type = xtypeof(ref)
@@ -23,7 +21,7 @@ local function applyRef(ref: unknown, instance: Instance)
 		return
 	end
 
-	External.logError(instances.expectedType, nil, "Value", ref_type)
+	External.logError(instances.expected_type, nil, "Value", ref_type)
 end
 
 local Ref = SpecialKey "self" {

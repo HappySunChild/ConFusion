@@ -24,7 +24,7 @@ local function destructor<T>(target: graph.GraphObject & T, auxiliary: (T) -> ()
 	local function destruct()
 		destroy(target)
 
-		if auxiliary then
+		if auxiliary ~= nil then
 			auxiliary(target)
 		end
 

@@ -3,30 +3,26 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
-local parseError = require "../core-logging/parseError"
-
-local dissolvingUse = require "../core-use/dissolvingUse"
-local genericUse = require "../core-use/genericUse"
-
 local deriveScope = require "../core-memory/deriveScope"
 local destructor = require "../core-memory/destructor"
+local dissolvingUse = require "../core-use/dissolvingUse"
 local doCleanup = require "../core-memory/doCleanup"
+local genericUse = require "../core-use/genericUse"
 local innerScope = require "../core-memory/innerScope"
-
 local isSimilar = require "./isSimilar"
+local parseError = require "../core-logging/parseError"
 
 type Self<T, S> = calc.Computed<T> & {
-	_innerScope: memory.Scope<S>?,
+	_inner_scope: memory.Scope<S>?,
 	_processor: calc.ComputedProcessor<S, T>,
 	_use: calc.Use,
 }
 
 local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
-	if computed._innerScope ~= nil then
-		doCleanup(computed._innerScope)
+	if computed._inner_scope ~= nil then
+		doCleanup(computed._inner_scope)
 
-		computed._innerScope = nil
+		computed._inner_scope = nil
 	end
 end
 
@@ -34,24 +30,24 @@ local function checkDissolvable<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): (boolean, T?)
-	local dissolvingScope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolvingScope)
+	local dissolving_scope = innerScope(scope)
+	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
 
 	if success then
 		-- scope went unused, we can clean it up
-		if #dissolvingScope == 1 then
-			doCleanup(dissolvingScope)
+		if #dissolving_scope == 1 then
+			doCleanup(dissolving_scope)
 		end
 
 		return true, value
 	end
 
-	doCleanup(dissolvingScope)
+	doCleanup(dissolving_scope)
 
 	return false
 end
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Computed",
 	kind = "state",
 	timeliness = "lazy",
@@ -67,28 +63,28 @@ local class = table.freeze {
 		local ok, new_value = xpcall(self._processor, parseError, self._use, inner_scope)
 
 		if ok then
-			local similar = isSimilar(self._internalValue, new_value)
+			local similar = isSimilar(self._internal_value, new_value)
 
-			if self._innerScope ~= nil then
-				doCleanup(self._innerScope)
+			if self._inner_scope ~= nil then
+				doCleanup(self._inner_scope)
 
-				self._innerScope = nil
+				self._inner_scope = nil
 			end
 
-			self._innerScope = inner_scope
-			self._internalValue = new_value
+			self._inner_scope = inner_scope
+			self._internal_value = new_value
 
 			return not similar
 		else
 			doCleanup(inner_scope)
 
-			External.logErrorNonFatal(logging.callbackError, new_value :: logging.Error)
+			External.logErrorNonFatal(logging.callback_error, new_value :: logging.Error)
 		end
 
 		return false
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Computed<T, S>(
 	scope: memory.Scope<S>,
@@ -102,13 +98,13 @@ local function Computed<T, S>(
 
 	local new_computed: Self<T, S> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
-		_internalValue = nil,
+		created_at = os.clock(),
+		_internal_value = nil,
 
 		_using = {},
 		_users = {},
 
-		_innerScope = nil,
+		_inner_scope = nil,
 		_processor = processor,
 	}, METATABLE) :: any
 

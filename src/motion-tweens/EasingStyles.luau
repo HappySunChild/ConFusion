@@ -1,4 +1,5 @@
 --!native
+--!optimize 2
 local tweens = require "./types"
 
 local PI = math.pi

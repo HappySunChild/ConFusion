@@ -2,16 +2,11 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-
-local observe = require "../../core-graph/observe"
-
-local castToState = require "../../core-calc/castToState"
-
-local peek = require "../../core-use/peek"
-
-local doCleanup = require "../../core-memory/doCleanup"
-
 local SpecialKey = require "./SpecialKey"
+local castToState = require "../../core-calc/castToState"
+local doCleanup = require "../../core-memory/doCleanup"
+local observe = require "../../core-graph/observe"
+local peek = require "../../core-use/peek"
 
 local Children = SpecialKey "descendants" {
 	name = "Children",
@@ -24,12 +19,12 @@ local Children = SpecialKey "descendants" {
 			old_scopes, new_scopes = new_scopes, old_scopes
 
 			local function processChild(child: instances.Child, name: string?)
-				local childType = typeof(child)
+				local child_type = typeof(child)
 
-				if childType == "Instance" then
+				if child_type == "Instance" then
 					new_children[child] = true
 
-					if not old_children[child] then
+					if old_children[child] == nil then
 						if child.Parent == nil then
 							child.Parent = apply_to
 						end
@@ -37,46 +32,46 @@ local Children = SpecialKey "descendants" {
 						old_children[child] = nil
 					end
 
-					if name and tonumber(name) == nil then
+					if name ~= nil and tonumber(name) == nil then
 						child.Name = name
 					end
-				elseif childType == "function" then
-					local childInstance = child(apply_to, name)
+				elseif child_type == "function" then
+					local child_instance = child(apply_to, name)
 
-					if childInstance then
-						processChild(childInstance, name)
+					if child_instance then
+						processChild(child_instance, name)
 					end
-				elseif castToState(child) then
+				elseif castToState(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then
 						processChild(value, name)
 					end
 
-					local childScope = old_scopes[child]
+					local child_scope = old_scopes[child]
 
-					if childScope == nil then
-						childScope = {}
-						observe(childScope, child, updateChildren)
+					if child_scope == nil then
+						child_scope = {}
+						observe(child_scope, child, updateChildren)
 					else
 						old_scopes[child] = nil
 					end
 
-					new_scopes[child] = childScope
-				elseif childType == "table" then
-					for key, subChild in child do
-						processChild(subChild, key)
+					new_scopes[child] = child_scope
+				elseif child_type == "table" then
+					for key, descendant in child do
+						processChild(descendant, key)
 					end
 				else
 					External.logErrorNonFatal(
-						instances.invalidChildType,
+						instances.invalid_child_type,
 						debug.traceback(nil, 2),
-						childType
+						child_type
 					)
 				end
 			end
 
-			if children then
+			if children ~= nil then
 				processChild(children)
 			end
 
@@ -86,8 +81,8 @@ local Children = SpecialKey "descendants" {
 
 			table.clear(old_children)
 
-			for _, childScope in old_scopes do
-				doCleanup(childScope)
+			for _, child_scope in old_scopes do
+				doCleanup(child_scope)
 			end
 
 			table.clear(old_scopes)

@@ -3,7 +3,7 @@ local graph = require "./types"
 local function castToGraph(target: unknown): graph.GraphObject?
 	if
 		typeof(target) == "table"
-		and target.createdAt ~= nil
+		and target.created_at ~= nil
 		and target._users ~= nil
 		and target._using ~= nil
 	then

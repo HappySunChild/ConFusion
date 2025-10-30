@@ -2,20 +2,17 @@ local calc = require "../core-calc/types"
 local iter = require "./types"
 local memory = require "../core-memory/types"
 
-local destructor = require "../core-memory/destructor"
-
-local depend = require "../core-graph/depend"
-
-local genericUse = require "../core-use/genericUse"
-
 local Disassembly = require "@self/Disassembly"
+local depend = require "../core-graph/depend"
+local destructor = require "../core-memory/destructor"
+local genericUse = require "../core-use/genericUse"
 
 type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
 	_disassembly: iter.Disassembly<S, IK, IV, OK, OV>,
 	_use: calc.Use,
 }
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "For",
 	kind = "state",
 	timeliness = "lazy",
@@ -25,7 +22,7 @@ local class = table.freeze {
 			return false
 		end
 
-		local output = self._internalValue
+		local output = self._internal_value
 		local disassembly = self._disassembly
 
 		depend(self, disassembly)
@@ -37,21 +34,21 @@ local class = table.freeze {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function For<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
-		initialKey: IK,
-		initialValue: IV
+		initial_key: IK,
+		initial_value: IV
 	) -> iter.SubObject<S, IK, IV, OK, OV>
 ): iter.For<OK, OV>
 	local new_for = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
-		_internalValue = {},
+		created_at = os.clock(),
+		_internal_value = {},
 
 		_using = {},
 		_users = {},

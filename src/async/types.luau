@@ -16,9 +16,9 @@ export type EventualProcessor<S, T> = (
 export type EventualConstructor = <S, T>(
 	scope: memory.Scope<S>,
 	processor: EventualProcessor<S, T>,
-	pendingValue: T
+	pending_value: T
 ) -> Eventual<T>
 
 return {
-	awaitNonGraph = "Can't await non-graph values.",
+	await_non_graph = "Can't await non-graph values.",
 }

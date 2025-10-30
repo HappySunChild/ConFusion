@@ -5,5 +5,5 @@ export type ScopedObject = {
 }
 
 return {
-	destroyedTwice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
+	destroyed_twice = "`doCleanup()` was given something that it is already cleaning up. Unclear how to proceed.",
 }

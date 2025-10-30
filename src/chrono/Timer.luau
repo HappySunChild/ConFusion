@@ -1,14 +1,11 @@
 local chrono = require "./types"
 local memory = require "../core-memory/types"
 
-local peek = require "../core-use/peek"
-
+local ExternalTime = require "./ExternalTime"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-
 local destructor = require "../core-memory/destructor"
-
-local ExternalTime = require "./ExternalTime"
+local peek = require "../core-use/peek"
 
 type Self = chrono.Timer & {
 	_paused: boolean,
@@ -16,7 +13,7 @@ type Self = chrono.Timer & {
 	_timer: chrono.ExternalTime,
 }
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "Timer",
 	kind = "state",
 	timeliness = "lazy",
@@ -43,7 +40,7 @@ local class = table.freeze {
 	end,
 	reset = function(self: Self)
 		self._start = peek(self._timer) :: number
-		self._internalValue = 0
+		self._internal_value = 0
 
 		change(self)
 	end,
@@ -56,37 +53,36 @@ local class = table.freeze {
 
 		local now = peek(self._timer) :: number
 
-		local oldValue = self._internalValue
-		local newValue = now - self._start
+		local old_value = self._internal_value
+		local new_value = now - self._start
 
-		self._internalValue = newValue
+		self._internal_value = new_value
 
-		return oldValue ~= newValue
+		return old_value ~= new_value
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function Timer(scope: memory.Scope): chrono.Timer
-	local externalTime = ExternalTime(scope)
-
-	local newTimer = setmetatable({
+	local externaltime = ExternalTime(scope)
+	local new_timer = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
-		_internalValue = 0,
+		created_at = os.clock(),
+		_internal_value = 0,
 
 		_paused = false,
-		_start = peek(externalTime),
+		_start = peek(externaltime),
 
 		_using = {},
 		_users = {},
-		_timer = externalTime,
+		_timer = externaltime,
 	}, METATABLE) :: Self
 
-	table.insert(scope, destructor(newTimer))
+	table.insert(scope, destructor(new_timer))
 
-	depend(newTimer, externalTime)
+	depend(new_timer, externaltime)
 
-	return newTimer
+	return new_timer
 end
 
 return Timer

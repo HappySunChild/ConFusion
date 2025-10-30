@@ -2,9 +2,7 @@ local chrono = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
 local change = require "../core-graph/change"
-
 local destructor = require "../core-memory/destructor"
 
 type Self = chrono.ExternalTime & {
@@ -21,12 +19,12 @@ local function auxiliaryDestructor(externalTime: Self)
 	end
 end
 
-local class = {
+local CLASS = {
 	type = "ExternalTime",
 	kind = "state",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internalValue = External.getLastUpdate(),
+	_internal_value = External.getLastUpdate(),
 
 	setActive = function(self: Self, active: boolean)
 		self._active = active
@@ -38,25 +36,25 @@ local class = {
 		return true
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
-	local newExternalTime = setmetatable({
+	local new_externaltime = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 		_active = true,
 	}, METATABLE) :: Self
 
-	table.insert(ALL_TIMERS, newExternalTime)
-	table.insert(scope, destructor(newExternalTime, auxiliaryDestructor))
+	table.insert(ALL_TIMERS, new_externaltime)
+	table.insert(scope, destructor(new_externaltime, auxiliaryDestructor))
 
-	return newExternalTime
+	return new_externaltime
 end
 
 External.bindToUpdateStep(function(now: number)
-	class._internalValue = now
+	CLASS._internal_value = now
 
 	for _, timer in ALL_TIMERS do
 		if timer:isActive() then

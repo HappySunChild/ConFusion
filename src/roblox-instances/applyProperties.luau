@@ -3,55 +3,54 @@ local instances = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-
-local parseError = require "../core-logging/parseError"
-
-local observe = require "../core-graph/observe"
-
-local peek = require "../core-use/peek"
-
-local kindof = require "../kindof"
-local xtypeof = require "../xtypeof"
-
 local Parent = require "./keys/Parent"
+local kindof = require "../kindof"
+local observe = require "../core-graph/observe"
+local parseError = require "../core-logging/parseError"
+local peek = require "../core-use/peek"
 local sortKeys = require "./keys/sortKeys"
+local xtypeof = require "../xtypeof"
 
 local function rawSetProperty(instance: Instance, property: string, value: any)
 	instance[property] = value
 end
 
-local function testProperty(instance: Instance, property: string)
+local function testPropertyAssignable(instance: Instance, property: string)
 	instance[property] = instance[property]
 end
 
 local function setProperty(instance: Instance, property: string, value: any)
 	local success, err = xpcall(rawSetProperty, parseError, instance, property, value)
 
-	if not success then
-		if not pcall(testProperty, instance, property) then
-			External.logErrorNonFatal(
-				instances.propertyCannotAssign,
-				nil,
-				instance.ClassName,
-				property
-			)
-		else
-			local givenType = typeof(value)
-			local expectedType = typeof(instance[property])
+	if success then
+		return
+	end
 
-			if givenType == expectedType then
-				External.logErrorNonFatal(instances.propertyAssignError, err)
-			else
-				External.logErrorNonFatal(
-					instances.propertyInvalidType,
-					nil,
-					instance.ClassName,
-					property,
-					expectedType,
-					givenType
-				)
-			end
-		end
+	if pcall(testPropertyAssignable, instance, property) == false then
+		External.logErrorNonFatal(
+			instances.property_cannot_assign,
+			nil,
+			instance.ClassName,
+			property
+		)
+
+		return
+	end
+
+	local given_type = typeof(value)
+	local expected_type = typeof(instance[property])
+
+	if given_type == expected_type then
+		External.logErrorNonFatal(instances.property_assign_error, err)
+	else
+		External.logErrorNonFatal(
+			instances.property_invalid_type,
+			nil,
+			instance.ClassName,
+			property,
+			expected_type,
+			given_type
+		)
 	end
 end
 
@@ -66,32 +65,32 @@ local function applyProperty(
 	end, true)
 end
 
-local function applyProperties<T>(
-	scope: memory.Scope<T>,
+local function applyProperties(
+	scope: memory.Scope,
 	instance: Instance,
-	props: instances.Properties
+	properties: instances.Properties
 )
-	props = table.clone(props)
+	local n_properties = table.clone(properties)
 
-	local specialKeys: { instances.SpecialKey } = {}
+	n_properties[Parent] = n_properties.Parent
+	n_properties.Parent = nil
 
-	props[Parent] = props.Parent
-	props.Parent = nil
+	local special_keys = {}
 
-	for key, value in props do
-		local keyType = xtypeof(key)
+	for key, value in n_properties do
+		local key_type = xtypeof(key)
 
-		if keyType == "string" then
+		if key_type == "string" then
 			applyProperty(scope, instance, key, value)
 		elseif kindof(key) == "key" then
-			table.insert(specialKeys, key)
+			table.insert(special_keys, key)
 		end
 	end
 
-	table.sort(specialKeys, sortKeys)
+	table.sort(special_keys, sortKeys)
 
-	for _, key in specialKeys do
-		key.apply(scope, instance, props[key])
+	for _, key: instances.SpecialKey in special_keys do
+		key.apply(scope, instance, n_properties[key])
 	end
 end
 

@@ -3,58 +3,54 @@ local iter = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local External = require "../core-external/External"
-
 local Computed = require "../core-calc/Computed"
-local Value = require "../core-calc/Value"
-
-local doCleanup = require "../core-memory/doCleanup"
-
-local parseError = require "../core-logging/parseError"
-
+local External = require "../core-external/External"
 local For = require "./For"
+local Value = require "../core-calc/Value"
 local checkDissolvable = require "./For/checkDissolvable"
+local doCleanup = require "../core-memory/doCleanup"
+local parseError = require "../core-logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {
-		roamKeys = false,
-		roamValues = true,
+		roam_keys = false,
+		roam_values = true,
 		invalidateInputKey = function(_): ()
 			-- do nothing
 		end,
 		invalidateInputValue = function(self): ()
-			self._inputValueState:set(self.inputValue)
+			self._input_value_state:set(self.input_value)
 		end,
 		useOutputPair = function(self, use)
-			return self.inputKey, use(self._outputValueState)
+			return self.input_key, use(self._ouput_value_state)
 		end,
 	},
 }
 
 local function SubObject<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
-	initialKey: IK,
-	initialValue: IV,
+	initial_key: IK,
+	initial_value: IV,
 	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.SubObject<S, IK, IV, IK, OV>
 	local object = setmetatable({
 		scope = scope,
-		inputKey = initialKey,
-		inputValue = initialValue,
+		input_key = initial_key,
+		input_value = initial_value,
 
-		_inputValueState = Value(scope, initialValue),
+		_input_value_state = Value(scope, initial_value),
 	}, SUB_OBJECT_META)
 
-	object._outputValueState = Computed(scope, function(use, scope)
-		local inputValue = use(object._inputValueState)
-		local ok, outputValue = xpcall(processor, parseError, use, scope, inputValue)
+	object._ouput_value_state = Computed(scope, function(use, scope)
+		local input_value = use(object._input_value_state)
+		local ok, output_value = xpcall(processor, parseError, use, scope, input_value)
 
 		if ok then
-			return outputValue
+			return output_value
 		end
 
-		local error: logging.Error = outputValue
-		External.logErrorNonFatal(logging.callbackError, error)
+		local error: logging.Error = output_value
+		External.logErrorNonFatal(logging.callback_error, error)
 
 		doCleanup(scope)
 
@@ -68,16 +64,16 @@ end
 
 local function ForValues<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
-	inputTable: calc.UsedAs<{ [IK]: IV }>,
+	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: iter.ForValuesProcessor<S, IV, OV>
 ): iter.For<IK, OV> | { [IK]: OV }
 	local can_dissolve, constant = checkDissolvable(
 		scope,
-		inputTable,
-		function(use, scope, inputKey, inputValue)
-			local newValue = processor(use, scope, inputValue)
+		input_table,
+		function(use, scope, input_key, input_value)
+			local new_value = processor(use, scope, input_value)
 
-			return inputKey, newValue
+			return input_key, new_value
 		end
 	)
 
@@ -85,8 +81,8 @@ local function ForValues<S, IK, IV, OV>(
 		return constant
 	end
 
-	return For(scope, inputTable, function(scope, initialKey, initialValue)
-		return SubObject(scope, initialKey, initialValue, processor)
+	return For(scope, input_table, function(scope, initial_key, initial_value)
+		return SubObject(scope, initial_key, initial_value, processor)
 	end)
 end
 

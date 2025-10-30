@@ -1,11 +1,10 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
-local function _isEager(target: graph.GraphObject)
+local function isNodeEager(target: graph.GraphObject): boolean
 	if target.timeliness == "eager" then
 		return true
 	end
@@ -17,7 +16,7 @@ local function _isEager(target: graph.GraphObject)
 	return false
 end
 
-local function _fireObservers(target: graph.GraphObject)
+local function fireNodeObservers(target: graph.GraphObject)
 	if target._observers == nil then
 		return
 	end
@@ -28,8 +27,8 @@ local function _fireObservers(target: graph.GraphObject)
 end
 
 local function change(target: graph.GraphObject)
-	if not castToGraph(target) then
-		return External.logError(graph.invalidChangeType, nil, typeof(target))
+	if castToGraph(target) == nil then
+		return External.logError(graph.invalid_change_type, nil, typeof(target))
 	end
 
 	if not evaluate(target, true) then
@@ -44,10 +43,10 @@ local function change(target: graph.GraphObject)
 	repeat
 		local done = true
 
-		for _, searchTarget: graph.GraphObject in search_now do
-			for user in searchTarget._users do
+		for _, search_target: graph.GraphObject in search_now do
+			for user in search_target._users do
 				if user.validity == "busy" then
-					External.logError(graph.infiniteLoop)
+					External.logError(graph.infinite_loop)
 				end
 
 				if user.validity == "valid" then
@@ -57,7 +56,7 @@ local function change(target: graph.GraphObject)
 
 					table.insert(search_next, user)
 
-					if _isEager(user) then
+					if isNodeEager(user) then
 						table.insert(eager_users, user)
 					end
 				end
@@ -70,14 +69,14 @@ local function change(target: graph.GraphObject)
 	until done
 
 	table.sort(eager_users, function(a, b)
-		return a.createdAt < b.createdAt
+		return a.created_at < b.created_at
 	end)
 
-	_fireObservers(target)
+	fireNodeObservers(target)
 
 	for _, user: graph.GraphObject in eager_users do
 		if evaluate(user) then
-			_fireObservers(user)
+			fireNodeObservers(user)
 		end
 	end
 
