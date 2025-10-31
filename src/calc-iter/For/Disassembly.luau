@@ -97,9 +97,8 @@ local CLASS = table.freeze {
 		for object in self._objects do
 			local reused = false
 
-			-- casting these to unknown because the type solver doesn't know how to handle generics, apparently.
-			local old_input_key = object.input_key :: unknown
-			local old_input_value = object.input_value :: unknown
+			local old_input_key = object.input_key
+			local old_input_value = object.input_value
 
 			local new_input_key
 
