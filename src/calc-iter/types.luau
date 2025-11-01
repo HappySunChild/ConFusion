@@ -33,6 +33,15 @@ export type RangeConstructor = (
 	step: calc.UsedAs<number>?
 ) -> Range | { number }
 
+export type ForRangeProcessor<S, T> = ForValuesProcessor<S, number, T>
+export type ForRangeConstructor = <S, T>(
+	scope: memory.Scope<S>,
+	start: calc.UsedAs<number>,
+	finish: calc.UsedAs<number>,
+	processor: ForRangeProcessor<S, T>,
+	step: calc.UsedAs<number>?
+) -> For<number, T>
+
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
 	scope: memory.Scope<S>,
