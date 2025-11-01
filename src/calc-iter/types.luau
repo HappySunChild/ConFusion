@@ -17,10 +17,10 @@ export type Disassembly<S, IK, IV, OK, OV> = calc.StateObject<{ [OK]: OV }> & {
 }
 
 -- A state object which maps over keys and/or values in another table.
-export type For<OK, OV> = {
+export type For<K, V> = {
 	type: "For",
 	timeliness: "lazy",
-} & calc.StateObject<{ [OK]: OV }>
+} & calc.StateObject<{ [K]: V }>
 
 export type Range = {
 	type: "Range",
