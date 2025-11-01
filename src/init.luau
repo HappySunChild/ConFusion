@@ -36,7 +36,8 @@ export type Computed<T> = calc.Computed<T>
 export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
-export type For<OK, OV> = iter.For<OK, OV>
+export type For<K, V> = iter.For<K, V>
+export type Range = iter.Range
 
 export type Animated<T> = motion.Animated<T>
 export type TweenInfo = tweens.TweenInfo
