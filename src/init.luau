@@ -85,7 +85,7 @@ type ConFusion = {
 	-- Calc: Iter
 	read ForPairs: iter.ForPairsConstructor,
 	read ForKeys: iter.ForKeysConstructor,
-	read ForValue: iter.ForValuesConstructor,
+	read ForValues: iter.ForValuesConstructor,
 	read ForRange: iter.ForRangeConstructor,
 	read Range: iter.RangeConstructor,
 
