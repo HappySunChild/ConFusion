@@ -109,9 +109,12 @@ local CLASS = table.freeze {
 				new_input_key = cur_input_key
 			else
 				for pending_key, pending_value in pending_pairs do
-					local will_be_occupied = current_objects[pending_key] ~= nil
-
-					if will_be_occupied then
+					if
+						object.roam_keys == false
+						-- "predict" that this key is going to be reused by another existing object that is
+						-- expecting it to be available. if it is going to be reused, then don't.
+						and current_objects[pending_key] ~= nil
+					then
 						continue
 					end
 
