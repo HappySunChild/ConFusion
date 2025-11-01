@@ -13,8 +13,8 @@ local parseError = require "../core-logging/parseError"
 
 local SUB_OBJECT_META = table.freeze {
 	__index = {
-		roam_keys = false,
-		roam_values = true,
+		roam_keys = true,
+		roam_values = false,
 		invalidateInputKey = function(_): ()
 			-- do nothing
 		end,
