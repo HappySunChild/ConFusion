@@ -2,7 +2,7 @@ local calc = require "../core-calc/types"
 local iter = require "./types"
 local memory = require "../core-memory/types"
 
-local ForValues = require "./ForValues" -- either ForValues or ForKeys would suffice here
+local ForValues = require "./ForValues"
 local Range = require "./Range"
 
 local function ForRange<S, T>(
