@@ -12,7 +12,7 @@ local peek = require "../../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_objects: { [iter.SubObject<S, IK, IV, OK, OV>]: boolean },
+	_objects: { iter.SubObject<S, IK, IV, OK, OV> },
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
@@ -21,7 +21,7 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
-	for object in disassembly._objects do
+	for _, object in disassembly._objects do
 		if object.scope ~= nil then
 			doCleanup(object.scope)
 
@@ -44,7 +44,7 @@ local CLASS = table.freeze {
 		local max_array_index = -math.huge
 		local has_holes = false
 
-		for object in self._objects do
+		for _, object in self._objects do
 			local output_key, output_value = object:useOutputPair(use)
 
 			if output_key == nil or output_value == nil then
@@ -92,49 +92,57 @@ local CLASS = table.freeze {
 		end
 
 		local pending_pairs = table.clone(peek(self._input)) :: { [any]: any }
-		local new_objects = {}
 
-		for object in self._objects do
-			local reused = false
+		local current_objects = self._objects
+		local next_objects = {}
 
-			local old_input_key = object.input_key
-			local old_input_value = object.input_value
+		for _, object in current_objects do
+			local can_reuse = false
+
+			local cur_input_key = object.input_key
+			local cur_input_value = object.input_value
 
 			local new_input_key
 
-			if not object.roam_keys and pending_pairs[old_input_key] ~= nil then
-				reused = true
-				new_input_key = old_input_key
+			if object.roam_keys == false and pending_pairs[cur_input_key] ~= nil then
+				can_reuse = true
+				new_input_key = cur_input_key
 			else
 				for pending_key, pending_value in pending_pairs do
-					reused = true
+					local will_be_occupied = current_objects[pending_key] ~= nil
+
+					if will_be_occupied then
+						continue
+					end
+
+					can_reuse = true
 					new_input_key = pending_key
 
 					if object.roam_values then
 						break
 					end
 
-					if pending_value == old_input_value then
+					if pending_value == cur_input_value then
 						break
 					end
 				end
 			end
 
-			if reused then
+			if can_reuse then
 				local new_input_value = pending_pairs[new_input_key]
-				new_objects[object] = true
 
-				if new_input_key ~= old_input_key then
+				next_objects[cur_input_key] = object
+				pending_pairs[new_input_key] = nil
+
+				if new_input_key ~= cur_input_key then
 					object.input_key = new_input_key
 					object:invalidateInputKey()
 				end
 
-				if new_input_value ~= old_input_value then
+				if new_input_value ~= cur_input_value then
 					object.input_value = new_input_value
 					object:invalidateInputValue()
 				end
-
-				pending_pairs[new_input_key] = nil
 			else
 				if object.scope ~= nil then
 					doCleanup(object.scope)
@@ -144,13 +152,15 @@ local CLASS = table.freeze {
 			end
 		end
 
+		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			local object =
+			local new_object =
 				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
-			new_objects[object] = true
+
+			next_objects[pending_key] = new_object
 		end
 
-		self._objects = new_objects
+		self._objects = next_objects
 
 		return true
 	end,
