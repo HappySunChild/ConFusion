@@ -96,7 +96,9 @@ local CLASS = table.freeze {
 		local current_objects = self._objects
 		local next_objects = {}
 
-		for _, object in current_objects do
+		for object_key, object in current_objects do
+			current_objects[object_key] = nil
+
 			local can_reuse = false
 
 			local cur_input_key = object.input_key
@@ -104,16 +106,34 @@ local CLASS = table.freeze {
 
 			local new_input_key
 
-			if object.roam_keys == false and pending_pairs[cur_input_key] ~= nil then
+			if not object.roam_keys and pending_pairs[cur_input_key] ~= nil then
 				can_reuse = true
 				new_input_key = cur_input_key
 			else
+				local claimed_values = {}
+
+				if not object.roam_values then
+					for _, other_object in current_objects do
+						claimed_values[other_object.input_value] = true
+					end
+				end
+
 				for pending_key, pending_value in pending_pairs do
 					if
-						object.roam_keys == false
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
+						not object.roam_keys
 						and current_objects[pending_key] ~= nil
+					then
+						continue
+					end
+
+					if
+						-- "selfless" check
+						-- don't use values that are "claimed" by other objects.
+						not object.roam_values
+						and cur_input_value ~= pending_value
+						and claimed_values[pending_value]
 					then
 						continue
 					end
@@ -134,8 +154,8 @@ local CLASS = table.freeze {
 			if can_reuse then
 				local new_input_value = pending_pairs[new_input_key]
 
-				next_objects[cur_input_key] = object
 				pending_pairs[new_input_key] = nil
+				next_objects[new_input_key] = object
 
 				if new_input_key ~= cur_input_key then
 					object.input_key = new_input_key
