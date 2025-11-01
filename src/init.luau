@@ -85,6 +85,8 @@ type ConFusion = {
 	read ForPairs: iter.ForPairsConstructor,
 	read ForKeys: iter.ForKeysConstructor,
 	read ForValue: iter.ForValuesConstructor,
+	read ForRange: iter.ForRangeConstructor,
+	read Range: iter.RangeConstructor,
 
 	-- Async
 	read Eventual: async.EventualConstructor,
@@ -175,6 +177,8 @@ local ConFusion = table.freeze {
 	ForPairs = require "@self/calc-iter/ForPairs",
 	ForKeys = require "@self/calc-iter/ForKeys",
 	ForValues = require "@self/calc-iter/ForValues",
+	ForRange = require "@self/calc-iter/ForRange",
+	Range = require "@self/calc-iter/Range",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
