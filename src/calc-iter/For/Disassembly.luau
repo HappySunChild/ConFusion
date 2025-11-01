@@ -44,8 +44,8 @@ local CLASS = table.freeze {
 		local max_array_index = -math.huge
 		local has_holes = false
 
-		for _, object in self._pairs do
-			local output_key, output_value = object:useOutputPair(use)
+		for _, pair in self._pairs do
+			local output_key, output_value = pair:useOutputPair(use)
 
 			if output_key == nil or output_value == nil then
 				has_holes = true
@@ -54,7 +54,11 @@ local CLASS = table.freeze {
 				External.logErrorNonFatal(
 					iter.for_key_collision,
 					nil,
-					tostring(output_key)
+					output_key,
+					pair.input_key,
+					pair.input_value,
+					output_key,
+					output_value
 				)
 
 				continue
