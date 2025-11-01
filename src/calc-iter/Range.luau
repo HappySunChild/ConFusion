@@ -59,6 +59,8 @@ local CLASS = table.freeze {
 
 		local output = self._internal_value
 
+		table.clear(output)
+
 		for i = peek(self._start), peek(self._finish), peek(self._step) do
 			output[i] = i
 		end
