@@ -11,59 +11,74 @@ local checkDissolvable = require "./For/checkDissolvable"
 local doCleanup = require "../core-memory/doCleanup"
 local parseError = require "../core-logging/parseError"
 
-local SUB_OBJECT_META = table.freeze {
-	__index = {
-		roam_keys = false,
-		roam_values = false,
-		invalidateInputKey = function(self): ()
-			self._input_key_state:set(self.input_key)
-		end,
-		invalidateInputValue = function(self): ()
-			self._input_value_state:set(self.input_value)
-		end,
-		useOutputPair = function(self, use)
-			local pair = use(self._output_pair_state)
-			return pair.key, pair.value
-		end,
-	},
+type ForPairsPair<IK, IV, OK, OV> = iter.Pair<IK, IV, OK, OV> & {
+	_input_key_state: calc.Value<IK>,
+	_input_value_state: calc.Value<IV>,
+	_output_pair_state: calc.Computed<{ key: OK, value: OV }>,
 }
 
-local function SubObject<S, IK, IV, OK, OV>(
+local PAIR_CLASS = table.freeze {
+	roam_keys = false,
+	roam_values = false,
+
+	invalidateInputKey = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>): ()
+		self._input_key_state:set(self.input_key)
+	end,
+	invalidateInputValue = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>): ()
+		self._input_value_state:set(self.input_value)
+	end,
+
+	useOutputPair = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>, use: calc.Use): (OK, OV)
+		local pair = use(self._output_pair_state)
+
+		return pair.key, pair.value
+	end,
+}
+local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
+
+local function ForPairsPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	initial_key: IK,
 	initial_value: IV,
-	processor: iter.ForPairsProcessor<S, IK, IV, OK, OV>
-): iter.SubObject<S, IK, IV, OK, OV>
-	local object = setmetatable({
+	processor: iter.ForPairsProcessor<
+		S,
+		IK,
+		IV,
+		OK,
+		OV
+	>
+): ForPairsPair<IK, IV, OK, OV>
+	local new_pair = setmetatable({
 		scope = scope,
 		input_key = initial_key,
 		input_value = initial_value,
 
 		_input_value_state = Value(scope, initial_value),
 		_input_key_state = Value(scope, initial_key),
-	}, SUB_OBJECT_META)
+	}, PAIR_METATABLE)
 
-	object._output_pair_state = Computed(scope, function(use, scope)
-		local input_key = use(object._input_key_state)
-		local input_value = use(object._input_value_state)
-		local ok, output_key, output_value =
-			xpcall(processor, parseError, use, scope, input_key, input_value)
+	new_pair._output_pair_state = Computed(
+		scope,
+		function(use: calc.Use, calc_scope: memory.Scope<S>)
+			local input_key = use(new_pair._input_key_state)
+			local input_value = use(new_pair._input_value_state)
 
-		if ok then
-			return { key = output_key, value = output_value }
+			local ok, output_key, output_value =
+				xpcall(processor, parseError, use, calc_scope, input_key, input_value)
+
+			if ok then
+				return { key = output_key, value = output_value }
+			end
+
+			External.logErrorNonFatal(calc.callback_error, output_key :: logging.Error)
+
+			doCleanup(calc_scope)
+
+			return { key = nil, value = nil }
 		end
+	)
 
-		local err: logging.Error = output_key
-		External.logErrorNonFatal(calc.callback_error, err)
-
-		doCleanup(scope)
-
-		table.clear(scope)
-
-		return { key = nil, value = nil }
-	end)
-
-	return object
+	return new_pair
 end
 
 local function ForPairs<S, IK, IV, OK, OV>(
@@ -77,9 +92,13 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		return constant
 	end
 
-	return For(scope, input_table, function(scope, initial_key, initial_value)
-		return SubObject(scope, initial_key, initial_value, processor)
-	end)
+	return For(
+		scope,
+		input_table,
+		function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
+			return ForPairsPair(scope, initial_key, initial_value, processor)
+		end
+	)
 end
 
 return ForPairs

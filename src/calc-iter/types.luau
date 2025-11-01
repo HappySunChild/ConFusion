@@ -1,15 +1,16 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type SubObject<S, IK, IV, OK, OV> = {
-	scope: memory.Scope<S>?,
+export type Pair<IK, IV, OK, OV> = {
+	scope: memory.Scope?,
 	input_key: IK,
 	input_value: IV,
 	roam_keys: boolean,
 	roam_values: boolean,
-	invalidateInputKey: (SubObject<S, IK, IV, OK, OV>) -> (),
-	invalidateInputValue: (SubObject<S, IK, IV, OK, OV>) -> (),
-	useOutputPair: (SubObject<S, IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
+
+	invalidateInputKey: (Pair<IK, IV, OK, OV>) -> (),
+	invalidateInputValue: (Pair<IK, IV, OK, OV>) -> (),
+	useOutputPair: (Pair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
 }
 
 export type Disassembly<S, IK, IV, OK, OV> = calc.StateObject<{ [OK]: OV }> & {
@@ -21,6 +22,7 @@ export type For<K, V> = {
 	type: "For",
 	timeliness: "lazy",
 } & calc.StateObject<{ [K]: V }>
+export type ForConstructor = {}
 
 export type Range = {
 	type: "Range",

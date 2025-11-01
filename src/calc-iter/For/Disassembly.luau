@@ -12,16 +12,16 @@ local peek = require "../../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_objects: { iter.SubObject<S, IK, IV, OK, OV> },
+	_pairs: { [IK]: iter.Pair<IK, IV, OK, OV> },
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.SubObject<S, IK, IV, OK, OV>,
+	) -> iter.Pair<IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
-	for _, object in disassembly._objects do
+	for _, object in disassembly._pairs do
 		if object.scope ~= nil then
 			doCleanup(object.scope)
 
@@ -44,7 +44,7 @@ local CLASS = table.freeze {
 		local max_array_index = -math.huge
 		local has_holes = false
 
-		for _, object in self._objects do
+		for _, object in self._pairs do
 			local output_key, output_value = object:useOutputPair(use)
 
 			if output_key == nil or output_value == nil then
@@ -93,27 +93,27 @@ local CLASS = table.freeze {
 
 		local pending_pairs = table.clone(peek(self._input)) :: { [any]: any }
 
-		local current_objects = self._objects
-		local next_objects = {}
+		local current_pairs = self._pairs
+		local next_pairs = {}
 
-		for object_key, object in current_objects do
-			current_objects[object_key] = nil
+		for pair_key, pair in current_pairs do
+			current_pairs[pair_key] = nil
 
 			local can_reuse = false
 
-			local cur_input_key = object.input_key
-			local cur_input_value = object.input_value
+			local cur_input_key = pair.input_key
+			local cur_input_value = pair.input_value
 
 			local new_input_key
 
-			if not object.roam_keys and pending_pairs[cur_input_key] ~= nil then
+			if not pair.roam_keys and pending_pairs[cur_input_key] ~= nil then
 				can_reuse = true
 				new_input_key = cur_input_key
 			else
 				local claimed_values = {}
 
-				if not object.roam_values then
-					for _, other_object in current_objects do
+				if not pair.roam_values then
+					for _, other_object in current_pairs do
 						claimed_values[other_object.input_value] = true
 					end
 				end
@@ -122,8 +122,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not object.roam_keys
-						and current_objects[pending_key] ~= nil
+						not pair.roam_keys and current_pairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -131,7 +130,7 @@ local CLASS = table.freeze {
 					if
 						-- "selfless" check
 						-- don't use values that are "claimed" by other objects.
-						not object.roam_values
+						not pair.roam_values
 						and cur_input_value ~= pending_value
 						and claimed_values[pending_value]
 					then
@@ -141,7 +140,7 @@ local CLASS = table.freeze {
 					can_reuse = true
 					new_input_key = pending_key
 
-					if object.roam_values then
+					if pair.roam_values then
 						break
 					end
 
@@ -155,35 +154,35 @@ local CLASS = table.freeze {
 				local new_input_value = pending_pairs[new_input_key]
 
 				pending_pairs[new_input_key] = nil
-				next_objects[new_input_key] = object
+				next_pairs[new_input_key] = pair
 
 				if new_input_key ~= cur_input_key then
-					object.input_key = new_input_key
-					object:invalidateInputKey()
+					pair.input_key = new_input_key
+					pair:invalidateInputKey()
 				end
 
 				if new_input_value ~= cur_input_value then
-					object.input_value = new_input_value
-					object:invalidateInputValue()
+					pair.input_value = new_input_value
+					pair:invalidateInputValue()
 				end
 			else
-				if object.scope ~= nil then
-					doCleanup(object.scope)
+				if pair.scope ~= nil then
+					doCleanup(pair.scope)
 				end
 
-				object.scope = nil
+				pair.scope = nil
 			end
 		end
 
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			local new_object =
+			local new_pair =
 				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
 
-			next_objects[pending_key] = new_object
+			next_pairs[pending_key] = new_pair
 		end
 
-		self._objects = next_objects
+		self._pairs = next_pairs
 
 		return true
 	end,
@@ -197,7 +196,7 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.SubObject<S, IK, IV, OK, OV>
+	) -> iter.Pair<IK, IV, OK, OV>
 ): iter.Disassembly<S, IK, IV, OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
@@ -207,8 +206,8 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		_using = {},
 
 		_input = input,
+		_pairs = {},
 		_constructor = constructor,
-		_objects = {},
 	}, METATABLE) :: any
 
 	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
