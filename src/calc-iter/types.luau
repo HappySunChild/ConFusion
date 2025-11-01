@@ -22,6 +22,17 @@ export type For<OK, OV> = {
 	timeliness: "lazy",
 } & calc.StateObject<{ [OK]: OV }>
 
+export type Range = {
+	type: "Range",
+	timeliness: "lazy",
+} & calc.StateObject<{ number }>
+export type RangeConstructor = (
+	scope: memory.Scope,
+	start: calc.UsedAs<number>,
+	finish: calc.UsedAs<number>,
+	step: calc.UsedAs<number>?
+) -> Range | { number }
+
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
 	scope: memory.Scope<S>,
