@@ -12,12 +12,12 @@ local peek = require "../../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_pairs: { [IK]: iter.Pair<IK, IV, OK, OV> },
+	_pairs: { [IK]: iter.ComputedPair<IK, IV, OK, OV> },
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.Pair<IK, IV, OK, OV>,
+	) -> iter.ComputedPair<IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
@@ -100,8 +100,8 @@ local CLASS = table.freeze {
 		local current_pairs = self._pairs
 		local next_pairs = {}
 
-		for pair_key, pair in current_pairs do
-			current_pairs[pair_key] = nil
+		for index, pair in current_pairs do
+			current_pairs[index] = nil
 
 			local can_reuse = false
 
@@ -200,7 +200,7 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.Pair<IK, IV, OK, OV>
+	) -> iter.ComputedPair<IK, IV, OK, OV>
 ): iter.Disassembly<S, IK, IV, OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,

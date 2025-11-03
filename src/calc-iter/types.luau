@@ -1,16 +1,16 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type Pair<IK, IV, OK, OV> = {
+export type ComputedPair<IK, IV, OK, OV> = {
 	scope: memory.Scope?,
 	input_key: IK,
 	input_value: IV,
 	roam_keys: boolean,
 	roam_values: boolean,
 
-	invalidateInputKey: (Pair<IK, IV, OK, OV>) -> (),
-	invalidateInputValue: (Pair<IK, IV, OK, OV>) -> (),
-	useOutputPair: (Pair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
+	invalidateInputKey: (ComputedPair<IK, IV, OK, OV>) -> (),
+	invalidateInputValue: (ComputedPair<IK, IV, OK, OV>) -> (),
+	useOutputPair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
 }
 
 export type Disassembly<S, IK, IV, OK, OV> = calc.StateObject<{ [OK]: OV }> & {

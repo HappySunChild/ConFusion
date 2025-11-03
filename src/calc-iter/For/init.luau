@@ -43,7 +43,7 @@ local function For<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.Pair<IK, IV, OK, OV>
+	) -> iter.ComputedPair<IK, IV, OK, OV>
 ): iter.For<OK, OV>
 	local new_for = setmetatable({
 		scope = scope,

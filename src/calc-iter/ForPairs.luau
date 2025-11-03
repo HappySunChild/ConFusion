@@ -11,7 +11,7 @@ local checkDissolvable = require "./For/checkDissolvable"
 local doCleanup = require "../core-memory/doCleanup"
 local parseError = require "../core-logging/parseError"
 
-type ForPairsPair<IK, IV, OK, OV> = iter.Pair<IK, IV, OK, OV> & {
+type ForPairsComputedPair<IK, IV, OK, OV> = iter.ComputedPair<IK, IV, OK, OV> & {
 	_input_key_state: calc.Value<IK>,
 	_input_value_state: calc.Value<IV>,
 	_output_pair_state: calc.Computed<{ key: OK, value: OV }>,
@@ -21,14 +21,17 @@ local PAIR_CLASS = table.freeze {
 	roam_keys = false,
 	roam_values = false,
 
-	invalidateInputKey = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>): ()
+	invalidateInputKey = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
 		self._input_key_state:set(self.input_key)
 	end,
-	invalidateInputValue = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>): ()
+	invalidateInputValue = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
 		self._input_value_state:set(self.input_value)
 	end,
 
-	useOutputPair = function<IK, IV, OK, OV>(self: ForPairsPair<IK, IV, OK, OV>, use: calc.Use): (OK, OV)
+	useOutputPair = function<IK, IV, OK, OV>(
+		self: ForPairsComputedPair<IK, IV, OK, OV>,
+		use: calc.Use
+	): (OK, OV)
 		local pair = use(self._output_pair_state)
 
 		return pair.key, pair.value
@@ -36,7 +39,7 @@ local PAIR_CLASS = table.freeze {
 }
 local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
 
-local function ForPairsPair<S, IK, IV, OK, OV>(
+local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	initial_key: IK,
 	initial_value: IV,
@@ -47,7 +50,12 @@ local function ForPairsPair<S, IK, IV, OK, OV>(
 		OK,
 		OV
 	>
-): ForPairsPair<IK, IV, OK, OV>
+): ForPairsComputedPair<
+	IK,
+	IV,
+	OK,
+	OV
+>
 	local new_pair = setmetatable({
 		scope = scope,
 		input_key = initial_key,
@@ -96,7 +104,7 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		scope,
 		input_table,
 		function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
-			return ForPairsPair(scope, initial_key, initial_value, processor)
+			return ForPairsComputedPair(scope, initial_key, initial_value, processor)
 		end
 	)
 end
