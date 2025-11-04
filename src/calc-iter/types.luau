@@ -18,8 +18,6 @@ export type Disassembly<OK, OV> = calc.StateObject<{ [OK]: OV }> & {
 }
 
 -- A state object which maps over keys and/or values in another table.
-export type For<K, V> = {
-	type: "For",
 	timeliness: "lazy",
 } & calc.StateObject<{ [K]: V }>
 
@@ -41,7 +39,6 @@ export type ForRangeConstructor = <S, T>(
 	finish: calc.UsedAs<number>,
 	processor: ForRangeProcessor<S, T>,
 	step: calc.UsedAs<number>?
-) -> For<number, T>
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
@@ -53,7 +50,6 @@ export type ForPairsConstructor = <S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForPairsProcessor<S, IK, IV, OK, OV>
-) -> For<OK, OV> | { [OK]: OV }
 
 export type ForKeysProcessor<S, IK, OK> = (
 	use: calc.Use,
@@ -64,7 +60,6 @@ export type ForKeysConstructor = <S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForKeysProcessor<S, IK, OK>
-) -> For<OK, IV> | { [OK]: IV }
 
 export type ForValuesProcessor<S, IV, OV> = (
 	use: calc.Use,
@@ -75,7 +70,6 @@ export type ForValuesConstructor = <S, IK, IV, OV>(
 	scope: memory.Scope<S>,
 	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: ForValuesProcessor<S, IV, OV>
-) -> For<IK, OV> | { [IK]: OV }
 
 return {
 	for_key_collision = "The key '%*' was returned multiple times simultaneously, which is not allowed in `For` objects.\nInput:\n\tKey: %*\n\tValue: %*\n\nOutput:\n\tKey: %*\n\tValue: %*",
