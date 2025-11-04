@@ -22,7 +22,6 @@ export type For<K, V> = {
 	type: "For",
 	timeliness: "lazy",
 } & calc.StateObject<{ [K]: V }>
-export type ForConstructor = {}
 
 export type Range = {
 	type: "Range",
