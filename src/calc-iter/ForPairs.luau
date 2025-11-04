@@ -56,7 +56,7 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 	OK,
 	OV
 >
-	local new_pair = setmetatable({
+	local new_computedpair = setmetatable({
 		scope = scope,
 		input_key = initial_key,
 		input_value = initial_value,
@@ -65,11 +65,11 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 		_input_key_state = Value(scope, initial_key),
 	}, PAIR_METATABLE)
 
-	new_pair._output_pair_state = Computed(
+	new_computedpair._output_pair_state = Computed(
 		scope,
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
-			local input_key = use(new_pair._input_key_state)
-			local input_value = use(new_pair._input_value_state)
+			local input_key = use(new_computedpair._input_key_state)
+			local input_value = use(new_computedpair._input_value_state)
 
 			local ok, output_key, output_value =
 				xpcall(processor, parseError, use, calc_scope, input_key, input_value)
@@ -86,7 +86,7 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 		end
 	)
 
-	return new_pair
+	return new_computedpair
 end
 
 local function ForPairs<S, IK, IV, OK, OV>(

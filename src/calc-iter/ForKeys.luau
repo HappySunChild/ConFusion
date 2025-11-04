@@ -40,7 +40,7 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 	initial_value: IV,
 	processor: iter.ForKeysProcessor<S, IK, OK>
 ): ForKeysComputedPair<IK, IV, OK>
-	local new_pair = setmetatable({
+	local new_computedpair = setmetatable({
 		scope = scope,
 		input_key = initial_key,
 		input_value = initial_value,
@@ -48,10 +48,10 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 		_input_key_state = Value(scope, initial_key),
 	}, PAIR_METATABLE)
 
-	new_pair._output_key_state = Computed(
+	new_computedpair._output_key_state = Computed(
 		scope,
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
-			local input_key = use(new_pair._input_key_state)
+			local input_key = use(new_computedpair._input_key_state)
 
 			local ok, output_key =
 				xpcall(processor, parseError, use, calc_scope, input_key)
@@ -68,7 +68,7 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 		end
 	)
 
-	return new_pair
+	return new_computedpair
 end
 
 local function ForKeys<S, IK, IV, OK>(
