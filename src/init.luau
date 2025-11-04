@@ -11,7 +11,9 @@ local calc = require "@self/core-calc/types"
 local graph = require "@self/core-graph/types"
 local memory = require "@self/core-memory/types"
 
-local iter = require "@self/calc-iter/types"
+local iter = require "@self/iter/types"
+local iter_for = require "@self/iter-for/types"
+local iter_range = require "@self/iter-range/types"
 
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
@@ -37,7 +39,7 @@ export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
 export type Iter<K, V> = iter.Iter<K, V>
-export type Range = iter.Range
+export type Range = iter_range.Range
 
 export type Animated<T> = motion.Animated<T>
 export type TweenInfo = tweens.TweenInfo
@@ -82,12 +84,14 @@ type ConFusion = {
 	read peek: calc.Use,
 	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
 
-	-- Calc: Iter
-	read ForPairs: iter.ForPairsConstructor,
-	read ForKeys: iter.ForKeysConstructor,
-	read ForValues: iter.ForValuesConstructor,
-	read ForRange: iter.ForRangeConstructor,
-	read Range: iter.RangeConstructor,
+	-- Iter: For
+	read ForPairs: iter_for.ForPairsConstructor,
+	read ForKeys: iter_for.ForKeysConstructor,
+	read ForValues: iter_for.ForValuesConstructor,
+
+	-- Iter: Range
+	read ForRange: iter_range.ForRangeConstructor,
+	read Range: iter_range.RangeConstructor,
 
 	-- Async
 	read Eventual: async.EventualConstructor,
@@ -174,12 +178,14 @@ local ConFusion = table.freeze {
 	peek = require "@self/core-use/peek",
 	flatten = require "@self/core-use/flatten",
 
-	-- Calc: Iter
-	ForPairs = require "@self/calc-iter/ForPairs",
-	ForKeys = require "@self/calc-iter/ForKeys",
-	ForValues = require "@self/calc-iter/ForValues",
-	ForRange = require "@self/calc-iter/ForRange",
-	Range = require "@self/calc-iter/Range",
+	-- Iter: For
+	ForPairs = require "@self/iter-for/ForPairs",
+	ForKeys = require "@self/iter-for/ForKeys",
+	ForValues = require "@self/iter-for/ForValues",
+
+	-- Iter: Range
+	ForRange = require "@self/iter-range/ForRange",
+	Range = require "@self/iter-range/Range",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",
