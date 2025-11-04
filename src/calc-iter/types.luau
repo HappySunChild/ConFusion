@@ -1,26 +1,47 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type SubObject<S, IK, IV, OK, OV> = {
-	scope: memory.Scope<S>?,
+export type ComputedPair<IK, IV, OK, OV> = {
+	scope: memory.Scope?,
 	input_key: IK,
 	input_value: IV,
 	roam_keys: boolean,
 	roam_values: boolean,
-	invalidateInputKey: (SubObject<S, IK, IV, OK, OV>) -> (),
-	invalidateInputValue: (SubObject<S, IK, IV, OK, OV>) -> (),
-	useOutputPair: (SubObject<S, IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
+
+	invalidateInputKey: (ComputedPair<IK, IV, OK, OV>) -> (),
+	invalidateInputValue: (ComputedPair<IK, IV, OK, OV>) -> (),
+	useOutputPair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
 }
 
-export type Disassembly<S, IK, IV, OK, OV> = calc.StateObject<{ [OK]: OV }> & {
-	populate: (Disassembly<S, IK, IV, OK, OV>, calc.Use, output: { [OK]: OV }) -> (),
+export type Disassembly<OK, OV> = calc.StateObject<{ [OK]: OV }> & {
+	populate: (Disassembly<OK, OV>, calc.Use, output: { [OK]: OV }) -> (),
 }
 
 -- A state object which maps over keys and/or values in another table.
-export type For<OK, OV> = {
+export type For<K, V> = {
 	type: "For",
 	timeliness: "lazy",
-} & calc.StateObject<{ [OK]: OV }>
+} & calc.StateObject<{ [K]: V }>
+
+export type Range = {
+	type: "Range",
+	timeliness: "lazy",
+} & calc.StateObject<{ number }>
+export type RangeConstructor = (
+	scope: memory.Scope,
+	start: calc.UsedAs<number>,
+	finish: calc.UsedAs<number>,
+	step: calc.UsedAs<number>?
+) -> Range | { number }
+
+export type ForRangeProcessor<S, T> = ForValuesProcessor<S, number, T>
+export type ForRangeConstructor = <S, T>(
+	scope: memory.Scope<S>,
+	start: calc.UsedAs<number>,
+	finish: calc.UsedAs<number>,
+	processor: ForRangeProcessor<S, T>,
+	step: calc.UsedAs<number>?
+) -> For<number, T>
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
@@ -57,5 +78,5 @@ export type ForValuesConstructor = <S, IK, IV, OV>(
 ) -> For<IK, OV> | { [IK]: OV }
 
 return {
-	for_key_collision = "The key '%s' was returned multiple times simultaneously, which is not allowed in `For` objects.",
+	for_key_collision = "The key '%*' was returned multiple times simultaneously, which is not allowed in `For` objects.\nInput:\n\tKey: %*\n\tValue: %*\n\nOutput:\n\tKey: %*\n\tValue: %*",
 }

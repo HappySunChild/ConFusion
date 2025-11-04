@@ -10,22 +10,22 @@ local destructor = require "../../core-memory/destructor"
 local doCleanup = require "../../core-memory/doCleanup"
 local peek = require "../../core-use/peek"
 
-type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
+type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_objects: { [iter.SubObject<S, IK, IV, OK, OV>]: boolean },
+	_computedpairs: { [IK]: iter.ComputedPair<IK, IV, OK, OV> },
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.SubObject<S, IK, IV, OK, OV>,
+	) -> iter.ComputedPair<IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
-	for object in disassembly._objects do
-		if object.scope ~= nil then
-			doCleanup(object.scope)
+	for _, computedpair in disassembly._computedpairs do
+		if computedpair.scope ~= nil then
+			doCleanup(computedpair.scope)
 
-			object.scope = nil
+			computedpair.scope = nil
 		end
 	end
 end
@@ -44,8 +44,8 @@ local CLASS = table.freeze {
 		local max_array_index = -math.huge
 		local has_holes = false
 
-		for object in self._objects do
-			local output_key, output_value = object:useOutputPair(use)
+		for _, computedpair in self._computedpairs do
+			local output_key, output_value = computedpair:useOutputPair(use)
 
 			if output_key == nil or output_value == nil then
 				has_holes = true
@@ -54,7 +54,11 @@ local CLASS = table.freeze {
 				External.logErrorNonFatal(
 					iter.for_key_collision,
 					nil,
-					tostring(output_key)
+					output_key,
+					computedpair.input_key,
+					computedpair.input_value,
+					output_key,
+					output_value
 				)
 
 				continue
@@ -92,25 +96,56 @@ local CLASS = table.freeze {
 		end
 
 		local pending_pairs = table.clone(peek(self._input)) :: { [any]: any }
-		local new_objects = {}
 
-		for object in self._objects do
-			local reused = false
+		local current_computedpairs = self._computedpairs
+		local next_computedpairs = {}
 
-			local old_input_key = object.input_key
-			local old_input_value = object.input_value
+		for index, computedpair in current_computedpairs do
+			current_computedpairs[index] = nil
 
-			local new_input_key
+			local old_input_key = computedpair.input_key
+			local old_input_value = computedpair.input_value
 
-			if not object.roam_keys and pending_pairs[old_input_key] ~= nil then
-				reused = true
+			local new_input_key: IK
+
+			local can_reuse = false
+
+			if not computedpair.roam_keys and pending_pairs[old_input_key] ~= nil then
+				can_reuse = true
 				new_input_key = old_input_key
 			else
+				local claimed_values = {}
+
+				if not computedpair.roam_values then
+					for _, other_computedpair in current_computedpairs do
+						claimed_values[other_computedpair.input_value] = true
+					end
+				end
+
 				for pending_key, pending_value in pending_pairs do
-					reused = true
+					if
+						-- "predict" that this key is going to be reused by another existing object that is
+						-- expecting it to be available. if it is going to be reused, then don't.
+						not computedpair.roam_keys
+						and current_computedpairs[pending_key] ~= nil
+					then
+						continue
+					end
+
+					if
+						-- "selfless" check
+						-- don't use values that are "claimed" by other objects.
+						not computedpair.roam_values
+						and old_input_value ~= pending_value
+						and claimed_values[pending_value] == true
+					then
+						continue
+					end
+
+					can_reuse = true
 					new_input_key = pending_key
 
-					if object.roam_values then
+					if computedpair.roam_values then
 						break
 					end
 
@@ -120,37 +155,42 @@ local CLASS = table.freeze {
 				end
 			end
 
-			if reused then
-				local new_input_value = pending_pairs[new_input_key]
-				new_objects[object] = true
+			-- cleanup computed pair that can't be reused
+			if not can_reuse then
+				if computedpair.scope ~= nil then
+					doCleanup(computedpair.scope)
 
-				if new_input_key ~= old_input_key then
-					object.input_key = new_input_key
-					object:invalidateInputKey()
+					computedpair.scope = nil
 				end
 
-				if new_input_value ~= old_input_value then
-					object.input_value = new_input_value
-					object:invalidateInputValue()
-				end
+				continue
+			end
 
-				pending_pairs[new_input_key] = nil
-			else
-				if object.scope ~= nil then
-					doCleanup(object.scope)
-				end
+			local new_input_value: IV = pending_pairs[new_input_key]
 
-				object.scope = nil
+			pending_pairs[new_input_key] = nil
+			next_computedpairs[new_input_key] = computedpair
+
+			if old_input_key ~= new_input_key then
+				computedpair.input_key = new_input_key
+				computedpair:invalidateInputKey()
+			end
+
+			if old_input_value ~= new_input_value then
+				computedpair.input_value = new_input_value
+				computedpair:invalidateInputValue()
 			end
 		end
 
+		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			local object =
+			local new_computedpair =
 				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
-			new_objects[object] = true
+
+			next_computedpairs[pending_key] = new_computedpair
 		end
 
-		self._objects = new_objects
+		self._computedpairs = next_computedpairs
 
 		return true
 	end,
@@ -164,8 +204,8 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.SubObject<S, IK, IV, OK, OV>
-): iter.Disassembly<S, IK, IV, OK, OV>
+	) -> iter.ComputedPair<IK, IV, OK, OV>
+): iter.Disassembly<OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
@@ -174,8 +214,8 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		_using = {},
 
 		_input = input,
+		_computedpairs = {},
 		_constructor = constructor,
-		_objects = {},
 	}, METATABLE) :: any
 
 	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))

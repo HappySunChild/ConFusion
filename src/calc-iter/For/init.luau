@@ -8,7 +8,7 @@ local destructor = require "../core-memory/destructor"
 local genericUse = require "../core-use/genericUse"
 
 type Self<S, IK, IV, OK, OV> = iter.For<OK, OV> & {
-	_disassembly: iter.Disassembly<S, IK, IV, OK, OV>,
+	_disassembly: iter.Disassembly<OK, OV>,
 	_use: calc.Use,
 }
 
@@ -43,7 +43,7 @@ local function For<S, IK, IV, OK, OV>(
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.SubObject<S, IK, IV, OK, OV>
+	) -> iter.ComputedPair<IK, IV, OK, OV>
 ): iter.For<OK, OV>
 	local new_for = setmetatable({
 		scope = scope,

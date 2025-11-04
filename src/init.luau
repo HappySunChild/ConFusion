@@ -36,7 +36,8 @@ export type Computed<T> = calc.Computed<T>
 export type Use = calc.Use
 export type UsedAs<T> = calc.UsedAs<T>
 
-export type For<OK, OV> = iter.For<OK, OV>
+export type For<K, V> = iter.For<K, V>
+export type Range = iter.Range
 
 export type Animated<T> = motion.Animated<T>
 export type TweenInfo = tweens.TweenInfo
@@ -84,7 +85,9 @@ type ConFusion = {
 	-- Calc: Iter
 	read ForPairs: iter.ForPairsConstructor,
 	read ForKeys: iter.ForKeysConstructor,
-	read ForValue: iter.ForValuesConstructor,
+	read ForValues: iter.ForValuesConstructor,
+	read ForRange: iter.ForRangeConstructor,
+	read Range: iter.RangeConstructor,
 
 	-- Async
 	read Eventual: async.EventualConstructor,
@@ -175,6 +178,8 @@ local ConFusion = table.freeze {
 	ForPairs = require "@self/calc-iter/ForPairs",
 	ForKeys = require "@self/calc-iter/ForKeys",
 	ForValues = require "@self/calc-iter/ForValues",
+	ForRange = require "@self/calc-iter/ForRange",
+	Range = require "@self/calc-iter/Range",
 
 	-- Async
 	Eventual = require "@self/async/Eventual",

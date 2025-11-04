@@ -11,55 +11,70 @@ local checkDissolvable = require "./For/checkDissolvable"
 local doCleanup = require "../core-memory/doCleanup"
 local parseError = require "../core-logging/parseError"
 
-local SUB_OBJECT_META = table.freeze {
-	__index = {
-		roam_keys = false,
-		roam_values = true,
-		invalidateInputKey = function(_): ()
-			-- do nothing
-		end,
-		invalidateInputValue = function(self): ()
-			self._input_value_state:set(self.input_value)
-		end,
-		useOutputPair = function(self, use)
-			return self.input_key, use(self._ouput_value_state)
-		end,
-	},
+type ForValuesComputedPair<IK, IV, OV> = iter.ComputedPair<IK, IV, IK, OV> & {
+	_input_value_state: calc.Value<IV>,
+	_output_value_state: calc.Computed<OV>,
 }
 
-local function SubObject<S, IK, IV, OV>(
+local PAIR_CLASS = table.freeze {
+	roam_keys = true,
+	roam_values = false,
+
+	invalidateInputKey = function(): () end,
+	invalidateInputValue = function<IK, IV, OV>(self: ForValuesComputedPair<IK, IV, OV>): ()
+		self._input_value_state:set(self.input_value)
+	end,
+
+	useOutputPair = function<IK, IV, OV>(
+		self: ForValuesComputedPair<IK, IV, OV>,
+		use: calc.Use
+	): (IK, OV)
+		return self.input_key, use(self._ouput_value_state)
+	end,
+}
+local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
+
+local function ForValuesComputedPair<S, IK, IV, OV>(
 	scope: memory.Scope<S>,
 	initial_key: IK,
 	initial_value: IV,
-	processor: iter.ForValuesProcessor<S, IV, OV>
-): iter.SubObject<S, IK, IV, IK, OV>
-	local object = setmetatable({
+	processor: iter.ForValuesProcessor<
+		S,
+		IV,
+		OV
+	>
+): ForValuesComputedPair<IK, IV, OV>
+	local input_value_state = Value(scope, initial_value)
+	local output_value_state = Computed(
+		scope,
+		function(use: calc.Use, calc_scope: memory.Scope<S>)
+			local input_value = use(input_value_state)
+
+			local ok, output_value =
+				xpcall(processor, parseError, use, calc_scope, input_value)
+
+			if ok then
+				return output_value
+			end
+
+			External.logErrorNonFatal(calc.callback_error, output_value :: logging.Error)
+
+			doCleanup(calc_scope)
+
+			return nil
+		end
+	)
+
+	local new_computedpair = setmetatable({
 		scope = scope,
 		input_key = initial_key,
 		input_value = initial_value,
 
-		_input_value_state = Value(scope, initial_value),
-	}, SUB_OBJECT_META)
+		_input_value_state = input_value_state,
+		_output_value_state = output_value_state,
+	}, PAIR_METATABLE)
 
-	object._ouput_value_state = Computed(scope, function(use, scope)
-		local input_value = use(object._input_value_state)
-		local ok, output_value = xpcall(processor, parseError, use, scope, input_value)
-
-		if ok then
-			return output_value
-		end
-
-		local error: logging.Error = output_value
-		External.logErrorNonFatal(calc.callback_error, error)
-
-		doCleanup(scope)
-
-		table.clear(scope)
-
-		return nil
-	end)
-
-	return object
+	return new_computedpair
 end
 
 local function ForValues<S, IK, IV, OV>(
@@ -82,7 +97,7 @@ local function ForValues<S, IK, IV, OV>(
 	end
 
 	return For(scope, input_table, function(scope, initial_key, initial_value)
-		return SubObject(scope, initial_key, initial_value, processor)
+		return ForValuesComputedPair(scope, initial_key, initial_value, processor)
 	end)
 end
 
