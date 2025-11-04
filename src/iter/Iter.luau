@@ -23,13 +23,13 @@ local CLASS = table.freeze {
 
 		local output = self._internal_value
 		local disassembly = self._disassembly
-		
+
 		depend(self, disassembly)
 
 		table.clear(output)
-		
+
 		disassembly:populate(self._use, output)
-		
+
 		return true
 	end,
 }
