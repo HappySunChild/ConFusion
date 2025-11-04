@@ -10,7 +10,7 @@ local destructor = require "../../core-memory/destructor"
 local doCleanup = require "../../core-memory/doCleanup"
 local peek = require "../../core-use/peek"
 
-type Self<S, IK, IV, OK, OV> = iter.Disassembly<S, IK, IV, OK, OV> & {
+type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
 	_computed_pairs: { [IK]: iter.ComputedPair<IK, IV, OK, OV> },
 	_constructor: (
@@ -205,7 +205,7 @@ local function Disassembly<S, IK, IV, OK, OV>(
 		initial_key: IK,
 		initial_value: IV
 	) -> iter.ComputedPair<IK, IV, OK, OV>
-): iter.Disassembly<S, IK, IV, OK, OV>
+): iter.Disassembly<OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),

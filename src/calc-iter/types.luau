@@ -13,8 +13,8 @@ export type ComputedPair<IK, IV, OK, OV> = {
 	useOutputPair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
 }
 
-export type Disassembly<S, IK, IV, OK, OV> = calc.StateObject<{ [OK]: OV }> & {
-	populate: (Disassembly<S, IK, IV, OK, OV>, calc.Use, output: { [OK]: OV }) -> (),
+export type Disassembly<OK, OV> = calc.StateObject<{ [OK]: OV }> & {
+	populate: (Disassembly<OK, OV>, calc.Use, output: { [OK]: OV }) -> (),
 }
 
 -- A state object which maps over keys and/or values in another table.
