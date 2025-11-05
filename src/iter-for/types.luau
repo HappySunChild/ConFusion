@@ -6,8 +6,6 @@ export type ComputedPair<IK, IV, OK, OV> = {
 	scope: memory.Scope?,
 	input_key: IK,
 	input_value: IV,
-	roam_keys: boolean,
-	roam_values: boolean,
 
 	invalidateInputKey: (ComputedPair<IK, IV, OK, OV>) -> (),
 	invalidateInputValue: (ComputedPair<IK, IV, OK, OV>) -> (),

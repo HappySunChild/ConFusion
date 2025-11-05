@@ -19,9 +19,6 @@ type ForKeysComputedPair<IK, IV, OK> = iter_for.ComputedPair<IK, IV, OK, IV> & {
 }
 
 local PAIR_CLASS = table.freeze {
-	roam_keys = false,
-	roam_values = true,
-
 	invalidateInputKey = function<IK, IV, OK>(self: ForKeysComputedPair<IK, IV, OK>): ()
 		self._input_key_state:set(self.input_key)
 	end,
@@ -46,19 +43,11 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 		OK
 	>
 ): ForKeysComputedPair<IK, IV, OK>
-	local new_computedpair = setmetatable({
-		scope = scope,
-		input_key = initial_key,
-		input_value = initial_value,
-
-		_input_key_state = Value(scope, initial_key),
-	}, PAIR_METATABLE)
-
-	new_computedpair._output_key_state = Computed(
+	local input_key_state = Value(scope, initial_key)
+	local output_key_state = Computed(
 		scope,
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
-			local input_key = use(new_computedpair._input_key_state)
-
+			local input_key = use(input_key_state)
 			local ok, output_key =
 				xpcall(processor, parseError, use, calc_scope, input_key)
 
@@ -73,6 +62,15 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 			return nil
 		end
 	)
+
+	local new_computedpair = setmetatable({
+		scope = scope,
+		input_key = initial_key,
+		input_value = initial_value,
+
+		_input_key_state = input_key_state,
+		_output_key_state = output_key_state,
+	}, PAIR_METATABLE)
 
 	return new_computedpair
 end
@@ -92,6 +90,8 @@ local function ForKeys<S, IK, IV, OK>(
 		scope,
 		ForDisassembly(
 			scope,
+			false,
+			true,
 			input_table,
 			function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
 				return ForKeysComputedPair(scope, initial_key, initial_value, processor)
