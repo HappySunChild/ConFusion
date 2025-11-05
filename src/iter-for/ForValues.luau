@@ -28,7 +28,7 @@ local PAIR_CLASS = table.freeze {
 		self: ForValuesComputedPair<IK, IV, OV>,
 		use: calc.Use
 	): (IK, OV)
-		return self.input_key, use(self._ouput_value_state)
+		return self.input_key, use(self._output_value_state)
 	end,
 }
 local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
