@@ -1,0 +1,58 @@
+local calc = require "../core-calc/types"
+local iter = require "./types"
+local memory = require "../core-memory/types"
+
+local depend = require "../core-graph/depend"
+local destructor = require "../core-memory/destructor"
+local genericeUse = require "../core-use/genericUse"
+
+type Self<K, V> = {
+	_use: calc.Use,
+	_disassembly: iter.Disassembly<K, V>,
+} & iter.Iter<K, V>
+
+local CLASS = table.freeze {
+	type = "Iter",
+	kind = "state",
+	timeliness = "lazy",
+
+	_evaluate = function<K, V>(self: Self<K, V>): boolean
+		if self.scope == nil then
+			return false
+		end
+
+		local output = self._internal_value
+		local disassembly = self._disassembly
+
+		depend(self, disassembly)
+
+		table.clear(output)
+
+		disassembly:populate(self._use, output)
+
+		return true
+	end,
+}
+local METATABLE = table.freeze { __index = CLASS }
+
+local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, V>)
+	local new_iter: Self<K, V> = setmetatable({
+		scope = scope,
+		created_at = os.clock(),
+
+		_internal_value = {},
+
+		_using = {},
+		_users = {},
+
+		_disassembly = disassembly,
+	}, METATABLE) :: any
+
+	new_iter._use = genericeUse(new_iter)
+
+	table.insert(scope, destructor(new_iter))
+
+	return new_iter
+end
+
+return Iter

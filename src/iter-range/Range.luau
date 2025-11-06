@@ -1,5 +1,5 @@
 local calc = require "../core-calc/types"
-local iter = require "./types"
+local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
 local castToState = require "../core-calc/castToState"
@@ -7,7 +7,7 @@ local depend = require "../core-graph/depend"
 local destructor = require "../core-memory/destructor"
 local peek = require "../core-use/peek"
 
-type Self = iter.Range & {
+type Self = iter_range.Range & {
 	_start: calc.UsedAs<number>,
 	_finish: calc.UsedAs<number>,
 	_step: calc.UsedAs<number>,
@@ -45,17 +45,9 @@ local CLASS = table.freeze {
 	timeliness = "lazy",
 
 	_evaluate = function(self: Self)
-		if castToState(self._start) then
-			depend(self, self._start)
-		end
-
-		if castToState(self._finish) then
-			depend(self, self._finish)
-		end
-
-		if castToState(self._step) then
-			depend(self, self._step)
-		end
+		depend(self, castToState(self._start))
+		depend(self, castToState(self._finish))
+		depend(self, castToState(self._step))
 
 		local output = self._internal_value
 
@@ -75,7 +67,7 @@ local function Range(
 	start: calc.UsedAs<number>,
 	finish: calc.UsedAs<number>,
 	step: calc.UsedAs<number>?
-): iter.Range | { number }
+): iter_range.Range | { number }
 	step = step or 1
 
 	local can_dissolve, constant = checkDissolvable(start, finish, step)

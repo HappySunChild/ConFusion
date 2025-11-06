@@ -1,12 +1,12 @@
-local calc = require "../../core-calc/types"
-local iter = require "../types"
-local memory = require "../../core-memory/types"
+local calc = require "../core-calc/types"
+local iter_for = require "../iter-for/types"
+local memory = require "../core-memory/types"
 
-local External = require "../../core-external/External"
-local castToState = require "../../core-calc/castToState"
-local dissolvingUse = require "../../core-use/dissolvingUse"
-local doCleanup = require "../../core-memory/doCleanup"
-local innerScope = require "../../core-memory/innerScope"
+local External = require "../core-external/External"
+local castToState = require "../core-calc/castToState"
+local dissolvingUse = require "../core-use/dissolvingUse"
+local doCleanup = require "../core-memory/doCleanup"
+local innerScope = require "../core-memory/innerScope"
 
 local function checkDissolvable<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
@@ -38,7 +38,11 @@ local function checkDissolvable<S, IK, IV, OK, OV>(
 		if output_key == nil or output_value == nil then
 			continue
 		elseif output[output_key] ~= nil then
-			External.logErrorNonFatal(iter.for_key_collision, nil, tostring(output_key))
+			External.logErrorNonFatal(
+				iter_for.for_key_collision,
+				nil,
+				tostring(output_key)
+			)
 
 			continue
 		end

@@ -1,5 +1,5 @@
 local calc = require "../core-calc/types"
-local iter = require "../calc-iter/types"
+local iter_for = require "../iter-for/types"
 local memory = require "../core-memory/types"
 local tweens = require "../motion-tweens/types"
 
@@ -21,15 +21,15 @@ export type Pipe<S, T> = {
 
 	forPairs: <IK, IV, OK, OV>(
 		Pipe<S, T>,
-		processor: iter.ForPairsProcessor<S, IK, IV, OK, OV>
+		processor: iter_for.ForPairsProcessor<S, IK, IV, OK, OV>
 	) -> Pipe<S, T>, -- Pipe<{ [OK]: OV }>,
 	forValues: <IK, IV, OV>(
 		Pipe<S, T>,
-		processor: iter.ForValuesProcessor<S, IV, OV>
+		processor: iter_for.ForValuesProcessor<S, IV, OV>
 	) -> Pipe<S, T>, -- Pipe<{ [IK]: OV }>,
 	forKeys: <IK, IV, OK>(
 		Pipe<S, T>,
-		processor: iter.ForKeysProcessor<S, IK, OK>
+		processor: iter_for.ForKeysProcessor<S, IK, OK>
 	) -> Pipe<S, T>, -- Pipe<{ [OK]: IV }>,
 
 	resolve: (Pipe<S, T>) -> calc.UsedAs<T>,

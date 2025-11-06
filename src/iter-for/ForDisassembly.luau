@@ -1,39 +1,39 @@
-local calc = require "../../core-calc/types"
-local iter = require "../types"
-local memory = require "../../core-memory/types"
+local calc = require "../core-calc/types"
+local iter = require "../iter/types"
+local iter_for = require "./types"
+local memory = require "../core-memory/types"
 
-local External = require "../../core-external/External"
-local castToState = require "../../core-calc/castToState"
-local depend = require "../../core-graph/depend"
-local deriveScope = require "../../core-memory/deriveScope"
-local destructor = require "../../core-memory/destructor"
-local doCleanup = require "../../core-memory/doCleanup"
-local peek = require "../../core-use/peek"
+local External = require "../core-external/External"
+local castToState = require "../core-calc/castToState"
+local depend = require "../core-graph/depend"
+local deriveScope = require "../core-memory/deriveScope"
+local destructor = require "../core-memory/destructor"
+local doCleanup = require "../core-memory/doCleanup"
+local peek = require "../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
+	_roam_keys: boolean,
+	_roam_values: boolean,
+
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_computedpairs: { [IK]: iter.ComputedPair<IK, IV, OK, OV> },
+	_computedpairs: { [IK]: iter_for.ComputedPair<IK, IV, OK, OV> },
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.ComputedPair<IK, IV, OK, OV>,
+	) -> iter_for.ComputedPair<IK, IV, OK, OV>,
 }
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
 	for _, computedpair in disassembly._computedpairs do
-		if computedpair.scope ~= nil then
-			doCleanup(computedpair.scope)
-
-			computedpair.scope = nil
-		end
+		doCleanup(computedpair.scope)
 	end
 end
 
 local CLASS = table.freeze {
 	type = "Disassembly",
 	kind = "graph",
-	timeliness = "eager",
+	timeliness = "lazy",
 
 	populate = function<S, IK, IV, OK, OV>(
 		self: Self<S, IK, IV, OK, OV>,
@@ -45,7 +45,7 @@ local CLASS = table.freeze {
 		local has_holes = false
 
 		for _, computedpair in self._computedpairs do
-			local output_key, output_value = computedpair:useOutputPair(use)
+			local output_key: OK?, output_value: OV? = computedpair:useOutputPair(use)
 
 			if output_key == nil or output_value == nil then
 				has_holes = true
@@ -89,13 +89,14 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		local outer_scope = self.scope :: memory.Scope
-
 		if castToState(self._input) ~= nil then
 			depend(self, self._input)
 		end
 
-		local pending_pairs = table.clone(peek(self._input)) :: { [any]: any }
+		local roam_keys = self._roam_keys
+		local roam_values = self._roam_values
+
+		local pending_pairs = table.clone(peek(self._input)) :: { [IK]: IV }
 
 		local current_computedpairs = self._computedpairs
 		local next_computedpairs = {}
@@ -110,13 +111,13 @@ local CLASS = table.freeze {
 
 			local can_reuse = false
 
-			if not computedpair.roam_keys and pending_pairs[old_input_key] ~= nil then
+			if not roam_keys and pending_pairs[old_input_key] ~= nil then
 				can_reuse = true
 				new_input_key = old_input_key
 			else
 				local claimed_values = {}
 
-				if not computedpair.roam_values then
+				if not roam_values then
 					for _, other_computedpair in current_computedpairs do
 						claimed_values[other_computedpair.input_value] = true
 					end
@@ -126,8 +127,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not computedpair.roam_keys
-						and current_computedpairs[pending_key] ~= nil
+						not roam_keys and current_computedpairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -135,7 +135,7 @@ local CLASS = table.freeze {
 					if
 						-- "selfless" check
 						-- don't use values that are "claimed" by other objects.
-						not computedpair.roam_values
+						not roam_values
 						and old_input_value ~= pending_value
 						and claimed_values[pending_value] == true
 					then
@@ -145,7 +145,7 @@ local CLASS = table.freeze {
 					can_reuse = true
 					new_input_key = pending_key
 
-					if computedpair.roam_values then
+					if roam_values then
 						break
 					end
 
@@ -157,11 +157,7 @@ local CLASS = table.freeze {
 
 			-- cleanup computed pair that can't be reused
 			if not can_reuse then
-				if computedpair.scope ~= nil then
-					doCleanup(computedpair.scope)
-
-					computedpair.scope = nil
-				end
+				doCleanup(computedpair.scope)
 
 				continue
 			end
@@ -182,12 +178,12 @@ local CLASS = table.freeze {
 			end
 		end
 
+		local outer_scope = self.scope
+
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			local new_computedpair =
+			next_computedpairs[pending_key] =
 				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
-
-			next_computedpairs[pending_key] = new_computedpair
 		end
 
 		self._computedpairs = next_computedpairs
@@ -197,14 +193,16 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function Disassembly<S, IK, IV, OK, OV>(
+local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
+	roam_keys: boolean,
+	roam_values: boolean,
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
 		initial_value: IV
-	) -> iter.ComputedPair<IK, IV, OK, OV>
+	) -> iter_for.ComputedPair<IK, IV, OK, OV>
 ): iter.Disassembly<OK, OV>
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
@@ -212,6 +210,9 @@ local function Disassembly<S, IK, IV, OK, OV>(
 
 		_users = {},
 		_using = {},
+
+		_roam_keys = roam_keys,
+		_roam_values = roam_values,
 
 		_input = input,
 		_computedpairs = {},
@@ -223,4 +224,4 @@ local function Disassembly<S, IK, IV, OK, OV>(
 	return new_disassembly
 end
 
-return Disassembly
+return ForDisassembly

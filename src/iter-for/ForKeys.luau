@@ -1,25 +1,24 @@
 local calc = require "../core-calc/types"
-local iter = require "./types"
+local iter = require "../iter/types"
+local iter_for = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
-local For = require "./For"
+local ForDisassembly = require "./ForDisassembly"
+local Iter = require "../iter/Iter"
 local Value = require "../core-calc/Value"
-local checkDissolvable = require "./For/checkDissolvable"
+local checkDissolvable = require "./checkDissolvable"
 local doCleanup = require "../core-memory/doCleanup"
 local parseError = require "../core-logging/parseError"
 
-type ForKeysComputedPair<IK, IV, OK> = iter.ComputedPair<IK, IV, OK, IV> & {
+type ForKeysComputedPair<IK, IV, OK> = iter_for.ComputedPair<IK, IV, OK, IV> & {
 	_input_key_state: calc.Value<IK>,
 	_output_key_state: calc.Computed<OK>,
 }
 
 local PAIR_CLASS = table.freeze {
-	roam_keys = false,
-	roam_values = true,
-
 	invalidateInputKey = function<IK, IV, OK>(self: ForKeysComputedPair<IK, IV, OK>): ()
 		self._input_key_state:set(self.input_key)
 	end,
@@ -38,14 +37,17 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	initial_key: IK,
 	initial_value: IV,
-	processor: iter.ForKeysProcessor<S, IK, OK>
+	processor: iter_for.ForKeysProcessor<
+		S,
+		IK,
+		OK
+	>
 ): ForKeysComputedPair<IK, IV, OK>
 	local input_key_state = Value(scope, initial_key)
 	local output_key_state = Computed(
 		scope,
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
 			local input_key = use(input_key_state)
-
 			local ok, output_key =
 				xpcall(processor, parseError, use, calc_scope, input_key)
 
@@ -76,20 +78,25 @@ end
 local function ForKeys<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
 	input_table: calc.UsedAs<{ [IK]: IV }>,
-	processor: iter.ForKeysProcessor<S, IK, OK>
-): iter.For<OK, IV> | { [OK]: IV }
+	processor: iter_for.ForKeysProcessor<S, IK, OK>
+): iter.Iter<OK, IV> | { [OK]: IV }
 	local can_dissolve, constant = checkDissolvable(scope, input_table, processor)
 
 	if can_dissolve then
 		return constant
 	end
 
-	return For(
+	return Iter(
 		scope,
-		input_table,
-		function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
-			return ForKeysComputedPair(scope, initial_key, initial_value, processor)
-		end
+		ForDisassembly(
+			scope,
+			false,
+			true,
+			input_table,
+			function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
+				return ForKeysComputedPair(scope, initial_key, initial_value, processor)
+			end
+		)
 	)
 end
 

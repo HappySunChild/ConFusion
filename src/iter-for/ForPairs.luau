@@ -1,26 +1,25 @@
 local calc = require "../core-calc/types"
-local iter = require "./types"
+local iter = require "../iter/types"
+local iter_for = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
-local For = require "./For"
+local ForDisassembly = require "./ForDisassembly"
+local Iter = require "../iter/Iter"
 local Value = require "../core-calc/Value"
-local checkDissolvable = require "./For/checkDissolvable"
+local checkDissolvable = require "./checkDissolvable"
 local doCleanup = require "../core-memory/doCleanup"
 local parseError = require "../core-logging/parseError"
 
-type ForPairsComputedPair<IK, IV, OK, OV> = iter.ComputedPair<IK, IV, OK, OV> & {
+type ForPairsComputedPair<IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
 	_input_key_state: calc.Value<IK>,
 	_input_value_state: calc.Value<IV>,
 	_output_pair_state: calc.Computed<{ key: OK, value: OV }>,
 }
 
 local PAIR_CLASS = table.freeze {
-	roam_keys = false,
-	roam_values = false,
-
 	invalidateInputKey = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
 		self._input_key_state:set(self.input_key)
 	end,
@@ -43,7 +42,7 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	initial_key: IK,
 	initial_value: IV,
-	processor: iter.ForPairsProcessor<
+	processor: iter_for.ForPairsProcessor<
 		S,
 		IK,
 		IV,
@@ -63,7 +62,6 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
 			local input_key = use(input_key_state)
 			local input_value = use(input_value_state)
-
 			local ok, output_key, output_value =
 				xpcall(processor, parseError, use, calc_scope, input_key, input_value)
 
@@ -84,8 +82,8 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 		input_key = initial_key,
 		input_value = initial_value,
 
-		_input_value_state = input_value_state,
 		_input_key_state = input_key_state,
+		_input_value_state = input_value_state,
 		_output_pair_state = output_pair_state,
 	}, PAIR_METATABLE)
 
@@ -95,20 +93,31 @@ end
 local function ForPairs<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
 	input_table: calc.UsedAs<{ [IK]: IV }>,
-	processor: iter.ForPairsProcessor<S, IK, IV, OK, OV>
-): iter.For<OK, OV> | { [OK]: OV }
+	processor: iter_for.ForPairsProcessor<
+		S,
+		IK,
+		IV,
+		OK,
+		OV
+	>
+): iter.Iter<OK, OV> | { [OK]: OV }
 	local can_dissolve, constant = checkDissolvable(scope, input_table, processor)
 
 	if can_dissolve then
 		return constant
 	end
 
-	return For(
+	return Iter(
 		scope,
-		input_table,
-		function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
-			return ForPairsComputedPair(scope, initial_key, initial_value, processor)
-		end
+		ForDisassembly(
+			scope,
+			false,
+			false,
+			input_table,
+			function(scope: memory.Scope<S>, initial_key: IK, initial_value: IV)
+				return ForPairsComputedPair(scope, initial_key, initial_value, processor)
+			end
+		)
 	)
 end
 
