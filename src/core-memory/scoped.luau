@@ -15,4 +15,4 @@ local function scoped(
 	return scope
 end
 
-return scoped :: memory.Scoped
+return scoped :: memory.DeriveScope

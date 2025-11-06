@@ -2,8 +2,7 @@ export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupT
 export type Scope<T = any> = { CleanupTask } & T
 
 export type Destroy = (CleanupTask) -> ()
-export type DeriveScope = <T, M>(base: Scope<T>, methods: M?) -> Scope<T & M>
-export type Scoped = <T, M>(base: T, methods: M?) -> Scope<T & M>
+export type DeriveScope = <T, M>(base: T, methods: M?) -> Scope<T & M>
 export type Insert = <Tasks...>(scope: Scope, Tasks...) -> Tasks...
 
 return {
