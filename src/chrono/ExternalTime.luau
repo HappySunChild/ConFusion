@@ -5,18 +5,12 @@ local External = require "../core-external/External"
 local change = require "../core-graph/change"
 local destructor = require "../core-memory/destructor"
 
-type Self = chrono.ExternalTime & {
-	_active: boolean,
-}
+type Self = chrono.ExternalTime
 
 local ALL_TIMERS = {}
 
-local function auxiliaryDestructor(externalTime: Self)
-	local index = table.find(ALL_TIMERS, externalTime)
-
-	if index ~= nil then
-		table.remove(ALL_TIMERS, index)
-	end
+local function auxiliaryDestructor(externaltime: Self)
+	ALL_TIMERS[externaltime] = nil
 end
 
 local CLASS = {
@@ -27,10 +21,14 @@ local CLASS = {
 	_internal_value = External.getLastUpdate(),
 
 	setActive = function(self: Self, active: boolean)
-		self._active = active
+		if active then
+			ALL_TIMERS[self] = true
+		else
+			ALL_TIMERS[self] = nil
+		end
 	end,
 	isActive = function(self: Self)
-		return self._active
+		return ALL_TIMERS[self] ~= nil
 	end,
 	_evaluate = function(self: Self)
 		return true
@@ -44,10 +42,10 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 		created_at = os.clock(),
 
 		_users = {},
-		_active = true,
 	}, METATABLE) :: Self
 
-	table.insert(ALL_TIMERS, new_externaltime)
+	new_externaltime[new_externaltime] = true
+
 	table.insert(scope, destructor(new_externaltime, auxiliaryDestructor))
 
 	return new_externaltime
@@ -56,10 +54,8 @@ end
 External.bindToUpdateStep(function(now: number)
 	CLASS._internal_value = now
 
-	for _, timer in ALL_TIMERS do
-		if timer:isActive() then
-			change(timer)
-		end
+	for timer in ALL_TIMERS do
+		change(timer)
 	end
 end)
 
