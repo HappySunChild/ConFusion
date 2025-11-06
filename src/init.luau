@@ -104,7 +104,7 @@ type ConFusion = {
 	read Timer: chrono.TimerConstructor,
 
 	-- Safe
-	read Safe: <Ok, Err>(callbacks: { try: () -> Ok, fallback: () -> Err }) -> Ok | Err,
+	read Safe: safe.Safe,
 
 	-- Motion
 	read Animated: motion.AnimatedConstructor,
