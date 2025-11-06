@@ -39,7 +39,6 @@ export type EasingStyles = {
 -- not to be confused with TweenInfo, this is TweenInfo. got that?
 export type TweenInfo = {
 	type: "TweenInfo",
-	kind: "tweeninfo",
 
 	easing_style: (number) -> number,
 	time: number,

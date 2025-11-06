@@ -4,7 +4,6 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 local Parent = require "./keys/Parent"
-local kindof = require "../kindof"
 local observe = require "../core-graph/observe"
 local parseError = require "../core-logging/parseError"
 local peek = require "../core-use/peek"
@@ -82,7 +81,7 @@ local function applyProperties(
 
 		if key_type == "string" then
 			applyProperty(scope, instance, key, value)
-		elseif kindof(key) == "key" then
+		elseif key_type == "SpecialKey" then
 			table.insert(special_keys, key)
 		end
 	end

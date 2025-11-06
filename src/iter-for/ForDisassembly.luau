@@ -31,8 +31,8 @@ local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, I
 end
 
 local CLASS = table.freeze {
-	type = "Disassembly",
-	kind = "graph",
+	type = "Graph",
+	kind = "Disassembly",
 	timeliness = "lazy",
 
 	populate = function<S, IK, IV, OK, OV>(

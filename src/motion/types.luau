@@ -6,7 +6,7 @@ export type CurveGenerator<T> = (goal: T, start: T, ...any) -> AnimationCurve<T>
 
 -- A state object whose value can be animated with a AnimatedMover callback.
 export type Animated<T> = {
-	type: "Animated",
+	kind: "Animated",
 
 	setDynamic: (self: Animated<T>, index: number, value: any) -> (),
 	getDynamic: (self: Animated<T>, index: number) -> any?,

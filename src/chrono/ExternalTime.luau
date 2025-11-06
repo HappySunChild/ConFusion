@@ -14,8 +14,8 @@ local function auxiliaryDestructor(externaltime: Self)
 end
 
 local CLASS = {
-	type = "ExternalTime",
-	kind = "state",
+	type = "State",
+	kind = "ExternalTime",
 	timeliness = "lazy",
 	_using = table.freeze {},
 	_internal_value = External.getLastUpdate(),

@@ -5,8 +5,8 @@ local change = require "../core-graph/change"
 local destructor = require "../core-memory/destructor"
 
 local CLASS = table.freeze {
-	type = "AttributeOf",
-	kind = "state",
+	type = "State",
+	kind = "AttributeOf",
 	timeliness = "lazy",
 	_using = table.freeze {},
 

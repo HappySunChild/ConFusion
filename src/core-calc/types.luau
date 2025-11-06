@@ -4,8 +4,7 @@ local memory = require "../core-memory/types"
 export type StateObject<T> = {
 	_internal_value: T,
 
-	kind: "state",
-	type: string,
+	type: "State",
 } & graph.GraphObject
 
 export type UsedAs<T> = T | StateObject<T>
@@ -13,7 +12,7 @@ export type Use = <T>(target: UsedAs<T>) -> T
 
 -- A state object whose value can be set by the user at any time.
 export type Value<T> = {
-	type: "Value",
+	kind: "Value",
 	timeliness: "lazy",
 
 	set: (Value<T>, new_value: T) -> T,
@@ -23,7 +22,7 @@ export type ValueConstructor = <T>(scope: memory.Scope, initial_value: T) -> Val
 
 -- A state object whose value is derived from other objects using a callback.
 export type Computed<T> = {
-	type: "Computed",
+	kind: "Computed",
 	timeliness: "eager",
 } & StateObject<T>
 

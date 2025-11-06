@@ -10,19 +10,15 @@ export type SpecialKeyStage =
 	| "last"
 
 export type SpecialKey<T = string> = {
-	type: T,
-	kind: "key",
+	type: "SpecialKey",
+	kind: T,
 	stage: SpecialKeyStage,
 
 	apply: (scope: memory.Scope, instance: Instance, value: unknown) -> (),
 }
 
 export type Properties = { [any]: any }
-export type Child =
-	Instance
-	| ((Instance) -> Instance?)
-	| { Child }
-	| calc.StateObject<Child>
+export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateObject<Child>
 
 export type NewConstructor = (
 	scope: memory.Scope,

@@ -40,8 +40,8 @@ local function checkDissolvable(
 end
 
 local CLASS = table.freeze {
-	type = "Range",
-	kind = "state",
+	type = "State",
+	kind = "Range",
 	timeliness = "lazy",
 
 	_evaluate = function(self: Self)

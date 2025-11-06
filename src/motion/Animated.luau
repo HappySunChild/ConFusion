@@ -43,8 +43,8 @@ local function syncFromCurve<T>(
 end
 
 local CLASS = table.freeze {
-	type = "Animated",
-	kind = "state",
+	type = "State",
+	kind = "Animated",
 	timeliness = "eager",
 
 	setDynamic = function<T>(self: Self<T>, index: number, value: any)

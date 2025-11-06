@@ -6,7 +6,7 @@ export type Disassembly<OK, OV> = {
 } & graph.GraphObject
 
 export type Iter<K, V> = {
-	type: "Iter",
+	kind: "Iter",
 	timeliness: "lazy",
 } & calc.StateObject<{ [K]: V }>
 

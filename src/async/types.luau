@@ -3,7 +3,7 @@ local graph = require "../core-graph/types"
 local memory = require "../core-memory/types"
 
 export type Eventual<T> = {
-	type: "Eventual",
+	kind: "Eventual",
 	timeliness: "lazy",
 
 	isPending: (Eventual<T>) -> boolean,

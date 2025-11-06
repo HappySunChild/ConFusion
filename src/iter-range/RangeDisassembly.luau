@@ -21,8 +21,8 @@ type Self<S, V> = {
 } & iter.Disassembly<number, V>
 
 local CLASS = table.freeze {
-	type = "RangeDisassembly",
-	kind = "graph",
+	type = "Graph",
+	kind = "Disassembly",
 	timeliness = "lazy",
 
 	populate = function<S, V>(self: Self<S, V>, use: calc.Use, output: { [number]: V })

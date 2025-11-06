@@ -19,7 +19,6 @@ type Self<S, T> = pipeline.Pipe<S, T> & {
 
 local CLASS = table.freeze {
 	type = "Pipe",
-	kind = "pipe",
 
 	spring = function<S, T>(
 		self: Self<S, T>,

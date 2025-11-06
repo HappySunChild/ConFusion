@@ -48,8 +48,8 @@ local function checkDissolvable<T, S>(
 end
 
 local CLASS = table.freeze {
-	type = "Computed",
-	kind = "state",
+	type = "State",
+	kind = "Computed",
 	timeliness = "lazy",
 
 	_evaluate = function<T, S>(self: Self<T, S>): boolean

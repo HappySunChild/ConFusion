@@ -12,8 +12,8 @@ type Self<K, V> = {
 } & iter.Iter<K, V>
 
 local CLASS = table.freeze {
-	type = "Iter",
-	kind = "state",
+	type = "State",
+	kind = "Iter",
 	timeliness = "lazy",
 
 	_evaluate = function<K, V>(self: Self<K, V>): boolean

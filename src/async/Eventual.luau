@@ -79,8 +79,8 @@ local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -
 end
 
 local CLASS = table.freeze {
-	type = "Eventual",
-	kind = "state",
+	type = "State",
+	kind = "Eventual",
 	timeliness = "eager",
 
 	isPending = function<T, S>(self: Self<T, S>)

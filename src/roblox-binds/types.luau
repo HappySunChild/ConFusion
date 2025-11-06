@@ -2,10 +2,10 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
 export type PropertyOf<T> = calc.StateObject<T> & {
-	type: "PropertyOf",
+	kind: "PropertyOf",
 }
 export type AttributeOf<T> = calc.StateObject<T> & {
-	type: "AttributeOf",
+	kind: "AttributeOf",
 }
 
 export type PropertyOfConstructor = (

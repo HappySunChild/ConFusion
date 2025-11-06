@@ -8,8 +8,8 @@ local isSimilar = require "./isSimilar"
 type Self<T> = calc.Value<T>
 
 local CLASS = table.freeze {
-	type = "Value",
-	kind = "state",
+	type = "State",
+	kind = "Value",
 	timeliness = "lazy",
 
 	_using = table.freeze {},

@@ -3,7 +3,7 @@ local iter = require "../iter/types"
 local memory = require "../core-memory/types"
 
 export type Range = {
-	type: "Range",
+	kind: "Range",
 	timeliness: "lazy",
 } & calc.StateObject<{ number }>
 export type RangeConstructor = (

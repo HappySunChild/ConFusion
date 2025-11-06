@@ -5,7 +5,6 @@ local tweens = require "../motion-tweens/types"
 
 export type Pipe<S, T> = {
 	type: "Pipe",
-	kind: "pipe",
 
 	spring: (
 		Pipe<S, T>,
