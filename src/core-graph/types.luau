@@ -4,6 +4,8 @@ export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
 
 export type GraphObject = {
+	scope: memory.Scope?,
+
 	type: string?,
 	kind: string?,
 
@@ -18,7 +20,6 @@ export type GraphObject = {
 	_observers: { [{}]: () -> () }?,
 
 	_evaluate: (GraphObject) -> boolean,
-} & memory.ScopedObject
 
 return {
 	infinite_loop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
