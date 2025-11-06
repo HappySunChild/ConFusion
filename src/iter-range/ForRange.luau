@@ -6,8 +6,8 @@ local memory = require "../core-memory/types"
 local Iter = require "../iter/Iter"
 local RangeDisassembly = require "./RangeDisassembly"
 local castToState = require "../core-calc/castToState"
+local destroy = require "../core-memory/destroy"
 local dissolvingUse = require "../core-use/dissolvingUse"
-local doCleanup = require "../core-memory/doCleanup"
 local innerScope = require "../core-memory/innerScope"
 
 local function checkDissolvable<S, T>(
@@ -33,7 +33,7 @@ local function checkDissolvable<S, T>(
 		local ok, value = pcall(processor, dissolvingUse, dissolving_scope, index)
 
 		if not ok then
-			doCleanup(dissolving_scope)
+			destroy(dissolving_scope)
 
 			return false, nil
 		end

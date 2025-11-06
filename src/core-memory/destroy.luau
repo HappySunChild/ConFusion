@@ -5,7 +5,7 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 
 local ACTIVE_TASKS = {}
 
-local function doCleanup(cleanup_task: memory.CleanupTask?)
+local function destroy(cleanup_task: memory.CleanupTask?)
 	if cleanup_task == nil then
 		return
 	end
@@ -29,7 +29,7 @@ local function doCleanup(cleanup_task: memory.CleanupTask?)
 
 		if cleanup_task[1] ~= nil then
 			for i = #cleanup_task, 1, -1 do
-				doCleanup(cleanup_task[i])
+				destroy(cleanup_task[i])
 
 				cleanup_task[i] = nil
 			end
@@ -41,4 +41,4 @@ local function doCleanup(cleanup_task: memory.CleanupTask?)
 	ACTIVE_TASKS[cleanup_task] = nil
 end
 
-return doCleanup :: memory.DoCleanup
+return destroy :: memory.Destroy

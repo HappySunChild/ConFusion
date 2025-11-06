@@ -7,8 +7,8 @@ local External = require "../core-external/External"
 local castToState = require "../core-calc/castToState"
 local depend = require "../core-graph/depend"
 local deriveScope = require "../core-memory/deriveScope"
+local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local doCleanup = require "../core-memory/doCleanup"
 local peek = require "../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
@@ -26,7 +26,7 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 
 local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
 	for _, computedpair in disassembly._computedpairs do
-		doCleanup(computedpair.scope)
+		destroy(computedpair.scope)
 	end
 end
 
@@ -157,7 +157,7 @@ local CLASS = table.freeze {
 
 			-- cleanup computed pair that can't be reused
 			if not can_reuse then
-				doCleanup(computedpair.scope)
+				destroy(computedpair.scope)
 
 				continue
 			end

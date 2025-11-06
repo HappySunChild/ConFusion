@@ -8,8 +8,8 @@ local castToState = require "../core-calc/castToState"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 local deriveScope = require "../core-memory/deriveScope"
+local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local doCleanup = require "../core-memory/doCleanup"
 local evaluate = require "../core-graph/evaluate"
 local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
@@ -34,11 +34,9 @@ local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
 		External.cancelTask(eventual._active_thread)
 	end
 
-	if eventual._inner_scope ~= nil then
-		doCleanup(eventual._inner_scope)
+	destroy(eventual._inner_scope)
 
-		eventual._inner_scope = nil
-	end
+	eventual._inner_scope = nil
 end
 
 local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
@@ -101,7 +99,7 @@ local CLASS = table.freeze {
 		-- cancel any currently active computations
 		if self._active_thread ~= nil then
 			if self._inner_scope ~= nil then
-				doCleanup(self._inner_scope)
+				destroy(self._inner_scope)
 
 				self._inner_scope = nil
 			end
@@ -124,12 +122,12 @@ local CLASS = table.freeze {
 
 			if ok then
 				if self._inner_scope ~= nil then
-					doCleanup(self._inner_scope)
+					destroy(self._inner_scope)
 				end
 
 				self._inner_scope = inner_scope
 			else
-				doCleanup(inner_scope)
+				destroy(inner_scope)
 
 				External.logErrorNonFatal(calc.callback_error, err :: logging.Error)
 			end

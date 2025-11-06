@@ -4,7 +4,7 @@ local memory = require "../../core-memory/types"
 local External = require "../../core-external/External"
 local SpecialKey = require "./SpecialKey"
 local castToState = require "../../core-calc/castToState"
-local doCleanup = require "../../core-memory/doCleanup"
+local destroy = require "../../core-memory/destroy"
 local observe = require "../../core-graph/observe"
 local peek = require "../../core-use/peek"
 
@@ -83,7 +83,7 @@ local Children = SpecialKey(
 			table.clear(old_children)
 
 			for _, child_scope in old_scopes do
-				doCleanup(child_scope)
+				destroy(child_scope)
 			end
 
 			table.clear(old_scopes)

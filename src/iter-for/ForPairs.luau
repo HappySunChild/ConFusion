@@ -10,7 +10,7 @@ local ForDisassembly = require "./ForDisassembly"
 local Iter = require "../iter/Iter"
 local Value = require "../core-calc/Value"
 local checkDissolvable = require "./checkDissolvable"
-local doCleanup = require "../core-memory/doCleanup"
+local destroy = require "../core-memory/destroy"
 local parseError = require "../core-logging/parseError"
 
 type ForPairsComputedPair<IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
@@ -71,7 +71,7 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 
 			External.logErrorNonFatal(calc.callback_error, output_key :: logging.Error)
 
-			doCleanup(calc_scope)
+			destroy(calc_scope)
 
 			return { key = nil, value = nil }
 		end

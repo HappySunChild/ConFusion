@@ -67,7 +67,7 @@ type ConFusion = {
 	read scoped: memory.Scoped,
 	read deriveScope: memory.DeriveScope,
 	read innerScope: memory.DeriveScope,
-	read doCleanup: memory.DoCleanup,
+	read destroy: memory.Destroy,
 	read insert: memory.Insert,
 
 	-- Core: State
@@ -161,7 +161,7 @@ return table.freeze {
 	scoped = require "@self/core-memory/scoped",
 	deriveScope = require "@self/core-memory/deriveScope",
 	innerScope = require "@self/core-memory/innerScope",
-	doCleanup = require "@self/core-memory/doCleanup",
+	destroy = require "@self/core-memory/destroy",
 	insert = require "@self/core-memory/insert",
 
 	-- Core: State

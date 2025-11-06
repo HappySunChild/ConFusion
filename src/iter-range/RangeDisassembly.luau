@@ -7,8 +7,8 @@ local RangePair = require "./RangePair"
 local castToState = require "../core-calc/castToState"
 local depend = require "../core-graph/depend"
 local deriveScope = require "../core-memory/deriveScope"
+local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local doCleanup = require "../core-memory/doCleanup"
 local peek = require "../core-use/peek"
 
 type Self<S, V> = {
@@ -70,7 +70,7 @@ local CLASS = table.freeze {
 
 		-- clean up remaining objects
 		for _, object in current_pairs do
-			doCleanup(object.scope)
+			destroy(object.scope)
 		end
 
 		self._pairs = next_pairs
@@ -82,7 +82,7 @@ local METATABLE = table.freeze { __index = CLASS }
 
 local function auxiliaryDestructor<S, V>(disassembly: Self<S, V>)
 	for _, object in disassembly._pairs do
-		doCleanup(object.scope)
+		destroy(object.scope)
 	end
 end
 

@@ -4,9 +4,9 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 local deriveScope = require "../core-memory/deriveScope"
+local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
 local dissolvingUse = require "../core-use/dissolvingUse"
-local doCleanup = require "../core-memory/doCleanup"
 local genericUse = require "../core-use/genericUse"
 local innerScope = require "../core-memory/innerScope"
 local isSimilar = require "./isSimilar"
@@ -19,11 +19,9 @@ type Self<T, S> = calc.Computed<T> & {
 }
 
 local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
-	if computed._inner_scope ~= nil then
-		doCleanup(computed._inner_scope)
+	destroy(computed._inner_scope)
 
-		computed._inner_scope = nil
-	end
+	computed._inner_scope = nil
 end
 
 local function checkDissolvable<T, S>(
@@ -36,13 +34,13 @@ local function checkDissolvable<T, S>(
 	if success then
 		-- scope went unused, we can clean it up
 		if #dissolving_scope == 1 then
-			doCleanup(dissolving_scope)
+			destroy(dissolving_scope)
 		end
 
 		return true, value
 	end
 
-	doCleanup(dissolving_scope)
+	destroy(dissolving_scope)
 
 	return false
 end
@@ -66,7 +64,7 @@ local CLASS = table.freeze {
 			local similar = isSimilar(self._internal_value, new_value)
 
 			if self._inner_scope ~= nil then
-				doCleanup(self._inner_scope)
+				destroy(self._inner_scope)
 
 				self._inner_scope = nil
 			end
@@ -76,7 +74,7 @@ local CLASS = table.freeze {
 
 			return not similar
 		else
-			doCleanup(inner_scope)
+			destroy(inner_scope)
 
 			External.logErrorNonFatal(calc.callback_error, new_value :: logging.Error)
 		end

@@ -6,7 +6,7 @@ local memory = require "../core-memory/types"
 local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
 local Value = require "../core-calc/Value"
-local doCleanup = require "../core-memory/doCleanup"
+local destroy = require "../core-memory/destroy"
 local parseError = require "../core-logging/parseError"
 
 type Self<T> = {
@@ -43,7 +43,7 @@ local function RangePair<S, T>(
 
 			External.logErrorNonFatal(calc.callback_error, output_value :: logging.Error)
 
-			doCleanup(calc_scope)
+			destroy(calc_scope)
 
 			return nil
 		end
