@@ -12,18 +12,15 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 	local key = KEY_CACHE[attribute]
 
 	if key == nil then
-		key = SpecialKey "self" {
-			name = `Attribute_{attribute}`,
-			apply = function(
-				scope: memory.Scope,
-				apply_to: Instance,
-				value: calc.UsedAs<any>
-			)
+		key = SpecialKey(
+			"self",
+			"Attribute",
+			function(scope: memory.Scope, apply_to: Instance, value: calc.UsedAs<any>)
 				observe(scope, value, function()
 					apply_to:SetAttribute(attribute, peek(value))
 				end, true)
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[attribute] = key
 	end

@@ -8,9 +8,10 @@ local doCleanup = require "../../core-memory/doCleanup"
 local observe = require "../../core-graph/observe"
 local peek = require "../../core-use/peek"
 
-local Children = SpecialKey "descendants" {
-	name = "Children",
-	apply = function(scope: memory.Scope, apply_to: Instance, children: instances.Child?)
+local Children = SpecialKey(
+	"descendants",
+	"Children",
+	function(scope: memory.Scope, apply_to: Instance, children: instances.Child?)
 		local new_children, old_children = {}, {}
 		local new_scopes, old_scopes = {}, {}
 
@@ -95,7 +96,7 @@ local Children = SpecialKey "descendants" {
 		end)
 
 		updateChildren()
-	end,
-}
+	end
+)
 
 return Children

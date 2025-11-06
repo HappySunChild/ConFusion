@@ -14,9 +14,10 @@ local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
 	local key = KEY_CACHE[event_name]
 
 	if key == nil then
-		key = SpecialKey "observer" {
-			name = `OnEvent_{event_name}`,
-			apply = function(
+		key = SpecialKey(
+			"observer",
+			"OnEvent",
+			function(
 				scope: memory.Scope,
 				apply_to: Instance,
 				callback: (...unknown) -> ()
@@ -33,8 +34,8 @@ local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
 				end
 
 				table.insert(scope, event:Connect(callback))
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[event_name] = key
 	end

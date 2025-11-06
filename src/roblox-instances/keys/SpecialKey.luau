@@ -6,16 +6,26 @@ type SpecialKeyProperties = {
 	apply: (scope: memory.Scope, apply_to: Instance, value: unknown) -> (),
 }
 
-local function SpecialKey(stage: instances.SpecialKeyStage)
-	return function(properties: SpecialKeyProperties): instances.SpecialKey
-		return table.freeze {
-			stage = stage,
-			kind = "key",
+local CLASS = table.freeze {
+	type = "SpecialKey",
+}
+local METATABLE = table.freeze { __index = CLASS }
 
-			type = properties.name or "SpecialKey",
-			apply = properties.apply,
-		}
-	end
+local function SpecialKey(
+	stage: instances.SpecialKeyStage,
+	kind: string,
+	apply_callback: (
+		scope: memory.Scope,
+		apply_to: Instance,
+		value: unknown
+	) -> ()
+)
+	return table.freeze(setmetatable({
+		stage = stage,
+		kind = kind,
+
+		apply = apply_callback,
+	}, METATABLE))
 end
 
 return SpecialKey

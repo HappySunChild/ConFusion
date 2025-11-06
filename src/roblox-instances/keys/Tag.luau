@@ -12,9 +12,10 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 	local key = KEY_CACHE[tag]
 
 	if key == nil then
-		key = SpecialKey "self" {
-			name = `Tag_{tag}`,
-			apply = function(
+		key = SpecialKey(
+			"self",
+			"Tag",
+			function(
 				scope: memory.Scope,
 				apply_to: Instance,
 				enabled: calc.UsedAs<boolean>
@@ -28,8 +29,8 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 						apply_to:RemoveTag(tag)
 					end
 				end, true)
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[tag] = key
 	end

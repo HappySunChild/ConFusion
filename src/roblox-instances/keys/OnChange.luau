@@ -10,13 +10,10 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 	local key = KEY_CACHE[property]
 
 	if key == nil then
-		key = SpecialKey "observer" {
-			name = `OnChange_{property}`,
-			apply = function(
-				scope: memory.Scope,
-				apply_to: Instance,
-				callback: (any) -> ()
-			)
+		key = SpecialKey(
+			"observer",
+			"OnChange",
+			function(scope: memory.Scope, apply_to: Instance, callback: (any) -> ())
 				local ok, event =
 					pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
 
@@ -35,8 +32,8 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 						callback(apply_to[property])
 					end)
 				)
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[property] = key
 	end

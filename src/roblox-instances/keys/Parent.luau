@@ -17,15 +17,12 @@ local function setParent(instance: Instance, parent: Instance?)
 	end
 end
 
-return SpecialKey "ancestor" {
-	name = "Parent",
-	apply = function(
-		scope: memory.Scope,
-		apply_to: Instance,
-		parent: calc.UsedAs<Instance?>
-	)
+return SpecialKey(
+	"ancestor",
+	"Parent",
+	function(scope: memory.Scope, apply_to: Instance, parent: calc.UsedAs<Instance?>)
 		observe(scope, parent, function()
 			setParent(apply_to, peek(parent))
 		end, true)
-	end,
-} :: instances.SpecialKey<"Parent">
+	end
+) :: instances.SpecialKey<"Parent">

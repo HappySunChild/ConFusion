@@ -12,13 +12,10 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 	local key = KEY_CACHE[attribute]
 
 	if key == nil then
-		key = SpecialKey "observer" {
-			name = `AttributeOut_{attribute}`,
-			apply = function(
-				scope: memory.Scope,
-				apply_to: Instance,
-				value: calc.Value<any>
-			)
+		key = SpecialKey(
+			"observer",
+			"AttributeOut",
+			function(scope: memory.Scope, apply_to: Instance, value: calc.Value<any>)
 				if xtypeof(value) ~= "Value" then
 					External.logError(
 						instances.expected_type,
@@ -38,8 +35,8 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 				)
 
 				return
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[attribute] = key
 	end

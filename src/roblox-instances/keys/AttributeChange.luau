@@ -9,13 +9,10 @@ local function AttributeChange(attribute: string): instances.SpecialKey<"Attribu
 	local key = KEY_CACHE[attribute]
 
 	if key == nil then
-		key = SpecialKey "observer" {
-			name = `AttributeChanged_{attribute}`,
-			apply = function(
-				scope: memory.Scope,
-				apply_to: Instance,
-				callback: (any) -> ()
-			)
+		key = SpecialKey(
+			"observer",
+			"AttributeChanged",
+			function(scope: memory.Scope, apply_to: Instance, callback: (any) -> ())
 				local event = apply_to:GetAttributeChangedSignal(attribute)
 
 				table.insert(
@@ -24,8 +21,8 @@ local function AttributeChange(attribute: string): instances.SpecialKey<"Attribu
 						callback(apply_to:GetAttribute(attribute))
 					end)
 				)
-			end,
-		}
+			end
+		)
 
 		KEY_CACHE[attribute] = key
 	end
