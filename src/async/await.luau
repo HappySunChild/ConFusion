@@ -25,4 +25,4 @@ local function await(subject: graph.GraphObject)
 	coroutine.yield()
 end
 
-return await
+return await :: async.Await

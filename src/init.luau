@@ -10,6 +10,7 @@ Fusion on GitHub: https://github.com/dphfox/Fusion
 local calc = require "@self/core-calc/types"
 local graph = require "@self/core-graph/types"
 local memory = require "@self/core-memory/types"
+local use = require "@self/core-use/types"
 
 local iter = require "@self/iter/types"
 local iter_for = require "@self/iter-for/types"
@@ -19,6 +20,7 @@ local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local pipeline = require "@self/pipeline/types"
+local safe = require "@self/safe/types"
 
 local motion = require "@self/motion/types"
 local springs = require "@self/motion-springs/types"
@@ -62,27 +64,22 @@ type ConFusion = {
 	},
 
 	-- Core: Memory
-	read scoped: <B, M>(base: B, methods: M?) -> memory.Scope<B> & M,
-	read deriveScope: <T, M>(existing: T, methods: M?) -> T & M,
-	read innerScope: <T, M>(existing: T, methods: M?) -> T & M,
-	read doCleanup: (action: memory.CleanupTask) -> (),
-	read insert: <Tasks...>(scope: memory.Scope, Tasks...) -> Tasks...,
+	read scoped: memory.Scoped,
+	read deriveScope: memory.DeriveScope,
+	read innerScope: memory.DeriveScope,
+	read doCleanup: memory.DoCleanup,
+	read insert: memory.Insert,
 
 	-- Core: State
 	read Computed: calc.ComputedConstructor,
 	read Value: calc.ValueConstructor,
 
 	-- Core: Graph
-	read observe: (
-		scope: memory.Scope,
-		subject: graph.GraphObject,
-		callback: () -> (),
-		immediate: boolean?
-	) -> () -> (),
+	read observe: graph.Observe,
 
 	-- Core: Use
 	read peek: calc.Use,
-	read flatten: <T>(calc.Use, calc.UsedAs<T>) -> T,
+	read flatten: use.Flatten,
 
 	-- Iter: For
 	read ForPairs: iter_for.ForPairsConstructor,
@@ -95,7 +92,7 @@ type ConFusion = {
 
 	-- Async
 	read Eventual: async.EventualConstructor,
-	read await: (subject: graph.GraphObject) -> (),
+	read await: async.Await,
 
 	-- Context
 	read Contextual: context.ContextConstructor,
@@ -154,7 +151,7 @@ local External = require "@self/core-external/External"
 local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
 External.setProvider(RobloxProvider)
 
-local ConFusion = table.freeze {
+return table.freeze {
 	version = table.freeze {
 		major = 0,
 		minor = 4,
@@ -241,6 +238,4 @@ local ConFusion = table.freeze {
 	-- Roblox: Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",
 	AttributeOf = require "@self/roblox-binds/AttributeOf",
-}
-
-return ConFusion :: ConFusion
+} :: ConFusion

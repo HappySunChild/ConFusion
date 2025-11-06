@@ -41,4 +41,4 @@ local function doCleanup(cleanup_task: memory.CleanupTask?)
 	ACTIVE_TASKS[cleanup_task] = nil
 end
 
-return doCleanup
+return doCleanup :: memory.DoCleanup

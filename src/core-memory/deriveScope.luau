@@ -21,4 +21,4 @@ local function deriveScope<S>(
 	return scope
 end
 
-return deriveScope :: <T, M>(existing: T, methods: M?) -> T & M
+return deriveScope :: memory.DeriveScope

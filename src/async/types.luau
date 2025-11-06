@@ -1,4 +1,5 @@
 local calc = require "../core-calc/types"
+local graph = require "../core-graph/types"
 local memory = require "../core-memory/types"
 
 export type Eventual<T> = {
@@ -18,6 +19,8 @@ export type EventualConstructor = <S, T>(
 	processor: EventualProcessor<S, T>,
 	pending_value: T
 ) -> Eventual<T>
+
+export type Await = (subject: graph.GraphObject) -> ()
 
 return {
 	await_non_graph = "Can't await non-graph values.",

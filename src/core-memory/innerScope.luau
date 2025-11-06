@@ -20,4 +20,4 @@ local function innerScope<T>(
 	return inner
 end
 
-return innerScope :: <T, M>(existing: T, methods: M?) -> T & M
+return innerScope :: memory.DeriveScope

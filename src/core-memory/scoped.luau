@@ -15,4 +15,4 @@ local function scoped(
 	return scope
 end
 
-return scoped :: <B, M>(base: B, methods: M) -> B & M
+return scoped :: memory.Scoped

@@ -47,4 +47,4 @@ local function observe(
 	return disconnect
 end
 
-return observe
+return observe :: graph.Observe
