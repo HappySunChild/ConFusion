@@ -38,6 +38,7 @@ return {
 	property_cannot_assign = "The %s class has no assignable property '%s'.",
 	property_assign_error = "Error while setting property:\nERROR_MESSAGE",
 
+	invalid_key_type = "Invalid key type '%s'.",
 	invalid_child_type = "Invalid child type '%s'.",
 
 	missing_specialkey_stage = "The SpecialKey '%s' is missing a stage property.",

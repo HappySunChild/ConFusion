@@ -83,6 +83,8 @@ local function applyProperties(
 			applyProperty(scope, instance, key, value)
 		elseif key_type == "SpecialKey" then
 			table.insert(special_keys, key)
+		else
+			External.logError(instances.invalid_key_type, nil, key_type)
 		end
 	end
 
