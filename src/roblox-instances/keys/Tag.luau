@@ -3,7 +3,7 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local SpecialKey = require "./SpecialKey"
-local observe = require "../../core-graph/observe"
+local observeImmediate = require "../../core-graph/observeImmediate"
 local peek = require "../../core-use/peek"
 
 local KEY_CACHE = {}
@@ -20,7 +20,7 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 				apply_to: Instance,
 				enabled: calc.UsedAs<boolean>
 			)
-				observe(scope, enabled, function()
+				observeImmediate(scope, enabled, function()
 					local value = peek(enabled)
 
 					if value == true then
@@ -28,7 +28,7 @@ local function Tag(tag: string): instances.SpecialKey<"Tag">
 					elseif apply_to:HasTag(tag) then
 						apply_to:RemoveTag(tag)
 					end
-				end, true)
+				end)
 			end
 		)
 

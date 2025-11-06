@@ -3,7 +3,7 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local SpecialKey = require "./SpecialKey"
-local observe = require "../../core-graph/observe"
+local observeImmediate = require "../../core-graph/observeImmediate"
 local peek = require "../../core-use/peek"
 
 local KEY_CACHE = {}
@@ -16,9 +16,9 @@ local function Attribute(attribute: string): instances.SpecialKey<"Attribute">
 			"self",
 			"Attribute",
 			function(scope: memory.Scope, apply_to: Instance, value: calc.UsedAs<any>)
-				observe(scope, value, function()
+				observeImmediate(scope, value, function()
 					apply_to:SetAttribute(attribute, peek(value))
-				end, true)
+				end)
 			end
 		)
 

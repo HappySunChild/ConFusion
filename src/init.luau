@@ -76,6 +76,7 @@ type ConFusion = {
 
 	-- Core: Graph
 	read observe: graph.Observe,
+	read observeImmediate: graph.Observe,
 
 	-- Core: Use
 	read peek: calc.Use,
@@ -170,6 +171,7 @@ return table.freeze {
 
 	-- Core: Graph
 	observe = require "@self/core-graph/observe",
+	observeImmediate = require "@self/core-graph/observeImmediate",
 
 	-- Core: Use
 	peek = require "@self/core-use/peek",
