@@ -33,7 +33,7 @@ end
 local CLASS = table.freeze {
 	type = "Disassembly",
 	kind = "graph",
-	timeliness = "eager",
+	timeliness = "lazy",
 
 	populate = function<S, IK, IV, OK, OV>(
 		self: Self<S, IK, IV, OK, OV>,

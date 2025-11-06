@@ -23,7 +23,7 @@ type Self<S, V> = {
 local CLASS = table.freeze {
 	type = "RangeDisassembly",
 	kind = "graph",
-	timeliness = "eager",
+	timeliness = "lazy",
 
 	populate = function<S, V>(self: Self<S, V>, use: calc.Use, output: { [number]: V })
 		for index, object in self._pairs do
