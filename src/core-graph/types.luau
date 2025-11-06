@@ -25,8 +25,7 @@ export type GraphObject = {
 export type Observe = (
 	scope: memory.Scope,
 	subject: GraphObject,
-	callback: () -> (),
-	immediate: boolean?
+	callback: () -> ()
 ) -> () -> ()
 
 return {

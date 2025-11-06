@@ -4,7 +4,7 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 local Parent = require "./keys/Parent"
-local observe = require "../core-graph/observe"
+local observeImmediate = require "../core-graph/observeImmediate"
 local parseError = require "../core-logging/parseError"
 local peek = require "../core-use/peek"
 local sortKeys = require "./keys/sortKeys"
@@ -59,9 +59,9 @@ local function applyProperty(
 	property: string,
 	value: calc.UsedAs<any>
 )
-	observe(scope, value, function()
+	observeImmediate(scope, value, function()
 		setProperty(instance, property, peek(value))
-	end, true)
+	end)
 end
 
 local function applyProperties(

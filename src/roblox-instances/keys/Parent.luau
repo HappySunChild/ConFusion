@@ -4,7 +4,7 @@ local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
 local SpecialKey = require "./SpecialKey"
-local observe = require "../../core-graph/observe"
+local observeImmediate = require "../../core-graph/observeImmediate"
 local peek = require "../../core-use/peek"
 
 local function setParent(instance: Instance, parent: Instance?)
@@ -21,8 +21,8 @@ return SpecialKey(
 	"ancestor",
 	"Parent",
 	function(scope: memory.Scope, apply_to: Instance, parent: calc.UsedAs<Instance?>)
-		observe(scope, parent, function()
+		observeImmediate(scope, parent, function()
 			setParent(apply_to, peek(parent))
-		end, true)
+		end)
 	end
 ) :: instances.SpecialKey<"Parent">

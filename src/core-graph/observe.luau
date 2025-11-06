@@ -1,7 +1,6 @@
 local graph = require "./types"
 local memory = require "../core-memory/types"
 
-local External = require "../core-external/External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 local nameOf = require "../core-logging/nameOf"
@@ -10,13 +9,8 @@ local nicknames = require "../core-logging/nicknames"
 local function observe(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
-	callback: () -> (),
-	immediate: boolean?
+	callback: () -> ()
 ): () -> ()
-	if immediate then
-		External.doTaskImmediate(callback)
-	end
-
 	if castToGraph(subject) == nil then
 		return
 	end
