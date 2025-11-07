@@ -11,6 +11,25 @@ export type MatchConstructor = <T>(
 ) -> (patterns: { [any]: T, _: T? }) -> Match<T>
 
 export type PatternPredicate = (value: unknown, use: calc.Use) -> boolean
+export type MatchPredicates = {
+	Not: (predicate: PatternPredicate) -> PatternPredicate,
+	And: (...PatternPredicate) -> PatternPredicate,
+	Or: (...PatternPredicate) -> PatternPredicate,
+
+	OfType: (target_type: calc.UsedAs<string>) -> PatternPredicate,
+	Nil: PatternPredicate,
+	NaN: PatternPredicate,
+
+	Regex: (regex_pattern: calc.UsedAs<string>) -> PatternPredicate,
+
+	Equals: (other: calc.UsedAs<any>) -> PatternPredicate,
+	GreaterThan: (minimum: calc.UsedAs<number>) -> PatternPredicate,
+	LessThan: (maximum: calc.UsedAs<number>) -> PatternPredicate,
+	InRange: (
+		minimum: calc.UsedAs<number>,
+		maximum: calc.UsedAs<number>
+	) -> PatternPredicate,
+}
 
 return {
 	pattern_predicate_error = "Error in pattern predicate:\nERROR_MESSAGE",
