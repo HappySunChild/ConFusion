@@ -19,6 +19,7 @@ local iter_range = require "@self/iter-range/types"
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
+local match = require "@self/match/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
 
@@ -103,6 +104,10 @@ type ConFusion = {
 
 	-- Safe
 	read Safe: safe.Safe,
+
+	-- Match
+	read Match: match.MatchConstructor,
+	read MatchPredicates: match.MatchPredicates,
 
 	-- Motion
 	read Animated: motion.AnimatedConstructor,
@@ -198,6 +203,10 @@ return table.freeze {
 
 	-- Safe
 	Safe = require "@self/safe/Safe",
+
+	-- Match
+	Match = require "@self/match/Match",
+	MatchPredicates = require "@self/match/predicates",
 
 	-- Motion
 	Animated = require "@self/motion/Animated",
