@@ -47,9 +47,9 @@ local CLASS = table.freeze {
 
 		local use = self._use
 
-		local patterns = self._patterns
-
 		local input_value = use(self._input_value)
+
+		local patterns = self._patterns
 
 		local old_value = self._internal_value
 		local new_value = self._default
@@ -70,6 +70,7 @@ local CLASS = table.freeze {
 		if not did_match then
 			External.logErrorNonFatal(
 				match.match_not_exhaustive,
+				nil,
 				input_value,
 				typeof(input_value)
 			)
@@ -79,7 +80,7 @@ local CLASS = table.freeze {
 
 		self._internal_value = new_value
 
-		return isSimilar(old_value, new_value)
+		return not isSimilar(old_value, new_value)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
@@ -96,7 +97,7 @@ local function Match(
 
 		local new_match: Self<T> = setmetatable({
 			scope = scope,
-			created = os.clock(),
+			created_at = os.clock(),
 
 			_input_value = input_value,
 			_patterns = c_patterns,
