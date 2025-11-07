@@ -4,12 +4,14 @@ local match = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+local castToState = require "../core-calc/castToState"
 local genericUse = require "../core-use/genericUse"
 local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
 
 type Self<T> = {
 	_literal_branches: { [any]: T },
+	_state_branches: { [calc.StateObject<any>]: T },
 	_predicate_branches: { [match.PatternPredicate]: T },
 	_default_branch: T?,
 
@@ -29,7 +31,13 @@ local CLASS = table.freeze {
 		local use = self._use
 
 		for pattern, output_value in self._literal_branches do
-			if use(pattern) == input_value then
+			if isSimilar(pattern, input_value) then
+				return true, output_value
+			end
+		end
+
+		for pattern, output_value in self._state_branches do
+			if isSimilar(use(pattern), input_value) then
 				return true, output_value
 			end
 		end
@@ -51,6 +59,7 @@ local CLASS = table.freeze {
 			end
 		end
 
+		print "checking default"
 		if self._default_branch ~= nil then
 			return true, self._default_branch
 		end
@@ -94,10 +103,13 @@ local function Match(
 		local default_branch = all_branches._
 		local literal_branches = {}
 		local predicate_branches = {}
+		local state_branches = {}
 
 		for pattern, output_value in all_branches do
 			if type(pattern) == "function" then
 				predicate_branches[pattern] = output_value
+			elseif castToState(pattern) ~= nil then
+				state_branches[pattern] = output_value
 			else
 				literal_branches[pattern] = output_value
 			end
@@ -110,6 +122,7 @@ local function Match(
 			_input_value = input_value,
 
 			_literal_branches = literal_branches,
+			_state_branches = state_branches,
 			_predicate_branches = predicate_branches,
 			_default_branch = default_branch,
 
