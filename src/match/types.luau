@@ -10,25 +10,25 @@ export type MatchConstructor = <T>(
 	value: calc.UsedAs<unknown>
 ) -> (patterns: { [any]: T, _: T? }) -> Match<T>
 
-export type PatternPredicate = (value: unknown, use: calc.Use) -> boolean
+export type PredicatePattern = (value: unknown, use: calc.Use) -> boolean
 export type MatchPredicates = {
-	Not: (predicate: PatternPredicate) -> PatternPredicate,
-	And: (...PatternPredicate) -> PatternPredicate,
-	Or: (...PatternPredicate) -> PatternPredicate,
+	Not: (predicate: PredicatePattern) -> PredicatePattern,
+	And: (...PredicatePattern) -> PredicatePattern,
+	Or: (...PredicatePattern) -> PredicatePattern,
 
-	OfType: (target_type: calc.UsedAs<string>) -> PatternPredicate,
-	Nil: PatternPredicate,
-	NaN: PatternPredicate,
+	OfType: (target_type: calc.UsedAs<string>) -> PredicatePattern,
+	Nil: PredicatePattern,
+	NaN: PredicatePattern,
 
-	Regex: (regex_pattern: calc.UsedAs<string>) -> PatternPredicate,
+	Regex: (regex_pattern: calc.UsedAs<string>) -> PredicatePattern,
 
-	Equals: (other: calc.UsedAs<any>) -> PatternPredicate,
-	GreaterThan: (minimum: calc.UsedAs<number>) -> PatternPredicate,
-	LessThan: (maximum: calc.UsedAs<number>) -> PatternPredicate,
+	Equals: (other: calc.UsedAs<any>) -> PredicatePattern,
+	GreaterThan: (minimum: calc.UsedAs<number>) -> PredicatePattern,
+	LessThan: (maximum: calc.UsedAs<number>) -> PredicatePattern,
 	InRange: (
 		minimum: calc.UsedAs<number>,
 		maximum: calc.UsedAs<number>
-	) -> PatternPredicate,
+	) -> PredicatePattern,
 }
 
 return {

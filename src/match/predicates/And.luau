@@ -1,7 +1,7 @@
 local calc = require "../../core-calc/types"
 local match = require "../types"
 
-local function And(...: match.PatternPredicate)
+local function And(...: match.PredicatePattern)
 	local all_predicates = { ... }
 
 	return function(value: unknown, use: calc.Use)

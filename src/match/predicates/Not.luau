@@ -1,7 +1,7 @@
 local calc = require "../../core-calc/types"
 local match = require "../types"
 
-local function Not(predicate: match.PatternPredicate)
+local function Not(predicate: match.PredicatePattern)
 	return function(value: unknown, use: calc.Use)
 		return not predicate(value, use)
 	end
