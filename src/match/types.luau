@@ -8,7 +8,7 @@ export type Match<T> = {
 export type MatchConstructor = <T>(
 	scope: memory.Scope,
 	value: calc.UsedAs<unknown>
-) -> (patterns: { [any]: T, _: T? }) -> Match<T>
+) -> (patterns: { [any]: T, _: T? }) -> Match<T> | T
 
 export type PredicatePattern = (value: unknown, use: calc.Use) -> boolean
 export type MatchPredicates = {
@@ -32,6 +32,7 @@ export type MatchPredicates = {
 }
 
 return {
-	pattern_predicate_error = "Error in pattern predicate:\nERROR_MESSAGE",
+	matching_error = "Error while matching patterns:\nERROR_MESSAGE",
+	predicate_pattern_error = "Error in predicate pattern:\nERROR_MESSAGE",
 	match_not_exhaustive = "Non-exhaustive match pattern: `%*` (%*) not covered!",
 }

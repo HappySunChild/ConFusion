@@ -5,15 +5,16 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 local castToState = require "../core-calc/castToState"
+local categorizeBranches = require "./categorizeBranches"
+local checkPatterns = require "./checkPatterns"
+local dissolvingUse = require "../core-use/dissolvingUse"
 local genericUse = require "../core-use/genericUse"
 local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
 
 type Self<T> = {
-	_literal_branches: { [any]: T },
-	_state_branches: { [calc.StateObject<any>]: T },
-	_predicate_branches: { [match.PatternPredicate]: T },
 	_default_branch: T?,
+	_branch_categories: { { [any]: T } },
 
 	_input_value: calc.UsedAs<unknown>,
 
@@ -27,57 +28,33 @@ local CLASS = table.freeze {
 	kind = "Match",
 	timeliness = "lazy",
 
-	_match = function<T>(self: Self<T>, input_value: unknown): (boolean, T?)
-		local use = self._use
-
-		for pattern, output_value in self._literal_branches do
-			if isSimilar(pattern, input_value) then
-				return true, output_value
-			end
-		end
-
-		for pattern, output_value in self._state_branches do
-			if isSimilar(use(pattern), input_value) then
-				return true, output_value
-			end
-		end
-
-		for pattern, output_value in self._predicate_branches do
-			local ok, matched = xpcall(pattern, parseError, input_value, use)
-
-			if not ok then
-				External.logErrorNonFatal(
-					match.pattern_predicate_error,
-					matched :: logging.Error
-				)
-
-				continue
-			end
-
-			if matched == true then
-				return true, output_value
-			end
-		end
-
-		print "checking default"
-		if self._default_branch ~= nil then
-			return true, self._default_branch
-		end
-
-		return false
-	end,
 	_evaluate = function<T>(self: Self<T>)
 		if self.scope == nil then
 			return false
 		end
 
-		local input_value = self._use(self._input_value)
+		local use = self._use
+
+		local input_value = use(self._input_value)
 		local old_value = self._internal_value
 
-		local did_match, new_value = self:_match(input_value)
+		local ok, did_match: boolean | logging.Error, new_value: T? = xpcall(
+			checkPatterns,
+			parseError,
+			input_value,
+			use,
+			self._default_branch,
+			unpack(self._branch_categories)
+		)
+
+		if not ok then
+			External.logErrorNonFatal(match.matching_error, did_match :: logging.Error)
+
+			return false
+		end
 
 		-- didn't match to any branches at all, match must be non-exhaustive
-		if not did_match then
+		if did_match == false then
 			External.logErrorNonFatal(
 				match.match_not_exhaustive,
 				nil,
@@ -95,24 +72,37 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
+local function checkDissolvable<T>(
+	input_value: calc.UsedAs<unknown>,
+	default_branch: T?,
+	...: { [any]: T }
+): (boolean, T?)
+	if castToState(input_value) ~= nil then
+		return false, nil
+	end
+
+	local ok, did_match, new_value =
+		pcall(checkPatterns, input_value, dissolvingUse, default_branch, ...)
+
+	if not ok or not did_match then
+		return false
+	end
+
+	return true, new_value
+end
+
 local function Match(
 	scope: memory.Scope,
 	input_value: calc.UsedAs<unknown>
 ): <T>({ [any]: T, _: T? }) -> match.Match<T>
-	return function<T>(all_branches: { [any]: T, _: T? }): match.Match<T>
-		local default_branch = all_branches._
-		local literal_branches = {}
-		local predicate_branches = {}
-		local state_branches = {}
+	return function<T>(all_branches: { [any]: T, _: T? }): match.Match<T> | T
+		local default_branch, branch_categories = categorizeBranches(all_branches)
 
-		for pattern, output_value in all_branches do
-			if type(pattern) == "function" then
-				predicate_branches[pattern] = output_value
-			elseif castToState(pattern) ~= nil then
-				state_branches[pattern] = output_value
-			else
-				literal_branches[pattern] = output_value
-			end
+		local can_dissolve, constant =
+			checkDissolvable(input_value, default_branch, unpack(branch_categories))
+
+		if can_dissolve then
+			return constant
 		end
 
 		local new_match: Self<T> = setmetatable({
@@ -121,10 +111,8 @@ local function Match(
 
 			_input_value = input_value,
 
-			_literal_branches = literal_branches,
-			_state_branches = state_branches,
-			_predicate_branches = predicate_branches,
 			_default_branch = default_branch,
+			_branch_categories = branch_categories,
 
 			_users = {},
 			_using = {},
