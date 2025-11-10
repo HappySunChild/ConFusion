@@ -13,7 +13,7 @@ export type Timer = calc.StateObject<number> & {
 
 	pause: (Timer) -> (),
 	unpause: (Timer) -> (),
-	reset: (Timer) -> (),
+	zero: (Timer) -> (),
 }
 export type TimerConstructor = (scope: memory.Scope) -> Timer
 

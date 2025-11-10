@@ -38,7 +38,7 @@ local CLASS = table.freeze {
 
 		change(self)
 	end,
-	reset = function(self: Self)
+	zero = function(self: Self)
 		self._start = peek(self._timer) :: number
 		self._internal_value = 0
 

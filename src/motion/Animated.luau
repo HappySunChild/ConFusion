@@ -97,7 +97,7 @@ local CLASS = table.freeze {
 			self._active_curve =
 				next_generator(self._active_goal, unpack(self._active_dynamics))
 
-			timer:reset()
+			timer:zero()
 			timer:unpause()
 		end
 
