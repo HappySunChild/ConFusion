@@ -4,6 +4,16 @@ local External = require "../core-external/External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
+local function fireNodeObservers(target: graph.GraphObject)
+	if target._observers == nil then
+		return
+	end
+
+	for _, callback in target._observers do
+		External.doTaskImmediate(callback)
+	end
+end
+
 local function isNodeEager(target: graph.GraphObject): boolean
 	if target.timeliness == "eager" then
 		return true
@@ -16,35 +26,17 @@ local function isNodeEager(target: graph.GraphObject): boolean
 	return false
 end
 
-local function fireNodeObservers(target: graph.GraphObject)
-	if target._observers == nil then
-		return
-	end
+local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject }
+	local eager_users: { graph.GraphObject } = {}
 
-	for _, callback in target._observers do
-		External.doTaskImmediate(callback)
-	end
-end
-
-local function change(target: graph.GraphObject)
-	if castToGraph(target) == nil then
-		return External.logError(graph.invalid_change_type, nil, typeof(target))
-	end
-
-	if not evaluate(target, true) then
-		return
-	end
-
-	local search_now = { target }
-	local search_next = {}
-
-	local eager_users = {}
+	local search_now: { graph.GraphObject } = { target }
+	local search_next: { graph.GraphObject } = {}
 
 	repeat
-		local done = true
+		local is_finished = true
 
-		for _, search_target: graph.GraphObject in search_now do
-			for user in search_target._users do
+		for _, searching: graph.GraphObject in search_now do
+			for user in searching._users do
 				if user.validity == "busy" then
 					External.logError(graph.infinite_loop)
 				end
@@ -52,7 +44,7 @@ local function change(target: graph.GraphObject)
 				if user.validity == "valid" then
 					user.validity = "invalid"
 
-					done = false
+					is_finished = false
 
 					table.insert(search_next, user)
 
@@ -66,11 +58,25 @@ local function change(target: graph.GraphObject)
 		search_now, search_next = search_next, search_now
 
 		table.clear(search_next)
-	until done
+	until is_finished
 
-	table.sort(eager_users, function(a, b)
-		return a.created_at < b.created_at
+	table.sort(eager_users, function(x: graph.GraphObject, y: graph.GraphObject)
+		return x.created_at < y.created_at
 	end)
+
+	return eager_users
+end
+
+local function change(target: graph.GraphObject)
+	if castToGraph(target) == nil then
+		External.logError(graph.invalid_change_type, nil, typeof(target))
+	end
+
+	if not evaluate(target, true) then
+		return
+	end
+
+	local eager_users = gatherEagerUsers(target)
 
 	fireNodeObservers(target)
 

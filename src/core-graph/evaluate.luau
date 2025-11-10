@@ -4,7 +4,7 @@ local External = require "../core-external/External"
 local castToGraph = require "./castToGraph"
 local xtypeof = require "../xtypeof"
 
-local function evaluate(target: graph.GraphObject, force_computation: boolean?)
+local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
 	if castToGraph(target) == nil then
 		External.logErrorNonFatal(graph.invalid_evaluate_type, nil, xtypeof(target))
 
