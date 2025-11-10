@@ -20,14 +20,13 @@ local CLASS = {
 	_using = table.freeze {},
 	_internal_value = External.getLastUpdate(),
 
-	setActive = function(self: Self, active: boolean)
-		if active then
-			ALL_TIMERS[self] = true
-		else
-			ALL_TIMERS[self] = nil
-		end
+	enabled = function(self: Self)
+		ALL_TIMERS[self] = true
 	end,
-	isActive = function(self: Self)
+	disable = function(self: Self)
+		ALL_TIMERS[self] = nil
+	end,
+	isEnabled = function(self: Self)
 		return ALL_TIMERS[self] ~= nil
 	end,
 	_evaluate = function(self: Self)

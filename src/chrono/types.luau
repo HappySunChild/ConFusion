@@ -4,8 +4,9 @@ local memory = require "../core-memory/types"
 export type ExternalTime = calc.StateObject<number> & {
 	kind: "ExternalTime",
 
-	setActive: (ExternalTime, active: boolean) -> (),
-	isActive: (ExternalTime) -> boolean,
+	enable: (ExternalTime) -> (),
+	disable: (ExternalTime) -> (),
+	isEnabled: (ExternalTime) -> boolean,
 }
 
 export type Timer = calc.StateObject<number> & {

@@ -23,7 +23,7 @@ local CLASS = table.freeze {
 			return
 		end
 
-		self._timer:setActive(true)
+		self._timer:enable()
 		self._paused = false
 
 		change(self)
@@ -33,7 +33,7 @@ local CLASS = table.freeze {
 			return
 		end
 
-		self._timer:setActive(false)
+		self._timer:disable()
 		self._paused = true
 
 		change(self)
