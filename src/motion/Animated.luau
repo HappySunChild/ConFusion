@@ -64,9 +64,7 @@ local CLASS = table.freeze {
 
 		local next_goal = peek(goal)
 
-		if castToState(goal) ~= nil then
-			depend(self, goal)
-		end
+		depend(self, castToState(goal))
 
 		-- protect against NaN goals
 		if next_goal ~= next_goal then
@@ -77,10 +75,7 @@ local CLASS = table.freeze {
 
 		local next_generator = peek(generator) :: motion.CurveGenerator<T>
 
-		if castToState(generator) ~= nil then
-			depend(self, generator :: any)
-		end
-
+		depend(self, castToState(generator))
 		depend(self, timer)
 
 		-- wake

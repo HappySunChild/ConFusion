@@ -89,9 +89,7 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		if castToState(self._input) ~= nil then
-			depend(self, self._input)
-		end
+		depend(self, castToState(self._input))
 
 		local roam_keys = self._roam_keys
 		local roam_values = self._roam_values

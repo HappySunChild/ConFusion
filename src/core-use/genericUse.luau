@@ -7,9 +7,7 @@ local peek = require "./peek"
 
 local function genericUse(user: graph.GraphObject): calc.Use
 	local function use<T>(target: calc.UsedAs<T>): T
-		if castToState(target) ~= nil then
-			depend(user, target)
-		end
+		depend(user, castToState(target))
 
 		return peek(target)
 	end
