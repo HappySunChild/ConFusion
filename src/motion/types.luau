@@ -1,21 +1,20 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type AnimationCurve<T> = (elapsed: number) -> (boolean, T, ...any)
-export type CurveGenerator<T> = (goal: T, start: T, ...any) -> AnimationCurve<T>
+export type AnimationMove<T> = (elapsed: number) -> (boolean, T, ...any)
+export type MoveGenerator<T> = (goal: T, start: T, ...any) -> AnimationMove<T>
 
--- A state object whose value can be animated with a AnimatedMover callback.
-export type Animated<T> = {
+export type Motion<T> = {
 	kind: "Animated",
 
-	setDynamic: (self: Animated<T>, index: number, value: any) -> (),
-	getDynamic: (self: Animated<T>, index: number) -> any?,
+	setDynamic: (self: Motion<T>, index: number, value: any) -> (),
+	getDynamic: (self: Motion<T>, index: number) -> any?,
 } & calc.StateObject<T>
-export type AnimatedConstructor = <T>(
+export type MotionConstructor = <T>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<T>,
-	mover: calc.UsedAs<CurveGenerator<T>>
-) -> Animated<T>
+	move_generator: calc.UsedAs<MoveGenerator<T>>
+) -> Motion<T>
 
 return {
 	animated_invalid_goal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",

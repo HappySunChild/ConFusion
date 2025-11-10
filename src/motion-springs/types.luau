@@ -7,6 +7,6 @@ export type SpringConstructor = <T>(
 	goal: calc.UsedAs<T>,
 	speed: calc.UsedAs<number>?,
 	damping: calc.UsedAs<number>?
-) -> motion.Animated<T>
+) -> motion.Motion<T>
 
 return nil

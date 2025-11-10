@@ -2,7 +2,7 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 
-local Animated = require "../motion/Animated"
+local Motion = require "../motion/Motion"
 local packType = require "./packType"
 local peek = require "../core-use/peek"
 local springCoefficients = require "./springCoefficients"
@@ -10,10 +10,10 @@ local unpackType = require "./unpackType"
 
 local EPSILON = 0.0001
 
-local function springMover<T>(
+local function SpringMover<T>(
 	speed: calc.UsedAs<number>,
 	damping: calc.UsedAs<number>
-): motion.CurveGenerator<T>
+): motion.MoveGenerator<T>
 	local current_v = {}
 
 	local active_type = ""
@@ -22,7 +22,7 @@ local function springMover<T>(
 		target_position: T,
 		initial_position: T,
 		initial_velocity: { number }?
-	): motion.AnimationCurve<T>
+	): motion.AnimationMove<T>
 		local discontinuous = typeof(target_position) ~= active_type
 
 		active_type = typeof(target_position)
@@ -101,8 +101,8 @@ local function Spring<T>(
 	goal: calc.UsedAs<T>,
 	speed: calc.UsedAs<number>?,
 	damping: calc.UsedAs<number>?
-): motion.Animated<T>
-	return Animated(scope, goal, springMover(speed or 10, damping or 1))
+): motion.Motion<T>
+	return Motion(scope, goal, SpringMover(speed or 10, damping or 1))
 end
 
 return Spring

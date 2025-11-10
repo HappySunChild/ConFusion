@@ -12,17 +12,17 @@ local destructor = require "../core-memory/destructor"
 local evaluate = require "../core-graph/evaluate"
 local peek = require "../core-use/peek"
 
-type Self<T> = motion.Animated<T> & {
+type Self<T> = motion.Motion<T> & {
 	_goal: calc.UsedAs<T>,
-	_generator: calc.UsedAs<motion.CurveGenerator<T>>,
+	_generator: calc.UsedAs<motion.MoveGenerator<T>>,
 
 	_regenerate: boolean?,
 
 	_active_goal: T,
 	_active_dynamics: { any },
 
-	_active_generator: motion.CurveGenerator<T>,
-	_active_curve: motion.AnimationCurve<T>,
+	_active_generator: motion.MoveGenerator<T>,
+	_active_curve: motion.AnimationMove<T>,
 
 	_timer: chrono.Timer,
 }
@@ -73,7 +73,7 @@ local CLASS = table.freeze {
 			return false
 		end
 
-		local next_generator = peek(generator) :: motion.CurveGenerator<T>
+		local next_generator = peek(generator) :: motion.MoveGenerator<T>
 
 		depend(self, castToState(generator))
 		depend(self, timer)
@@ -125,11 +125,11 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function Animated<T>(
+local function Motion<T>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<T>,
-	mover: calc.UsedAs<motion.CurveGenerator<T>>
-): motion.Animated<T>
+	mover: calc.UsedAs<motion.MoveGenerator<T>>
+): motion.Motion<T>
 	local new_animated: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
@@ -158,4 +158,4 @@ local function Animated<T>(
 	return new_animated
 end
 
-return Animated
+return Motion

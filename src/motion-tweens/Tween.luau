@@ -3,15 +3,15 @@ local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 local tweens = require "./types"
 
-local Animated = require "../motion/Animated"
+local Motion = require "../motion/Motion"
 local castToState = require "../core-calc/castToState"
 local getTweenAlpha = require "./getTweenAlpha"
 local getTweenDuration = require "./getTweenDuration"
 local lerp = require "./lerp"
 local peek = require "../core-use/peek"
 
-local function tweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
-	local curve_generator = function(target: T, start: T): motion.AnimationCurve<T>
+local function TweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
+	local curve_generator = function(target: T, start: T): motion.AnimationMove<T>
 		local active_info = peek(info) :: tweens.TweenInfo
 		local duration = getTweenDuration(active_info)
 
@@ -31,12 +31,12 @@ local function Tween<T>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<T>,
 	info: calc.UsedAs<tweens.TweenInfo>
-): motion.Animated<T> | T
+): motion.Motion<T> | T
 	if castToState(goal) == nil then
 		return goal
 	end
 
-	return Animated(scope, goal, tweenMover(info))
+	return Motion(scope, goal, TweenMover(info))
 end
 
 return Tween

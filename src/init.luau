@@ -43,7 +43,7 @@ export type UsedAs<T> = calc.UsedAs<T>
 export type Iter<K, V> = iter.Iter<K, V>
 export type Range = iter_range.Range
 
-export type Animated<T> = motion.Animated<T>
+export type Motion<T> = motion.Motion<T>
 export type TweenInfo = tweens.TweenInfo
 
 export type Eventual<T> = async.Eventual<T>
@@ -105,7 +105,7 @@ type ConFusion = {
 	read Safe: safe.Safe,
 
 	-- Motion
-	read Animated: motion.AnimatedConstructor,
+	read Motion: motion.MotionConstructor,
 
 	-- Motion: Springs
 	read Spring: springs.SpringConstructor,
@@ -200,7 +200,7 @@ return table.freeze {
 	Safe = require "@self/safe/Safe",
 
 	-- Motion
-	Animated = require "@self/motion/Animated",
+	Motion = require "@self/motion/Motion",
 
 	-- Motion: Springs
 	Spring = require "@self/motion-springs/Spring",
