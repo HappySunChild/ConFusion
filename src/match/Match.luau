@@ -4,13 +4,17 @@ local match = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-local castToState = require "../core-calc/castToState"
-local categorizeBranches = require "./categorizeBranches"
-local checkPatterns = require "./checkPatterns"
+
 local dissolvingUse = require "../core-use/dissolvingUse"
 local genericUse = require "../core-use/genericUse"
+
+local castToState = require "../core-calc/castToState"
 local isSimilar = require "../core-calc/isSimilar"
+
 local parseError = require "../core-logging/parseError"
+
+local categorizeBranches = require "./categorizeBranches"
+local checkPatterns = require "./checkPatterns"
 
 type Self<T> = {
 	_default_branch: T?,
@@ -91,37 +95,36 @@ local function checkDissolvable<T>(
 	return true, new_value
 end
 
-local function Match(
+local function Match<T>(
 	scope: memory.Scope,
-	input_value: calc.UsedAs<unknown>
-): <T>({ [any]: T, _: T? }) -> match.Match<T>
-	return function<T>(all_branches: { [any]: T, _: T? }): match.Match<T> | T
-		local default_branch, branch_categories = categorizeBranches(all_branches)
+	input_value: calc.UsedAs<unknown>,
+	all_branches: { [any]: T, _: T? }
+): match.Match<T> | T
+	local default_branch, branch_categories = categorizeBranches(all_branches)
 
-		local can_dissolve, constant =
-			checkDissolvable(input_value, default_branch, unpack(branch_categories))
+	local can_dissolve, constant =
+		checkDissolvable(input_value, default_branch, unpack(branch_categories))
 
-		if can_dissolve then
-			return constant
-		end
-
-		local new_match: Self<T> = setmetatable({
-			scope = scope,
-			created_at = os.clock(),
-
-			_input_value = input_value,
-
-			_default_branch = default_branch,
-			_branch_categories = branch_categories,
-
-			_users = {},
-			_using = {},
-		}, METATABLE) :: any
-
-		new_match._use = genericUse(new_match)
-
-		return new_match
+	if can_dissolve then
+		return constant
 	end
+
+	local new_match: Self<T> = setmetatable({
+		scope = scope,
+		created_at = os.clock(),
+
+		_input_value = input_value,
+
+		_default_branch = default_branch,
+		_branch_categories = branch_categories,
+
+		_users = {},
+		_using = {},
+	}, METATABLE) :: any
+
+	new_match._use = genericUse(new_match)
+
+	return new_match
 end
 
 return Match :: match.MatchConstructor

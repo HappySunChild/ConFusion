@@ -12,5 +12,6 @@ return table.freeze {
 	Equals = require "@self/Equals",
 	GreaterThan = require "@self/GreaterThan",
 	LessThan = require "@self/LessThan",
+	
 	InRange = require "@self/InRange",
 }

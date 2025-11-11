@@ -7,8 +7,9 @@ export type Match<T> = {
 } & calc.StateObject<T>
 export type MatchConstructor = <T>(
 	scope: memory.Scope,
-	value: calc.UsedAs<unknown>
-) -> (patterns: { [any]: T, _: T? }) -> Match<T> | T
+	value: calc.UsedAs<unknown>,
+	all_branches: { [any]: T, _: T? }
+) -> Match<T> | T
 
 export type PredicatePattern = (value: unknown, use: calc.Use) -> boolean
 export type MatchPredicates = {
@@ -25,6 +26,7 @@ export type MatchPredicates = {
 	Equals: (other: calc.UsedAs<any>) -> PredicatePattern,
 	GreaterThan: (minimum: calc.UsedAs<number>) -> PredicatePattern,
 	LessThan: (maximum: calc.UsedAs<number>) -> PredicatePattern,
+	
 	InRange: (
 		minimum: calc.UsedAs<number>,
 		maximum: calc.UsedAs<number>
