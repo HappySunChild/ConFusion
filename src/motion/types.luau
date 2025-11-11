@@ -5,7 +5,7 @@ export type AnimationMove<T> = (elapsed: number) -> (boolean, T, ...any)
 export type MoveGenerator<T> = (goal: T, start: T, ...any) -> AnimationMove<T>
 
 export type Motion<T> = {
-	kind: "Animated",
+	kind: "Motion",
 
 	setDynamic: (self: Motion<T>, index: number, value: any) -> (),
 	getDynamic: (self: Motion<T>, index: number) -> any?,
@@ -17,6 +17,6 @@ export type MotionConstructor = <T>(
 ) -> Motion<T>
 
 return {
-	animated_invalid_goal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
-	animated_invalid_motion = "An Animated encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
+	motion_invalid_goal = "A Motion was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
+	motion_invalid_motion = "A Motion encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
 }
