@@ -106,6 +106,7 @@ type ConFusion = {
 	read Safe: safe.Safe,
 
 	-- Match
+	read None: match.None,
 	read Match: match.MatchConstructor,
 	read MatchPredicates: match.MatchPredicates,
 
@@ -205,6 +206,7 @@ return table.freeze {
 	Safe = require "@self/safe/Safe",
 
 	-- Match
+	None = require "@self/match/None",
 	Match = require "@self/match/Match",
 	MatchPredicates = require "@self/match/predicates",
 

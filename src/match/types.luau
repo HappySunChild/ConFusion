@@ -1,6 +1,11 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
+export type None = {
+	type: "Symbol",
+	kind: "None",
+}
+
 export type Match<T> = {
 	kind: "Match",
 	timeliness: "lazy",

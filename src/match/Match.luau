@@ -13,6 +13,7 @@ local isSimilar = require "../core-calc/isSimilar"
 
 local parseError = require "../core-logging/parseError"
 
+local None = require "./None"
 local categorizeBranches = require "./categorizeBranches"
 local checkPatterns = require "./checkPatterns"
 
@@ -67,6 +68,11 @@ local CLASS = table.freeze {
 			)
 
 			return false
+		end
+
+		-- this is disgusting
+		if new_value == None then
+			new_value = nil
 		end
 
 		self._internal_value = new_value
