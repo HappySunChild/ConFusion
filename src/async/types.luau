@@ -20,7 +20,7 @@ export type EventualConstructor = <S, T>(
 	pending_value: T
 ) -> Eventual<T>
 
-export type Await = (subject: graph.GraphObject) -> ()
+export type Await = (scope: memory.Scope, subject: graph.GraphObject) -> ()
 
 return {
 	await_non_graph = "Can't await non-graph values.",
