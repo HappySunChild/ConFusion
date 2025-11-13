@@ -2,6 +2,7 @@ local instances = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local Hydrate = require "./Hydrate"
 local defaultProperties = require "./defaultProperties"
 

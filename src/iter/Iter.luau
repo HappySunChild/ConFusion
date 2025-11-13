@@ -3,7 +3,9 @@ local iter = require "./types"
 local memory = require "../core-memory/types"
 
 local depend = require "../core-graph/depend"
+
 local destructor = require "../core-memory/destructor"
+
 local genericeUse = require "../core-use/genericUse"
 
 type Self<K, V> = {

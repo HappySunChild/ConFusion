@@ -3,10 +3,15 @@ local instances = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-local Parent = require "./keys/Parent"
-local observeImmediate = require "../core-graph/observeImmediate"
-local parseError = require "../core-logging/parseError"
+
 local peek = require "../core-use/peek"
+
+local observeImmediate = require "../core-graph/observeImmediate"
+
+local parseError = require "../core-logging/parseError"
+
+local Parent = require "./keys/Parent"
+
 local sortKeys = require "./keys/sortKeys"
 local xtypeof = require "../xtypeof"
 

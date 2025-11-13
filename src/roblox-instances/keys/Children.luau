@@ -2,11 +2,16 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
-local SpecialKey = require "./SpecialKey"
+
 local castToState = require "../../core-calc/castToState"
-local destroy = require "../../core-memory/destroy"
-local observe = require "../../core-graph/observe"
+
 local peek = require "../../core-use/peek"
+
+local destroy = require "../../core-memory/destroy"
+
+local observe = require "../../core-graph/observe"
+
+local SpecialKey = require "./SpecialKey"
 
 local Children = SpecialKey(
 	"descendants",

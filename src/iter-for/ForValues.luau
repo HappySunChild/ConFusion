@@ -4,14 +4,19 @@ local iter_for = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
-local ForDisassembly = require "./ForDisassembly"
-local Iter = require "../iter/Iter"
+
+local Computed = require "../core-calc/Computed"
 local Value = require "../core-calc/Value"
-local checkDissolvable = require "./checkDissolvable"
+
 local destroy = require "../core-memory/destroy"
+
 local parseError = require "../core-logging/parseError"
+
+local Iter = require "../iter/Iter"
+
+local ForDisassembly = require "./ForDisassembly"
+local checkDissolvable = require "./checkDissolvable"
 
 type ForValuesComputedPair<IK, IV, OV> = iter_for.ComputedPair<IK, IV, IK, OV> & {
 	_input_value_state: calc.Value<IV>,

@@ -1,6 +1,7 @@
 local memory = require "../../core-memory/types"
 
 local SpecialKey = require "./SpecialKey"
+
 local destroy = require "../../core-memory/destroy"
 
 return SpecialKey(

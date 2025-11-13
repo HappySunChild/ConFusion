@@ -3,47 +3,24 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local deriveScope = require "../core-memory/deriveScope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
+local innerScope = require "../core-memory/innerScope"
+
 local dissolvingUse = require "../core-use/dissolvingUse"
 local genericUse = require "../core-use/genericUse"
-local innerScope = require "../core-memory/innerScope"
-local isSimilar = require "./isSimilar"
+
 local parseError = require "../core-logging/parseError"
+
+local isSimilar = require "./isSimilar"
 
 type Self<T, S> = calc.Computed<T> & {
 	_inner_scope: memory.Scope<S>?,
 	_processor: calc.ComputedProcessor<S, T>,
 	_use: calc.Use,
 }
-
-local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
-	destroy(computed._inner_scope)
-
-	computed._inner_scope = nil
-end
-
-local function checkDissolvable<T, S>(
-	scope: memory.Scope<S>,
-	processor: calc.ComputedProcessor<S, T>
-): (boolean, T?)
-	local dissolving_scope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
-
-	if success then
-		-- scope went unused, we can clean it up
-		if #dissolving_scope == 1 then
-			destroy(dissolving_scope)
-		end
-
-		return true, value
-	end
-
-	destroy(dissolving_scope)
-
-	return false
-end
 
 local CLASS = table.freeze {
 	type = "State",
@@ -83,6 +60,33 @@ local CLASS = table.freeze {
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
+
+local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
+	destroy(computed._inner_scope)
+
+	computed._inner_scope = nil
+end
+
+local function checkDissolvable<T, S>(
+	scope: memory.Scope<S>,
+	processor: calc.ComputedProcessor<S, T>
+): (boolean, T?)
+	local dissolving_scope = innerScope(scope)
+	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
+
+	if success then
+		-- scope went unused, we can clean it up
+		if #dissolving_scope == 1 then
+			destroy(dissolving_scope)
+		end
+
+		return true, value
+	end
+
+	destroy(dissolving_scope)
+
+	return false
+end
 
 local function Computed<T, S>(
 	scope: memory.Scope<S>,

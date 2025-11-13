@@ -3,9 +3,12 @@ local iter_for = require "../iter-for/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local castToState = require "../core-calc/castToState"
-local destroy = require "../core-memory/destroy"
+
 local dissolvingUse = require "../core-use/dissolvingUse"
+
+local destroy = require "../core-memory/destroy"
 local innerScope = require "../core-memory/innerScope"
 
 local function checkDissolvable<S, IK, IV, OK, OV>(

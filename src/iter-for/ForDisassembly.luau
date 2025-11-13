@@ -4,12 +4,16 @@ local iter_for = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local castToState = require "../core-calc/castToState"
+
+local peek = require "../core-use/peek"
+
 local depend = require "../core-graph/depend"
+
 local deriveScope = require "../core-memory/deriveScope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local peek = require "../core-use/peek"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_roam_keys: boolean,
@@ -23,12 +27,6 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 		initial_value: IV
 	) -> iter_for.ComputedPair<IK, IV, OK, OV>,
 }
-
-local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
-	for _, computedpair in disassembly._computedpairs do
-		destroy(computedpair.scope)
-	end
-end
 
 local CLASS = table.freeze {
 	type = "Graph",
@@ -190,6 +188,12 @@ local CLASS = table.freeze {
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
+
+local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
+	for _, computedpair in disassembly._computedpairs do
+		destroy(computedpair.scope)
+	end
+end
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,

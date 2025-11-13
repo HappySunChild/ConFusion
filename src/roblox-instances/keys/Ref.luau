@@ -2,8 +2,10 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 
 local External = require "../../core-external/External"
-local SpecialKey = require "./SpecialKey"
+
 local xtypeof = require "../../xtypeof"
+
+local SpecialKey = require "./SpecialKey"
 
 local function applyRef(
 	instance: Instance,

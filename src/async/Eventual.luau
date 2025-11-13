@@ -4,16 +4,21 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local castToState = require "../core-calc/castToState"
+local isSimilar = require "../core-calc/isSimilar"
+
+local peek = require "../core-use/peek"
+
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
+local evaluate = require "../core-graph/evaluate"
+
 local deriveScope = require "../core-memory/deriveScope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local evaluate = require "../core-graph/evaluate"
-local isSimilar = require "../core-calc/isSimilar"
+
 local parseError = require "../core-logging/parseError"
-local peek = require "../core-use/peek"
 
 type Self<T, S> = async.Eventual<T> & {
 	_inner_scope: memory.Scope<S>,
@@ -28,53 +33,6 @@ type Self<T, S> = async.Eventual<T> & {
 	_become: (any) -> (),
 	_use: calc.Use,
 }
-
-local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
-	if eventual._active_thread ~= nil then
-		External.cancelTask(eventual._active_thread)
-	end
-
-	destroy(eventual._inner_scope)
-
-	eventual._inner_scope = nil
-end
-
-local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
-	local session_used = {}
-
-	local function use<T>(target: calc.UsedAs<T>): T
-		if castToState(target) ~= nil then
-			depend(eventual, target)
-
-			session_used[target] = true
-		end
-
-		return peek(target)
-	end
-
-	local function become(targetValue: T)
-		local become_value = eventual._internal_value
-
-		eventual._internal_value = targetValue
-
-		if eventual.validity == "busy" then
-			return
-		end
-
-		eventual._become_value = become_value
-		eventual._is_becoming = true
-
-		change(eventual)
-
-		eventual._become_value = nil
-
-		for target in session_used do
-			depend(eventual, target)
-		end
-	end
-
-	return use, become
-end
 
 local CLASS = table.freeze {
 	type = "State",
@@ -146,6 +104,53 @@ local CLASS = table.freeze {
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
+
+local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
+	if eventual._active_thread ~= nil then
+		External.cancelTask(eventual._active_thread)
+	end
+
+	destroy(eventual._inner_scope)
+
+	eventual._inner_scope = nil
+end
+
+local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
+	local session_used = {}
+
+	local function use<T>(target: calc.UsedAs<T>): T
+		if castToState(target) ~= nil then
+			depend(eventual, target)
+
+			session_used[target] = true
+		end
+
+		return peek(target)
+	end
+
+	local function become(targetValue: T)
+		local become_value = eventual._internal_value
+
+		eventual._internal_value = targetValue
+
+		if eventual.validity == "busy" then
+			return
+		end
+
+		eventual._become_value = become_value
+		eventual._is_becoming = true
+
+		change(eventual)
+
+		eventual._become_value = nil
+
+		for target in session_used do
+			depend(eventual, target)
+		end
+	end
+
+	return use, become
+end
 
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,

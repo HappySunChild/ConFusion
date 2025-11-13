@@ -2,7 +2,9 @@ local calc = require "./types"
 local memory = require "../core-memory/types"
 
 local change = require "../core-graph/change"
+
 local destructor = require "../core-memory/destructor"
+
 local isSimilar = require "./isSimilar"
 
 type Self<T> = calc.Value<T>

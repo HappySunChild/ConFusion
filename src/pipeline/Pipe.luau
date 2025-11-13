@@ -10,6 +10,7 @@ local ForPairs = require "../iter-for/ForPairs"
 local ForValues = require "../iter-for/ForValues"
 local Spring = require "../motion-springs/Spring"
 local Tween = require "../motion-tweens/Tween"
+
 local innerScope = require "../core-memory/innerScope"
 
 type Self<S, T> = pipeline.Pipe<S, T> & {

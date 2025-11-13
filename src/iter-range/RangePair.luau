@@ -3,10 +3,13 @@ local iter_range = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
+
+local Computed = require "../core-calc/Computed"
 local Value = require "../core-calc/Value"
+
 local destroy = require "../core-memory/destroy"
+
 local parseError = require "../core-logging/parseError"
 
 type Self<T> = {

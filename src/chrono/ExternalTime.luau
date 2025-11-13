@@ -2,16 +2,14 @@ local chrono = require "./types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
+
 local change = require "../core-graph/change"
+
 local destructor = require "../core-memory/destructor"
 
 type Self = chrono.ExternalTime
 
 local ALL_TIMERS = {}
-
-local function auxiliaryDestructor(externaltime: Self)
-	ALL_TIMERS[externaltime] = nil
-end
 
 local CLASS = {
 	type = "State",
@@ -34,6 +32,10 @@ local CLASS = {
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
+
+local function auxiliaryDestructor(externaltime: Self)
+	ALL_TIMERS[externaltime] = nil
+end
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({

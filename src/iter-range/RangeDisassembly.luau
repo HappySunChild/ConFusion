@@ -3,13 +3,17 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local RangePair = require "./RangePair"
 local castToState = require "../core-calc/castToState"
+
+local peek = require "../core-use/peek"
+
 local depend = require "../core-graph/depend"
+
 local deriveScope = require "../core-memory/deriveScope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local peek = require "../core-use/peek"
+
+local RangePair = require "./RangePair"
 
 type Self<S, V> = {
 	_start: calc.UsedAs<number>,

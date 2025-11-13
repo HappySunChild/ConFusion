@@ -3,12 +3,16 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local Iter = require "../iter/Iter"
-local RangeDisassembly = require "./RangeDisassembly"
 local castToState = require "../core-calc/castToState"
-local destroy = require "../core-memory/destroy"
+
 local dissolvingUse = require "../core-use/dissolvingUse"
+
+local destroy = require "../core-memory/destroy"
 local innerScope = require "../core-memory/innerScope"
+
+local Iter = require "../iter/Iter"
+
+local RangeDisassembly = require "./RangeDisassembly"
 
 local function checkDissolvable<S, T>(
 	scope: memory.Scope<S>,

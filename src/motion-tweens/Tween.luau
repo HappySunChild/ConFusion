@@ -3,12 +3,15 @@ local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 local tweens = require "./types"
 
-local Motion = require "../motion/Motion"
 local castToState = require "../core-calc/castToState"
+
+local peek = require "../core-use/peek"
+
+local Motion = require "../motion/Motion"
+
 local getTweenAlpha = require "./getTweenAlpha"
 local getTweenDuration = require "./getTweenDuration"
 local lerp = require "./lerp"
-local peek = require "../core-use/peek"
 
 local function TweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
 	local curve_generator = function(target: T, start: T): motion.AnimationMove<T>
