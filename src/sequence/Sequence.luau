@@ -2,20 +2,19 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local sequence = require "./types"
 
-local peek = require "../core-use/peek"
-
-local depend = require "../core-graph/depend"
+local dissolvingUse = require "../core-use/dissolvingUse"
+local genericUse = require "../core-use/genericUse"
 
 local castToState = require "../core-calc/castToState"
 local isSimilar = require "../core-calc/isSimilar"
 
-local lerp = require "../motion-tweens/lerp"
-
-local getRangeKeys = require "./getRangeKeys"
+local evaluateSequenceAt = require "./evaluateSequenceAt"
 
 type Self<T> = sequence.Sequence<T> & {
 	_alpha: calc.UsedAs<number>,
-	_keyframes: { [number]: T },
+	_keyframes: { T },
+
+	_use: calc.Use,
 }
 
 local CLASS = table.freeze {
@@ -23,27 +22,14 @@ local CLASS = table.freeze {
 	kind = "Keyframes",
 	timeliness = "lazy",
 
-	_evaluate = function<T>(self: Self<T>)
-		local alpha = self._alpha
-		local keyframes = self._keyframes
-
-		depend(self, castToState(alpha))
-
-		local prev_time, next_time = getRangeKeys(peek(alpha), keyframes)
-		local prev_value, next_value = keyframes[prev_time], keyframes[next_time]
-
-		local new_value = nil
-
-		if prev_time ~= nil and next_time ~= nil then
-			local intermediate_alpha = (alpha - prev_time) / (next_time - prev_time)
-
-			new_value = lerp(prev_value, next_value, intermediate_alpha)
-		elseif next_time == nil then
-			new_value = prev_value
-		elseif prev_time == nil then
-			new_value = next_value
+	_evaluate = function<T>(self: Self<T>): boolean
+		if self.scope == nil then
+			return false
 		end
 
+		local use = self._use
+
+		local new_value = evaluateSequenceAt(use(self._alpha), self._keyframes, use)
 		local old_value = self._internal_value
 
 		self._internal_value = new_value
@@ -53,12 +39,35 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
+local function checkDissolvable<T>(
+	alpha: calc.UsedAs<number>,
+	keyframes: { T }
+): (boolean, T?)
+	if castToState(alpha) ~= nil then
+		return false, nil
+	end
+
+	local ok, value = pcall(evaluateSequenceAt, alpha :: number, keyframes, dissolvingUse)
+
+	if not ok then
+		return false, nil
+	end
+
+	return true, value
+end
+
 local function Sequence<T>(
 	scope: memory.Scope,
 	alpha: calc.UsedAs<number>,
-	keyframes: { [number]: T }
-): sequence.Sequence<T>
-	local new_keypoints = setmetatable({
+	keyframes: { T }
+): sequence.Sequence<T> | T
+	local can_dissolve, constant = checkDissolvable(alpha, keyframes)
+
+	if can_dissolve then
+		return constant
+	end
+
+	local new_sequence: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
 
@@ -67,9 +76,11 @@ local function Sequence<T>(
 
 		_alpha = alpha,
 		_keyframes = keyframes,
-	}, METATABLE)
+	}, METATABLE) :: any
 
-	return new_keypoints
+	new_sequence._use = genericUse(new_sequence)
+
+	return new_sequence
 end
 
 return Sequence

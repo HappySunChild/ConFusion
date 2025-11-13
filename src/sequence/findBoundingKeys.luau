@@ -1,10 +1,10 @@
-local function getRangeKeys(
+local function findBoundingKeys(
 	eval_alpha: number,
-	list: { [number]: any }
+	keyframes: { any }
 ): (number?, number?)
 	local low_key, high_key = -math.huge, math.huge
 
-	for alpha_key in list do
+	for alpha_key in keyframes do
 		if alpha_key <= eval_alpha and alpha_key > low_key then
 			low_key = alpha_key
 		end
@@ -25,4 +25,4 @@ local function getRangeKeys(
 	return low_key, high_key
 end
 
-return getRangeKeys
+return findBoundingKeys

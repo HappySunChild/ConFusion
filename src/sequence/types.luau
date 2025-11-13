@@ -9,6 +9,6 @@ export type SequenceConstructor = <T>(
 	scope: memory.Scope,
 	alpha: calc.UsedAs<number>,
 	keyframes: { [number]: T }
-) -> Sequence<T>
+) -> Sequence<T> | T
 
 return nil
