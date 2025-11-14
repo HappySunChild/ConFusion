@@ -22,4 +22,5 @@ return {
 	missing_child_class = "Could not find child of class '%s' in '%s'.",
 	missing_descendant = "Could not find descendant '%s' in '%s'.",
 	missing_descendant_class = "Could not find descendant of class '%s' in '%s'.",
+	missing_query_descendant = "Could not find descendants with query '%s'",
 }
