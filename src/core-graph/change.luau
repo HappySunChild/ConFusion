@@ -5,32 +5,32 @@ local External = require "../core-external/External"
 local castToGraph = require "./castToGraph"
 local evaluate = require "./evaluate"
 
-local function fireNodeObservers(target: graph.GraphObject)
-	if target._observers == nil then
+local function fireNodeObservers(node: graph.GraphObject)
+	if node._observers == nil then
 		return
 	end
 
-	for _, callback in target._observers do
+	for _, callback in node._observers do
 		External.doTaskImmediate(callback)
 	end
 end
 
-local function isNodeEager(target: graph.GraphObject): boolean
-	if target.timeliness == "eager" then
+local function isNodeEager(node: graph.GraphObject): boolean
+	if node.timeliness == "eager" then
 		return true
 	end
 
-	if target._observers ~= nil then
-		return next(target._observers) ~= nil
+	if node._observers ~= nil then
+		return next(node._observers) ~= nil
 	end
 
 	return false
 end
 
-local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject }
+local function gatherEagerUsers(node: graph.GraphObject): { graph.GraphObject }
 	local eager_users: { graph.GraphObject } = {}
 
-	local search_now: { graph.GraphObject } = { target }
+	local search_now: { graph.GraphObject } = { node }
 	local search_next: { graph.GraphObject } = {}
 
 	repeat
