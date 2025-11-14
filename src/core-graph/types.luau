@@ -17,7 +17,7 @@ export type GraphObject = {
 	_last_compute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
-	_observers: { [{}]: () -> () }?,
+	_observers: { () -> () }?,
 
 	_evaluate: (GraphObject) -> boolean,
 }

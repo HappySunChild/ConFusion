@@ -20,18 +20,21 @@ local function observe(
 		subject._observers = {}
 	end
 
-	local unique_identifier = {}
-	subject._observers[unique_identifier] = callback
+	table.insert(subject._observers, callback)
 
 	evaluate(subject)
 
 	local function disconnect()
-		subject._observers[unique_identifier] = nil
+		local observe_index = table.find(subject._observers, callback)
 
-		local index = table.find(scope, disconnect)
+		if observe_index ~= nil then
+			table.remove(subject._observers, observe_index)
+		end
 
-		if index ~= nil then
-			table.remove(scope, index)
+		local disconnect_index = table.find(scope, disconnect)
+
+		if disconnect_index ~= nil then
+			table.remove(scope, disconnect_index)
 		end
 	end
 
