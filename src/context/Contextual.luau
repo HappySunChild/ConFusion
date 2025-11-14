@@ -12,7 +12,6 @@ type Self<T> = context.Contextual<T> & {
 
 local CLASS = table.freeze {
 	type = "Contextual",
-	kind = "contextual",
 
 	now = function<T>(self: Self<T>): T
 		local thread = coroutine.running()
