@@ -3,7 +3,11 @@ local logging = require "../core-logging/types"
 local match = require "./types"
 
 local External = require "../core-external/External"
+
 local isSimilar = require "../core-calc/isSimilar"
+
+local peek = require "../core-use/peek"
+
 local parseError = require "../core-logging/parseError"
 
 local function checkPredicate(
@@ -24,7 +28,7 @@ local function checkPredicate(
 	return matched :: boolean
 end
 
-local function checkPatterns<T>(
+local function matchBranches<T>(
 	input_value: unknown,
 	use: calc.Use,
 	default: T?,
@@ -32,7 +36,9 @@ local function checkPatterns<T>(
 ): (boolean, T?)
 	for _, branches in { ... } do
 		for pattern, output_value in branches do
-			if isSimilar(use(pattern), input_value) then
+			if isSimilar(peek(pattern), input_value) then
+				use(pattern) -- this feels a little gross, but it's fine really
+
 				return true, output_value
 			elseif checkPredicate(pattern, input_value, use) then
 				return true, output_value
@@ -47,4 +53,4 @@ local function checkPatterns<T>(
 	return false, nil
 end
 
-return checkPatterns
+return matchBranches

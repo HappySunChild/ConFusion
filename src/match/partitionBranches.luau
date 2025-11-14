@@ -1,6 +1,6 @@
 local castToState = require "../core-calc/castToState"
 
-local function categorizeBranches<T>(
+local function partitionBranches<T>(
 	all_branches: { [any]: T, _: T? }
 ): (T?, { { [any]: T } })
 	local default_branch = all_branches._
@@ -10,7 +10,7 @@ local function categorizeBranches<T>(
 	local literal_branches = {}
 	local state_branches = {}
 	local predicate_branches = {}
-	local categories = { literal_branches, state_branches, predicate_branches }
+	local partitions = { literal_branches, state_branches, predicate_branches }
 
 	for pattern, output_value in all_branches do
 		if type(pattern) == "function" then
@@ -22,7 +22,7 @@ local function categorizeBranches<T>(
 		end
 	end
 
-	return default_branch, categories
+	return default_branch, partitions
 end
 
-return categorizeBranches
+return partitionBranches

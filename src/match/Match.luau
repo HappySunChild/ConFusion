@@ -14,8 +14,8 @@ local isSimilar = require "../core-calc/isSimilar"
 local parseError = require "../core-logging/parseError"
 
 local None = require "./None"
-local categorizeBranches = require "./categorizeBranches"
-local checkPatterns = require "./checkPatterns"
+local matchBranches = require "./matchBranches"
+local partitionBranches = require "./partitionBranches"
 
 type Self<T> = {
 	_default_branch: T?,
@@ -44,7 +44,7 @@ local CLASS = table.freeze {
 		local old_value = self._internal_value
 
 		local ok, did_match: boolean | logging.Error, new_value: T? = xpcall(
-			checkPatterns,
+			matchBranches,
 			parseError,
 			input_value,
 			use,
@@ -92,7 +92,7 @@ local function checkDissolvable<T>(
 	end
 
 	local ok, did_match, new_value =
-		pcall(checkPatterns, input_value, dissolvingUse, default_branch, ...)
+		pcall(matchBranches, input_value, dissolvingUse, default_branch, ...)
 
 	if not ok or not did_match then
 		return false
@@ -106,7 +106,7 @@ local function Match<T>(
 	input_value: calc.UsedAs<unknown>,
 	all_branches: { [any]: T, _: T? }
 ): match.Match<T> | T
-	local default_branch, branch_categories = categorizeBranches(all_branches)
+	local default_branch, branch_categories = partitionBranches(all_branches)
 
 	local can_dissolve, constant =
 		checkDissolvable(input_value, default_branch, unpack(branch_categories))
