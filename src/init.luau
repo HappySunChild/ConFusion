@@ -12,15 +12,15 @@ local graph = require "@self/core-graph/types"
 local memory = require "@self/core-memory/types"
 local use = require "@self/core-use/types"
 
-local iter = require "@self/iter/types"
-local iter_for = require "@self/iter-for/types"
-local iter_range = require "@self/iter-range/types"
-
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
+
+local iter = require "@self/iter/types"
+local iter_for = require "@self/iter-for/types"
+local iter_range = require "@self/iter-range/types"
 
 local motion = require "@self/motion/types"
 local springs = require "@self/motion-springs/types"
@@ -33,14 +33,15 @@ local templates = require "@self/roblox-templates/types"
 export type Scope<T = ConFusion> = memory.Scope<T>
 
 export type GraphObject = graph.GraphObject
-
 export type StateObject<T> = calc.StateObject<T>
+export type UsedAs<T> = calc.UsedAs<T>
+
 export type Value<T> = calc.Value<T>
 export type Computed<T> = calc.Computed<T>
 export type Use = calc.Use
-export type UsedAs<T> = calc.UsedAs<T>
 
 export type Iter<K, V> = iter.Iter<K, V>
+
 export type Range = iter_range.Range
 
 export type Motion<T> = motion.Motion<T>
