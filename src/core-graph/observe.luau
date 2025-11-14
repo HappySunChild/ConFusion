@@ -11,9 +11,9 @@ local function observe(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
 	callback: () -> ()
-): () -> ()
+): (() -> ())?
 	if castToGraph(subject) == nil then
-		return
+		return nil
 	end
 
 	if subject._observers == nil then

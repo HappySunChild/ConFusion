@@ -9,10 +9,10 @@ local function observeImmediate(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
 	callback: () -> ()
-): () -> ()
+): (() -> ())?
 	External.doTaskImmediate(callback)
 
 	return observe(scope, subject, callback)
 end
 
-return observeImmediate
+return observeImmediate :: graph.Observe
