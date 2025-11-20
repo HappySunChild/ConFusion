@@ -16,6 +16,16 @@ export type MatchConstructor = <T>(
 	all_branches: { [any]: T, _: T? }
 ) -> Match<T> | T
 
+export type WrappedPattern = {
+	pattern: any,
+	priority: number,
+}
+export type Branch<T = any> = {
+	pattern: any,
+	value: T,
+	priority: number?,
+}
+
 export type PredicatePattern = (value: unknown, use: calc.Use) -> boolean
 export type MatchPredicates = {
 	Not: (predicate: PredicatePattern) -> PredicatePattern,
@@ -31,7 +41,7 @@ export type MatchPredicates = {
 	Equals: (other: calc.UsedAs<any>) -> PredicatePattern,
 	GreaterThan: (minimum: calc.UsedAs<number>) -> PredicatePattern,
 	LessThan: (maximum: calc.UsedAs<number>) -> PredicatePattern,
-	
+
 	InRange: (
 		minimum: calc.UsedAs<number>,
 		maximum: calc.UsedAs<number>
