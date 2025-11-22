@@ -13,6 +13,7 @@ export type Pipe<S, T> = {
 	) -> Pipe<S, T>,
 	tween: (Pipe<S, T>, info: calc.UsedAs<tweens.TweenInfo>) -> Pipe<S, T>,
 
+	match: <O>(Pipe<S, T>, patterns: { [any]: O }) -> Pipe<S, T>,
 	map: <O>(
 		Pipe<S, T>,
 		processor: (value: T, use: calc.Use, scope: memory.Scope<S>) -> O
