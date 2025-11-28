@@ -138,10 +138,7 @@ type ConFusion = {
 
 	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
-	read OfName: templates.OfChildConstructor,
-	read OfClass: templates.OfClassConstructor,
-	read DescendantOfName: templates.OfChildConstructor,
-	read DescendantOfClass: templates.OfClassConstructor,
+	read QueryDescendants: templates.QueryDescendants,
 
 	-- Roblox: Binds
 	read PropertyOf: binds.PropertyOfConstructor,
@@ -233,10 +230,7 @@ return table.freeze {
 
 	-- Roblox: Templates
 	FromTemplate = require "@self/roblox-templates/FromTemplate",
-	OfName = require "@self/roblox-templates/OfName",
-	OfClass = require "@self/roblox-templates/OfClass",
-	DescendantOfName = require "@self/roblox-templates/DescendantOfName",
-	DescendantOfClass = require "@self/roblox-templates/DescendantOfClass",
+	QueryDescendants = require "@self/roblox-templates/QueryDescendants",
 
 	-- Roblox: Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",

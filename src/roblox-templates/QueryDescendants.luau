@@ -1,25 +1,25 @@
 local instances = require "../roblox-instances/types"
 local memory = require "../core-memory/types"
-local templates = require "./types"
+local templates = require "../roblox-templates/types"
 
 local External = require "../core-external/External"
 
 local applyProperties = require "../roblox-instances/applyProperties"
 
-local function OfClass(scope: memory.Scope, class_name: string)
+local function QueryDescendants(scope: memory.Scope, selector: string)
 	return function(properties: instances.Properties)
-		return function(parent: Instance)
-			local child = parent:FindFirstChildWhichIsA(class_name)
+		return function(parent: Instance): Instance?
+			local descendants = parent:QueryDescendants(selector)
+			local child = descendants[1]
 
 			if child == nil then
 				External.logErrorNonFatal(
-					templates.missing_child_class,
+					templates.missing_query_descendant,
 					nil,
-					class_name,
-					parent.Name
+					selector
 				)
 
-				return
+				return nil
 			end
 
 			applyProperties(scope, child, properties)
@@ -29,4 +29,4 @@ local function OfClass(scope: memory.Scope, class_name: string)
 	end
 end
 
-return OfClass
+return QueryDescendants
