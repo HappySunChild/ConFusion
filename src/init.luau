@@ -150,7 +150,7 @@ local External = require "@self/core-external/External"
 local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
 External.set_provider(RobloxProvider)
 
-return table.freeze {
+local ConFusion = table.freeze {
 	version = table.freeze {
 		major = 0,
 		minor = 4,
@@ -235,4 +235,6 @@ return table.freeze {
 	-- Roblox: Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",
 	AttributeOf = require "@self/roblox-binds/AttributeOf",
-} :: ConFusion
+}
+
+return ConFusion :: ConFusion
