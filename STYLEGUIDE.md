@@ -19,7 +19,7 @@ It's okay to slightly deviate from these conventions, cause they are just that, 
 
 ### Casing Exceptions
 With any ~~great~~ terrible standard there are, of course, exceptions. Here are some of the exceptions that are permitted and expected.
-- All constructor functions **MUST** be in `PascalCase` and have the same name as their class. (i.e. `Value`. `createValue` or `value` is not acceptable!)
+- All constructor functions **MUST** be in `PascalCase` and have the same name as their class. (i.e. `Value`. `createValue`/`value` are not acceptable!)
 - Some functions **MAY** be named in `PascalCase` **IF** they're directly accessible from the export table. This usually implies that the function has some interesting syntax/usage, but doesn't have to. (i.e. `Safe`, `New`, `Hydrate` etc.)
 - Functions may be named in `snake_case` if they're being treated as first-class values (i.e. creating a function within another function that gets returned/passed into another function). This is usually to indicate that this function is contemporary, or is meant to be used somewhere else.
 
@@ -32,8 +32,8 @@ Example:
 local some_types = require "..."
 local some_more_types = require "..."
 
-local someUtilityFunction = require "..."
-local someOtherUtility = require "..."
+local some_utility_function = require "..."
+local some_other_utility = require "..."
 
 -- rest of the file...
 ```
@@ -52,7 +52,7 @@ local CLASS = table.freeze {
 	kind = "example",
 	
 	-- [static class methods]
-	doSomething = function(self: Self, ...)
+	do_something = function(self: Self, ...)
 		...
 	end
 }
