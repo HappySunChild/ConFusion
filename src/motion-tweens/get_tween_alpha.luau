@@ -1,6 +1,6 @@
 local tweens = require "./types"
 
-local function getTweenAlpha(info: tweens.TweenInfo, current_time: number)
+local function get_tween_alpha(info: tweens.TweenInfo, current_time: number)
 	local cycle_count = info.repeat_count + 1
 	local cycle_duration = info.delay_time + info.time
 
@@ -31,4 +31,4 @@ local function getTweenAlpha(info: tweens.TweenInfo, current_time: number)
 	return info.easing_style(tween_progress)
 end
 
-return getTweenAlpha
+return get_tween_alpha

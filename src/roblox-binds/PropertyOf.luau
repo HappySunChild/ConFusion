@@ -29,7 +29,7 @@ local function PropertyOf(
 		pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok then
-		External.logError(
+		External.log_error(
 			instances.cannot_connect_change,
 			nil,
 			instance.ClassName,

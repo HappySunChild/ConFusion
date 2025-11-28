@@ -16,4 +16,4 @@ local function scoped(
 	return scope
 end
 
-return scoped :: memory.DeriveScope
+return scoped :: memory.derive_scope

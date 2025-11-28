@@ -25,13 +25,13 @@ local UNPACK_METHODS = table.freeze {
 		return { value.X, value.Y, value.Z, axis.X, axis.Y, axis.Z, angle }
 	end,
 	Color3 = function(value: Color3)
-		local lab = Oklab.fromSRGBToOklab(value)
+		local lab = Oklab.from_srgb_to_oklab(value)
 
 		return { lab.x, lab.y, lab.z }
 	end,
 } :: { [string]: (value: any) -> { number } }
 
-local function unpackType(value: any): { number }
+local function unpack_type(value: any): { number }
 	local data_type = typeof(value)
 	local unpacker = UNPACK_METHODS[data_type]
 
@@ -42,4 +42,4 @@ local function unpackType(value: any): { number }
 	return {}
 end
 
-return unpackType
+return unpack_type

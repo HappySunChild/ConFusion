@@ -1,4 +1,4 @@
-local function springCoefficients(
+local function spring_coefficients(
 	time: number,
 	damping: number,
 	speed: number
@@ -56,4 +56,4 @@ local function springCoefficients(
 	return pos_pos, pos_vel, vel_pos, vel_vel
 end
 
-return springCoefficients
+return spring_coefficients

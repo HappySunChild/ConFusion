@@ -1,6 +1,6 @@
 local graph = require "./types"
 
-local function castToGraph(target: unknown): graph.GraphObject?
+local function cast_to_graph(target: unknown): graph.GraphObject?
 	if
 		typeof(target) == "table"
 		and target.created_at ~= nil
@@ -13,4 +13,4 @@ local function castToGraph(target: unknown): graph.GraphObject?
 	return nil
 end
 
-return castToGraph
+return cast_to_graph

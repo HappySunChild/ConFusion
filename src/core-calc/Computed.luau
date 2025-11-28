@@ -4,17 +4,17 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local deriveScope = require "../core-memory/deriveScope"
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
-local innerScope = require "../core-memory/innerScope"
+local inner_scope = require "../core-memory/inner_scope"
 
-local dissolvingUse = require "../core-use/dissolvingUse"
-local genericUse = require "../core-use/genericUse"
+local dissolving_use = require "../core-use/dissolving_use"
+local generic_use = require "../core-use/generic_use"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
-local isSimilar = require "./isSimilar"
+local is_similar = require "./is_similar"
 
 type Self<T, S> = calc.Computed<T> & {
 	_inner_scope: memory.Scope<S>?,
@@ -33,12 +33,12 @@ local CLASS = table.freeze {
 		end
 
 		local outer_scope = self.scope
-		local inner_scope = deriveScope(outer_scope)
+		local inner_scope = derive_scope(outer_scope)
 
-		local ok, new_value = xpcall(self._processor, parseError, self._use, inner_scope)
+		local ok, new_value = xpcall(self._processor, parse_error, self._use, inner_scope)
 
 		if ok then
-			local similar = isSimilar(self._internal_value, new_value)
+			local similar = is_similar(self._internal_value, new_value)
 
 			if self._inner_scope ~= nil then
 				destroy(self._inner_scope)
@@ -53,7 +53,7 @@ local CLASS = table.freeze {
 		else
 			destroy(inner_scope)
 
-			External.logErrorNonFatal(calc.callback_error, new_value :: logging.Error)
+			External.log_error_non_fatal(calc.callback_error, new_value :: logging.Error)
 		end
 
 		return false
@@ -61,18 +61,18 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
+local function auxiliary_destructor<T, S>(computed: Self<T, S>)
 	destroy(computed._inner_scope)
 
 	computed._inner_scope = nil
 end
 
-local function checkDissolvable<T, S>(
+local function check_dissolvable<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): (boolean, T?)
-	local dissolving_scope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
+	local dissolving_scope = inner_scope(scope)
+	local success, value = pcall(processor, dissolving_use, dissolving_scope)
 
 	if success then
 		-- scope went unused, we can clean it up
@@ -92,7 +92,7 @@ local function Computed<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): calc.Computed<T>
-	local can_dissolve, constant = checkDissolvable(scope, processor)
+	local can_dissolve, constant = check_dissolvable(scope, processor)
 
 	if can_dissolve then
 		return constant
@@ -110,9 +110,9 @@ local function Computed<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	new_computed._use = genericUse(new_computed)
+	new_computed._use = generic_use(new_computed)
 
-	table.insert(scope, destructor(new_computed, auxiliaryDestructor))
+	table.insert(scope, destructor(new_computed, auxiliary_destructor))
 
 	return new_computed
 end

@@ -3,7 +3,7 @@ local context = require "./types"
 
 local External = require "../core-external/External"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
 type Self<T> = context.Contextual<T> & {
 	_default: T,
@@ -23,18 +23,18 @@ local CLASS = table.freeze {
 
 		return value[1]
 	end,
-	executeWith = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
+	execute_with = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
 		local thread = coroutine.running()
 		local original = self._values[thread]
 
 		self._values[thread] = { new }
 
-		local ok, value = xpcall(callback, parseError, ...)
+		local ok, value = xpcall(callback, parse_error, ...)
 
 		self._values[thread] = original
 
 		if not ok then
-			External.logError(calc.callback_error, value)
+			External.log_error(calc.callback_error, value)
 		end
 
 		return value

@@ -11,12 +11,12 @@ local Value = require "../core-calc/Value"
 
 local destroy = require "../core-memory/destroy"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
 local Iter = require "../iter/Iter"
 
 local ForDisassembly = require "./ForDisassembly"
-local checkDissolvable = require "./checkDissolvable"
+local check_dissolvable = require "./check_dissolvable"
 
 type ForValuesComputedPair<IK, IV, OV> = iter_for.ComputedPair<IK, IV, IK, OV> & {
 	_input_value_state: calc.Value<IV>,
@@ -24,12 +24,12 @@ type ForValuesComputedPair<IK, IV, OV> = iter_for.ComputedPair<IK, IV, IK, OV> &
 }
 
 local PAIR_CLASS = table.freeze {
-	invalidateInputKey = function(): () end,
-	invalidateInputValue = function<IK, IV, OV>(self: ForValuesComputedPair<IK, IV, OV>): ()
+	invalidate_input_key = function(): () end,
+	invalidate_input_value = function<IK, IV, OV>(self: ForValuesComputedPair<IK, IV, OV>): ()
 		self._input_value_state:set(self.input_value)
 	end,
 
-	useOutputPair = function<IK, IV, OV>(
+	use_output_pair = function<IK, IV, OV>(
 		self: ForValuesComputedPair<IK, IV, OV>,
 		use: calc.Use
 	): (IK, OV)
@@ -54,13 +54,16 @@ local function ForValuesComputedPair<S, IK, IV, OV>(
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
 			local input_value = use(input_value_state)
 			local ok, output_value =
-				xpcall(processor, parseError, use, calc_scope, input_value)
+				xpcall(processor, parse_error, use, calc_scope, input_value)
 
 			if ok then
 				return output_value
 			end
 
-			External.logErrorNonFatal(calc.callback_error, output_value :: logging.Error)
+			External.log_error_non_fatal(
+				calc.callback_error,
+				output_value :: logging.Error
+			)
 
 			destroy(calc_scope)
 
@@ -85,7 +88,7 @@ local function ForValues<S, IK, IV, OV>(
 	input_table: calc.UsedAs<{ [IK]: IV }>,
 	processor: iter_for.ForValuesProcessor<S, IV, OV>
 ): iter.Iter<IK, OV> | { [IK]: OV }
-	local can_dissolve, constant = checkDissolvable(
+	local can_dissolve, constant = check_dissolvable(
 		scope,
 		input_table,
 		function(use: calc.Use, scope: memory.Scope<S>, input_key: IK, input_value: IV)

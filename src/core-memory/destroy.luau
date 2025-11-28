@@ -11,7 +11,7 @@ local function destroy(cleanup_task: memory.CleanupTask?)
 	end
 
 	if ACTIVE_TASKS[cleanup_task] ~= nil then
-		External.logError(memory.destroyed_twice)
+		External.log_error(memory.destroyed_twice)
 	end
 
 	ACTIVE_TASKS[cleanup_task] = true

@@ -1,6 +1,6 @@
 local logging = require "./types"
 
-local function formatError(
+local function format_error(
 	message: string,
 	error_or_trace: logging.Error | string?,
 	...: unknown
@@ -27,4 +27,4 @@ local function formatError(
 	return error_text:gsub("\n", "\n\t")
 end
 
-return formatError
+return format_error

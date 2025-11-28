@@ -1,10 +1,10 @@
 local graph = require "./types"
 local memory = require "../core-memory/types"
 
-local nameOf = require "../core-logging/nameOf"
+local name_of = require "../core-logging/name_of"
 local nicknames = require "../core-logging/nicknames"
 
-local castToGraph = require "./castToGraph"
+local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 
 local function observe(
@@ -12,7 +12,7 @@ local function observe(
 	subject: graph.GraphObject,
 	callback: () -> ()
 ): (() -> ())?
-	if castToGraph(subject) == nil then
+	if cast_to_graph(subject) == nil then
 		return nil
 	end
 
@@ -38,7 +38,7 @@ local function observe(
 		end
 	end
 
-	nicknames[disconnect] = `Observer ({nameOf(subject, "unknown")})`
+	nicknames[disconnect] = `Observer ({name_of(subject, "unknown")})`
 
 	table.insert(scope, disconnect)
 

@@ -5,8 +5,8 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local castToState = require "../core-calc/castToState"
-local isSimilar = require "../core-calc/isSimilar"
+local cast_to_state = require "../core-calc/cast_to_state"
+local is_similar = require "../core-calc/is_similar"
 
 local peek = require "../core-use/peek"
 
@@ -14,11 +14,11 @@ local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 local evaluate = require "../core-graph/evaluate"
 
-local deriveScope = require "../core-memory/deriveScope"
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
 type Self<T, S> = async.Eventual<T> & {
 	_inner_scope: memory.Scope<S>,
@@ -39,7 +39,7 @@ local CLASS = table.freeze {
 	kind = "Eventual",
 	timeliness = "eager",
 
-	isPending = function<T, S>(self: Self<T, S>)
+	is_pending = function<T, S>(self: Self<T, S>)
 		return self._active_thread ~= nil
 	end,
 	_evaluate = function<T, S>(self: Self<T, S>): boolean
@@ -51,7 +51,7 @@ local CLASS = table.freeze {
 		if self._is_becoming == true then
 			self._is_becoming = false
 
-			return not isSimilar(self._become_value, self._internal_value)
+			return not is_similar(self._become_value, self._internal_value)
 		end
 
 		-- cancel any currently active computations
@@ -62,21 +62,21 @@ local CLASS = table.freeze {
 				self._inner_scope = nil
 			end
 
-			External.cancelTask(self._active_thread)
+			External.cancel_task(self._active_thread)
 
 			self._active_thread = nil
 		end
 
 		local outer_scope = self.scope
-		local inner_scope = deriveScope(outer_scope)
+		local inner_scope = derive_scope(outer_scope)
 
 		self._internal_value = self._pending_value
 
 		local completed = false
 
-		local active_thread = External.doTaskImmediate(function()
+		local active_thread = External.do_task_immediate(function()
 			local ok, err =
-				xpcall(self._processor, parseError, self._use, inner_scope, self._become)
+				xpcall(self._processor, parse_error, self._use, inner_scope, self._become)
 
 			if ok then
 				if self._inner_scope ~= nil then
@@ -87,7 +87,7 @@ local CLASS = table.freeze {
 			else
 				destroy(inner_scope)
 
-				External.logErrorNonFatal(calc.callback_error, err :: logging.Error)
+				External.log_error_non_fatal(calc.callback_error, err :: logging.Error)
 			end
 
 			self._active_thread = nil
@@ -100,14 +100,14 @@ local CLASS = table.freeze {
 			self._active_thread = active_thread
 		end
 
-		return not isSimilar(self._internal_value, self._pending_value)
+		return not is_similar(self._internal_value, self._pending_value)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
+local function auxiliary_destructor<T, S>(eventual: Self<T, S>)
 	if eventual._active_thread ~= nil then
-		External.cancelTask(eventual._active_thread)
+		External.cancel_task(eventual._active_thread)
 	end
 
 	destroy(eventual._inner_scope)
@@ -115,11 +115,11 @@ local function auxiliaryDestructor<T, S>(eventual: Self<T, S>)
 	eventual._inner_scope = nil
 end
 
-local function generateCallbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
+local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
 	local session_used = {}
 
 	local function use<T>(target: calc.UsedAs<T>): T
-		if castToState(target) ~= nil then
+		if cast_to_state(target) ~= nil then
 			depend(eventual, target)
 
 			session_used[target] = true
@@ -171,9 +171,9 @@ local function Eventual<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	new_eventual._use, new_eventual._become = generateCallbacks(new_eventual)
+	new_eventual._use, new_eventual._become = generate_callbacks(new_eventual)
 
-	table.insert(scope, destructor(new_eventual, auxiliaryDestructor))
+	table.insert(scope, destructor(new_eventual, auxiliary_destructor))
 
 	evaluate(new_eventual, true)
 

@@ -7,9 +7,9 @@ export type ComputedPair<IK, IV, OK, OV> = {
 	input_key: IK,
 	input_value: IV,
 
-	invalidateInputKey: (ComputedPair<IK, IV, OK, OV>) -> (),
-	invalidateInputValue: (ComputedPair<IK, IV, OK, OV>) -> (),
-	useOutputPair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
+	invalidate_input_key: (ComputedPair<IK, IV, OK, OV>) -> (),
+	invalidate_input_value: (ComputedPair<IK, IV, OK, OV>) -> (),
+	use_output_pair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
 }
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (

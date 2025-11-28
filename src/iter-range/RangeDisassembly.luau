@@ -3,13 +3,13 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
 
-local deriveScope = require "../core-memory/deriveScope"
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
 
@@ -35,9 +35,9 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, V>(self: Self<S, V>)
-		depend(self, castToState(self._start))
-		depend(self, castToState(self._finish))
-		depend(self, castToState(self._step))
+		depend(self, cast_to_state(self._start))
+		depend(self, cast_to_state(self._finish))
+		depend(self, cast_to_state(self._step))
 
 		local outer_scope = self.scope
 
@@ -69,7 +69,7 @@ local CLASS = table.freeze {
 
 			-- create a new object if none are available
 			next_pairs[new_index] =
-				RangePair(deriveScope(outer_scope), new_index, self._processor)
+				RangePair(derive_scope(outer_scope), new_index, self._processor)
 		end
 
 		-- clean up remaining objects
@@ -84,7 +84,7 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor<S, V>(disassembly: Self<S, V>)
+local function auxiliary_destructor<S, V>(disassembly: Self<S, V>)
 	for _, object in disassembly._pairs do
 		destroy(object.scope)
 	end
@@ -114,7 +114,7 @@ local function RangeDisassembly<S, V>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
+	table.insert(scope, destructor(new_disassembly, auxiliary_destructor))
 
 	return new_disassembly
 end

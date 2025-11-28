@@ -3,7 +3,7 @@ local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
 
-local castToState = require "../../core-calc/castToState"
+local cast_to_state = require "../../core-calc/cast_to_state"
 
 local peek = require "../../core-use/peek"
 
@@ -47,7 +47,7 @@ local Children = SpecialKey(
 					if child_instance then
 						processChild(child_instance, name)
 					end
-				elseif castToState(child) ~= nil then
+				elseif cast_to_state(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then
@@ -69,7 +69,7 @@ local Children = SpecialKey(
 						processChild(descendant, key)
 					end
 				else
-					External.logErrorNonFatal(
+					External.log_error_non_fatal(
 						instances.invalid_child_type,
 						debug.traceback(nil, 2),
 						child_type

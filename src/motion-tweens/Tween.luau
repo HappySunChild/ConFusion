@@ -3,7 +3,7 @@ local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 local tweens = require "./types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local peek = require "../core-use/peek"
 
@@ -35,7 +35,7 @@ local function Tween<T>(
 	goal: calc.UsedAs<T>,
 	info: calc.UsedAs<tweens.TweenInfo>
 ): motion.Motion<T> | T
-	if castToState(goal) == nil then
+	if cast_to_state(goal) == nil then
 		return goal
 	end
 

@@ -65,9 +65,9 @@ type ConFusion = {
 	},
 
 	-- Core: Memory
-	read scoped: memory.DeriveScope,
-	read deriveScope: memory.DeriveScope,
-	read innerScope: memory.DeriveScope,
+	read scoped: memory.derive_scope,
+	read derive_scope: memory.derive_scope,
+	read inner_scope: memory.derive_scope,
 	read destroy: memory.Destroy,
 	read insert: memory.Insert,
 
@@ -77,7 +77,7 @@ type ConFusion = {
 
 	-- Core: Graph
 	read observe: graph.Observe,
-	read observeImmediate: graph.Observe,
+	read observe_immediate: graph.Observe,
 
 	-- Core: Use
 	read peek: calc.Use,
@@ -148,7 +148,7 @@ type ConFusion = {
 local External = require "@self/core-external/External"
 
 local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
-External.setProvider(RobloxProvider)
+External.set_provider(RobloxProvider)
 
 return table.freeze {
 	version = table.freeze {
@@ -158,8 +158,8 @@ return table.freeze {
 
 	-- Core: Memory
 	scoped = require "@self/core-memory/scoped",
-	deriveScope = require "@self/core-memory/deriveScope",
-	innerScope = require "@self/core-memory/innerScope",
+	derive_scope = require "@self/core-memory/derive_scope",
+	inner_scope = require "@self/core-memory/inner_scope",
 	destroy = require "@self/core-memory/destroy",
 	insert = require "@self/core-memory/insert",
 
@@ -169,7 +169,7 @@ return table.freeze {
 
 	-- Core: Graph
 	observe = require "@self/core-graph/observe",
-	observeImmediate = require "@self/core-graph/observeImmediate",
+	observe_immediate = require "@self/core-graph/observe_immediate",
 
 	-- Core: Use
 	peek = require "@self/core-use/peek",

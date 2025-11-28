@@ -18,15 +18,15 @@ export type Pipe<S, T> = {
 		processor: (value: T, use: calc.Use, scope: memory.Scope<S>) -> O
 	) -> Pipe<S, T>, -- Pipe<O>, -- this isn't allowed?
 
-	forPairs: <IK, IV, OK, OV>(
+	for_pairs: <IK, IV, OK, OV>(
 		Pipe<S, T>,
 		processor: iter_for.ForPairsProcessor<S, IK, IV, OK, OV>
 	) -> Pipe<S, T>, -- Pipe<{ [OK]: OV }>,
-	forValues: <IK, IV, OV>(
+	for_values: <IK, IV, OV>(
 		Pipe<S, T>,
 		processor: iter_for.ForValuesProcessor<S, IV, OV>
 	) -> Pipe<S, T>, -- Pipe<{ [IK]: OV }>,
-	forKeys: <IK, IV, OK>(
+	for_keys: <IK, IV, OK>(
 		Pipe<S, T>,
 		processor: iter_for.ForKeysProcessor<S, IK, OK>
 	) -> Pipe<S, T>, -- Pipe<{ [OK]: IV }>,

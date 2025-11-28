@@ -1,6 +1,6 @@
 local nicknames = require "./nicknames"
 
-local function nameOf(x: unknown, default: string)
+local function name_of(x: unknown, default: string)
 	local nickname = nicknames[x]
 
 	if type(nickname) == "string" then
@@ -22,4 +22,4 @@ local function nameOf(x: unknown, default: string)
 	return default
 end
 
-return nameOf
+return name_of

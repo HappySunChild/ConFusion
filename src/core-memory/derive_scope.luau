@@ -4,7 +4,7 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 
 local merge = require "./merge"
 
-local function deriveScope<S>(
+local function derive_scope<S>(
 	existing: memory.Scope<S>,
 	methods: { [unknown]: unknown }?
 ): unknown
@@ -22,4 +22,4 @@ local function deriveScope<S>(
 	return scope
 end
 
-return deriveScope :: memory.DeriveScope
+return derive_scope :: memory.derive_scope

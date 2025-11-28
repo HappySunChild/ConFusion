@@ -5,8 +5,8 @@ local motion = require "./types"
 
 local External = require "../core-external/External"
 
-local castToState = require "../core-calc/castToState"
-local isSimilar = require "../core-calc/isSimilar"
+local cast_to_state = require "../core-calc/cast_to_state"
+local is_similar = require "../core-calc/is_similar"
 
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
@@ -32,7 +32,7 @@ type Self<T> = motion.Motion<T> & {
 
 	_timer: chrono.Timer,
 
-	_syncDynamics: (Self<T>, should_sleep: boolean, output: T, ...any) -> (T, boolean),
+	_sync_dynamics: (Self<T>, should_sleep: boolean, output: T, ...any) -> (T, boolean),
 	_wake: (Self<T>) -> (),
 	_sleep: (Self<T>) -> (),
 }
@@ -42,17 +42,17 @@ local CLASS = table.freeze {
 	kind = "Motion",
 	timeliness = "eager",
 
-	setDynamic = function<T>(self: Self<T>, index: number, value: any)
+	set_dynamic = function<T>(self: Self<T>, index: number, value: any)
 		self._active_dynamics[index] = value
 		self._regenerate = true
 
 		change(self)
 	end,
-	getDynamic = function<T>(self: Self<T>, index: number)
+	get_dynamic = function<T>(self: Self<T>, index: number)
 		return self._active_dynamics[index]
 	end,
 
-	_syncDynamics = function<T>(
+	_sync_dynamics = function<T>(
 		self: Self<T>,
 		should_sleep: boolean,
 		output: T,
@@ -63,7 +63,7 @@ local CLASS = table.freeze {
 		table.clear(self._dynamics)
 
 		if output ~= output then
-			External.logWarn(motion.animated_invalid_motion, output, self._active_goal)
+			External.log_warn(motion.animated_invalid_motion, output, self._active_goal)
 
 			output = self._active_goal
 		end
@@ -102,18 +102,18 @@ local CLASS = table.freeze {
 
 		local next_goal = peek(goal) :: T
 
-		depend(self, castToState(goal))
+		depend(self, cast_to_state(goal))
 
 		-- protect against NaN goals
 		if next_goal ~= next_goal then
-			External.logWarn(motion.animated_invalid_goal, next_goal)
+			External.log_warn(motion.animated_invalid_goal, next_goal)
 
 			return false
 		end
 
 		local next_generator = peek(generator) :: motion.MoveGenerator<T>
 
-		depend(self, castToState(generator))
+		depend(self, cast_to_state(generator))
 		depend(self, timer)
 
 		-- wake
@@ -129,7 +129,7 @@ local CLASS = table.freeze {
 
 		-- fix Motions following eachother
 		if elapsed == 0 then
-			elapsed = External.getDeltaTime()
+			elapsed = External.get_delta_time()
 		end
 
 		local old_value = self._internal_value :: any
@@ -141,7 +141,7 @@ local CLASS = table.freeze {
 			self:_sleep()
 		end
 
-		return isSimilar(old_value, new_value)
+		return is_similar(old_value, new_value)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

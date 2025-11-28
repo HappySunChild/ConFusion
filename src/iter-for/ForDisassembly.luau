@@ -5,13 +5,13 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
 
-local deriveScope = require "../core-memory/deriveScope"
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
 
@@ -49,7 +49,7 @@ local CLASS = table.freeze {
 				has_holes = true
 				continue
 			elseif output[output_key] ~= nil then
-				External.logErrorNonFatal(
+				External.log_error_non_fatal(
 					iter.for_key_collision,
 					nil,
 					output_key,
@@ -87,7 +87,7 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		depend(self, castToState(self._input))
+		depend(self, cast_to_state(self._input))
 
 		local roam_keys = self._roam_keys
 		local roam_values = self._roam_values
@@ -179,7 +179,7 @@ local CLASS = table.freeze {
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
 			next_computedpairs[pending_key] =
-				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
+				self._constructor(derive_scope(outer_scope), pending_key, pending_value)
 		end
 
 		self._computedpairs = next_computedpairs
@@ -189,7 +189,7 @@ local CLASS = table.freeze {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
+local function auxiliary_destructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
 	for _, computedpair in disassembly._computedpairs do
 		destroy(computedpair.scope)
 	end
@@ -221,7 +221,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_constructor = constructor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
+	table.insert(scope, destructor(new_disassembly, auxiliary_destructor))
 
 	return new_disassembly
 end

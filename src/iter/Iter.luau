@@ -6,7 +6,7 @@ local depend = require "../core-graph/depend"
 
 local destructor = require "../core-memory/destructor"
 
-local genericeUse = require "../core-use/genericUse"
+local genericeUse = require "../core-use/generic_use"
 
 type Self<K, V> = {
 	_use: calc.Use,
