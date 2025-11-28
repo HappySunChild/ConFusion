@@ -12,7 +12,7 @@ Setting a standard for case conventions helps alleviate a lot of the ultimately 
 - Regular variables, including parameters/arguments, are to be named with `snake_case`.
 - Constant variables are to be written in `SCREAMING_SNAKE_CASE`/`CONSTANT_CASE`.
 - Properties of a class/table should be written in `snake_case`, optionally with a preceding underscore (`_`) to denote that it's private.
-- All functions* AND methods are to be written in `camelCase`, optionally with a preceding underscore (`_`) to denote that it's private.
+- All functions* AND methods are to be written in `snake_case`, optionally with a preceding underscore (`_`) to denote that it's private.
 - Classes and types are to be written in `PascalCase`.
 
 It's okay to slightly deviate from these conventions, cause they are just that, conventions, but it'd be really appreciated if you did follow these as having a consistent style for a project is nice, and makes it look clean and modern and blah blah whatever.
