@@ -33,7 +33,7 @@ local CLASS = {
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor(externaltime: Self)
+local function auxiliary_destructor(externaltime: Self)
 	ALL_TIMERS[externaltime] = nil
 end
 
@@ -47,7 +47,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 
 	new_externaltime[new_externaltime] = true
 
-	table.insert(scope, destructor(new_externaltime, auxiliaryDestructor))
+	table.insert(scope, destructor(new_externaltime, auxiliary_destructor))
 
 	return new_externaltime
 end

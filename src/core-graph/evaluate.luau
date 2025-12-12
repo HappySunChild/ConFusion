@@ -8,7 +8,7 @@ local cast_to_graph = require "./cast_to_graph"
 
 local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
 	if cast_to_graph(target) == nil then
-		External.log_error_non_fatal(graph.invalid_evaluate_type, nil, xtypeof(target))
+		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(target))
 
 		return
 	end

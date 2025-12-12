@@ -49,7 +49,7 @@ local CLASS = table.freeze {
 				has_holes = true
 				continue
 			elseif output[output_key] ~= nil then
-				External.log_error_non_fatal(
+				External.log_error_nonfatal(
 					iter.for_key_collision,
 					nil,
 					output_key,

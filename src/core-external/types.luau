@@ -4,7 +4,7 @@ export type ExternalProvider = {
 	start_schedular: () -> (),
 	stop_scheduler: () -> (),
 
-	log_error_non_fatal: (message: string) -> (),
+	log_error_nonfatal: (message: string) -> (),
 	log_warn: (message: string) -> (),
 
 	do_task_immediate: <A...>(resume: (A...) -> () | thread, A...) -> thread?,

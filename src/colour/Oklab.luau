@@ -47,9 +47,9 @@ return table.freeze {
 	from_oklab_to_linear = from_oklab_to_linear,
 
 	from_srgb_to_oklab = function(srgb: vector): vector
-		return from_linear_to_oklab(Linear.fromSRGBToLinear(srgb))
+		return from_linear_to_oklab(Linear.from_srgb_to_linear(srgb))
 	end,
 	from_oklab_to_srgb = function(lab: vector, unclamped: boolean?): vector
-		return Linear.fromLinearToSRGB(from_oklab_to_linear(lab, unclamped))
+		return Linear.from_linear_to_srgb(from_oklab_to_linear(lab, unclamped))
 	end,
 }

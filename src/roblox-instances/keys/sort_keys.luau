@@ -11,7 +11,7 @@ local STAGE_ORDER = table.freeze {
 	"last",
 }
 
-local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
+local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
 	local a_index = table.find(STAGE_ORDER, a.stage)
 	local b_index = table.find(STAGE_ORDER, b.stage)
 
@@ -40,4 +40,4 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 	return a_index < b_index
 end
 
-return sortKeys
+return sort_keys

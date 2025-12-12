@@ -6,8 +6,8 @@ local name_of = require "../core-logging/name_of"
 local active_debugger: external.ExternalDebugger? = nil
 
 return table.freeze {
-	getName = name_of,
-	setDebugger = function(new_debugger: external.ExternalDebugger?)
+	name_of = name_of,
+	set_debugger = function(new_debugger: external.ExternalDebugger?)
 		local old_debugger = active_debugger
 
 		if old_debugger ~= nil then
@@ -22,14 +22,14 @@ return table.freeze {
 
 		return old_debugger
 	end,
-	trackScope = function(scope: memory.Scope)
+	track_scope = function(scope: memory.Scope)
 		if active_debugger == nil then
 			return
 		end
 
 		active_debugger.track_scope(scope)
 	end,
-	untrackScope = function(scope: memory.Scope)
+	untrack_scope = function(scope: memory.Scope)
 		if active_debugger == nil then
 			return
 		end

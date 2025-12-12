@@ -79,7 +79,7 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 				return { key = output_key, value = output_value }
 			end
 
-			External.log_error_non_fatal(calc.callback_error, output_key :: logging.Error)
+			External.log_error_nonfatal(calc.callback_error, output_key :: logging.Error)
 
 			destroy(calc_scope)
 

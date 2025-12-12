@@ -87,7 +87,7 @@ local CLASS = table.freeze {
 			else
 				destroy(inner_scope)
 
-				External.log_error_non_fatal(calc.callback_error, err :: logging.Error)
+				External.log_error_nonfatal(calc.callback_error, err :: logging.Error)
 			end
 
 			self._active_thread = nil
@@ -128,10 +128,10 @@ local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) 
 		return peek(target)
 	end
 
-	local function become(targetValue: T)
+	local function become(target_value: T)
 		local become_value = eventual._internal_value
 
-		eventual._internal_value = targetValue
+		eventual._internal_value = target_value
 
 		if eventual.validity == "busy" then
 			return

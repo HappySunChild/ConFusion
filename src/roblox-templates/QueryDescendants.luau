@@ -13,7 +13,7 @@ local function QueryDescendants(scope: memory.Scope, selector: string)
 			local child = descendants[1]
 
 			if child == nil then
-				External.log_error_non_fatal(
+				External.log_error_nonfatal(
 					templates.missing_query_descendant,
 					nil,
 					selector

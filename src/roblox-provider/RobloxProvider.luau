@@ -51,7 +51,7 @@ return table.freeze {
 		end
 	end,
 
-	log_error_non_fatal = function(message: string)
+	log_error_nonfatal = function(message: string)
 		task.spawn(error, message, 0)
 	end,
 	log_warn = warn,

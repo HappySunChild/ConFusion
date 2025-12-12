@@ -53,7 +53,7 @@ local CLASS = table.freeze {
 		else
 			destroy(inner_scope)
 
-			External.log_error_non_fatal(calc.callback_error, new_value :: logging.Error)
+			External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
 		end
 
 		return false

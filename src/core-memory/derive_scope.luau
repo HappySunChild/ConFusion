@@ -17,7 +17,7 @@ local function derive_scope<S>(
 
 	local scope = setmetatable({}, metatable)
 
-	ExternalDebug.trackScope(scope)
+	ExternalDebug.track_scope(scope)
 
 	return scope
 end

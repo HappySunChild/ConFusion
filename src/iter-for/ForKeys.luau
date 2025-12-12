@@ -60,7 +60,7 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 				return output_key
 			end
 
-			External.log_error_non_fatal(calc.callback_error, output_key :: logging.Error)
+			External.log_error_nonfatal(calc.callback_error, output_key :: logging.Error)
 
 			destroy(calc_scope)
 

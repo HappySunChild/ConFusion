@@ -44,7 +44,7 @@ local function RangePair<S, T>(
 				return output_value
 			end
 
-			External.log_error_non_fatal(
+			External.log_error_nonfatal(
 				calc.callback_error,
 				output_value :: logging.Error
 			)

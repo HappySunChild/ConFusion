@@ -41,7 +41,7 @@ local function check_dissolvable<S, IK, IV, OK, OV>(
 		if output_key == nil or output_value == nil then
 			continue
 		elseif output[output_key] ~= nil then
-			External.log_error_non_fatal(
+			External.log_error_nonfatal(
 				iter_for.for_key_collision,
 				nil,
 				tostring(output_key)

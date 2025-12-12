@@ -15,10 +15,10 @@ local function to_srgb(channel: number): number
 end
 
 return table.freeze {
-	fromLinearToSRGB = function(rgb: vector): vector
+	from_linear_to_srgb = function(rgb: vector): vector
 		return vector.create(to_srgb(rgb.x), to_srgb(rgb.y), to_srgb(rgb.z))
 	end,
-	fromSRGBToLinear = function(srgb: vector): vector
+	from_srgb_to_linear = function(srgb: vector): vector
 		return vector.create(to_linear(srgb.x), to_linear(srgb.y), to_linear(srgb.z))
 	end,
 }

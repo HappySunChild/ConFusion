@@ -34,7 +34,7 @@ local function destroy(cleanup_task: memory.CleanupTask?)
 				cleanup_task[i] = nil
 			end
 
-			ExternalDebug.untrackScope(cleanup_task)
+			ExternalDebug.untrack_scope(cleanup_task)
 		end
 	end
 

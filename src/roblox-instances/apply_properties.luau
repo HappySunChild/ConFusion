@@ -12,7 +12,7 @@ local parse_error = require "../core-logging/parse_error"
 
 local Parent = require "./keys/Parent"
 
-local sortKeys = require "./keys/sortKeys"
+local sort_keys = require "./keys/sort_keys"
 local xtypeof = require "../xtypeof"
 
 local function raw_set_property(instance: Instance, property: string, value: any)
@@ -31,7 +31,7 @@ local function set_property(instance: Instance, property: string, value: any)
 	end
 
 	if pcall(test_property_assignable, instance, property) == false then
-		External.log_error_non_fatal(
+		External.log_error_nonfatal(
 			instances.property_cannot_assign,
 			nil,
 			instance.ClassName,
@@ -45,9 +45,9 @@ local function set_property(instance: Instance, property: string, value: any)
 	local expected_type = typeof(instance[property])
 
 	if given_type == expected_type then
-		External.log_error_non_fatal(instances.property_assign_error, err)
+		External.log_error_nonfatal(instances.property_assign_error, err)
 	else
-		External.log_error_non_fatal(
+		External.log_error_nonfatal(
 			instances.property_invalid_type,
 			nil,
 			instance.ClassName,
@@ -93,7 +93,7 @@ local function apply_properties(
 		end
 	end
 
-	table.sort(special_keys, sortKeys)
+	table.sort(special_keys, sort_keys)
 
 	for _, key: instances.SpecialKey in special_keys do
 		key.apply(scope, instance, n_properties[key])
