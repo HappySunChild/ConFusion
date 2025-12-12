@@ -22,7 +22,7 @@ return table.freeze {
 		end
 
 		if new_provider ~= nil then
-			new_provider.start_schedular()
+			new_provider.start_scheduler()
 		end
 
 		active_provider = new_provider

@@ -1,7 +1,7 @@
 local memory = require "../core-memory/types"
 
 export type ExternalProvider = {
-	start_schedular: () -> (),
+	start_scheduler: () -> (),
 	stop_scheduler: () -> (),
 
 	log_error_nonfatal: (message: string) -> (),
