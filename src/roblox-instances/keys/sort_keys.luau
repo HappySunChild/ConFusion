@@ -11,12 +11,12 @@ local STAGE_ORDER = table.freeze {
 	"last",
 }
 
-local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
+local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
 	local a_index = table.find(STAGE_ORDER, a.stage)
 	local b_index = table.find(STAGE_ORDER, b.stage)
 
 	if not a_index then
-		External.logWarn(
+		External.log_warn(
 			if a.stage == nil
 				then instances.missing_specialkey_stage
 				else instances.invalid_specialkey_stage,
@@ -26,7 +26,7 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 
 		return true
 	elseif not b_index then
-		External.logWarn(
+		External.log_warn(
 			if b.stage == nil
 				then instances.missing_specialkey_stage
 				else instances.invalid_specialkey_stage,
@@ -40,4 +40,4 @@ local function sortKeys(a: instances.SpecialKey, b: instances.SpecialKey)
 	return a_index < b_index
 end
 
-return sortKeys
+return sort_keys

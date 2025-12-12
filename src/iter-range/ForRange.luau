@@ -3,18 +3,18 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
-local dissolvingUse = require "../core-use/dissolvingUse"
+local dissolving_use = require "../core-use/dissolving_use"
 
 local destroy = require "../core-memory/destroy"
-local innerScope = require "../core-memory/innerScope"
+local inner_scope = require "../core-memory/inner_scope"
 
 local Iter = require "../iter/Iter"
 
 local RangeDisassembly = require "./RangeDisassembly"
 
-local function checkDissolvable<S, T>(
+local function check_dissolvable<S, T>(
 	scope: memory.Scope<S>,
 	start: calc.UsedAs<number>,
 	finish: calc.UsedAs<number>,
@@ -22,19 +22,19 @@ local function checkDissolvable<S, T>(
 	processor: iter_range.RangeDisassemblyProcessor<S, T>
 ): (boolean, { [number]: T }?)
 	if
-		castToState(start) ~= nil
-		or castToState(finish) ~= nil
-		or castToState(step) ~= nil
+		cast_to_state(start) ~= nil
+		or cast_to_state(finish) ~= nil
+		or cast_to_state(step) ~= nil
 	then
 		return false
 	end
 
-	local dissolving_scope = innerScope(scope)
+	local dissolving_scope = inner_scope(scope)
 
 	local output = {}
 
 	for index = start :: number, finish :: number, step :: number do
-		local ok, value = pcall(processor, dissolvingUse, dissolving_scope, index)
+		local ok, value = pcall(processor, dissolving_use, dissolving_scope, index)
 
 		if not ok then
 			destroy(dissolving_scope)
@@ -57,7 +57,8 @@ local function ForRange<S, T>(
 ): iter.Iter<number, T> | { T }
 	step = step or 1
 
-	local can_dissolve, constant = checkDissolvable(scope, start, finish, step, processor)
+	local can_dissolve, constant =
+		check_dissolvable(scope, start, finish, step, processor)
 
 	if can_dissolve then
 		return constant

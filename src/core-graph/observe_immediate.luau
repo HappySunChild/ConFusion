@@ -5,14 +5,14 @@ local External = require "../core-external/External"
 
 local observe = require "./observe"
 
-local function observeImmediate(
+local function observe_immediate(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
 	callback: () -> ()
 ): (() -> ())?
-	External.doTaskImmediate(callback)
+	External.do_task_immediate(callback)
 
 	return observe(scope, subject, callback)
 end
 
-return observeImmediate :: graph.Observe
+return observe_immediate :: graph.Observe

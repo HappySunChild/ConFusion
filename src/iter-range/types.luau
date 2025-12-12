@@ -18,7 +18,7 @@ export type RangePair<T> = {
 	input_index: number,
 
 	invalidate: (RangePair<T>) -> (),
-	useOutput: (RangePair<T>, use: calc.Use) -> T,
+	use_output: (RangePair<T>, use: calc.Use) -> T,
 }
 
 export type RangeDisassemblyProcessor<S, T> = (

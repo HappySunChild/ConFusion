@@ -1,11 +1,11 @@
 local calc = require "../core-calc/types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local evaluate = require "../core-graph/evaluate"
 
 local function peek<T>(target: calc.UsedAs<T>): T
-	if castToState(target) ~= nil then
+	if cast_to_state(target) ~= nil then
 		evaluate(target)
 
 		return target._internal_value :: T

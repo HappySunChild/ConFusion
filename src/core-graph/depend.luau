@@ -2,25 +2,25 @@ local graph = require "./types"
 
 local External = require "../core-external/External"
 
-local nameOf = require "../core-logging/nameOf"
+local name_of = require "../core-logging/name_of"
 
-local castToGraph = require "./castToGraph"
+local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
-	if castToGraph(dependency) == nil then
+	if cast_to_graph(dependency) == nil then
 		return
 	end
 
 	evaluate(dependency)
 
 	if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
-		External.logError(
+		External.log_error(
 			graph.cannot_depend,
 			nil,
-			nameOf(user, "User"),
+			name_of(user, "User"),
 			table.isfrozen(user._using) and "FROZEN" or "NOT FROZEN",
-			nameOf(dependency, "Dependency"),
+			name_of(dependency, "Dependency"),
 			table.isfrozen(dependency._users) and "FROZEN" or "NOT FROZEN"
 		)
 	end

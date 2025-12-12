@@ -1,6 +1,6 @@
 local Linear = require "./Linear"
 
-local function fromLinearToOklab(lrgb: vector): vector
+local function from_linear_to_oklab(lrgb: vector): vector
 	local r, g, b = lrgb.x, lrgb.y, lrgb.z
 
 	local l = r * 0.4122214708 + g * 0.5363325363 + b * 0.0514459929
@@ -18,7 +18,7 @@ local function fromLinearToOklab(lrgb: vector): vector
 	)
 end
 
-local function fromOklabToLinear(lab: vector, unclamped: boolean?): vector
+local function from_oklab_to_linear(lab: vector, unclamped: boolean?): vector
 	local L, a, b = lab.x, lab.y, lab.z
 
 	local l_root = L + a * 0.3963377774 + b * 0.2158037573
@@ -43,13 +43,13 @@ local function fromOklabToLinear(lab: vector, unclamped: boolean?): vector
 end
 
 return table.freeze {
-	fromLinearToOklab = fromLinearToOklab,
-	fromOklabToLinear = fromOklabToLinear,
+	from_linear_to_oklab = from_linear_to_oklab,
+	from_oklab_to_linear = from_oklab_to_linear,
 
-	fromSRGBToOklab = function(srgb: vector): vector
-		return fromLinearToOklab(Linear.fromSRGBToLinear(srgb))
+	from_srgb_to_oklab = function(srgb: vector): vector
+		return from_linear_to_oklab(Linear.from_srgb_to_linear(srgb))
 	end,
-	fromOklabToSRGB = function(lab: vector, unclamped: boolean?): vector
-		return Linear.fromLinearToSRGB(fromOklabToLinear(lab, unclamped))
+	from_oklab_to_srgb = function(lab: vector, unclamped: boolean?): vector
+		return Linear.from_linear_to_srgb(from_oklab_to_linear(lab, unclamped))
 	end,
 }

@@ -6,7 +6,7 @@ export type Eventual<T> = {
 	kind: "Eventual",
 	timeliness: "lazy",
 
-	isPending: (Eventual<T>) -> boolean,
+	is_pending: (Eventual<T>) -> boolean,
 } & calc.StateObject<T>
 
 export type EventualProcessor<S, T> = (

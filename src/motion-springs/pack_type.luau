@@ -32,7 +32,7 @@ local PACK_METHODS = table.freeze {
 			)
 	end,
 	Color3 = function(numbers: { number })
-		local ok_result = Oklab.fromOklabToSRGB(
+		local ok_result = Oklab.from_oklab_to_srgb(
 			vector.create(numbers[1], numbers[2], numbers[3]),
 			false
 		)
@@ -41,7 +41,7 @@ local PACK_METHODS = table.freeze {
 	end,
 } :: { [string]: (numbers: { number }) -> any }
 
-local function packType(data_type: string, packed: { number }): unknown
+local function pack_type(data_type: string, packed: { number }): unknown
 	local packer = PACK_METHODS[data_type]
 
 	if type(packer) == "function" then
@@ -51,4 +51,4 @@ local function packType(data_type: string, packed: { number }): unknown
 	return nil
 end
 
-return packType
+return pack_type

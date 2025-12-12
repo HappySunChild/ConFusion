@@ -6,7 +6,7 @@ export type ExternalTime = calc.StateObject<number> & {
 
 	enable: (ExternalTime) -> (),
 	disable: (ExternalTime) -> (),
-	isEnabled: (ExternalTime) -> boolean,
+	is_enabled: (ExternalTime) -> boolean,
 }
 
 export type Timer = calc.StateObject<number> & {

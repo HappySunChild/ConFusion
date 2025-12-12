@@ -1,12 +1,12 @@
 local memory = require "./types"
 
-local deriveScope = require "./deriveScope"
+local derive_scope = require "./derive_scope"
 
-local function innerScope<T>(
+local function inner_scope<T>(
 	existing: memory.Scope<T>,
 	methods: { [unknown]: unknown }
 ): unknown
-	local inner = deriveScope(existing, methods)
+	local inner = derive_scope(existing, methods)
 
 	table.insert(existing, inner)
 	table.insert(inner, function()
@@ -20,4 +20,4 @@ local function innerScope<T>(
 	return inner
 end
 
-return innerScope :: memory.DeriveScope
+return inner_scope :: memory.derive_scope

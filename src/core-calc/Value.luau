@@ -5,7 +5,7 @@ local change = require "../core-graph/change"
 
 local destructor = require "../core-memory/destructor"
 
-local isSimilar = require "./isSimilar"
+local is_similar = require "./is_similar"
 
 type Self<T> = calc.Value<T>
 
@@ -17,7 +17,7 @@ local CLASS = table.freeze {
 	_using = table.freeze {},
 
 	set = function<T>(self: Self<T>, new_value: T): T
-		if not isSimilar(new_value, self._internal_value) then
+		if not is_similar(new_value, self._internal_value) then
 			self._internal_value = new_value
 
 			change(self)

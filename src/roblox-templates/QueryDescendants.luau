@@ -4,7 +4,7 @@ local templates = require "../roblox-templates/types"
 
 local External = require "../core-external/External"
 
-local applyProperties = require "../roblox-instances/applyProperties"
+local apply_properties = require "../roblox-instances/apply_properties"
 
 local function QueryDescendants(scope: memory.Scope, selector: string)
 	return function(properties: instances.Properties)
@@ -13,7 +13,7 @@ local function QueryDescendants(scope: memory.Scope, selector: string)
 			local child = descendants[1]
 
 			if child == nil then
-				External.logErrorNonFatal(
+				External.log_error_nonfatal(
 					templates.missing_query_descendant,
 					nil,
 					selector
@@ -22,7 +22,7 @@ local function QueryDescendants(scope: memory.Scope, selector: string)
 				return nil
 			end
 
-			applyProperties(scope, child, properties)
+			apply_properties(scope, child, properties)
 
 			return child
 		end

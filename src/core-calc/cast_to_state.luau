@@ -2,7 +2,7 @@ local calc = require "./types"
 
 local xtypeof = require "../xtypeof"
 
-local function castToState(target: unknown): calc.StateObject<unknown>?
+local function cast_to_state(target: unknown): calc.StateObject<unknown>?
 	if xtypeof(target) == "State" then
 		return target
 	end
@@ -10,4 +10,4 @@ local function castToState(target: unknown): calc.StateObject<unknown>?
 	return nil
 end
 
-return castToState
+return cast_to_state

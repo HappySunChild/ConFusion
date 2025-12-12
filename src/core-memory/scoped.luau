@@ -11,9 +11,9 @@ local function scoped(
 	local metatable = { __index = merge(false, {}, base, methods) }
 	local scope = setmetatable({}, metatable)
 
-	ExternalDebug.trackScope(scope)
+	ExternalDebug.track_scope(scope)
 
 	return scope
 end
 
-return scoped :: memory.DeriveScope
+return scoped :: memory.derive_scope

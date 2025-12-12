@@ -6,32 +6,32 @@ local External = require "../core-external/External"
 
 local peek = require "../core-use/peek"
 
-local observeImmediate = require "../core-graph/observeImmediate"
+local observe_immediate = require "../core-graph/observe_immediate"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
 local Parent = require "./keys/Parent"
 
-local sortKeys = require "./keys/sortKeys"
+local sort_keys = require "./keys/sort_keys"
 local xtypeof = require "../xtypeof"
 
-local function rawSetProperty(instance: Instance, property: string, value: any)
+local function raw_set_property(instance: Instance, property: string, value: any)
 	instance[property] = value
 end
 
-local function testPropertyAssignable(instance: Instance, property: string)
+local function test_property_assignable(instance: Instance, property: string)
 	instance[property] = instance[property]
 end
 
-local function setProperty(instance: Instance, property: string, value: any)
-	local success, err = xpcall(rawSetProperty, parseError, instance, property, value)
+local function set_property(instance: Instance, property: string, value: any)
+	local success, err = xpcall(raw_set_property, parse_error, instance, property, value)
 
 	if success then
 		return
 	end
 
-	if pcall(testPropertyAssignable, instance, property) == false then
-		External.logErrorNonFatal(
+	if pcall(test_property_assignable, instance, property) == false then
+		External.log_error_nonfatal(
 			instances.property_cannot_assign,
 			nil,
 			instance.ClassName,
@@ -45,9 +45,9 @@ local function setProperty(instance: Instance, property: string, value: any)
 	local expected_type = typeof(instance[property])
 
 	if given_type == expected_type then
-		External.logErrorNonFatal(instances.property_assign_error, err)
+		External.log_error_nonfatal(instances.property_assign_error, err)
 	else
-		External.logErrorNonFatal(
+		External.log_error_nonfatal(
 			instances.property_invalid_type,
 			nil,
 			instance.ClassName,
@@ -58,18 +58,18 @@ local function setProperty(instance: Instance, property: string, value: any)
 	end
 end
 
-local function applyProperty(
+local function apply_property(
 	scope: memory.Scope,
 	instance: Instance,
 	property: string,
 	value: calc.UsedAs<any>
 )
-	observeImmediate(scope, value, function()
-		setProperty(instance, property, peek(value))
+	observe_immediate(scope, value, function()
+		set_property(instance, property, peek(value))
 	end)
 end
 
-local function applyProperties(
+local function apply_properties(
 	scope: memory.Scope,
 	instance: Instance,
 	properties: instances.Properties
@@ -85,19 +85,19 @@ local function applyProperties(
 		local key_type = xtypeof(key)
 
 		if key_type == "string" then
-			applyProperty(scope, instance, key, value)
+			apply_property(scope, instance, key, value)
 		elseif key_type == "SpecialKey" then
 			table.insert(special_keys, key)
 		else
-			External.logError(instances.invalid_key_type, nil, key_type)
+			External.log_error(instances.invalid_key_type, nil, key_type)
 		end
 	end
 
-	table.sort(special_keys, sortKeys)
+	table.sort(special_keys, sort_keys)
 
 	for _, key: instances.SpecialKey in special_keys do
 		key.apply(scope, instance, n_properties[key])
 	end
 end
 
-return applyProperties
+return apply_properties

@@ -5,13 +5,13 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
 
-local deriveScope = require "../core-memory/deriveScope"
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
 local destructor = require "../core-memory/destructor"
 
@@ -43,13 +43,13 @@ local CLASS = table.freeze {
 		local has_holes = false
 
 		for _, computedpair in self._computedpairs do
-			local output_key: OK?, output_value: OV? = computedpair:useOutputPair(use)
+			local output_key: OK?, output_value: OV? = computedpair:use_output_pair(use)
 
 			if output_key == nil or output_value == nil then
 				has_holes = true
 				continue
 			elseif output[output_key] ~= nil then
-				External.logErrorNonFatal(
+				External.log_error_nonfatal(
 					iter.for_key_collision,
 					nil,
 					output_key,
@@ -87,18 +87,18 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		depend(self, castToState(self._input))
+		depend(self, cast_to_state(self._input))
 
 		local roam_keys = self._roam_keys
 		local roam_values = self._roam_values
 
 		local pending_pairs = table.clone(peek(self._input)) :: { [IK]: IV }
 
-		local current_computedpairs = self._computedpairs
-		local next_computedpairs = {}
+		local old_computedpairs = self._computedpairs
+		local new_computedpairs = {}
 
-		for index, computedpair in current_computedpairs do
-			current_computedpairs[index] = nil
+		for index, computedpair in old_computedpairs do
+			old_computedpairs[index] = nil
 
 			local old_input_key = computedpair.input_key
 			local old_input_value = computedpair.input_value
@@ -114,7 +114,7 @@ local CLASS = table.freeze {
 				local claimed_values = {}
 
 				if not roam_values then
-					for _, other_computedpair in current_computedpairs do
+					for _, other_computedpair in old_computedpairs do
 						claimed_values[other_computedpair.input_value] = true
 					end
 				end
@@ -123,7 +123,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not roam_keys and current_computedpairs[pending_key] ~= nil
+						not roam_keys and old_computedpairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -151,7 +151,7 @@ local CLASS = table.freeze {
 				end
 			end
 
-			-- cleanup computed pair that can't be reused
+			-- cleanup computed pairs that can't be reused
 			if not can_reuse then
 				destroy(computedpair.scope)
 
@@ -161,35 +161,36 @@ local CLASS = table.freeze {
 			local new_input_value: IV = pending_pairs[new_input_key]
 
 			pending_pairs[new_input_key] = nil
-			next_computedpairs[new_input_key] = computedpair
+			new_computedpairs[new_input_key] = computedpair
 
 			if old_input_key ~= new_input_key then
 				computedpair.input_key = new_input_key
-				computedpair:invalidateInputKey()
+				computedpair:invalidate_input_key()
 			end
 
 			if old_input_value ~= new_input_value then
 				computedpair.input_value = new_input_value
-				computedpair:invalidateInputValue()
+				computedpair:invalidate_input_value()
 			end
 		end
 
 		local outer_scope = self.scope
+		local pair_constructor = self._constructor
 
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			next_computedpairs[pending_key] =
-				self._constructor(deriveScope(outer_scope), pending_key, pending_value)
+			new_computedpairs[pending_key] =
+				pair_constructor(derive_scope(outer_scope), pending_key, pending_value)
 		end
 
-		self._computedpairs = next_computedpairs
+		self._computedpairs = new_computedpairs
 
 		return true
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function auxiliaryDestructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
+local function auxiliary_destructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
 	for _, computedpair in disassembly._computedpairs do
 		destroy(computedpair.scope)
 	end
@@ -221,7 +222,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_constructor = constructor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
+	table.insert(scope, destructor(new_disassembly, auxiliary_destructor))
 
 	return new_disassembly
 end

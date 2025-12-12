@@ -6,7 +6,7 @@ local depend = require "../core-graph/depend"
 
 local destructor = require "../core-memory/destructor"
 
-local genericeUse = require "../core-use/genericUse"
+local generic_use = require "../core-use/generic_use"
 
 type Self<K, V> = {
 	_use: calc.Use,
@@ -50,7 +50,7 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 		_disassembly = disassembly,
 	}, METATABLE) :: any
 
-	new_iter._use = genericeUse(new_iter)
+	new_iter._use = generic_use(new_iter)
 
 	table.insert(scope, destructor(new_iter))
 

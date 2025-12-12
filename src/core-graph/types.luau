@@ -3,6 +3,8 @@ local memory = require "../core-memory/types"
 export type Validity = "busy" | "invalid" | "valid"
 export type Timeliness = "lazy" | "eager"
 
+type Disconnect = () -> ()
+
 export type GraphObject = {
 	scope: memory.Scope?,
 
@@ -17,7 +19,7 @@ export type GraphObject = {
 	_last_compute: number?,
 	_users: { [GraphObject]: true },
 	_using: { [GraphObject]: true },
-	_observers: { () -> () }?,
+	_observers: { Disconnect }?,
 
 	_evaluate: (GraphObject) -> boolean,
 }
@@ -26,7 +28,7 @@ export type Observe = (
 	scope: memory.Scope,
 	subject: GraphObject,
 	callback: () -> ()
-) -> () -> ()?
+) -> Disconnect?
 
 return {
 	infinite_loop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",

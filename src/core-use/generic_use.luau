@@ -1,15 +1,15 @@
 local calc = require "../core-calc/types"
 local graph = require "../core-graph/types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local depend = require "../core-graph/depend"
 
 local peek = require "./peek"
 
-local function genericUse(user: graph.GraphObject): calc.Use
+local function generic_use(user: graph.GraphObject): calc.Use
 	local function use<T>(target: calc.UsedAs<T>): T
-		depend(user, castToState(target))
+		depend(user, cast_to_state(target))
 
 		return peek(target)
 	end
@@ -17,4 +17,4 @@ local function genericUse(user: graph.GraphObject): calc.Use
 	return use
 end
 
-return genericUse
+return generic_use

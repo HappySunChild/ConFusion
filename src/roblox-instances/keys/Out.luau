@@ -19,7 +19,7 @@ local function Out(property: string): instances.SpecialKey<"Out">
 			"Out",
 			function(scope: memory.Scope, apply_to: Instance, value: calc.Value<any>)
 				if xtypeof(value) ~= "Value" then
-					External.logError(
+					External.log_error(
 						instances.expected_type,
 						nil,
 						"Value",

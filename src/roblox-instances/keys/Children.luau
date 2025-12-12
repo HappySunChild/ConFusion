@@ -3,7 +3,7 @@ local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
 
-local castToState = require "../../core-calc/castToState"
+local cast_to_state = require "../../core-calc/cast_to_state"
 
 local peek = require "../../core-use/peek"
 
@@ -20,11 +20,11 @@ local Children = SpecialKey(
 		local new_children, old_children = {}, {}
 		local new_scopes, old_scopes = {}, {}
 
-		local function updateChildren()
+		local function update_children()
 			old_children, new_children = new_children, old_children
 			old_scopes, new_scopes = new_scopes, old_scopes
 
-			local function processChild(child: instances.Child, name: string?)
+			local function process_child(child: instances.Child, name: string?)
 				local child_type = typeof(child)
 
 				if child_type == "Instance" then
@@ -45,20 +45,20 @@ local Children = SpecialKey(
 					local child_instance = child(apply_to, name)
 
 					if child_instance then
-						processChild(child_instance, name)
+						process_child(child_instance, name)
 					end
-				elseif castToState(child) ~= nil then
+				elseif cast_to_state(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then
-						processChild(value, name)
+						process_child(value, name)
 					end
 
 					local child_scope = old_scopes[child]
 
 					if child_scope == nil then
 						child_scope = {}
-						observe(child_scope, child, updateChildren)
+						observe(child_scope, child, update_children)
 					else
 						old_scopes[child] = nil
 					end
@@ -66,10 +66,10 @@ local Children = SpecialKey(
 					new_scopes[child] = child_scope
 				elseif child_type == "table" then
 					for key, descendant in child do
-						processChild(descendant, key)
+						process_child(descendant, key)
 					end
 				else
-					External.logErrorNonFatal(
+					External.log_error_nonfatal(
 						instances.invalid_child_type,
 						debug.traceback(nil, 2),
 						child_type
@@ -78,7 +78,7 @@ local Children = SpecialKey(
 			end
 
 			if children ~= nil then
-				processChild(children)
+				process_child(children)
 			end
 
 			for instance in old_children do
@@ -97,10 +97,10 @@ local Children = SpecialKey(
 		table.insert(scope, function()
 			children = nil
 
-			updateChildren()
+			update_children()
 		end)
 
-		updateChildren()
+		update_children()
 	end
 )
 
