@@ -31,7 +31,7 @@ local CLASS = table.freeze {
 
 	populate = function<S, V>(self: Self<S, V>, use: calc.Use, output: { [number]: V })
 		for index, object in self._pairs do
-			output[index] = object:useOutput(use)
+			output[index] = object:use_output(use)
 		end
 	end,
 	_evaluate = function<S, V>(self: Self<S, V>)
