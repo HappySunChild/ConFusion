@@ -50,6 +50,9 @@ local function destroy(cleanup_task: memory.CleanupTask?)
 		ExternalDebug.untrack_scope(cleanup_task)
 	elseif cast_to_graph(cleanup_task) ~= nil then
 		cleanup_task:destroy()
+		-- this is kind of annoying.
+		-- else
+		-- 	External.log_warn(memory.unknown_cleanup_task, name_of(cleanup_task, "unknown"))
 	end
 
 	ACTIVE_TASKS[cleanup_task] = nil
