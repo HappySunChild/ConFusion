@@ -1,4 +1,4 @@
-export type CleanupTask = Instance | RBXScriptConnection | () -> () | { CleanupTask }
+export type CleanupTask = any
 export type Scope<T = any> = { CleanupTask } & T
 
 export type Destroy = (CleanupTask) -> ()
