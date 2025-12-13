@@ -3,7 +3,7 @@ local memory = require "../core-memory/types"
 
 local change = require "../core-graph/change"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local CLASS = table.freeze {
 	type = "State",
@@ -14,6 +14,7 @@ local CLASS = table.freeze {
 	_evaluate = function()
 		return true
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -34,7 +35,7 @@ local function AttributeOf(
 	}, METATABLE) :: any
 
 	table.insert(scope, {
-		destructor(new_attribute),
+		new_attribute,
 		event:Connect(function()
 			new_attribute._internal_value = instance:GetAttribute(attribute)
 

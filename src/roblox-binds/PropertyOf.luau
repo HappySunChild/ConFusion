@@ -6,7 +6,7 @@ local External = require "../core-external/External"
 
 local change = require "../core-graph/change"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local CLASS = table.freeze {
 	type = "State",
@@ -17,6 +17,7 @@ local CLASS = table.freeze {
 	_evaluate = function()
 		return true
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -47,7 +48,7 @@ local function PropertyOf(
 	}, METATABLE) :: any
 
 	table.insert(scope, {
-		destructor(new_property),
+		new_property,
 		event:Connect(function()
 			new_property._internal_value = instance[property]
 

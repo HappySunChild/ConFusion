@@ -5,7 +5,7 @@ local External = require "../core-external/External"
 
 local change = require "../core-graph/change"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 type Self = chrono.ExternalTime
 
@@ -27,15 +27,17 @@ local CLASS = {
 	is_enabled = function(self: Self)
 		return ALL_TIMERS[self] ~= nil
 	end,
+
 	_evaluate = function(self: Self)
 		return true
 	end,
+	destroy = function(self: Self)
+		ALL_TIMERS[self] = nil
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliary_destructor(externaltime: Self)
-	ALL_TIMERS[externaltime] = nil
-end
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({
@@ -47,7 +49,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 
 	new_externaltime[new_externaltime] = true
 
-	table.insert(scope, destructor(new_externaltime, auxiliary_destructor))
+	table.insert(scope, new_externaltime)
 
 	return new_externaltime
 end
