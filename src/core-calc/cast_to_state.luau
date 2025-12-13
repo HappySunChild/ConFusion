@@ -1,6 +1,6 @@
 local calc = require "./types"
 
-local xtypeof = require "../xtypeof"
+local xtypeof = require "../core-graph/xtypeof"
 
 local function cast_to_state(target: unknown): calc.StateObject<unknown>?
 	if xtypeof(target) == "State" then

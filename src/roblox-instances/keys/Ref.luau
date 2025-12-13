@@ -3,7 +3,7 @@ local instances = require "../types"
 
 local External = require "../../core-external/External"
 
-local xtypeof = require "../../xtypeof"
+local xtypeof = require "../../core-graph/xtypeof"
 
 local SpecialKey = require "./SpecialKey"
 

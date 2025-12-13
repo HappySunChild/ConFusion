@@ -13,7 +13,7 @@ local parse_error = require "../core-logging/parse_error"
 local Parent = require "./keys/Parent"
 
 local sort_keys = require "./keys/sort_keys"
-local xtypeof = require "../xtypeof"
+local xtypeof = require "../core-graph/xtypeof"
 
 local function raw_set_property(instance: Instance, property: string, value: any)
 	instance[property] = value
