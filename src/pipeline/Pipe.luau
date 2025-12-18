@@ -8,6 +8,7 @@ local Computed = require "../core-calc/Computed"
 local ForKeys = require "../iter-for/ForKeys"
 local ForPairs = require "../iter-for/ForPairs"
 local ForValues = require "../iter-for/ForValues"
+local Match = require "../match/Match"
 local Spring = require "../motion-springs/Spring"
 local Tween = require "../motion-tweens/Tween"
 
@@ -36,6 +37,11 @@ local CLASS = table.freeze {
 		return self
 	end,
 
+	match = function<S, T, O>(self: Self<S, T>, all_branches: { [any]: O }): Self<S, O>
+		self._latest = Match(self._internal_scope, self._latest)(all_branches)
+
+		return self
+	end,
 	map = function<S, T, O>(
 		self: Self<S, T>,
 		processor: (value: T, use: calc.Use, scope: memory.Scope<S>) -> O

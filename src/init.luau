@@ -15,6 +15,7 @@ local use = require "@self/core-use/types"
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
+local match = require "@self/match/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
 
@@ -104,6 +105,11 @@ type ConFusion = {
 
 	-- Safe
 	read Safe: safe.Safe,
+
+	-- Match
+	read None: match.None,
+	read Match: match.MatchConstructor,
+	read MatchPredicates: match.MatchPredicates,
 
 	-- Motion
 	read Motion: motion.MotionConstructor,
@@ -196,6 +202,11 @@ local ConFusion = table.freeze {
 
 	-- Safe
 	Safe = require "@self/safe/Safe",
+
+	-- Match
+	None = require "@self/match/None",
+	Match = require "@self/match/Match",
+	MatchPredicates = require "@self/match/predicates",
 
 	-- Motion
 	Motion = require "@self/motion/Motion",
