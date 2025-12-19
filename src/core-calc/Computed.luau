@@ -59,8 +59,8 @@ local CLASS = table.freeze {
 		return false
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
-		self._inner_scope = nil
 		destroy(self._inner_scope)
+		self._inner_scope = nil
 
 		generic_destroy(self)
 	end,
