@@ -8,6 +8,10 @@ local change = require "../core-graph/change"
 
 local generic_destroy = require "../core-memory/generic_destroy"
 
+type Self<T> = binds.PropertyOf<T> & {
+	_event: RBXScriptConnection,
+}
+
 local CLASS = table.freeze {
 	type = "State",
 	kind = "PropertyOf",
@@ -17,7 +21,11 @@ local CLASS = table.freeze {
 	_evaluate = function()
 		return true
 	end,
-	destroy = generic_destroy,
+	destroy = function<T>(self: Self<T>)
+		self._event:Disconnect()
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -45,16 +53,15 @@ local function PropertyOf(
 		_users = {},
 
 		_internal_value = instance[property],
+		_event = nil,
 	}, METATABLE) :: any
+	new_property._event = event:Connect(function()
+		new_property._internal_value = instance[property]
 
-	table.insert(scope, {
-		new_property,
-		event:Connect(function()
-			new_property._internal_value = instance[property]
+		change(new_property)
+	end)
 
-			change(new_property)
-		end),
-	})
+	table.insert(scope, new_property)
 
 	return new_property
 end
