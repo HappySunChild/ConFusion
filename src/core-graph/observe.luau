@@ -10,7 +10,7 @@ local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 
 local function observe_lifetime_formatter(_, b: unknown)
-	return `The observing subject {name_of(b)}`, "it could be observed"
+	return `The subject '{name_of(b)}'`, "it could be observed"
 end
 
 local function observe(

@@ -10,7 +10,7 @@ local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 
 local function depend_lifetime_formatter(a: unknown, b: unknown): (string, string)
-	return `The dependency {name_of(b, "object")}`, `the user {name_of(a, "object")}`
+	return `The dependency '{name_of(b, "object")}'`, `the user '{name_of(a, "object")}'`
 end
 
 local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
