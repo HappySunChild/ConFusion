@@ -18,7 +18,7 @@ local CLASS = {
 	_using = table.freeze {},
 	_internal_value = External.get_last_update(),
 
-	enabled = function(self: Self)
+	enable = function(self: Self)
 		ALL_TIMERS[self] = true
 	end,
 	disable = function(self: Self)
