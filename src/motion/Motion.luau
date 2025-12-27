@@ -136,26 +136,26 @@ local METATABLE = table.freeze { __index = CLASS }
 local function Motion<T>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<T>,
-	mover: calc.UsedAs<motion.MoveGenerator<T>>
+	move_generator: calc.UsedAs<motion.MoveGenerator<T>>
 ): motion.Motion<T>
 	local new_motion: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = peek(goal),
+		_internal_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
 
 		_using = {},
 		_users = {},
 
 		_goal = goal,
-		_generator = mover,
+		_generator = move_generator,
 
-		_dynamics = {},
+		_dynamics = { peek(goal) },
 
 		_regenerate = nil,
 		_active_goal = nil,
 		_active_generator = nil,
-		_active_curve = nil,
+		_active_move = nil,
 
 		_timer = Timer(scope),
 	}, METATABLE) :: any
