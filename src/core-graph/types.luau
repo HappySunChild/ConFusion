@@ -22,6 +22,7 @@ export type GraphObject = {
 	_observers: { Disconnect }?,
 
 	_evaluate: (GraphObject) -> boolean,
+	destroy: (GraphObject) -> (),
 }
 
 export type Observe = (

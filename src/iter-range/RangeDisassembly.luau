@@ -11,7 +11,7 @@ local depend = require "../core-graph/depend"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local RangePair = require "./RangePair"
 
@@ -81,14 +81,15 @@ local CLASS = table.freeze {
 
 		return true
 	end,
+	destroy = function<S, V>(self: Self<S, V>)
+		for _, object in self._pairs do
+			destroy(object.scope)
+		end
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliary_destructor<S, V>(disassembly: Self<S, V>)
-	for _, object in disassembly._pairs do
-		destroy(object.scope)
-	end
-end
 
 local function RangeDisassembly<S, V>(
 	scope: memory.Scope<S>,
@@ -114,7 +115,7 @@ local function RangeDisassembly<S, V>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliary_destructor))
+	table.insert(scope, new_disassembly)
 
 	return new_disassembly
 end

@@ -13,7 +13,7 @@ local depend = require "../core-graph/depend"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_roam_keys: boolean,
@@ -187,14 +187,15 @@ local CLASS = table.freeze {
 
 		return true
 	end,
+	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
+		for _, computedpair in self._computedpairs do
+			destroy(computedpair.scope)
+		end
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliary_destructor<S, IK, IV, OK, OV>(disassembly: Self<S, IK, IV, OK, OV>)
-	for _, computedpair in disassembly._computedpairs do
-		destroy(computedpair.scope)
-	end
-end
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
@@ -222,7 +223,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_constructor = constructor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliary_destructor))
+	table.insert(scope, new_disassembly)
 
 	return new_disassembly
 end

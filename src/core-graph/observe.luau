@@ -4,8 +4,14 @@ local memory = require "../core-memory/types"
 local name_of = require "../core-logging/name_of"
 local nicknames = require "../core-logging/nicknames"
 
+local check_lifetime = require "../core-memory/check_lifetime"
+
 local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
+
+local function observe_lifetime_formatter(_, b: unknown)
+	return `The subject '{name_of(b)}'`, "it could be observed"
+end
 
 local function observe(
 	scope: memory.Scope,
@@ -15,6 +21,8 @@ local function observe(
 	if cast_to_graph(subject) == nil then
 		return nil
 	end
+
+	check_lifetime(nil, subject, subject.scope, observe_lifetime_formatter)
 
 	if subject._observers == nil then
 		subject._observers = {}

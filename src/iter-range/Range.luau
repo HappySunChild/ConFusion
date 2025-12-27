@@ -8,7 +8,7 @@ local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 type Self = iter_range.Range & {
 	_start: calc.UsedAs<number>,
@@ -36,6 +36,7 @@ local CLASS = table.freeze {
 
 		return true
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -92,7 +93,7 @@ local function Range(
 		_step = step,
 	}, METATABLE)
 
-	table.insert(scope, destructor(new_range))
+	table.insert(scope, new_range)
 
 	return new_range
 end
