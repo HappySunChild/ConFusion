@@ -128,7 +128,7 @@ local CLASS = table.freeze {
 			timer:pause()
 		end
 
-		return is_similar(old_value, new_value)
+		return not is_similar(old_value, new_value)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
