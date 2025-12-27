@@ -45,7 +45,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 		_users = {},
 	}, METATABLE) :: Self
 
-	new_externaltime[new_externaltime] = true
+	ALL_TIMERS[new_externaltime] = true
 
 	table.insert(scope, destructor(new_externaltime, auxiliary_destructor))
 
