@@ -31,11 +31,34 @@ type Self<T> = motion.Motion<T> & {
 	_active_move: motion.AnimationMove<T>,
 
 	_timer: chrono.Timer,
-
-	_sync_dynamics: (Self<T>, should_sleep: boolean, output: T, ...any) -> (T, boolean),
-	_wake: (Self<T>) -> (),
-	_sleep: (Self<T>) -> (),
 }
+
+local function sync_dynamics<T>(
+	motion_obj: Self<T>,
+	should_sleep: boolean,
+	output_value: T,
+	...: any
+): (T, boolean)
+	local dynamics = motion_obj._dynamics
+
+	table.clear(dynamics)
+
+	if output_value ~= output_value then
+		local goal = motion_obj._active_goal
+
+		External.log_warn(motion.animated_invalid_motion, output_value, goal)
+
+		output_value = goal
+	end
+
+	dynamics[1] = output_value
+
+	for i = 1, select("#", ...) do
+		dynamics[i + 1] = select(i, ...)
+	end
+
+	return output_value, should_sleep
+end
 
 local CLASS = table.freeze {
 	type = "State",
@@ -52,77 +75,41 @@ local CLASS = table.freeze {
 		return self._active_dynamics[index]
 	end,
 
-	_sync_dynamics = function<T>(
-		self: Self<T>,
-		should_sleep: boolean,
-		output: T,
-		...: any
-	): (T, boolean)
-		local dynamics = self._dynamics
-
-		table.clear(self._dynamics)
-
-		if output ~= output then
-			External.log_warn(motion.animated_invalid_motion, output, self._active_goal)
-
-			output = self._active_goal
-		end
-
-		dynamics[1] = output
-
-		for i = 1, select("#", ...) do
-			dynamics[i + 1] = select(i, ...)
-		end
-
-		return output, should_sleep
-	end,
-	_wake = function<T>(self: Self<T>)
-		self._regenerate = nil
-
-		local timer = self._timer
-		local goal = peek(self._goal)
-		local generator = peek(self._generator)
-
-		self._active_goal = goal
-		self._active_generator = generator
-		self._active_move = generator(goal, unpack(self._dynamics))
-
-		timer:zero()
-		timer:unpause()
-	end,
-	_sleep = function<T>(self: Self<T>)
-		local timer = self._timer
-
-		timer:pause()
-	end,
 	_evaluate = function<T>(self: Self<T>)
 		local timer = self._timer
 		local goal = self._goal
 		local generator = self._generator
 
-		local next_goal = peek(goal) :: T
+		local new_goal = peek(goal) :: T
 
 		depend(self, cast_to_state(goal))
 
 		-- protect against NaN goals
-		if next_goal ~= next_goal then
-			External.log_warn(motion.animated_invalid_goal, next_goal)
+		if new_goal ~= new_goal then
+			External.log_warn(motion.animated_invalid_goal, new_goal)
 
 			return false
 		end
 
-		local next_generator = peek(generator) :: motion.MoveGenerator<T>
+		local new_generator = peek(generator) :: motion.MoveGenerator<T>
 
 		depend(self, cast_to_state(generator))
 		depend(self, timer)
 
 		-- wake
 		if
-			next_goal ~= self._active_goal
-			or next_generator ~= self._active_generator
+			new_goal ~= self._active_goal
+			or new_generator ~= self._active_generator
 			or self._regenerate == true
 		then
-			self:_wake()
+			self._regenerate = nil
+
+			self._active_goal = new_goal
+			self._active_generator = new_generator
+			self._active_move = generator(new_goal, unpack(self._dynamics))
+
+			timer:zero()
+			timer:unpause()
 		end
 
 		local elapsed = peek(timer) :: number
@@ -133,12 +120,12 @@ local CLASS = table.freeze {
 		end
 
 		local old_value = self._internal_value :: any
-		local new_value, should_sleep = self:_syncDynamics(self._active_move(elapsed))
+		local new_value, should_sleep = sync_dynamics(self, self._active_move(elapsed))
 
 		self._internal_value = new_value
 
 		if should_sleep then
-			self:_sleep()
+			timer:pause()
 		end
 
 		return is_similar(old_value, new_value)
@@ -155,7 +142,7 @@ local function Motion<T>(
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = nil,
+		_internal_value = peek(goal),
 
 		_using = {},
 		_users = {},
@@ -165,6 +152,7 @@ local function Motion<T>(
 
 		_dynamics = {},
 
+		_regenerate = nil,
 		_active_goal = nil,
 		_active_generator = nil,
 		_active_curve = nil,
