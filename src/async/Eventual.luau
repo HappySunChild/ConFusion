@@ -16,7 +16,7 @@ local evaluate = require "../core-graph/evaluate"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local parse_error = require "../core-logging/parse_error"
 
@@ -42,6 +42,7 @@ local CLASS = table.freeze {
 	is_pending = function<T, S>(self: Self<T, S>)
 		return self._active_thread ~= nil
 	end,
+
 	_evaluate = function<T, S>(self: Self<T, S>): boolean
 		if self.scope == nil then
 			return false
@@ -102,18 +103,18 @@ local CLASS = table.freeze {
 
 		return not is_similar(self._internal_value, self._pending_value)
 	end,
+	destroy = function<T, S>(self: Self<T, S>)
+		if self._active_thread ~= nil then
+			External.cancel_task(self._active_thread)
+		end
+
+		destroy(self._inner_scope)
+		self._inner_scope = nil
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliary_destructor<T, S>(eventual: Self<T, S>)
-	if eventual._active_thread ~= nil then
-		External.cancel_task(eventual._active_thread)
-	end
-
-	destroy(eventual._inner_scope)
-
-	eventual._inner_scope = nil
-end
 
 local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
 	local session_used = {}
@@ -173,7 +174,7 @@ local function Eventual<T, S>(
 
 	new_eventual._use, new_eventual._become = generate_callbacks(new_eventual)
 
-	table.insert(scope, destructor(new_eventual, auxiliary_destructor))
+	table.insert(scope, new_eventual)
 
 	evaluate(new_eventual, true)
 

@@ -12,7 +12,7 @@ local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 local evaluate = require "../core-graph/evaluate"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local peek = require "../core-use/peek"
 
@@ -130,6 +130,7 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -160,7 +161,7 @@ local function Motion<T>(
 		_timer = Timer(scope),
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_motion))
+	table.insert(scope, new_motion)
 
 	evaluate(new_motion, true)
 

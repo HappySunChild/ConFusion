@@ -2,9 +2,12 @@ local chrono = require "./types"
 local memory = require "../core-memory/types"
 
 local ExternalTime = require "./ExternalTime"
+
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
-local destructor = require "../core-memory/destructor"
+
+local generic_destroy = require "../core-memory/generic_destroy"
+
 local peek = require "../core-use/peek"
 
 type Self = chrono.Timer & {
@@ -44,6 +47,7 @@ local CLASS = table.freeze {
 
 		change(self)
 	end,
+
 	_evaluate = function(self: Self)
 		if self._paused then
 			return false
@@ -60,6 +64,7 @@ local CLASS = table.freeze {
 
 		return old_value ~= new_value
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -78,7 +83,7 @@ local function Timer(scope: memory.Scope): chrono.Timer
 		_timer = externaltime,
 	}, METATABLE) :: Self
 
-	table.insert(scope, destructor(new_timer))
+	table.insert(scope, new_timer)
 
 	depend(new_timer, externaltime)
 

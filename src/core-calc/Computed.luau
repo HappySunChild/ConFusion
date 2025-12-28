@@ -6,7 +6,7 @@ local External = require "../core-external/External"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 local inner_scope = require "../core-memory/inner_scope"
 
 local dissolving_use = require "../core-use/dissolving_use"
@@ -58,14 +58,14 @@ local CLASS = table.freeze {
 
 		return false
 	end,
+	destroy = function<T, S>(self: Self<T, S>)
+		destroy(self._inner_scope)
+		self._inner_scope = nil
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliary_destructor<T, S>(computed: Self<T, S>)
-	destroy(computed._inner_scope)
-
-	computed._inner_scope = nil
-end
 
 local function check_dissolvable<T, S>(
 	scope: memory.Scope<S>,
@@ -112,7 +112,7 @@ local function Computed<T, S>(
 
 	new_computed._use = generic_use(new_computed)
 
-	table.insert(scope, destructor(new_computed, auxiliary_destructor))
+	table.insert(scope, new_computed)
 
 	return new_computed
 end
