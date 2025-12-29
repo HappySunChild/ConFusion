@@ -5,11 +5,9 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 local merge = require "./merge"
 
 local function scoped<S, M>(base: memory.Scope<S>, methods: M?): memory.Scope<S & M>
-	local metatable = if methods == nil
-		then nil
-		else table.freeze {
-			__index = table.freeze(merge(true, table.clone(base), methods)),
-		}
+	local metatable = table.freeze {
+		__index = table.freeze(merge(true, table.clone(base), methods)),
+	}
 	local new_scope = setmetatable({}, metatable)
 
 	ExternalDebug.track_scope(new_scope)
