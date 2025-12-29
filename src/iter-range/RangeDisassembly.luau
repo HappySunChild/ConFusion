@@ -3,8 +3,6 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local cast_to_state = require "../core-calc/cast_to_state"
-
 local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
@@ -35,9 +33,9 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, V>(self: Self<S, V>)
-		depend(self, cast_to_state(self._start))
-		depend(self, cast_to_state(self._finish))
-		depend(self, cast_to_state(self._step))
+		depend(self, self._start)
+		depend(self, self._finish)
+		depend(self, self._step)
 
 		local outer_scope = self.scope
 

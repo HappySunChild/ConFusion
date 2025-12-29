@@ -5,7 +5,6 @@ local motion = require "./types"
 
 local External = require "../core-external/External"
 
-local cast_to_state = require "../core-calc/cast_to_state"
 local is_similar = require "../core-calc/is_similar"
 
 local change = require "../core-graph/change"
@@ -82,7 +81,7 @@ local CLASS = table.freeze {
 
 		local new_goal = peek(goal) :: T
 
-		depend(self, cast_to_state(goal))
+		depend(self, goal)
 
 		-- protect against NaN goals
 		if new_goal ~= new_goal then
@@ -93,7 +92,7 @@ local CLASS = table.freeze {
 
 		local new_generator = peek(generator) :: motion.MoveGenerator<T>
 
-		depend(self, cast_to_state(generator))
+		depend(self, generator)
 		depend(self, timer)
 
 		-- wake

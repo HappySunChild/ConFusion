@@ -5,8 +5,6 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local cast_to_state = require "../core-calc/cast_to_state"
-
 local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
@@ -87,7 +85,7 @@ local CLASS = table.freeze {
 		end
 	end,
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		depend(self, cast_to_state(self._input))
+		depend(self, self._input)
 
 		local roam_keys = self._roam_keys
 		local roam_values = self._roam_values
