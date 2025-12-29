@@ -65,9 +65,9 @@ type ConFusion = {
 	},
 
 	-- Core: Memory
-	read scoped: memory.derive_scope,
-	read derive_scope: memory.derive_scope,
-	read inner_scope: memory.derive_scope,
+	read scoped: memory.DeriveScope,
+	read derive_scope: memory.DeriveScope,
+	read inner_scope: memory.DeriveScope,
 	read destroy: memory.Destroy,
 	read insert: memory.Insert,
 

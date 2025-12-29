@@ -22,4 +22,4 @@ local function derive_scope<S>(
 	return scope
 end
 
-return derive_scope :: memory.derive_scope
+return derive_scope :: memory.DeriveScope

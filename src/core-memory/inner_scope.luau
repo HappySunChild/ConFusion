@@ -20,4 +20,4 @@ local function inner_scope<T>(
 	return inner
 end
 
-return inner_scope :: memory.derive_scope
+return inner_scope :: memory.DeriveScope
