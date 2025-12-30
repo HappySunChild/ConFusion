@@ -25,7 +25,7 @@ local function applyProperty(
 	rule:SetProperty(property, peek(value))
 end
 
-return SpecialKey "RuleProperties" {
+return SpecialKey "StyleProperties" {
 	stage = "self",
 	apply = function(
 		scope: memory.Scope,
@@ -36,4 +36,4 @@ return SpecialKey "RuleProperties" {
 			applyProperty(scope, applyTo, property, value)
 		end
 	end,
-} :: instances.SpecialKey<"RuleProperties">
+} :: instances.SpecialKey<"StyleProperties">

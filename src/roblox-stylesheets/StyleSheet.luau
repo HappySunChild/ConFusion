@@ -1,8 +1,8 @@
 local memory = require "../core-memory/types"
 local style = require "./types"
 
-local Derives = require "./keys/Derives"
-local Rules = require "./keys/Rules"
+local StyleDerives = require "./keys/StyleDerives"
+local StyleRules = require "./keys/StyleRules"
 
 local Attribute = require "../roblox-instances/keys/Attribute"
 
@@ -19,8 +19,8 @@ local function StyleSheet(
 	local actual_properties = {
 		Parent = properties.parent,
 
-		[Derives] = properties.derives,
-		[Rules] = properties.rules,
+		[StyleDerives] = properties.derives,
+		[StyleRules] = properties.rules,
 	}
 
 	local tokens = properties.tokens

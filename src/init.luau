@@ -136,10 +136,10 @@ type ConFusion = {
 	read StyleSheet: stylesheets.StyleSheetConstructor,
 
 	read Default: instances.SpecialKey<"Default">,
-	read Derives: instances.SpecialKey<"Derives">,
-	read Rules: instances.SpecialKey<"Rules">,
-	read RuleProperties: instances.SpecialKey<"RuleProperties">,
-	read Style: instances.SpecialKey<"Style">,
+	read StyleDerives: instances.SpecialKey<"StyleDerives">,
+	read StyleRules: instances.SpecialKey<"StyleRules">,
+	read StyleProperties: instances.SpecialKey<"StyleProperties">,
+	read StyleLink: instances.SpecialKey<"StyleLink">,
 
 	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
@@ -236,10 +236,10 @@ local ConFusion = table.freeze {
 	StyleSheet = require "@self/roblox-stylesheets/StyleSheet",
 
 	Default = require "@self/roblox-stylesheets/keys/Default",
-	Derives = require "@self/roblox-stylesheets/keys/Derives",
-	Rules = require "@self/roblox-stylesheets/keys/Rules",
-	RuleProperties = require "@self/roblox-stylesheets/keys/RuleProperties",
-	Style = require "@self/roblox-stylesheets/keys/Style",
+	StyleDerives = require "@self/roblox-stylesheets/keys/StyleDerives",
+	StyleRules = require "@self/roblox-stylesheets/keys/StyleRules",
+	StyleProperties = require "@self/roblox-stylesheets/keys/StyleProperties",
+	StyleLink = require "@self/roblox-stylesheets/keys/StyleLink",
 
 	-- Roblox: Templates
 	FromTemplate = require "@self/roblox-templates/FromTemplate",

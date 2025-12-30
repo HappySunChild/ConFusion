@@ -6,7 +6,7 @@ local applyProperties = require "../../roblox-instances/applyProperties"
 
 local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
 
-return SpecialKey "Style" {
+return SpecialKey "StyleLink" {
 	stage = "descendants",
 	apply = function(
 		scope: memory.Scope,
@@ -22,4 +22,4 @@ return SpecialKey "Style" {
 
 		table.insert(scope, link)
 	end,
-} :: instances.SpecialKey<"Style">
+} :: instances.SpecialKey<"StyleLink">
