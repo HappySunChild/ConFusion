@@ -82,8 +82,6 @@ local function change(target: graph.GraphObject)
 			fire_node_observers(user)
 		end
 	end
-
-	return true
 end
 
 return change
