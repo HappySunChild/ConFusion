@@ -3,7 +3,7 @@ local memory = require "../core-memory/types"
 local StyleProperties = require "./keys/StyleProperties"
 local StyleRules = require "./keys/StyleRules"
 
-local applyProperties = require "../roblox-instances/applyProperties"
+local apply_properties = require "../roblox-instances/apply_properties"
 
 local function StyleRule(scope: memory.Scope, selector: string)
 	local new_rule = Instance.new "StyleRule"
@@ -12,7 +12,7 @@ local function StyleRule(scope: memory.Scope, selector: string)
 		return function(subrules: { StyleRule }): StyleRule
 			table.insert(scope, new_rule)
 
-			applyProperties(scope, new_rule, {
+			apply_properties(scope, new_rule, {
 				Selector = selector,
 				Name = selector,
 

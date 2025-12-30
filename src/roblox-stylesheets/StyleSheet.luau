@@ -6,7 +6,7 @@ local StyleRules = require "./keys/StyleRules"
 
 local Attribute = require "../roblox-instances/keys/Attribute"
 
-local applyProperties = require "../roblox-instances/applyProperties"
+local apply_properties = require "../roblox-instances/apply_properties"
 
 local function StyleSheet(
 	scope: memory.Scope,
@@ -31,7 +31,7 @@ local function StyleSheet(
 		end
 	end
 
-	applyProperties(scope, new_sheet, actual_properties)
+	apply_properties(scope, new_sheet, actual_properties)
 
 	return new_sheet
 end

@@ -4,7 +4,7 @@ local memory = require "../core-memory/types"
 export type StyleSheetProperties = {
 	derives: { StyleSheet }?,
 	rules: { [number]: StyleRule }?,
-	tokens: { [string]: any }?,
+	tokens: { [string]: calc.UsedAs<any> }?,
 
 	parent: calc.UsedAs<Instance>?,
 }
