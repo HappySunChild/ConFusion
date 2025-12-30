@@ -57,6 +57,13 @@ local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject 
 	return eager_users
 end
 
+--[[
+	Prompts a graph node to be re-evaluated. If it meaningfully
+	changes, then dependents will be marked invalid and will have to be
+	re-evaluated at a later point (or immediately if it is eager).
+
+	https://fluff.blog/2024/04/16/monotonic-painting.html
+]]
 local function change(target: graph.GraphObject)
 	if cast_to_graph(target) == nil then
 		External.log_error(graph.invalid_change_type, nil, typeof(target))

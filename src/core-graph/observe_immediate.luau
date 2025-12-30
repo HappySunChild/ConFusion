@@ -5,6 +5,12 @@ local External = require "../core-external/External"
 
 local observe = require "./observe"
 
+--[[
+	Adds an observer callback to a graph node after immediately calling the callback.
+	This has the side effect of also making the node eager.
+	
+	Returns a disconnect function that removes the observer callback from the node.
+]]
 local function observe_immediate(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
@@ -15,4 +21,4 @@ local function observe_immediate(
 	return observe(scope, subject, callback)
 end
 
-return observe_immediate :: graph.Observe
+return observe_immediate

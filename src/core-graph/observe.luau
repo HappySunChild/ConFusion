@@ -13,6 +13,12 @@ local function observe_lifetime_formatter(_, b: unknown)
 	return `The subject '{name_of(b)}'`, "it could be observed"
 end
 
+--[[
+	Adds an observer callback to a graph node. This has the side 
+	effect of also making the node eager.
+	
+	Returns a disconnect function that removes the observer callback from the node.
+]]
 local function observe(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
@@ -53,4 +59,4 @@ local function observe(
 	return disconnect
 end
 
-return observe :: graph.Observe
+return observe

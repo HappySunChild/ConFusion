@@ -1,6 +1,10 @@
 local memory = require "../core-memory/types"
 
-export type Validity = "busy" | "invalid" | "valid"
+export type Validity =
+	| "busy" -- currently reevaluating
+	| "invalid" -- might need to be reevaluated
+	| "dirty" -- definitely needs to be reevaluated
+	| "valid" -- does not need to be reevaluated
 export type Timeliness = "lazy" | "eager"
 
 type Disconnect = () -> ()
