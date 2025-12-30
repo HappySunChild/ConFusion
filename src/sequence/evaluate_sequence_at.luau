@@ -35,6 +35,11 @@ local function evaluate_sequence_at<T>(
 	use: calc.Use
 ): T?
 	local prev_time, next_time = find_bounding_keys(eval_alpha, keyframes)
+
+	if prev_time == next_time then -- if both times are exactly equal then that means we're exactly on a keyframe
+		return use(keyframes[eval_alpha])
+	end
+
 	local prev_value, next_value = use(keyframes[prev_time]), use(keyframes[next_time])
 
 	if prev_time ~= nil and next_time ~= nil then -- both bounding keys are present
