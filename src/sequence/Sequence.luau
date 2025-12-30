@@ -2,13 +2,13 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local sequence = require "./types"
 
-local dissolvingUse = require "../core-use/dissolvingUse"
-local genericUse = require "../core-use/genericUse"
+local dissolving_use = require "../core-use/dissolving_use"
+local generic_use = require "../core-use/generic_use"
 
-local castToState = require "../core-calc/castToState"
-local isSimilar = require "../core-calc/isSimilar"
+local cast_to_state = require "../core-calc/cast_to_state"
+local is_similar = require "../core-calc/is_similar"
 
-local evaluateSequenceAt = require "./evaluateSequenceAt"
+local evaluate_sequence_at = require "./evaluate_sequence_at"
 
 type Self<T> = sequence.Sequence<T> & {
 	_alpha: calc.UsedAs<number>,
@@ -29,25 +29,26 @@ local CLASS = table.freeze {
 
 		local use = self._use
 
-		local new_value = evaluateSequenceAt(use(self._alpha), self._keyframes, use)
 		local old_value = self._internal_value
+		local new_value = evaluate_sequence_at(use(self._alpha), self._keyframes, use)
 
 		self._internal_value = new_value
 
-		return isSimilar(old_value, new_value)
+		return not is_similar(old_value, new_value)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
-local function checkDissolvable<T>(
+local function check_dissolvable<T>(
 	alpha: calc.UsedAs<number>,
 	keyframes: { T }
 ): (boolean, T?)
-	if castToState(alpha) ~= nil then
+	if cast_to_state(alpha) ~= nil then
 		return false, nil
 	end
 
-	local ok, value = pcall(evaluateSequenceAt, alpha :: number, keyframes, dissolvingUse)
+	local ok, value =
+		pcall(evaluate_sequence_at, alpha :: number, keyframes, dissolving_use)
 
 	if not ok then
 		return false, nil
@@ -61,7 +62,7 @@ local function Sequence<T>(
 	alpha: calc.UsedAs<number>,
 	keyframes: { T }
 ): sequence.Sequence<T> | T
-	local can_dissolve, constant = checkDissolvable(alpha, keyframes)
+	local can_dissolve, constant = check_dissolvable(alpha, keyframes)
 
 	if can_dissolve then
 		return constant
@@ -78,7 +79,7 @@ local function Sequence<T>(
 		_keyframes = keyframes,
 	}, METATABLE) :: any
 
-	new_sequence._use = genericUse(new_sequence)
+	new_sequence._use = generic_use(new_sequence)
 
 	return new_sequence
 end
