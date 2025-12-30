@@ -17,6 +17,11 @@ local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
+local sequence = require "@self/sequence/types"
+
+local iter = require "@self/iter/types"
+local iter_for = require "@self/iter-for/types"
+local iter_range = require "@self/iter-range/types"
 
 local iter = require "@self/iter/types"
 local iter_for = require "@self/iter-for/types"
@@ -104,6 +109,9 @@ type ConFusion = {
 
 	-- Safe
 	read Safe: safe.Safe,
+
+	-- Sequence
+	read Sequence: sequence.SequenceConstructor,
 
 	-- Motion
 	read Motion: motion.MotionConstructor,
@@ -196,6 +204,9 @@ local ConFusion = table.freeze {
 
 	-- Safe
 	Safe = require "@self/safe/Safe",
+
+	-- Sequence
+	Sequence = require "@self/sequence/Sequence",
 
 	-- Motion
 	Motion = require "@self/motion/Motion",
