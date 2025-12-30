@@ -3,33 +3,34 @@ local instances = require "../types"
 
 local External = require "../../core-external/External"
 
-local xtypeof = require "../../xtypeof"
+local xtypeof = require "../../core-graph/xtypeof"
 
 local SpecialKey = require "./SpecialKey"
 
-local Ref = SpecialKey "Ref" {
-	stage = "self",
-	apply = function(
-		_,
-		applyTo: Instance,
-		refs: { calc.Value<Instance> } | calc.Value<Instance>
-	)
-		if xtypeof(refs) == "Value" then
-			refs = refs :: calc.Value<Instance>
-			refs:set(applyTo)
+local function apply_ref(
+	instance: Instance,
+	ref: { calc.Value<Instance> } | calc.Value<Instance>
+)
+	local ref_type = xtypeof(ref)
 
-			return
+	if ref_type == "Value" then
+		ref = ref :: calc.Value<Instance>
+		ref:set(instance)
+
+		return
+	elseif ref_type == "table" then
+		for _, sub_ref in ref do
+			apply_ref(sub_ref, instance)
 		end
 
-		refs = refs :: { calc.Value<Instance> }
-		for _, ref in refs do
-			if xtypeof(ref) ~= "Value" then
-				External.logError(instances.expectedType, nil, "Value", xtypeof(ref))
-			end
+		return
+	end
 
-			ref:set(applyTo)
-		end
-	end,
-}
+	External.log_error(instances.expected_type, nil, "Value", ref_type)
+end
+
+local Ref = SpecialKey("self", "Ref", function(scope, apply_to: Instance, ref: unknown)
+	apply_ref(apply_to, ref)
+end)
 
 return Ref

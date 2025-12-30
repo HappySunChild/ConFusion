@@ -2,11 +2,11 @@ local tweens = require "./types"
 
 local EasingStyles = require "./EasingStyles"
 
-local class = table.freeze {
+local CLASS = table.freeze {
 	type = "TweenInfo",
 	kind = "tweeninfo",
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function TweenInfo(info: {
 	easing_style: ((number) -> number)?,
@@ -16,7 +16,7 @@ local function TweenInfo(info: {
 	repeat_count: number?,
 }): tweens.TweenInfo
 	return setmetatable({
-		easing = info.easing_style or EasingStyles.Linear.Out,
+		easing_style = info.easing_style or EasingStyles.Linear.Out,
 		time = info.time or 1,
 		delay_time = info.delay_time or 0,
 		reverses = info.reverses or false,

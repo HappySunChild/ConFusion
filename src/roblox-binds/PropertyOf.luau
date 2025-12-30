@@ -4,21 +4,30 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local destructor = require "../core-memory/destructor"
-
 local change = require "../core-graph/change"
 
-local class = table.freeze {
-	type = "PropertyOf",
-	kind = "state",
+local generic_destroy = require "../core-memory/generic_destroy"
+
+type Self<T> = binds.PropertyOf<T> & {
+	_event: RBXScriptConnection,
+}
+
+local CLASS = table.freeze {
+	type = "State",
+	kind = "PropertyOf",
 	timeliness = "lazy",
 	_using = table.freeze {},
 
 	_evaluate = function()
 		return true
 	end,
+	destroy = function<T>(self: Self<T>)
+		self._event:Disconnect()
+
+		generic_destroy(self)
+	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function PropertyOf(
 	scope: memory.Scope,
@@ -29,33 +38,32 @@ local function PropertyOf(
 		pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok then
-		External.logError(
-			instances.cannotConnectChange,
+		External.log_error(
+			instances.cannot_connect_change,
 			nil,
 			instance.ClassName,
 			tostring(property)
 		)
 	end
 
-	local newProperty: binds.PropertyOf<unknown> = setmetatable({
+	local new_property: binds.PropertyOf<unknown> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 
-		_internalValue = instance[property],
+		_internal_value = instance[property],
+		_event = nil,
 	}, METATABLE) :: any
+	new_property._event = event:Connect(function()
+		new_property._internal_value = instance[property]
 
-	table.insert(scope, {
-		destructor(newProperty),
-		event:Connect(function()
-			newProperty._internalValue = instance[property]
+		change(new_property)
+	end)
 
-			change(newProperty)
-		end),
-	})
+	table.insert(scope, new_property)
 
-	return newProperty
+	return new_property
 end
 
 return PropertyOf

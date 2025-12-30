@@ -5,63 +5,60 @@ local External = require "../core-external/External"
 
 local change = require "../core-graph/change"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
-type Self = chrono.ExternalTime & {
-	_active: boolean,
-}
+type Self = chrono.ExternalTime
 
 local ALL_TIMERS = {}
 
-local function auxiliaryDestructor(externalTime: Self)
-	local index = table.find(ALL_TIMERS, externalTime)
-
-	if index ~= nil then
-		table.remove(ALL_TIMERS, index)
-	end
-end
-
-local class = {
-	type = "ExternalTime",
-	kind = "state",
+local CLASS = {
+	type = "State",
+	kind = "ExternalTime",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internalValue = External.getLastUpdate(),
+	_internal_value = External.get_last_update(),
 
-	setActive = function(self: Self, active: boolean)
-		self._active = active
+	enable = function(self: Self)
+		ALL_TIMERS[self] = true
 	end,
-	isActive = function(self: Self)
-		return self._active
+	disable = function(self: Self)
+		ALL_TIMERS[self] = nil
 	end,
+	is_enabled = function(self: Self)
+		return ALL_TIMERS[self] ~= nil
+	end,
+
 	_evaluate = function(self: Self)
 		return true
 	end,
+	destroy = function(self: Self)
+		ALL_TIMERS[self] = nil
+
+		generic_destroy(self)
+	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
-	local newExternalTime = setmetatable({
+	local new_externaltime = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
-		_active = true,
 	}, METATABLE) :: Self
 
-	table.insert(ALL_TIMERS, newExternalTime)
-	table.insert(scope, destructor(newExternalTime, auxiliaryDestructor))
+	ALL_TIMERS[new_externaltime] = true
 
-	return newExternalTime
+	table.insert(scope, new_externaltime)
+
+	return new_externaltime
 end
 
-External.bindToUpdateStep(function(now: number)
-	class._internalValue = now
+External.bind_to_update_step(function(now: number)
+	CLASS._internal_value = now
 
-	for _, timer in ALL_TIMERS do
-		if timer:isActive() then
-			change(timer)
-		end
+	for timer in ALL_TIMERS do
+		change(timer)
 	end
 end)
 

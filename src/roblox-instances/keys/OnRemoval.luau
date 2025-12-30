@@ -1,23 +1,20 @@
 local memory = require "../../core-memory/types"
 
-local doCleanup = require "../../core-memory/doCleanup"
-
 local SpecialKey = require "./SpecialKey"
 
-return SpecialKey "OnRemoval" {
-	stage = "observer",
-	apply = function(
-		scope: memory.Scope,
-		applyTo: Instance,
-		removalTask: memory.CleanupTask
-	)
+local destroy = require "../../core-memory/destroy"
+
+return SpecialKey(
+	"observer",
+	"OnRemoval",
+	function(scope: memory.Scope, apply_to: Instance, removal_task: memory.CleanupTask)
 		table.insert(
 			scope,
-			applyTo.AncestryChanged:Connect(function(_, parent)
+			apply_to.AncestryChanged:Connect(function(_, parent: Instance?)
 				if parent == nil then
-					doCleanup(removalTask)
+					destroy(removal_task)
 				end
 			end)
 		)
-	end,
-}
+	end
+)

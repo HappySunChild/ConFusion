@@ -9,12 +9,13 @@ local Hydrate = require "../roblox-instances/Hydrate"
 local function FromTemplate<InstanceT>(
 	scope: memory.Scope,
 	template: InstanceT
-): (props: instances.Properties) -> InstanceT
+): (properties: instances.Properties) -> InstanceT
 	template = template :: Instance
-	local newInstance = template:Clone()
 
-	if not newInstance then
-		External.logError(templates.cannotCreateTemplate, nil, template:GetFullName())
+	local new_instance = template:Clone()
+
+	if new_instance == nil then
+		External.log_error(templates.cannot_create_template, nil, template:GetFullName())
 	end
 
 	return Hydrate(scope, template)

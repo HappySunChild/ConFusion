@@ -1,48 +1,57 @@
 local instances = require "./types"
 local memory = require "../core-memory/types"
 
-local destructor = require "../core-memory/destructor"
-
 local change = require "../core-graph/change"
 
-local class = table.freeze {
-	type = "AttributeOf",
-	kind = "state",
+local generic_destroy = require "../core-memory/generic_destroy"
+
+type Self<T> = instances.AttributeOf<T> & {
+	_event: RBXScriptConnection,
+}
+
+local CLASS = table.freeze {
+	type = "State",
+	kind = "AttributeOf",
 	timeliness = "lazy",
 	_using = table.freeze {},
 
 	_evaluate = function()
 		return true
 	end,
-}
-local METATABLE = table.freeze { __index = class }
+	destroy = function<T>(self: Self<T>)
+		self._event:Disconnect()
 
-local function AttributeOf(
+		generic_destroy(self)
+	end,
+}
+local METATABLE = table.freeze { __index = CLASS }
+
+local function AttributeOf<T>(
 	scope: memory.Scope,
 	instance: Instance,
 	attribute: string
-): instances.AttributeOf<unknown>
+): instances.AttributeOf<T>
 	local event = instance:GetAttributeChangedSignal(attribute)
 
-	local newAttribute: instances.AttributeOf<unknown> = setmetatable({
+	local new_attribute: Self<T> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
 		_users = {},
 
-		_internvalValue = instance:GetAttribute(attribute),
+		_internal_value = instance:GetAttribute(attribute),
+		_event = nil,
 	}, METATABLE) :: any
 
-	table.insert(scope, {
-		destructor(newAttribute),
-		event:Connect(function()
-			newAttribute._internalValue = instance:GetAttribute(attribute)
+	new_attribute._event = event:Connect(function()
+		new_attribute._internal_value = instance:GetAttribute(attribute)
 
-			change(newAttribute)
-		end),
-	})
+		change(new_attribute)
+	end)
 
-	return newAttribute
+	table.insert(scope, new_attribute)
+
+	return new_attribute
 end
 
 return AttributeOf

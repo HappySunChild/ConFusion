@@ -1,52 +1,56 @@
 local graph = require "./types"
 local memory = require "../core-memory/types"
 
-local External = require "../core-external/External"
-
-local nameOf = require "../core-logging/nameOf"
+local name_of = require "../core-logging/name_of"
 local nicknames = require "../core-logging/nicknames"
 
-local castToGraph = require "./castToGraph"
+local check_lifetime = require "../core-memory/check_lifetime"
+
+local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
+
+local function observe_lifetime_formatter(_, b: unknown)
+	return `The subject '{name_of(b)}'`, "it could be observed"
+end
 
 local function observe(
 	scope: memory.Scope,
 	subject: graph.GraphObject,
-	callback: () -> (),
-	immediate: boolean?
-): () -> ()
-	if immediate then
-		External.doTaskImmediate(callback)
+	callback: () -> ()
+): (() -> ())?
+	if cast_to_graph(subject) == nil then
+		return nil
 	end
 
-	if castToGraph(subject) == nil then
-		return
-	end
+	check_lifetime(nil, subject, subject.scope, observe_lifetime_formatter)
 
 	if subject._observers == nil then
 		subject._observers = {}
 	end
 
-	local uniqueId = {}
-	subject._observers[uniqueId] = callback
+	table.insert(subject._observers, callback)
 
 	evaluate(subject)
 
 	local function disconnect()
-		subject._observers[uniqueId] = nil
+		local observe_index = table.find(subject._observers, callback)
 
-		local index = table.find(scope, disconnect)
+		if observe_index ~= nil then
+			table.remove(subject._observers, observe_index)
+		end
 
-		if index then
-			table.remove(scope, index)
+		local disconnect_index = table.find(scope, disconnect)
+
+		if disconnect_index ~= nil then
+			table.remove(scope, disconnect_index)
 		end
 	end
 
-	nicknames[disconnect] = `Observer ({nameOf(subject, "unknown")})`
+	nicknames[disconnect] = `Observer ({name_of(subject, "unknown")})`
 
 	table.insert(scope, disconnect)
 
 	return disconnect
 end
 
-return observe
+return observe :: graph.Observe

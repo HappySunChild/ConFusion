@@ -2,22 +2,30 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 type SpecialKeyProperties = {
-	stage: instances.SpecialKeyStage,
-	apply: (scope: memory.Scope, applyTo: Instance, ...any) -> (),
+	name: string?,
+	apply: (scope: memory.Scope, apply_to: Instance, value: unknown) -> (),
 }
 
-local function SpecialKey(name: string)
-	return function(props: SpecialKeyProperties): instances.SpecialKey
-		local newKey = table.freeze {
-			type = name,
-			kind = "key",
+local CLASS = table.freeze {
+	type = "SpecialKey",
+}
+local METATABLE = table.freeze { __index = CLASS }
 
-			stage = props.stage,
-			apply = props.apply,
-		}
+local function SpecialKey(
+	stage: instances.SpecialKeyStage,
+	kind: string,
+	apply_callback: (
+		scope: memory.Scope,
+		apply_to: Instance,
+		value: unknown
+	) -> ()
+)
+	return table.freeze(setmetatable({
+		stage = stage,
+		kind = kind,
 
-		return newKey
-	end
+		apply = apply_callback,
+	}, METATABLE))
 end
 
 return SpecialKey

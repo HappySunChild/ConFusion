@@ -5,35 +5,40 @@ local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 
-local function getProperty(instance: Instance, key: string)
+local function get_property(instance: Instance, key: string)
 	return instance[key]
 end
 
-local keyCache = {}
+local KEY_CACHE = {}
 
-local function OnEvent(eventName: string): instances.SpecialKey<"OnEvent">
-	local key = keyCache[eventName]
+local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
+	local key = KEY_CACHE[event_name]
 
-	if not key then
-		key = SpecialKey "OnEvent" {
-			stage = "observer",
-			apply = function(scope: memory.Scope, applyTo: Instance, callback)
-				local ok, event = pcall(getProperty, applyTo, eventName)
+	if key == nil then
+		key = SpecialKey(
+			"observer",
+			"OnEvent",
+			function(
+				scope: memory.Scope,
+				apply_to: Instance,
+				callback: (...unknown) -> ()
+			)
+				local ok, event = pcall(get_property, apply_to, event_name)
 
 				if not ok or typeof(event) ~= "RBXScriptSignal" then
-					External.logError(
-						instances.cannotConnectEvent,
+					External.log_error(
+						instances.cannot_connect_event,
 						nil,
-						applyTo.ClassName,
-						eventName
+						apply_to.ClassName,
+						event_name
 					)
 				end
 
 				table.insert(scope, event:Connect(callback))
-			end,
-		}
+			end
+		)
 
-		keyCache[eventName] = key
+		KEY_CACHE[event_name] = key
 	end
 
 	return key

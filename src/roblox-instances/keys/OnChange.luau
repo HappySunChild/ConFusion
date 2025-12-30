@@ -5,27 +5,24 @@ local External = require "../../core-external/External"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function OnChange(property: string): instances.SpecialKey<"OnChange">
-	local key = keyCache[property]
+	local key = KEY_CACHE[property]
 
-	if not key then
-		key = SpecialKey "OnChange" {
-			stage = "observer",
-			apply = function(
-				scope: memory.Scope,
-				applyTo: Instance,
-				callback: (any) -> ()
-			)
+	if key == nil then
+		key = SpecialKey(
+			"observer",
+			"OnChange",
+			function(scope: memory.Scope, apply_to: Instance, callback: (any) -> ())
 				local ok, event =
-					pcall(applyTo.GetPropertyChangedSignal, applyTo, property)
+					pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
 
 				if not ok then
-					External.logError(
-						instances.cannotConnectChange,
+					External.log_error(
+						instances.cannot_connect_change,
 						nil,
-						applyTo.ClassName,
+						apply_to.ClassName,
 						property
 					)
 				end
@@ -33,13 +30,13 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 				table.insert(
 					scope,
 					event:Connect(function()
-						callback(applyTo[property])
+						callback(apply_to[property])
 					end)
 				)
-			end,
-		}
+			end
+		)
 
-		keyCache[property] = key
+		KEY_CACHE[property] = key
 	end
 
 	return key

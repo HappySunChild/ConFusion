@@ -3,50 +3,51 @@ local memory = require "../core-memory/types"
 
 local change = require "../core-graph/change"
 
-local destructor = require "../core-memory/destructor"
+local generic_destroy = require "../core-memory/generic_destroy"
 
-local isSimilar = require "./isSimilar"
+local is_similar = require "./is_similar"
 
-type Self<V> = calc.Value<V>
+type Self<T> = calc.Value<T>
 
-local class = table.freeze {
-	type = "Value",
-	kind = "state",
+local CLASS = table.freeze {
+	type = "State",
+	kind = "Value",
 	timeliness = "lazy",
 
 	_using = table.freeze {},
 
-	set = function<V>(self: Self<V>, newValue: V): V
-		if not isSimilar(newValue, self._internalValue) then
-			self._internalValue = newValue
+	set = function<T>(self: Self<T>, new_value: T): T
+		if not is_similar(new_value, self._internal_value) then
+			self._internal_value = new_value
 
 			change(self)
 		end
 
-		return newValue
+		return new_value
 	end,
-	update = function<V>(self: Self<V>, updater: (V) -> V): V
-		return self:set(updater(self._internalValue))
+	update = function<T>(self: Self<T>, updater: (T) -> T): T
+		return self:set(updater(self._internal_value))
 	end,
 	_evaluate = function()
 		return true
 	end,
+	destroy = generic_destroy,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 
-local function Value<V>(scope: memory.Scope, initialValue: V): calc.Value<V>
-	local newValue: Self<V> = setmetatable({
+local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
+	local new_value: Self<T> = setmetatable({
 		scope = scope,
-		createdAt = os.clock(),
+		created_at = os.clock(),
 
-		_internalValue = initialValue,
+		_internal_value = initial_value,
 
 		_users = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(newValue))
+	table.insert(scope, new_value)
 
-	return newValue
+	return new_value
 end
 
 return Value

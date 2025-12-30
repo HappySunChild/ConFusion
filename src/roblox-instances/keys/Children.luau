@@ -3,104 +3,105 @@ local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
 
-local observe = require "../../core-graph/observe"
-
-local castToState = require "../../core-calc/castToState"
+local cast_to_state = require "../../core-calc/cast_to_state"
 
 local peek = require "../../core-use/peek"
 
-local doCleanup = require "../../core-memory/doCleanup"
+local destroy = require "../../core-memory/destroy"
+
+local observe = require "../../core-graph/observe"
 
 local SpecialKey = require "./SpecialKey"
 
-local Children = SpecialKey "Children" {
-	stage = "descendants",
-	apply = function(scope: memory.Scope, applyTo: Instance, children: instances.Child?)
-		local newChildren, oldChildren = {}, {}
-		local newScopes, oldScopes = {}, {}
+local Children = SpecialKey(
+	"descendants",
+	"Children",
+	function(scope: memory.Scope, apply_to: Instance, children: instances.Child?)
+		local new_children, old_children = {}, {}
+		local new_scopes, old_scopes = {}, {}
 
-		local function updateChildren()
-			oldChildren, newChildren = newChildren, oldChildren
-			oldScopes, newScopes = newScopes, oldScopes
+		local function update_children()
+			old_children, new_children = new_children, old_children
+			old_scopes, new_scopes = new_scopes, old_scopes
 
-			local function processChild(child: instances.Child, name: string?)
-				local childType = typeof(child)
+			local function process_child(child: instances.Child, name: string?)
+				local child_type = typeof(child)
 
-				if childType == "Instance" then
-					newChildren[child] = true
+				if child_type == "Instance" then
+					new_children[child] = true
 
-					if not oldChildren[child] then
+					if old_children[child] == nil then
 						if child.Parent == nil then
-							child.Parent = applyTo
+							child.Parent = apply_to
 						end
 					else
-						oldChildren[child] = nil
+						old_children[child] = nil
 					end
 
-					if name and tonumber(name) == nil then
+					if name ~= nil and tonumber(name) == nil then
 						child.Name = name
 					end
-				elseif childType == "function" then
-					local childInstance = child(applyTo, name)
+				elseif child_type == "function" then
+					local child_instance = child(apply_to, name)
 
-					if childInstance then
-						processChild(childInstance, name)
+					if child_instance then
+						process_child(child_instance, name)
 					end
-				elseif castToState(child) then
+				elseif cast_to_state(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then
-						processChild(value, name)
+						process_child(value, name)
 					end
 
-					local childScope = oldScopes[child]
+					local child_scope = old_scopes[child]
 
-					if childScope == nil then
-						childScope = {}
-						observe(childScope, child, updateChildren)
+					if child_scope == nil then
+						child_scope = {}
+						observe(child_scope, child, update_children)
 					else
-						oldScopes[child] = nil
+						old_scopes[child] = nil
 					end
 
-					newScopes[child] = childScope
-				elseif childType == "table" then
-					for key, subChild in child do
-						processChild(subChild, key)
+					new_scopes[child] = child_scope
+				elseif child_type == "table" then
+					for key, descendant in child do
+						process_child(descendant, key)
 					end
 				else
-					External.logErrorNonFatal(
-						instances.invalidChildType,
+					External.log_error_nonfatal(
+						instances.invalid_child_type,
 						debug.traceback(nil, 2),
-						childType
+						child_type
 					)
 				end
 			end
 
-			if children then
-				processChild(children)
+			if children ~= nil then
+				process_child(children)
 			end
 
-			for instance in oldChildren do
+			for instance in old_children do
 				instance.Parent = nil
 			end
 
-			table.clear(oldChildren)
+			table.clear(old_children)
 
-			for _, childScope in oldScopes do
-				doCleanup(childScope)
+			for _, child_scope in old_scopes do
+				destroy(child_scope)
 			end
 
-			table.clear(oldScopes)
+			table.clear(old_scopes)
 		end
 
 		table.insert(scope, function()
 			children = nil
 
-			updateChildren()
+			update_children()
 		end)
 
-		updateChildren()
-	end,
-}
+		update_children()
+	end
+)
 
 return Children

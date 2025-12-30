@@ -1,11 +1,12 @@
 local calc = require "../core-calc/types"
+local graph = require "../core-graph/types"
 local memory = require "../core-memory/types"
 
 export type Eventual<T> = {
-	type: "Eventual",
+	kind: "Eventual",
 	timeliness: "lazy",
 
-	isPending: (Eventual<T>) -> boolean,
+	is_pending: (Eventual<T>) -> boolean,
 } & calc.StateObject<T>
 
 export type EventualProcessor<S, T> = (
@@ -16,9 +17,11 @@ export type EventualProcessor<S, T> = (
 export type EventualConstructor = <S, T>(
 	scope: memory.Scope<S>,
 	processor: EventualProcessor<S, T>,
-	pendingValue: T
+	pending_value: T
 ) -> Eventual<T>
 
+export type Await = (scope: memory.Scope, subject: graph.GraphObject) -> ()
+
 return {
-	awaitNonGraph = "Can't await non-graph values.",
+	await_non_graph = "Can't await non-graph values.",
 }

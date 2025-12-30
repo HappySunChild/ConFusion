@@ -4,16 +4,15 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 
 local merge = require "./merge"
 
-local function scoped(
-	base: memory.Scope<{ [unknown]: unknown }>,
-	methods: { [unknown]: unknown }
-): unknown
-	local metatable = { __index = merge(false, {}, base, methods) }
-	local scope = setmetatable({}, metatable)
+local function scoped<S, M>(base: memory.Scope<S>, methods: M?): memory.Scope<S & M>
+	local metatable = table.freeze {
+		__index = table.freeze(merge(true, table.clone(base), methods)),
+	}
+	local new_scope = setmetatable({}, metatable)
 
-	ExternalDebug.trackScope(scope)
+	ExternalDebug.track_scope(new_scope)
 
-	return scope
+	return new_scope
 end
 
-return scoped :: <B, M>(base: B, methods: M) -> B & M
+return scoped :: memory.DeriveScope

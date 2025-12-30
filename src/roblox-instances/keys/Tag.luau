@@ -2,46 +2,39 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 local memory = require "../../core-memory/types"
 
-local observe = require "../../core-graph/observe"
-
-local castToState = require "../../core-calc/castToState"
-
 local peek = require "../../core-use/peek"
+
+local observe_immediate = require "../../core-graph/observe_immediate"
 
 local SpecialKey = require "./SpecialKey"
 
-local keyCache = {}
+local KEY_CACHE = {}
 
 local function Tag(tag: string): instances.SpecialKey<"Tag">
-	local key = keyCache[tag]
+	local key = KEY_CACHE[tag]
 
-	if not key then
-		key = SpecialKey "Tag" {
-			stage = "self",
-			apply = function(
+	if key == nil then
+		key = SpecialKey(
+			"self",
+			"Tag",
+			function(
 				scope: memory.Scope,
-				instance: Instance,
+				apply_to: Instance,
 				enabled: calc.UsedAs<boolean>
 			)
-				if castToState(enabled) then
-					observe(scope, enabled, function()
-						local value = peek(enabled)
+				observe_immediate(scope, enabled, function()
+					local value = peek(enabled)
 
-						if value == true then
-							instance:AddTag(tag)
-						elseif instance:HasTag(tag) then
-							instance:RemoveTag(tag)
-						end
-					end)
-				end
+					if value == true then
+						apply_to:AddTag(tag)
+					elseif apply_to:HasTag(tag) then
+						apply_to:RemoveTag(tag)
+					end
+				end)
+			end
+		)
 
-				if peek(enabled) then
-					instance:AddTag(tag)
-				end
-			end,
-		}
-
-		keyCache[tag] = key
+		KEY_CACHE[tag] = key
 	end
 
 	return key

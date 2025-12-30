@@ -1,14 +1,16 @@
 local calc = require "../core-calc/types"
 
-local castToState = require "../core-calc/castToState"
+local cast_to_state = require "../core-calc/cast_to_state"
 
 local evaluate = require "../core-graph/evaluate"
 
-local function peek<T>(target: calc.UsedAs<T>): T
-	if castToState(target) then
+local function peek<T>(
+	target: calc.UsedAs<T>
+): T -- should peek error with use_after_destroy on invalid objects?
+	if cast_to_state(target) ~= nil then
 		evaluate(target)
 
-		return target._internalValue :: T
+		return target._internal_value :: T
 	end
 
 	return target :: T

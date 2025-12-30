@@ -1,7 +1,7 @@
 local external = require "./types"
 local logging = require "../core-logging/types"
 
-local formatError = require "../core-logging/formatError"
+local format_error = require "../core-logging/format_error"
 
 local bound_callbacks = {}
 local active_provider: external.ExternalProvider? = nil
@@ -9,27 +9,27 @@ local active_provider: external.ExternalProvider? = nil
 local last_update = os.clock()
 local delta_time = 0
 
-local function logError(message: string, err: logging.Error?, ...: any?): never
-	error(formatError(message, err, ...), 0)
+local function log_error(message: string, err: logging.Error?, ...: any?): never
+	error(format_error(message, err, ...), 0)
 end
 
 return table.freeze {
-	setProvider = function(new_provider: external.ExternalProvider?)
+	set_provider = function(new_provider: external.ExternalProvider?)
 		local old_provider = active_provider
 
 		if old_provider ~= nil then
-			old_provider.stopScheduler()
+			old_provider.stop_scheduler()
 		end
 
-		if new_provider then
-			new_provider.startScheduler()
+		if new_provider ~= nil then
+			new_provider.start_scheduler()
 		end
 
 		active_provider = new_provider
 
 		return old_provider
 	end,
-	bindToUpdateStep = function(callback: (now: number) -> ()): () -> ()
+	bind_to_update_step = function(callback: (now: number) -> ()): () -> ()
 		local unique_identifier = {}
 		bound_callbacks[unique_identifier] = callback
 
@@ -37,7 +37,7 @@ return table.freeze {
 			bound_callbacks[unique_identifier] = nil
 		end
 	end,
-	performUpdateStep = function(): ()
+	perform_update_step = function(): ()
 		local now = os.clock()
 
 		delta_time = now - last_update
@@ -48,61 +48,61 @@ return table.freeze {
 		end
 	end,
 
-	getDeltaTime = function(): number
+	get_delta_time = function(): number
 		return delta_time
 	end,
-	getLastUpdate = function(): number
+	get_last_update = function(): number
 		return last_update
 	end,
 
-	doTaskImmediate = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
-		if not active_provider then
-			logError(external.missingProvider)
+	do_task_immediate = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
+		if active_provider == nil then
+			log_error(external.missing_provider)
 		end
 
-		return active_provider.doTaskImmediate(resume, ...)
+		return active_provider.do_task_immediate(resume, ...)
 	end,
-	doTaskDeferred = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
-		if not active_provider then
-			logError(external.missingProvider)
+	do_task_deferred = function<A...>(resume: (A...) -> () | thread, ...: A...): thread?
+		if active_provider == nil then
+			log_error(external.missing_provider)
 		end
 
-		return active_provider.doTaskDeferred(resume, ...)
+		return active_provider.do_task_deferred(resume, ...)
 	end,
-	doTaskDelayed = function<A...>(
+	do_task_delayed = function<A...>(
 		sec: number,
 		resume: (A...) -> () | thread,
 		...: A...
 	): thread?
-		if not active_provider then
-			logError(external.missingProvider)
+		if active_provider == nil then
+			log_error(external.missing_provider)
 		end
 
-		return active_provider.doTaskDelayed(sec, resume, ...)
+		return active_provider.do_task_delayed(sec, resume, ...)
 	end,
-	cancelTask = function(task: thread): boolean
-		if not active_provider then
-			logError(external.missingProvider)
+	cancel_task = function(task: thread): boolean
+		if active_provider == nil then
+			log_error(external.missing_provider)
 		end
 
-		return active_provider.cancelTask(task)
+		return active_provider.cancel_task(task)
 	end,
 
-	logError = logError,
-	logErrorNonFatal = function(message: string, err: logging.Error?, ...: any?)
-		local formatted_message = formatError(message, err, ...)
+	log_error = log_error,
+	log_error_nonfatal = function(message: string, err: logging.Error?, ...: any?)
+		local formatted_message = format_error(message, err, ...)
 
-		if active_provider then
-			active_provider.logErrorNonFatal(formatted_message)
+		if active_provider ~= nil then
+			active_provider.log_error_nonfatal(formatted_message)
 		else
 			print(formatted_message)
 		end
 	end,
-	logWarn = function(message: string, ...: any?)
-		local formatted_message = formatError(message, debug.traceback(nil, 2), ...)
+	log_warn = function(message: string, ...: any?)
+		local formatted_message = format_error(message, debug.traceback(nil, 2), ...)
 
-		if active_provider then
-			active_provider.logWarn(formatted_message)
+		if active_provider ~= nil then
+			active_provider.log_warn(formatted_message)
 		else
 			print(formatted_message)
 		end

@@ -1,26 +1,26 @@
 local memory = require "../core-memory/types"
 
 export type ExternalProvider = {
-	startScheduler: () -> (),
-	stopScheduler: () -> (),
+	start_scheduler: () -> (),
+	stop_scheduler: () -> (),
 
-	logErrorNonFatal: (message: string) -> (),
-	logWarn: (message: string) -> (),
+	log_error_nonfatal: (message: string) -> (),
+	log_warn: (message: string) -> (),
 
-	doTaskImmediate: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
-	doTaskDeferred: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
-	doTaskDelayed: <A...>(sec: number, resume: (A...) -> () | thread, A...) -> thread?,
-	cancelTask: (task: thread) -> boolean,
+	do_task_immediate: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
+	do_task_deferred: <A...>(resume: (A...) -> () | thread, A...) -> thread?,
+	do_task_delayed: <A...>(sec: number, resume: (A...) -> () | thread, A...) -> thread?,
+	cancel_task: (task: thread) -> boolean,
 }
 
 export type ExternalDebugger = {
-	startDebugging: () -> (),
-	stopDebugging: () -> (),
+	start_debugging: () -> (),
+	stop_debugging: () -> (),
 
-	trackScope: (scope: memory.Scope) -> (),
-	untrackScope: (scope: memory.Scope) -> (),
+	track_scope: (scope: memory.Scope) -> (),
+	untrack_scope: (scope: memory.Scope) -> (),
 }
 
 return {
-	missingProvider = "ConFusion is not connected to an external provider.",
+	missing_provider = "ConFusion is not connected to an external provider.",
 }

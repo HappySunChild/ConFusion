@@ -2,64 +2,65 @@ local graph = require "./types"
 
 local External = require "../core-external/External"
 
-local xtypeof = require "../xtypeof"
+local cast_to_graph = require "./cast_to_graph"
+local xtypeof = require "./xtypeof"
 
-local castToGraph = require "./castToGraph"
+local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
+	if cast_to_graph(target) == nil then
+		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(target))
 
-local function evaluate(target: graph.GraphObject, forceComputation: boolean?)
-	if not castToGraph(target) then
-		return External.logErrorNonFatal(graph.invalidEvaluateType, nil, xtypeof(target))
+		return
 	end
 
 	if target.validity == "busy" then
-		return External.logError(graph.infiniteLoop)
+		External.log_error(graph.infinite_loop)
 	end
 
-	local firstEvaluation = target._lastChange == nil or target._lastCompute == nil
-	local isInvalid = target.validity == "invalid"
+	local first_evaluation = target._last_change == nil or target._last_compute == nil
+	local is_invalid = target.validity == "invalid"
 
-	if firstEvaluation or isInvalid or forceComputation then
-		local needsComputation = firstEvaluation or forceComputation
-
-		-- check if computation is actually needed
-		if not needsComputation then
-			for dependency in target._using do
-				evaluate(dependency, false)
-
-				if dependency._lastChange > target._lastCompute then
-					needsComputation = true
-
-					break
-				end
-			end
-		end
-
-		local targetMeaningfullyChanged = false
-
-		if needsComputation then
-			-- remove dependencies
-			for dependency in target._using do
-				dependency._users[target] = nil
-				target._using[dependency] = nil
-			end
-
-			target.validity = "busy"
-
-			targetMeaningfullyChanged = target:_evaluate() or firstEvaluation
-
-			target._lastCompute = os.clock()
-		end
-
-		if targetMeaningfullyChanged then
-			target._lastChange = os.clock()
-		end
-
-		target.validity = "valid"
-
-		return targetMeaningfullyChanged
+	if not (first_evaluation or is_invalid or force_computation) then
+		return false
 	end
 
-	return false
+	local needs_computation = first_evaluation or force_computation
+
+	-- check if computation is actually needed
+	if not needs_computation then
+		for dependency in target._using do
+			evaluate(dependency, false)
+
+			if dependency._last_change > target._last_compute then
+				needs_computation = true
+
+				break
+			end
+		end
+	end
+
+	local meaningfully_changed = false
+
+	if needs_computation then
+		-- remove dependencies
+		for dependency in target._using do
+			dependency._users[target] = nil
+			target._using[dependency] = nil
+		end
+
+		target.validity = "busy"
+
+		meaningfully_changed = target:_evaluate() or first_evaluation
+
+		target._last_compute = os.clock()
+	end
+
+	if meaningfully_changed then
+		target._last_change = os.clock()
+	end
+
+	target.validity = "valid"
+
+	return meaningfully_changed
 end
 
 return evaluate

@@ -1,23 +1,22 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type AnimationCurve<V> = (elapsed: number) -> (boolean, V, ...any)
-export type CurveGenerator<V> = (goal: V, start: V, ...any) -> AnimationCurve<V>
+export type AnimationMove<T> = (elapsed: number) -> (boolean, T, ...any)
+export type MoveGenerator<T> = (goal: T, start: T, ...any) -> AnimationMove<T>
 
--- A state object whose value can be animated with a AnimatedMover callback.
-export type Animated<V> = {
-	type: "Animated",
+export type Motion<T> = {
+	kind: "Motion",
 
-	setDynamic: (self: Animated<V>, index: number, value: any) -> (),
-	getDynamic: (self: Animated<V>, index: number) -> any?,
-} & calc.StateObject<V>
-export type AnimatedConstructor = <V>(
+	set_dynamic: (self: Motion<T>, index: number, value: any) -> (),
+	get_dynamic: (self: Motion<T>, index: number) -> any?,
+} & calc.StateObject<T>
+export type MotionConstructor = <T>(
 	scope: memory.Scope,
-	goal: calc.UsedAs<V>,
-	mover: calc.UsedAs<CurveGenerator<V>>
-) -> Animated<V>
+	goal: calc.UsedAs<T>,
+	move_generator: calc.UsedAs<MoveGenerator<T>>
+) -> Motion<T>
 
 return {
-	animatedInvalidGoal = "An Animated was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
-	animatedInvalidMotion = "An Animated encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
+	motion_invalid_goal = "A Motion was given a NaN goal. Ensure NaN isn't being passed anywhere!\nGoal: '%*'",
+	motion_invalid_motion = "A Motion encountered NaN during motion. Ensure NaN/inf isn't being passed anywhere!\nCurrent: '%*'\nGoal: '%*'",
 }

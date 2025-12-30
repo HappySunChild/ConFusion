@@ -7,10 +7,10 @@ local LERP_FUNCTIONS = table.freeze {
 		local a_vec = vector.create(a.R, a.G, a.B)
 		local b_vec = vector.create(b.R, b.G, b.B)
 
-		local ok_from = Oklab.fromSRGBToOklab(a_vec)
-		local ok_target = Oklab.fromSRGBToOklab(b_vec)
+		local ok_from = Oklab.from_srgb_to_oklab(a_vec)
+		local ok_target = Oklab.from_srgb_to_oklab(b_vec)
 
-		local ok_result = Oklab.fromOklabToSRGB(vector.lerp(ok_from, ok_target, alpha))
+		local ok_result = Oklab.from_oklab_to_srgb(vector.lerp(ok_from, ok_target, alpha))
 
 		return Color3.new(ok_result.x, ok_result.y, ok_result.z)
 	end,
@@ -32,9 +32,9 @@ local LERP_FUNCTIONS = table.freeze {
 	UDim2 = function(a: UDim2, b: UDim2, alpha: number)
 		return a:Lerp(b, alpha)
 	end,
-} :: { [string]: <V>(a: V, b: V, alpha: number) -> V }
+} :: { [string]: <T>(a: T, b: T, alpha: number) -> T }
 
-local function lerp<V>(from: V, target: V, alpha: number): V
+local function lerp<T>(from: T, target: T, alpha: number): T
 	local data_type = typeof(from)
 
 	if typeof(target) == data_type then

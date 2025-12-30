@@ -1,18 +1,17 @@
+local calc = require "../core-calc/types"
 local context = require "./types"
-local logging = require "../core-logging/types"
 
 local External = require "../core-external/External"
 
-local parseError = require "../core-logging/parseError"
+local parse_error = require "../core-logging/parse_error"
 
 type Self<T> = context.Contextual<T> & {
 	_default: T,
 	_values: { [thread]: { T } },
 }
 
-local class = table.freeze {
-	class = "Contextual",
-	kind = "contextual",
+local CLASS = table.freeze {
+	type = "Contextual",
 
 	now = function<T>(self: Self<T>): T
 		local thread = coroutine.running()
@@ -24,33 +23,33 @@ local class = table.freeze {
 
 		return value[1]
 	end,
-	executeWith = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
+	execute_with = function<T, R, A...>(self: Self<T>, new: T, callback: (A...) -> R, ...: A...): R
 		local thread = coroutine.running()
 		local original = self._values[thread]
 
 		self._values[thread] = { new }
 
-		local ok, value = xpcall(callback, parseError, ...)
+		local ok, value = xpcall(callback, parse_error, ...)
 
 		self._values[thread] = original
 
 		if not ok then
-			External.logError(logging.callbackError, value)
+			External.log_error(calc.callback_error, value)
 		end
 
 		return value
 	end,
 }
-local METATABLE = table.freeze { __index = class }
+local METATABLE = table.freeze { __index = CLASS }
 local WEAK_KEYS_METATABLE = table.freeze { __mode = "k" }
 
 local function Contextual<T>(default: T): context.Contextual<T>
-	local newContextual: Self<T> = setmetatable({
+	local new_contextual: Self<T> = setmetatable({
 		_default = default,
 		_values = setmetatable({}, WEAK_KEYS_METATABLE),
 	}, METATABLE) :: any
 
-	return newContextual
+	return new_contextual
 end
 
 return Contextual
