@@ -10,16 +10,16 @@ local is_eager = require "./is_eager"
 	as soon as possible. If it is eager, then the node is immediately re-evaluated.
 ]]
 local function mark_dirty(node: graph.GraphObject)
-	if node.validity == "dirty" then
-		return
-	end
-
 	if node.validity == "busy" then
 		External.log_error(graph.infinite_loop)
+	elseif node.validity == "dirty" then
+		return
 	end
 
 	if is_eager(node) then
 		change(node) -- ok i think??
+
+		return
 	end
 
 	node.validity = "dirty"
