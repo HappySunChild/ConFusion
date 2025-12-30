@@ -1,4 +1,4 @@
-local function parseError(message: string)
+local function parse_error(message: string)
 	return {
 		type = "Error",
 		raw = message,
@@ -7,4 +7,4 @@ local function parseError(message: string)
 	}
 end
 
-return parseError
+return parse_error

@@ -2,6 +2,7 @@ local instances = require "../types"
 local memory = require "../../core-memory/types"
 
 local External = require "../../core-external/External"
+
 local SpecialKey = require "./SpecialKey"
 
 local KEY_CACHE = {}
@@ -18,7 +19,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 					pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
 
 				if not ok then
-					External.logError(
+					External.log_error(
 						instances.cannot_connect_change,
 						nil,
 						apply_to.ClassName,

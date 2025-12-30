@@ -3,11 +3,14 @@ local iter_range = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
+
+local Computed = require "../core-calc/Computed"
 local Value = require "../core-calc/Value"
+
 local destroy = require "../core-memory/destroy"
-local parseError = require "../core-logging/parseError"
+
+local parse_error = require "../core-logging/parse_error"
 
 type Self<T> = {
 	_input_index_state: calc.Value<number>,
@@ -18,7 +21,7 @@ local CLASS = table.freeze {
 	invalidate = function<T>(self: Self<T>)
 		self._input_index_state:set(self.input_index)
 	end,
-	useOutput = function<T>(self: Self<T>, use: calc.Use): T
+	use_output = function<T>(self: Self<T>, use: calc.Use): T
 		return use(self._output_value_state)
 	end,
 }
@@ -35,13 +38,16 @@ local function RangePair<S, T>(
 		function(use: calc.Use, calc_scope: memory.Scope<S>)
 			local input_index = use(input_index_state)
 			local ok, output_value =
-				xpcall(processor, parseError, use, calc_scope, input_index)
+				xpcall(processor, parse_error, use, calc_scope, input_index)
 
 			if ok then
 				return output_value
 			end
 
-			External.logErrorNonFatal(calc.callback_error, output_value :: logging.Error)
+			External.log_error_nonfatal(
+				calc.callback_error,
+				output_value :: logging.Error
+			)
 
 			destroy(calc_scope)
 

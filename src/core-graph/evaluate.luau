@@ -1,18 +1,19 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-local castToGraph = require "./castToGraph"
-local xtypeof = require "../xtypeof"
+
+local cast_to_graph = require "./cast_to_graph"
+local xtypeof = require "./xtypeof"
 
 local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
-	if castToGraph(target) == nil then
-		External.logErrorNonFatal(graph.invalid_evaluate_type, nil, xtypeof(target))
+	if cast_to_graph(target) == nil then
+		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(target))
 
 		return
 	end
 
 	if target.validity == "busy" then
-		External.logError(graph.infinite_loop)
+		External.log_error(graph.infinite_loop)
 	end
 
 	local first_evaluation = target._last_change == nil or target._last_compute == nil

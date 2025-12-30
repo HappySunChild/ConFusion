@@ -3,13 +3,15 @@ local iter = require "../iter/types"
 local iter_range = require "./types"
 local memory = require "../core-memory/types"
 
-local RangePair = require "./RangePair"
-local castToState = require "../core-calc/castToState"
-local depend = require "../core-graph/depend"
-local deriveScope = require "../core-memory/deriveScope"
-local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
 local peek = require "../core-use/peek"
+
+local depend = require "../core-graph/depend"
+
+local derive_scope = require "../core-memory/derive_scope"
+local destroy = require "../core-memory/destroy"
+local generic_destroy = require "../core-memory/generic_destroy"
+
+local RangePair = require "./RangePair"
 
 type Self<S, V> = {
 	_start: calc.UsedAs<number>,
@@ -27,13 +29,13 @@ local CLASS = table.freeze {
 
 	populate = function<S, V>(self: Self<S, V>, use: calc.Use, output: { [number]: V })
 		for index, object in self._pairs do
-			output[index] = object:useOutput(use)
+			output[index] = object:use_output(use)
 		end
 	end,
 	_evaluate = function<S, V>(self: Self<S, V>)
-		depend(self, castToState(self._start))
-		depend(self, castToState(self._finish))
-		depend(self, castToState(self._step))
+		depend(self, self._start)
+		depend(self, self._finish)
+		depend(self, self._step)
 
 		local outer_scope = self.scope
 
@@ -65,7 +67,7 @@ local CLASS = table.freeze {
 
 			-- create a new object if none are available
 			next_pairs[new_index] =
-				RangePair(deriveScope(outer_scope), new_index, self._processor)
+				RangePair(derive_scope(outer_scope), new_index, self._processor)
 		end
 
 		-- clean up remaining objects
@@ -77,14 +79,15 @@ local CLASS = table.freeze {
 
 		return true
 	end,
+	destroy = function<S, V>(self: Self<S, V>)
+		for _, object in self._pairs do
+			destroy(object.scope)
+		end
+
+		generic_destroy(self)
+	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
-
-local function auxiliaryDestructor<S, V>(disassembly: Self<S, V>)
-	for _, object in disassembly._pairs do
-		destroy(object.scope)
-	end
-end
 
 local function RangeDisassembly<S, V>(
 	scope: memory.Scope<S>,
@@ -110,7 +113,7 @@ local function RangeDisassembly<S, V>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_disassembly, auxiliaryDestructor))
+	table.insert(scope, new_disassembly)
 
 	return new_disassembly
 end

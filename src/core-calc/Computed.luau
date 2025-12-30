@@ -3,14 +3,18 @@ local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
-local deriveScope = require "../core-memory/deriveScope"
+
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local destructor = require "../core-memory/destructor"
-local dissolvingUse = require "../core-use/dissolvingUse"
-local genericUse = require "../core-use/genericUse"
-local innerScope = require "../core-memory/innerScope"
-local isSimilar = require "./isSimilar"
-local parseError = require "../core-logging/parseError"
+local generic_destroy = require "../core-memory/generic_destroy"
+local inner_scope = require "../core-memory/inner_scope"
+
+local dissolving_use = require "../core-use/dissolving_use"
+local generic_use = require "../core-use/generic_use"
+
+local parse_error = require "../core-logging/parse_error"
+
+local is_similar = require "./is_similar"
 
 type Self<T, S> = calc.Computed<T> & {
 	_inner_scope: memory.Scope<S>?,
@@ -18,18 +22,53 @@ type Self<T, S> = calc.Computed<T> & {
 	_use: calc.Use,
 }
 
-local function auxiliaryDestructor<T, S>(computed: Self<T, S>)
-	destroy(computed._inner_scope)
+local CLASS = table.freeze {
+	type = "State",
+	kind = "Computed",
+	timeliness = "lazy",
 
-	computed._inner_scope = nil
-end
+	_evaluate = function<T, S>(self: Self<T, S>): boolean
+		if self.scope == nil then
+			return false
+		end
 
-local function checkDissolvable<T, S>(
+		local outer_scope = self.scope
+		local inner_scope = derive_scope(outer_scope)
+
+		local ok, new_value = xpcall(self._processor, parse_error, self._use, inner_scope)
+
+		if ok then
+			local similar = is_similar(self._internal_value, new_value)
+
+			destroy(self._inner_scope)
+
+			self._inner_scope = inner_scope
+			self._internal_value = new_value
+
+			return not similar
+		end
+
+		destroy(inner_scope)
+
+		External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
+
+		return false
+	end,
+	destroy = function<T, S>(self: Self<T, S>)
+		destroy(self._inner_scope)
+		self._inner_scope = nil
+
+		generic_destroy(self)
+	end,
+}
+local METATABLE = table.freeze { __index = CLASS }
+
+local function check_dissolvable<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): (boolean, T?)
-	local dissolving_scope = innerScope(scope)
-	local success, value = pcall(processor, dissolvingUse, dissolving_scope)
+	local dissolving_scope = inner_scope(scope)
+	local success, value = pcall(processor, dissolving_use, dissolving_scope)
 
 	if success then
 		-- scope went unused, we can clean it up
@@ -45,50 +84,11 @@ local function checkDissolvable<T, S>(
 	return false
 end
 
-local CLASS = table.freeze {
-	type = "State",
-	kind = "Computed",
-	timeliness = "lazy",
-
-	_evaluate = function<T, S>(self: Self<T, S>): boolean
-		if self.scope == nil then
-			return false
-		end
-
-		local outer_scope = self.scope
-		local inner_scope = deriveScope(outer_scope)
-
-		local ok, new_value = xpcall(self._processor, parseError, self._use, inner_scope)
-
-		if ok then
-			local similar = isSimilar(self._internal_value, new_value)
-
-			if self._inner_scope ~= nil then
-				destroy(self._inner_scope)
-
-				self._inner_scope = nil
-			end
-
-			self._inner_scope = inner_scope
-			self._internal_value = new_value
-
-			return not similar
-		else
-			destroy(inner_scope)
-
-			External.logErrorNonFatal(calc.callback_error, new_value :: logging.Error)
-		end
-
-		return false
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
-
 local function Computed<T, S>(
 	scope: memory.Scope<S>,
 	processor: calc.ComputedProcessor<S, T>
 ): calc.Computed<T>
-	local can_dissolve, constant = checkDissolvable(scope, processor)
+	local can_dissolve, constant = check_dissolvable(scope, processor)
 
 	if can_dissolve then
 		return constant
@@ -106,9 +106,9 @@ local function Computed<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	new_computed._use = genericUse(new_computed)
+	new_computed._use = generic_use(new_computed)
 
-	table.insert(scope, destructor(new_computed, auxiliaryDestructor))
+	table.insert(scope, new_computed)
 
 	return new_computed
 end

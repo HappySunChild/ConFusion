@@ -1,6 +1,6 @@
 local tweens = require "./types"
 
-local function getTweenDuration(info: tweens.TweenInfo)
+local function get_tween_duration(info: tweens.TweenInfo)
 	if info.repeat_count == -1 then
 		return math.huge
 	end
@@ -16,4 +16,4 @@ local function getTweenDuration(info: tweens.TweenInfo)
 	return duration
 end
 
-return getTweenDuration
+return get_tween_duration

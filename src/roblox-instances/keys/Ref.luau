@@ -2,10 +2,12 @@ local calc = require "../../core-calc/types"
 local instances = require "../types"
 
 local External = require "../../core-external/External"
-local SpecialKey = require "./SpecialKey"
-local xtypeof = require "../../xtypeof"
 
-local function applyRef(
+local xtypeof = require "../../core-graph/xtypeof"
+
+local SpecialKey = require "./SpecialKey"
+
+local function apply_ref(
 	instance: Instance,
 	ref: { calc.Value<Instance> } | calc.Value<Instance>
 )
@@ -18,17 +20,17 @@ local function applyRef(
 		return
 	elseif ref_type == "table" then
 		for _, sub_ref in ref do
-			applyRef(sub_ref, instance)
+			apply_ref(sub_ref, instance)
 		end
 
 		return
 	end
 
-	External.logError(instances.expected_type, nil, "Value", ref_type)
+	External.log_error(instances.expected_type, nil, "Value", ref_type)
 end
 
 local Ref = SpecialKey("self", "Ref", function(scope, apply_to: Instance, ref: unknown)
-	applyRef(apply_to, ref)
+	apply_ref(apply_to, ref)
 end)
 
 return Ref

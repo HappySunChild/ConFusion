@@ -4,14 +4,19 @@ local iter_for = require "./types"
 local logging = require "../core-logging/types"
 local memory = require "../core-memory/types"
 
-local Computed = require "../core-calc/Computed"
 local External = require "../core-external/External"
-local ForDisassembly = require "./ForDisassembly"
-local Iter = require "../iter/Iter"
+
+local Computed = require "../core-calc/Computed"
 local Value = require "../core-calc/Value"
-local checkDissolvable = require "./checkDissolvable"
+
 local destroy = require "../core-memory/destroy"
-local parseError = require "../core-logging/parseError"
+
+local parse_error = require "../core-logging/parse_error"
+
+local Iter = require "../iter/Iter"
+
+local ForDisassembly = require "./ForDisassembly"
+local check_dissolvable = require "./check_dissolvable"
 
 type ForPairsComputedPair<IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
 	_input_key_state: calc.Value<IK>,
@@ -20,14 +25,19 @@ type ForPairsComputedPair<IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV
 }
 
 local PAIR_CLASS = table.freeze {
-	invalidateInputKey = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
+	invalidate_input_key = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
 		self._input_key_state:set(self.input_key)
 	end,
-	invalidateInputValue = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
+	invalidate_input_value = function<IK, IV, OK, OV>(self: ForPairsComputedPair<
+		IK,
+		IV,
+		OK,
+		OV
+	>): ()
 		self._input_value_state:set(self.input_value)
 	end,
 
-	useOutputPair = function<IK, IV, OK, OV>(
+	use_output_pair = function<IK, IV, OK, OV>(
 		self: ForPairsComputedPair<IK, IV, OK, OV>,
 		use: calc.Use
 	): (OK, OV)
@@ -63,13 +73,13 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 			local input_key = use(input_key_state)
 			local input_value = use(input_value_state)
 			local ok, output_key, output_value =
-				xpcall(processor, parseError, use, calc_scope, input_key, input_value)
+				xpcall(processor, parse_error, use, calc_scope, input_key, input_value)
 
 			if ok then
 				return { key = output_key, value = output_value }
 			end
 
-			External.logErrorNonFatal(calc.callback_error, output_key :: logging.Error)
+			External.log_error_nonfatal(calc.callback_error, output_key :: logging.Error)
 
 			destroy(calc_scope)
 
@@ -101,7 +111,7 @@ local function ForPairs<S, IK, IV, OK, OV>(
 		OV
 	>
 ): iter.Iter<OK, OV> | { [OK]: OV }
-	local can_dissolve, constant = checkDissolvable(scope, input_table, processor)
+	local can_dissolve, constant = check_dissolvable(scope, input_table, processor)
 
 	if can_dissolve then
 		return constant

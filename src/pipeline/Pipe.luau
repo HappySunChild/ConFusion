@@ -10,7 +10,8 @@ local ForPairs = require "../iter-for/ForPairs"
 local ForValues = require "../iter-for/ForValues"
 local Spring = require "../motion-springs/Spring"
 local Tween = require "../motion-tweens/Tween"
-local innerScope = require "../core-memory/innerScope"
+
+local inner_scope = require "../core-memory/inner_scope"
 
 type Self<S, T> = pipeline.Pipe<S, T> & {
 	_latest: calc.UsedAs<T>,
@@ -47,7 +48,7 @@ local CLASS = table.freeze {
 		return self
 	end,
 
-	forPairs = function<S, IK, IV, OK, OV>(
+	for_pairs = function<S, IK, IV, OK, OV>(
 		self: Self<S, { [IK]: IV }>,
 		processor: iter_for.ForPairsProcessor<
 			unknown,
@@ -61,7 +62,7 @@ local CLASS = table.freeze {
 
 		return self
 	end,
-	forValues = function<S, IK, IV, OV>(
+	for_values = function<S, IK, IV, OV>(
 		self: Self<S, { [IK]: IV }>,
 		processor: iter_for.ForValuesProcessor<S, IV, OV>
 	): Self<S, { [IK]: OV }>
@@ -69,7 +70,7 @@ local CLASS = table.freeze {
 
 		return self
 	end,
-	forKeys = function<S, IK, IV, OK>(
+	for_keys = function<S, IK, IV, OK>(
 		self: Self<S, { [IK]: IV }>,
 		processor: iter_for.ForKeysProcessor<S, IK, OK>
 	): Self<S, { [OK]: IV }>
@@ -89,7 +90,7 @@ local function Pipe<S, T>(
 	initial_value: calc.UsedAs<T>
 ): pipeline.Pipe<S, T>
 	local new_pipe: Self<S, T> = setmetatable({
-		_internal_scope = innerScope(scope),
+		_internal_scope = inner_scope(scope),
 		_latest = initial_value,
 	}, METATABLE) :: any
 

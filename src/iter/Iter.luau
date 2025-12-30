@@ -3,8 +3,10 @@ local iter = require "./types"
 local memory = require "../core-memory/types"
 
 local depend = require "../core-graph/depend"
-local destructor = require "../core-memory/destructor"
-local genericeUse = require "../core-use/genericUse"
+
+local generic_destroy = require "../core-memory/generic_destroy"
+
+local generic_use = require "../core-use/generic_use"
 
 type Self<K, V> = {
 	_use: calc.Use,
@@ -32,6 +34,7 @@ local CLASS = table.freeze {
 
 		return true
 	end,
+	destroy = generic_destroy,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -48,9 +51,9 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 		_disassembly = disassembly,
 	}, METATABLE) :: any
 
-	new_iter._use = genericeUse(new_iter)
+	new_iter._use = generic_use(new_iter)
 
-	table.insert(scope, destructor(new_iter))
+	table.insert(scope, new_iter)
 
 	return new_iter
 end

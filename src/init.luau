@@ -12,16 +12,16 @@ local graph = require "@self/core-graph/types"
 local memory = require "@self/core-memory/types"
 local use = require "@self/core-use/types"
 
-local iter = require "@self/iter/types"
-local iter_for = require "@self/iter-for/types"
-local iter_range = require "@self/iter-range/types"
-
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
 local sequence = require "@self/sequence/types"
+
+local iter = require "@self/iter/types"
+local iter_for = require "@self/iter-for/types"
+local iter_range = require "@self/iter-range/types"
 
 local motion = require "@self/motion/types"
 local springs = require "@self/motion-springs/types"
@@ -34,14 +34,15 @@ local templates = require "@self/roblox-templates/types"
 export type Scope<T = ConFusion> = memory.Scope<T>
 
 export type GraphObject = graph.GraphObject
-
 export type StateObject<T> = calc.StateObject<T>
+export type UsedAs<T> = calc.UsedAs<T>
+
 export type Value<T> = calc.Value<T>
 export type Computed<T> = calc.Computed<T>
 export type Use = calc.Use
-export type UsedAs<T> = calc.UsedAs<T>
 
 export type Iter<K, V> = iter.Iter<K, V>
+
 export type Range = iter_range.Range
 
 export type Motion<T> = motion.Motion<T>
@@ -66,8 +67,8 @@ type ConFusion = {
 
 	-- Core: Memory
 	read scoped: memory.DeriveScope,
-	read deriveScope: memory.DeriveScope,
-	read innerScope: memory.DeriveScope,
+	read derive_scope: memory.DeriveScope,
+	read inner_scope: memory.DeriveScope,
 	read destroy: memory.Destroy,
 	read insert: memory.Insert,
 
@@ -77,7 +78,7 @@ type ConFusion = {
 
 	-- Core: Graph
 	read observe: graph.Observe,
-	read observeImmediate: graph.Observe,
+	read observe_immediate: graph.Observe,
 
 	-- Core: Use
 	read peek: calc.Use,
@@ -141,10 +142,7 @@ type ConFusion = {
 
 	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
-	read OfName: templates.OfChildConstructor,
-	read OfClass: templates.OfClassConstructor,
-	read DescendantOfName: templates.OfChildConstructor,
-	read DescendantOfClass: templates.OfClassConstructor,
+	read QueryDescendants: templates.QueryDescendants,
 
 	-- Roblox: Binds
 	read PropertyOf: binds.PropertyOfConstructor,
@@ -154,9 +152,9 @@ type ConFusion = {
 local External = require "@self/core-external/External"
 
 local RobloxProvider = require "@self/roblox-provider/RobloxProvider"
-External.setProvider(RobloxProvider)
+External.set_provider(RobloxProvider)
 
-return table.freeze {
+local ConFusion = table.freeze {
 	version = table.freeze {
 		major = 0,
 		minor = 4,
@@ -164,8 +162,8 @@ return table.freeze {
 
 	-- Core: Memory
 	scoped = require "@self/core-memory/scoped",
-	deriveScope = require "@self/core-memory/deriveScope",
-	innerScope = require "@self/core-memory/innerScope",
+	derive_scope = require "@self/core-memory/derive_scope",
+	inner_scope = require "@self/core-memory/inner_scope",
 	destroy = require "@self/core-memory/destroy",
 	insert = require "@self/core-memory/insert",
 
@@ -175,7 +173,7 @@ return table.freeze {
 
 	-- Core: Graph
 	observe = require "@self/core-graph/observe",
-	observeImmediate = require "@self/core-graph/observeImmediate",
+	observe_immediate = require "@self/core-graph/observe_immediate",
 
 	-- Core: Use
 	peek = require "@self/core-use/peek",
@@ -239,12 +237,11 @@ return table.freeze {
 
 	-- Roblox: Templates
 	FromTemplate = require "@self/roblox-templates/FromTemplate",
-	OfName = require "@self/roblox-templates/OfName",
-	OfClass = require "@self/roblox-templates/OfClass",
-	DescendantOfName = require "@self/roblox-templates/DescendantOfName",
-	DescendantOfClass = require "@self/roblox-templates/DescendantOfClass",
+	QueryDescendants = require "@self/roblox-templates/QueryDescendants",
 
 	-- Roblox: Binds
 	PropertyOf = require "@self/roblox-binds/PropertyOf",
 	AttributeOf = require "@self/roblox-binds/AttributeOf",
-} :: ConFusion
+}
+
+return ConFusion :: ConFusion

@@ -1,35 +1,36 @@
 local graph = require "./types"
 
 local External = require "../core-external/External"
-local castToGraph = require "./castToGraph"
+
+local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 
-local function fireNodeObservers(target: graph.GraphObject)
-	if target._observers == nil then
+local function fire_node_observers(node: graph.GraphObject)
+	if node._observers == nil then
 		return
 	end
 
-	for _, callback in target._observers do
-		External.doTaskImmediate(callback)
+	for _, callback in node._observers do
+		External.do_task_immediate(callback)
 	end
 end
 
-local function isNodeEager(target: graph.GraphObject): boolean
-	if target.timeliness == "eager" then
+local function is_node_eager(node: graph.GraphObject): boolean
+	if node.timeliness == "eager" then
 		return true
 	end
 
-	if target._observers ~= nil then
-		return next(target._observers) ~= nil
+	if node._observers ~= nil then
+		return next(node._observers) ~= nil
 	end
 
 	return false
 end
 
-local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject }
+local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject }
 	local eager_users: { graph.GraphObject } = {}
 
-	local search_now: { graph.GraphObject } = { target }
+	local search_now: { graph.GraphObject } = { node }
 	local search_next: { graph.GraphObject } = {}
 
 	repeat
@@ -38,7 +39,7 @@ local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject 
 		for _, searching: graph.GraphObject in search_now do
 			for user in searching._users do
 				if user.validity == "busy" then
-					External.logError(graph.infinite_loop)
+					External.log_error(graph.infinite_loop)
 				end
 
 				if user.validity == "valid" then
@@ -48,7 +49,7 @@ local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject 
 
 					table.insert(search_next, user)
 
-					if isNodeEager(user) then
+					if is_node_eager(user) then
 						table.insert(eager_users, user)
 					end
 				end
@@ -68,21 +69,21 @@ local function gatherEagerUsers(target: graph.GraphObject): { graph.GraphObject 
 end
 
 local function change(target: graph.GraphObject)
-	if castToGraph(target) == nil then
-		External.logError(graph.invalid_change_type, nil, typeof(target))
+	if cast_to_graph(target) == nil then
+		External.log_error(graph.invalid_change_type, nil, typeof(target))
 	end
 
 	if not evaluate(target, true) then
 		return
 	end
 
-	local eager_users = gatherEagerUsers(target)
+	local eager_users = gather_eager_users(target)
 
-	fireNodeObservers(target)
+	fire_node_observers(target)
 
 	for _, user: graph.GraphObject in eager_users do
 		if evaluate(user) then
-			fireNodeObservers(user)
+			fire_node_observers(user)
 		end
 	end
 

@@ -2,11 +2,13 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 local motion = require "../motion/types"
 
-local Motion = require "../motion/Motion"
-local packType = require "./packType"
 local peek = require "../core-use/peek"
-local springCoefficients = require "./springCoefficients"
-local unpackType = require "./unpackType"
+
+local Motion = require "../motion/Motion"
+
+local pack_type = require "./pack_type"
+local spring_coefficients = require "./spring_coefficients"
+local unpack_type = require "./unpack_type"
 
 local EPSILON = 0.0001
 
@@ -27,8 +29,8 @@ local function SpringMover<T>(
 
 		active_type = typeof(target_position)
 
-		local start_p = unpackType(initial_position)
-		local target_p = unpackType(target_position)
+		local start_p = unpack_type(initial_position)
+		local target_p = unpack_type(target_position)
 
 		local spring_count = #target_p
 
@@ -49,7 +51,7 @@ local function SpringMover<T>(
 				new_value = initial_position
 			else
 				local pos_pos, pos_vel, vel_pos, vel_vel =
-					springCoefficients(elapsed, peek(damping), peek(speed))
+					spring_coefficients(elapsed, peek(damping), peek(speed))
 
 				local is_moving = false
 
@@ -84,7 +86,7 @@ local function SpringMover<T>(
 				end
 
 				should_sleep = not is_moving
-				new_value = packType(active_type, current_p)
+				new_value = pack_type(active_type, current_p)
 			end
 
 			return should_sleep, new_value, current_v

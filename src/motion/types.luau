@@ -7,8 +7,8 @@ export type MoveGenerator<T> = (goal: T, start: T, ...any) -> AnimationMove<T>
 export type Motion<T> = {
 	kind: "Motion",
 
-	setDynamic: (self: Motion<T>, index: number, value: any) -> (),
-	getDynamic: (self: Motion<T>, index: number) -> any?,
+	set_dynamic: (self: Motion<T>, index: number, value: any) -> (),
+	get_dynamic: (self: Motion<T>, index: number) -> any?,
 } & calc.StateObject<T>
 export type MotionConstructor = <T>(
 	scope: memory.Scope,
