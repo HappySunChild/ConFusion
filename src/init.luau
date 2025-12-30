@@ -23,10 +23,6 @@ local iter = require "@self/iter/types"
 local iter_for = require "@self/iter-for/types"
 local iter_range = require "@self/iter-range/types"
 
-local iter = require "@self/iter/types"
-local iter_for = require "@self/iter-for/types"
-local iter_range = require "@self/iter-range/types"
-
 local motion = require "@self/motion/types"
 local springs = require "@self/motion-springs/types"
 local tweens = require "@self/motion-tweens/types"
