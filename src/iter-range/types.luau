@@ -13,12 +13,8 @@ export type RangeConstructor = (
 	step: calc.UsedAs<number>?
 ) -> Range | { number }
 
-export type RangePair<T> = {
-	scope: memory.Scope<T>?,
-	input_index: number,
-
-	invalidate: (RangePair<T>) -> (),
-	use_output: (RangePair<T>, use: calc.Use) -> T,
+export type RangePair<T> = calc.StateObject<T> & {
+	invalidate_index: (RangePair<T>, new_index: number) -> (),
 }
 
 export type RangeDisassemblyProcessor<S, T> = (
