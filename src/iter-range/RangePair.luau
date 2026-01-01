@@ -12,7 +12,7 @@ local generic_destroy = require "../core-memory/generic_destroy"
 
 local parse_error = require "../core-logging/parse_error"
 
-local change = require "../core-graph/change"
+local mark_dirty = require "../core-graph/mark_dirty"
 
 local generic_use = require "../core-use/generic_use"
 
@@ -38,7 +38,7 @@ local CLASS = table.freeze {
 
 		self._input_index = new_index
 
-		change(self)
+		mark_dirty(self)
 	end,
 
 	_evaluate = function<T, S>(self: Self<T, S>)
@@ -74,7 +74,7 @@ local CLASS = table.freeze {
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
 		destroy(self._inner_scope)
-		self._inner_scope = {}
+		self._inner_scope = nil
 
 		generic_destroy(self)
 	end,
