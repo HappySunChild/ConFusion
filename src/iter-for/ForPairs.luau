@@ -6,47 +6,92 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local Computed = require "../core-calc/Computed"
-local Value = require "../core-calc/Value"
+local is_similar = require "../core-calc/is_similar"
 
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local parse_error = require "../core-logging/parse_error"
+
+local mark_dirty = require "../core-graph/mark_dirty"
+
+local generic_use = require "../core-use/generic_use"
 
 local Iter = require "../iter/Iter"
 
 local ForDisassembly = require "./ForDisassembly"
 local check_dissolvable = require "./check_dissolvable"
 
-type ForPairsComputedPair<IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
-	_input_key_state: calc.Value<IK>,
-	_input_value_state: calc.Value<IV>,
-	_output_pair_state: calc.Computed<{ key: OK, value: OV }>,
+type Self<S, IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
+	_inner_scope: memory.Scope<S>,
+	_processor: iter_for.ForPairsProcessor<S, IK, IV, OK, OV>,
+	_use: calc.Use,
 }
 
-local PAIR_CLASS = table.freeze {
-	invalidate_input_key = function<IK, IV, OK, OV>(self: ForPairsComputedPair<IK, IV, OK, OV>): ()
-		self._input_key_state:set(self.input_key)
-	end,
-	invalidate_input_value = function<IK, IV, OK, OV>(self: ForPairsComputedPair<
-		IK,
-		IV,
-		OK,
-		OV
-	>): ()
-		self._input_value_state:set(self.input_value)
+local CLASS = table.freeze {
+	type = "State",
+	kind = "ComputedPair (ForKeys)",
+
+	invalidate_pair = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>, new_key: IK, new_value: IV)
+		if not is_similar(self._input_key, new_key) then
+			self._input_key = new_key
+
+			mark_dirty(self)
+		end
+
+		if not is_similar(self._input_value, new_value) then
+			self._input_value = new_value
+
+			mark_dirty(self)
+		end
 	end,
 
-	use_output_pair = function<IK, IV, OK, OV>(
-		self: ForPairsComputedPair<IK, IV, OK, OV>,
-		use: calc.Use
-	): (OK, OV)
-		local pair = use(self._output_pair_state)
+	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
+		if self.scope == nil then
+			return false
+		end
 
-		return pair.key, pair.value
+		local inner_scope = derive_scope(self.scope)
+		local ok, new_key, new_value = xpcall(
+			self._processor,
+			parse_error,
+			self._use,
+			inner_scope,
+			self._input_key,
+			self._input_value
+		)
+
+		if not ok then
+			destroy(inner_scope)
+
+			External.log_error_nonfatal(calc.callback_error, new_key :: logging.Error)
+
+			return false
+		end
+
+		destroy(self._inner_scope)
+		self._inner_scope = inner_scope
+
+		local output = self._internal_value
+		local old_key, old_value = output.key, output.value
+
+		output.key, output.value = new_key, new_value
+
+		return not (is_similar(old_key, new_key) or is_similar(old_value, new_value))
+	end,
+	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
+		destroy(self._inner_scope)
+		self._inner_scope = nil
+
+		self._input_key = nil
+		self._input_value = nil
+		self._internal_value = nil
+
+		generic_destroy(self)
 	end,
 }
-local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
@@ -57,45 +102,28 @@ local function ForPairsComputedPair<S, IK, IV, OK, OV>(
 		IK,
 		IV,
 		OK,
-		OV
+		IV
 	>
-): ForPairsComputedPair<
-	IK,
-	IV,
-	OK,
-	OV
->
-	local input_value_state = Value(scope, initial_value)
-	local input_key_state = Value(scope, initial_key)
-	local output_pair_state = Computed(
-		scope,
-		function(use: calc.Use, calc_scope: memory.Scope<S>)
-			local input_key = use(input_key_state)
-			local input_value = use(input_value_state)
-			local ok, output_key, output_value =
-				xpcall(processor, parse_error, use, calc_scope, input_key, input_value)
-
-			if ok then
-				return { key = output_key, value = output_value }
-			end
-
-			External.log_error_nonfatal(calc.callback_error, output_key :: logging.Error)
-
-			destroy(calc_scope)
-
-			return { key = nil, value = nil }
-		end
-	)
-
+)
 	local new_computedpair = setmetatable({
+		created_at = os.clock(),
 		scope = scope,
-		input_key = initial_key,
-		input_value = initial_value,
 
-		_input_key_state = input_key_state,
-		_input_value_state = input_value_state,
-		_output_pair_state = output_pair_state,
-	}, PAIR_METATABLE)
+		_using = {},
+		_users = {},
+
+		_internal_value = { key = nil, value = nil },
+
+		_input_key = initial_key,
+		_input_value = initial_value,
+
+		_inner_scope = nil,
+		_processor = processor,
+	}, METATABLE)
+
+	new_computedpair._use = generic_use(new_computedpair)
+
+	table.insert(scope, new_computedpair)
 
 	return new_computedpair
 end

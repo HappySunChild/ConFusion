@@ -6,37 +6,82 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local Computed = require "../core-calc/Computed"
-local Value = require "../core-calc/Value"
+local is_similar = require "../core-calc/is_similar"
 
+local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
+local generic_destroy = require "../core-memory/generic_destroy"
 
 local parse_error = require "../core-logging/parse_error"
+
+local mark_dirty = require "../core-graph/mark_dirty"
+
+local generic_use = require "../core-use/generic_use"
 
 local Iter = require "../iter/Iter"
 
 local ForDisassembly = require "./ForDisassembly"
 local check_dissolvable = require "./check_dissolvable"
 
-type ForKeysComputedPair<IK, IV, OK> = iter_for.ComputedPair<IK, IV, OK, IV> & {
-	_input_key_state: calc.Value<IK>,
-	_output_key_state: calc.Computed<OK>,
+type Self<S, IK, IV, OK> = iter_for.ComputedPair<IK, IV, OK, IV> & {
+	_inner_scope: memory.Scope<S>,
+	_processor: iter_for.ForValuesProcessor<S, IK, OK>,
+	_use: calc.Use,
 }
 
-local PAIR_CLASS = table.freeze {
-	invalidate_input_key = function<IK, IV, OK>(self: ForKeysComputedPair<IK, IV, OK>): ()
-		self._input_key_state:set(self.input_key)
-	end,
-	invalidate_input_value = function<S, IK, IV, OK>(): () end,
+local CLASS = table.freeze {
+	type = "State",
+	kind = "ComputedPair (ForKeys)",
 
-	use_output_pair = function<IK, IV, OK>(
-		self: ForKeysComputedPair<IK, IV, OK>,
-		use: calc.Use
-	): (OK, IV)
-		return use(self._output_key_state), self.input_value
+	invalidate_pair = function<S, IK, IV, OV>(self: Self<S, IK, IV, OV>, new_key: IK, new_value: IV)
+		self._input_value = new_value
+		self._internal_value.value = new_value
+
+		if not is_similar(self._input_key, new_key) then
+			self._input_key = new_key
+
+			mark_dirty(self)
+		end
+	end,
+
+	_evaluate = function<S, IK, IV, OV>(self: Self<S, IK, IV, OV>)
+		if self.scope == nil then
+			return false
+		end
+
+		local inner_scope = derive_scope(self.scope)
+		local ok, new_key =
+			xpcall(self._processor, parse_error, self._use, inner_scope, self._input_key)
+
+		if not ok then
+			destroy(inner_scope)
+
+			External.log_error_nonfatal(calc.callback_error, new_key :: logging.Error)
+
+			return false
+		end
+
+		destroy(self._inner_scope)
+		self._inner_scope = inner_scope
+
+		local output = self._internal_value
+		local old_key = output.key
+
+		output.key = new_key
+
+		return not is_similar(old_key, new_key)
+	end,
+	destroy = function<S, IK, IV, OV>(self: Self<S, IK, IV, OV>)
+		destroy(self._inner_scope)
+		self._inner_scope = nil
+
+		self._input_key = nil
+		self._input_value = nil
+
+		generic_destroy(self)
 	end,
 }
-local PAIR_METATABLE = table.freeze { __index = PAIR_CLASS }
+local METATABLE = table.freeze { __index = CLASS }
 
 local function ForKeysComputedPair<S, IK, IV, OK>(
 	scope: memory.Scope<S>,
@@ -47,35 +92,26 @@ local function ForKeysComputedPair<S, IK, IV, OK>(
 		IK,
 		OK
 	>
-): ForKeysComputedPair<IK, IV, OK>
-	local input_key_state = Value(scope, initial_key)
-	local output_key_state = Computed(
-		scope,
-		function(use: calc.Use, calc_scope: memory.Scope<S>)
-			local input_key = use(input_key_state)
-			local ok, output_key =
-				xpcall(processor, parse_error, use, calc_scope, input_key)
-
-			if ok then
-				return output_key
-			end
-
-			External.log_error_nonfatal(calc.callback_error, output_key :: logging.Error)
-
-			destroy(calc_scope)
-
-			return nil
-		end
-	)
-
+)
 	local new_computedpair = setmetatable({
+		created_at = os.clock(),
 		scope = scope,
-		input_key = initial_key,
-		input_value = initial_value,
 
-		_input_key_state = input_key_state,
-		_output_key_state = output_key_state,
-	}, PAIR_METATABLE)
+		_using = {},
+		_users = {},
+
+		_internal_value = { key = nil, value = initial_value },
+
+		_input_key = initial_key,
+		_input_value = initial_value,
+
+		_inner_scope = nil,
+		_processor = processor,
+	}, METATABLE)
+
+	new_computedpair._use = generic_use(new_computedpair)
+
+	table.insert(scope, new_computedpair)
 
 	return new_computedpair
 end
