@@ -14,9 +14,6 @@ local destroy = require "../core-memory/destroy"
 local generic_destroy = require "../core-memory/generic_destroy"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
-	_roam_keys: boolean,
-	_roam_values: boolean,
-
 	_input: calc.UsedAs<{ [IK]: IV }>,
 
 	_active_pairs: { [IK]: iter_for.ComputedPair<IK, IV, OK, OV> },
@@ -91,9 +88,6 @@ local CLASS = table.freeze {
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
 		depend(self, self._input)
 
-		local roam_keys = self._roam_keys
-		local roam_values = self._roam_values
-
 		local pending_pairs = table.clone(peek(self._input)) :: { [IK]: IV }
 
 		local old_pairs = self._active_pairs
@@ -109,13 +103,13 @@ local CLASS = table.freeze {
 
 			local new_input_key: IK
 
-			if not roam_keys and pending_pairs[old_input_key] ~= nil then
+			if not pair.roam_keys and pending_pairs[old_input_key] ~= nil then
 				can_reuse = true
 				new_input_key = old_input_key
 			else
 				local claimed_values = {}
 
-				if not roam_values then
+				if not pair.roam_values then
 					for _, other_pair in old_pairs do
 						claimed_values[other_pair._input_value] = true
 					end
@@ -125,7 +119,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not roam_keys and old_pairs[pending_key] ~= nil
+						not pair.roam_keys and old_pairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -133,7 +127,7 @@ local CLASS = table.freeze {
 					if
 						-- "selfless" check
 						-- don't use values that are "claimed" by other objects.
-						not roam_values
+						not pair.roam_values
 						and old_input_value ~= pending_value
 						and claimed_values[pending_value] == true
 					then
@@ -143,7 +137,7 @@ local CLASS = table.freeze {
 					can_reuse = true
 					new_input_key = pending_key
 
-					if roam_values then
+					if pair.roam_values then
 						break
 					end
 
@@ -195,8 +189,6 @@ local METATABLE = table.freeze { __index = CLASS }
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
-	roam_keys: boolean,
-	roam_values: boolean,
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
@@ -210,9 +202,6 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 
 		_users = {},
 		_using = {},
-
-		_roam_keys = roam_keys,
-		_roam_values = roam_values,
 
 		_input = input,
 
