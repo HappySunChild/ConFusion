@@ -13,7 +13,7 @@ local function apply_ref(
 )
 	local ref_type = xtypeof(ref)
 
-	if ref_type == "Value" then
+	if ref_type == "State" and ref.kind == "Value" then
 		ref = ref :: calc.Value<Instance>
 		ref:set(instance)
 

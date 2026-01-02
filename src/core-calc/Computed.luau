@@ -40,21 +40,17 @@ local CLASS = table.freeze {
 		if ok then
 			local similar = is_similar(self._internal_value, new_value)
 
-			if self._inner_scope ~= nil then
-				destroy(self._inner_scope)
-
-				self._inner_scope = nil
-			end
+			destroy(self._inner_scope)
 
 			self._inner_scope = inner_scope
 			self._internal_value = new_value
 
 			return not similar
-		else
-			destroy(inner_scope)
-
-			External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
 		end
+
+		destroy(inner_scope)
+
+		External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
 
 		return false
 	end,

@@ -22,9 +22,9 @@ local CLASS = table.freeze {
 	timeliness = "lazy",
 
 	_evaluate = function(self: Self)
-		depend(self, cast_to_state(self._start))
-		depend(self, cast_to_state(self._finish))
-		depend(self, cast_to_state(self._step))
+		depend(self, self._start)
+		depend(self, self._finish)
+		depend(self, self._step)
 
 		local output = self._internal_value
 
