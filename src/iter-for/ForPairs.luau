@@ -31,7 +31,7 @@ type Self<S, IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
 
 local CLASS = table.freeze {
 	type = "State",
-	kind = "ComputedPair (ForKeys)",
+	kind = "ComputedPair (ForPairs)",
 
 	invalidate_pair = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>, new_key: IK, new_value: IV)
 		if not is_similar(self._input_key, new_key) then
