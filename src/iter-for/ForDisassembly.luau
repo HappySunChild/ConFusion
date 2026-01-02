@@ -96,6 +96,8 @@ local CLASS = table.freeze {
 		for index, pair in old_pairs do
 			old_pairs[index] = nil
 
+			local roam_keys, roam_values = pair.roam_keys, pair.roam_values
+
 			local can_reuse = false
 
 			local old_input_key = pair._input_key
@@ -103,13 +105,13 @@ local CLASS = table.freeze {
 
 			local new_input_key: IK
 
-			if not pair.roam_keys and pending_pairs[old_input_key] ~= nil then
+			if not roam_keys and pending_pairs[old_input_key] ~= nil then
 				can_reuse = true
 				new_input_key = old_input_key
 			else
 				local claimed_values = {}
 
-				if not pair.roam_values then
+				if not roam_values then
 					for _, other_pair in old_pairs do
 						claimed_values[other_pair._input_value] = true
 					end
@@ -119,7 +121,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not pair.roam_keys and old_pairs[pending_key] ~= nil
+						not roam_keys and old_pairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -127,7 +129,7 @@ local CLASS = table.freeze {
 					if
 						-- "selfless" check
 						-- don't use values that are "claimed" by other objects.
-						not pair.roam_values
+						not roam_values
 						and old_input_value ~= pending_value
 						and claimed_values[pending_value] == true
 					then
@@ -137,7 +139,7 @@ local CLASS = table.freeze {
 					can_reuse = true
 					new_input_key = pending_key
 
-					if pair.roam_values then
+					if roam_values then
 						break
 					end
 
@@ -157,8 +159,6 @@ local CLASS = table.freeze {
 			local new_input_value: IV = pending_pairs[new_input_key]
 
 			pending_pairs[new_input_key] = nil
-
-			print("REUSE", old_input_key, old_input_value, new_input_key, new_input_value)
 
 			-- "claim" pair and invalidate with new parameters
 			new_pairs[new_input_key] = pair
