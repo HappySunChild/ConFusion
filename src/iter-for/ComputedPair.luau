@@ -88,7 +88,7 @@ local CLASS = table.freeze {
 
 		output.key, output.value = new_key, new_value
 
-		return not (is_similar(old_key, new_key) or is_similar(old_value, new_value))
+		return not (is_similar(old_key, new_key) and is_similar(old_value, new_value))
 	end,
 	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
 		destroy(self._inner_scope)
