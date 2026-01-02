@@ -2,12 +2,15 @@ local calc = require "../core-calc/types"
 local iter = require "../iter/types"
 local memory = require "../core-memory/types"
 
-export type ComputedPair<IK, IV, OK, OV> = calc.StateObject<{ key: OK, value: OV }> & {
+export type ComputedPair<IK, IV, OK, OV> = {
 	_input_key: IK,
 	_input_value: IV,
 
+	roam_keys: boolean,
+	roam_values: boolean,
+
 	invalidate_pair: (ComputedPair<IK, IV, OK, OV>, new_key: IK, new_value: IV) -> (),
-}
+} & calc.StateObject<{ key: OK, value: OV }>
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
