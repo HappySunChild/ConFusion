@@ -32,7 +32,7 @@ local CLASS = table.freeze {
 	timeliness = "lazy",
 
 	invalidate_index = function<T, S>(self: Self<T, S>, new_index: number)
-		if is_similar(new_index, self._internal_value) then
+		if is_similar(self._input_index, new_index) then
 			return
 		end
 
@@ -55,22 +55,25 @@ local CLASS = table.freeze {
 			self._input_index
 		)
 
-		if ok then
-			destroy(self._inner_scope)
+		if not ok then
+			destroy(inner_scope)
 
-			local old_value = self._internal_value
+			External.log_error_nonfatal(
+				calc.callback_error,
+				output_value :: logging.Error
+			)
 
-			self._internal_value = output_value
-			self._inner_scope = inner_scope
-
-			return not is_similar(old_value, output_value)
+			return false
 		end
 
-		destroy(inner_scope)
+		destroy(self._inner_scope)
+		self._inner_scope = inner_scope
 
-		External.log_error_nonfatal(calc.callback_error, output_value :: logging.Error)
+		local old_value = self._internal_value
 
-		return false
+		self._internal_value = output_value
+
+		return not is_similar(old_value, output_value)
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
 		destroy(self._inner_scope)
