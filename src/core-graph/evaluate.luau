@@ -5,6 +5,12 @@ local External = require "../core-external/External"
 local cast_to_graph = require "./cast_to_graph"
 local xtypeof = require "./xtypeof"
 
+--[[
+	Evaluates the graph object if necessary, so that it is up to date.
+	Returns `true` if it meaningfully changed.
+
+	https://fluff.blog/2024/04/16/monotonic-painting.html
+]]
 local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
 	if cast_to_graph(target) == nil then
 		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(target))
@@ -17,13 +23,15 @@ local function evaluate(target: graph.GraphObject, force_computation: boolean?):
 	end
 
 	local first_evaluation = target._last_change == nil or target._last_compute == nil
-	local is_invalid = target.validity == "invalid"
+	local is_invalid = target.validity == "invalid" or target.validity == "dirty"
 
 	if not (first_evaluation or is_invalid or force_computation) then
 		return false
 	end
 
-	local needs_computation = first_evaluation or force_computation
+	local needs_computation = force_computation
+		or first_evaluation
+		or target.validity == "dirty"
 
 	-- check if computation is actually needed
 	if not needs_computation then

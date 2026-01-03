@@ -14,11 +14,11 @@ local destroy = require "../core-memory/destroy"
 local generic_destroy = require "../core-memory/generic_destroy"
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
-	_roam_keys: boolean,
-	_roam_values: boolean,
-
 	_input: calc.UsedAs<{ [IK]: IV }>,
-	_computedpairs: { [IK]: iter_for.ComputedPair<IK, IV, OK, OV> },
+
+	_active_pairs: { [IK]: iter_for.ComputedPair<IK, IV, OK, OV> },
+	_pair_scope: memory.Scope<S>,
+
 	_constructor: (
 		memory.Scope<S>,
 		initial_key: IK,
@@ -40,8 +40,9 @@ local CLASS = table.freeze {
 		local max_array_index = -math.huge
 		local has_holes = false
 
-		for _, computedpair in self._computedpairs do
-			local output_key: OK?, output_value: OV? = computedpair:use_output_pair(use)
+		for _, pair in self._active_pairs do
+			local pair_output = use(pair)
+			local output_key, output_value = pair_output.key, pair_output.value
 
 			if output_key == nil or output_value == nil then
 				has_holes = true
@@ -51,8 +52,8 @@ local CLASS = table.freeze {
 					iter.for_key_collision,
 					nil,
 					output_key,
-					computedpair.input_key,
-					computedpair.input_value,
+					pair.input_key,
+					pair.input_value,
 					output_key,
 					output_value
 				)
@@ -87,23 +88,22 @@ local CLASS = table.freeze {
 	_evaluate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
 		depend(self, self._input)
 
-		local roam_keys = self._roam_keys
-		local roam_values = self._roam_values
-
 		local pending_pairs = table.clone(peek(self._input)) :: { [IK]: IV }
 
-		local old_computedpairs = self._computedpairs
-		local new_computedpairs = {}
+		local old_pairs = self._active_pairs
+		local new_pairs = {}
 
-		for index, computedpair in old_computedpairs do
-			old_computedpairs[index] = nil
+		for index, pair in old_pairs do
+			old_pairs[index] = nil
 
-			local old_input_key = computedpair.input_key
-			local old_input_value = computedpair.input_value
-
-			local new_input_key: IK
+			local roam_keys, roam_values = pair.roam_keys, pair.roam_values
 
 			local can_reuse = false
+
+			local old_input_key = pair._input_key
+			local old_input_value = pair._input_value
+
+			local new_input_key: IK
 
 			if not roam_keys and pending_pairs[old_input_key] ~= nil then
 				can_reuse = true
@@ -112,8 +112,8 @@ local CLASS = table.freeze {
 				local claimed_values = {}
 
 				if not roam_values then
-					for _, other_computedpair in old_computedpairs do
-						claimed_values[other_computedpair.input_value] = true
+					for _, other_pair in old_pairs do
+						claimed_values[other_pair._input_value] = true
 					end
 				end
 
@@ -121,7 +121,7 @@ local CLASS = table.freeze {
 					if
 						-- "predict" that this key is going to be reused by another existing object that is
 						-- expecting it to be available. if it is going to be reused, then don't.
-						not roam_keys and old_computedpairs[pending_key] ~= nil
+						not roam_keys and old_pairs[pending_key] ~= nil
 					then
 						continue
 					end
@@ -149,9 +149,9 @@ local CLASS = table.freeze {
 				end
 			end
 
-			-- cleanup computed pairs that can't be reused
+			-- cleanup pairs that can't be reused
 			if not can_reuse then
-				destroy(computedpair.scope)
+				pair:destroy()
 
 				continue
 			end
@@ -159,36 +159,28 @@ local CLASS = table.freeze {
 			local new_input_value: IV = pending_pairs[new_input_key]
 
 			pending_pairs[new_input_key] = nil
-			new_computedpairs[new_input_key] = computedpair
 
-			if old_input_key ~= new_input_key then
-				computedpair.input_key = new_input_key
-				computedpair:invalidate_input_key()
-			end
-
-			if old_input_value ~= new_input_value then
-				computedpair.input_value = new_input_value
-				computedpair:invalidate_input_value()
-			end
+			-- "claim" pair and invalidate with new parameters
+			new_pairs[new_input_key] = pair
+			pair:invalidate_pair(new_input_key, new_input_value)
 		end
 
-		local outer_scope = self.scope
+		local pair_scope = self._pair_scope
 		local pair_constructor = self._constructor
 
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			new_computedpairs[pending_key] =
-				pair_constructor(derive_scope(outer_scope), pending_key, pending_value)
+			new_pairs[pending_key] =
+				pair_constructor(pair_scope, pending_key, pending_value)
 		end
 
-		self._computedpairs = new_computedpairs
+		self._active_pairs = new_pairs
 
 		return true
 	end,
 	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		for _, computedpair in self._computedpairs do
-			destroy(computedpair.scope)
-		end
+		destroy(self._pair_scope)
+		self._pair_scope = nil
 
 		generic_destroy(self)
 	end,
@@ -197,8 +189,6 @@ local METATABLE = table.freeze { __index = CLASS }
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
-	roam_keys: boolean,
-	roam_values: boolean,
 	input: calc.UsedAs<{ [IK]: IV }>,
 	constructor: (
 		memory.Scope<S>,
@@ -213,11 +203,11 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_users = {},
 		_using = {},
 
-		_roam_keys = roam_keys,
-		_roam_values = roam_values,
-
 		_input = input,
-		_computedpairs = {},
+
+		_active_pairs = {},
+		_pair_scope = derive_scope(scope),
+
 		_constructor = constructor,
 	}, METATABLE) :: any
 

@@ -4,6 +4,7 @@ local External = require "../core-external/External"
 
 local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
+local is_eager = require "./is_eager"
 
 local function fire_node_observers(node: graph.GraphObject)
 	if node._observers == nil then
@@ -13,18 +14,6 @@ local function fire_node_observers(node: graph.GraphObject)
 	for _, callback in node._observers do
 		External.do_task_immediate(callback)
 	end
-end
-
-local function is_node_eager(node: graph.GraphObject): boolean
-	if node.timeliness == "eager" then
-		return true
-	end
-
-	if node._observers ~= nil then
-		return next(node._observers) ~= nil
-	end
-
-	return false
 end
 
 local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject }
@@ -49,7 +38,7 @@ local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject 
 
 					table.insert(search_next, user)
 
-					if is_node_eager(user) then
+					if is_eager(user) then
 						table.insert(eager_users, user)
 					end
 				end
@@ -68,6 +57,13 @@ local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject 
 	return eager_users
 end
 
+--[[
+	Prompts a graph node to be re-evaluated. If it meaningfully
+	changes, then dependents will be marked invalid and will have to be
+	re-evaluated at a later point (or immediately if it is eager).
+
+	https://fluff.blog/2024/04/16/monotonic-painting.html
+]]
 local function change(target: graph.GraphObject)
 	if cast_to_graph(target) == nil then
 		External.log_error(graph.invalid_change_type, nil, typeof(target))
@@ -86,8 +82,6 @@ local function change(target: graph.GraphObject)
 			fire_node_observers(user)
 		end
 	end
-
-	return true
 end
 
 return change
