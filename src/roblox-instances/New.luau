@@ -4,7 +4,6 @@ local memory = require "../core-memory/types"
 local External = require "../core-external/External"
 
 local Hydrate = require "./Hydrate"
-local default_properties = require "./default_properties"
 
 local function New(
 	scope: memory.Scope,
@@ -14,14 +13,6 @@ local function New(
 
 	if not success then
 		External.log_error(instances.cannot_create_class, nil, class_name)
-	end
-
-	local default_class_properties = default_properties[class_name]
-
-	if default_class_properties ~= nil then
-		for key, value in default_class_properties do
-			new_instance[key] = value
-		end
 	end
 
 	return Hydrate(scope, new_instance)

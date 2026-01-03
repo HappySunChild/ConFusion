@@ -29,6 +29,7 @@ local tweens = require "@self/motion-tweens/types"
 
 local binds = require "@self/roblox-binds/types"
 local instances = require "@self/roblox-instances/types"
+local stylesheets = require "@self/roblox-stylesheets/types"
 local templates = require "@self/roblox-templates/types"
 
 export type Scope<T = ConFusion> = memory.Scope<T>
@@ -140,6 +141,16 @@ type ConFusion = {
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
 
+	-- Roblox: Stylesheets
+	read StyleRule: stylesheets.StyleRuleConstructor,
+	read StyleSheet: stylesheets.StyleSheetConstructor,
+
+	read Default: instances.SpecialKey<"Default">,
+	read StyleDerives: instances.SpecialKey<"StyleDerives">,
+	read StyleRules: instances.SpecialKey<"StyleRules">,
+	read StyleProperties: instances.SpecialKey<"StyleProperties">,
+	read StyleLink: instances.SpecialKey<"StyleLink">,
+
 	-- Roblox: Templates
 	read FromTemplate: templates.FromTemplateConstructor,
 	read QueryDescendants: templates.QueryDescendants,
@@ -234,6 +245,16 @@ local ConFusion = table.freeze {
 	Out = require "@self/roblox-instances/keys/Out",
 	OnEvent = require "@self/roblox-instances/keys/OnEvent",
 	OnChange = require "@self/roblox-instances/keys/OnChange",
+
+	-- Roblox: Stylesheets
+	StyleRule = require "@self/roblox-stylesheets/StyleRule",
+	StyleSheet = require "@self/roblox-stylesheets/StyleSheet",
+
+	Default = require "@self/roblox-stylesheets/keys/Default",
+	StyleDerives = require "@self/roblox-stylesheets/keys/StyleDerives",
+	StyleRules = require "@self/roblox-stylesheets/keys/StyleRules",
+	StyleProperties = require "@self/roblox-stylesheets/keys/StyleProperties",
+	StyleLink = require "@self/roblox-stylesheets/keys/StyleLink",
 
 	-- Roblox: Templates
 	FromTemplate = require "@self/roblox-templates/FromTemplate",
