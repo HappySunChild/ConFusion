@@ -65,13 +65,13 @@ local CLASS = table.freeze {
 	timeliness = "eager",
 
 	set_dynamic = function<T>(self: Self<T>, index: number, value: any)
-		self._active_dynamics[index] = value
+		self._dynamics[index] = value
 		self._regenerate = true
 
 		change(self)
 	end,
 	get_dynamic = function<T>(self: Self<T>, index: number)
-		return self._active_dynamics[index]
+		return self._dynamics[index]
 	end,
 
 	_evaluate = function<T>(self: Self<T>)
