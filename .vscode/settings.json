@@ -22,6 +22,6 @@
 		"roblox-provider": "../../../../custom-icons/folder-roblox",
 		"roblox-stylesheets": "../../../../custom-icons/folder-roblox"
 	},
-	"luau-lsp.sourcemap.rojoProjectFile": "default.project.json",
+	"luau-lsp.sourcemap.rojoProjectFile": "dev.project.json",
 	"luau-lsp.platform.type": "roblox"
 }
