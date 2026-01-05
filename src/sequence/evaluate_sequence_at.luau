@@ -1,6 +1,6 @@
 local calc = require "../core-calc/types"
 
-local lerp = require "../motion-tweens/lerp"
+local lerp = require "../lerp/lerp"
 
 local function find_bounding_keys(
 	eval_alpha: number,
