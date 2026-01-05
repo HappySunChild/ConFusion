@@ -1,6 +1,6 @@
 local calc = require "../core-calc/types"
 
-local lerp = require "../lerp/lerp"
+local lerp_type = require "../lerp/lerp_type"
 
 local function find_bounding_keys(
 	eval_alpha: number,
@@ -45,7 +45,7 @@ local function evaluate_sequence_at<T>(
 	if prev_time ~= nil and next_time ~= nil then -- both bounding keys are present
 		local intermediate_alpha = (eval_alpha - prev_time) / (next_time - prev_time)
 
-		return lerp(prev_value, next_value, intermediate_alpha)
+		return lerp_type(prev_value, next_value, intermediate_alpha)
 	elseif next_time == nil then -- open ended towards positive infinity
 		return prev_value
 	elseif prev_time == nil then -- open ended towards negative infinity

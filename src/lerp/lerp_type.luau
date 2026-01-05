@@ -1,6 +1,6 @@
 local Oklab = require "../colour/Oklab"
 
-local function inline_lerp<T>(a: T, b: T, alpha: number): T
+local function lerp_type<T>(a: T, b: T, alpha: number): T
 	local data_type = typeof(a)
 
 	if type(b) == data_type then
@@ -38,4 +38,4 @@ local function inline_lerp<T>(a: T, b: T, alpha: number): T
 	return if alpha < 0.5 then a else b
 end
 
-return inline_lerp
+return lerp_type
