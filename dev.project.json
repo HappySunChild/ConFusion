@@ -10,10 +10,6 @@
 				"ConFusion": {
 					"$path": "src"
 				}
-			},
-			"Shared": {
-				"$ignoreUnknownInstances": true,
-				"$path": "tests/shared"
 			}
 		},
 		"StarterPlayer": {
@@ -22,8 +18,8 @@
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
 				"$ignoreUnknownInstances": true,
-				"Demos": {
-					"$path": "tests/demos"
+				"devtests": {
+					"$path": "dev-tests/roblox"
 				}
 			}
 		}
