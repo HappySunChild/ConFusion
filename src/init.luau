@@ -201,8 +201,8 @@ local ConFusion = table.freeze {
 	-- Safe
 	Safe = require "@self/safe/Safe",
 
-	-- Sequence
-	Sequence = require "@self/sequence/Sequence",
+	-- Keyframes
+	Keyframes = require "@self/keyframes/Keyframes",
 
 	-- Motion
 	Motion = require "@self/motion/Motion",
