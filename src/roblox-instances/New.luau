@@ -3,13 +3,14 @@ local memory = require "../core-memory/types"
 
 local External = require "../core-external/External"
 
-local Hydrate = require "./Hydrate"
+local apply_properties = require "./apply_properties"
 local default_properties = require "./default_properties"
 
 local function New(
 	scope: memory.Scope,
-	class_name: string
-): (instances.Properties) -> Instance
+	class_name: string,
+	properties: instances.Properties
+): Instance
 	local success, new_instance = pcall(Instance.new, class_name, nil) -- ok
 
 	if not success then
@@ -24,7 +25,11 @@ local function New(
 		end
 	end
 
-	return Hydrate(scope, new_instance)
+	table.insert(scope, new_instance)
+
+	apply_properties(scope, new_instance, properties)
+
+	return new_instance
 end
 
 return New
