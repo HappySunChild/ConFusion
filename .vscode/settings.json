@@ -13,7 +13,7 @@
 		"motion-springs": "animation",
 		"motion-tweens": "animation",
 		"match": "json",
-		"sequence": "input",
+		"keyframes": "input",
 		"predicates": "keys",
 		"safe": "syntax",
 		"roblox-instances": "../../../../custom-icons/folder-roblox",

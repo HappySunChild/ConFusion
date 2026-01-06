@@ -15,9 +15,9 @@ local use = require "@self/core-use/types"
 local async = require "@self/async/types"
 local chrono = require "@self/chrono/types"
 local context = require "@self/context/types"
+local keyframes = require "@self/keyframes/types"
 local pipeline = require "@self/pipeline/types"
 local safe = require "@self/safe/types"
-local sequence = require "@self/sequence/types"
 
 local iter = require "@self/iter/types"
 local iter_for = require "@self/iter-for/types"
@@ -106,8 +106,8 @@ type ConFusion = {
 	-- Safe
 	read Safe: safe.Safe,
 
-	-- Sequence
-	read Sequence: sequence.SequenceConstructor,
+	-- Keyframes
+	read Keyframes: keyframes.KeyframesConstructor,
 
 	-- Motion
 	read Motion: motion.MotionConstructor,
