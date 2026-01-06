@@ -70,8 +70,20 @@ local CLASS = table.freeze {
 
 		change(self)
 	end,
+	set_dynamics = function<T>(self: Self<T>, dynamics: { any }, at_index: number?)
+		table.move(dynamics, 1, #dynamics, at_index or 1, self._dynamics)
+		self._regenerate = true
+
+		change(self)
+	end,
 	get_dynamic = function<T>(self: Self<T>, index: number)
 		return self._dynamics[index]
+	end,
+	get_dynamics = function<T>(self: Self<T>): { any }
+		-- considered cloning, but i don't think it's worth it
+		-- WARNING TO ANYONE USING THIS, DIRECTLY MODIFYING THE DYNAMICS TABLE
+		-- IS VERY MUCH NOT RECOMMENDED, DO NOT DO IT!!!
+		return self._dynamics
 	end,
 
 	_evaluate = function<T>(self: Self<T>)
