@@ -82,7 +82,7 @@ local CLASS = table.freeze {
 	get_dynamics = function<T>(self: Self<T>): { any }
 		-- considered cloning, but i don't think it's worth it
 		-- WARNING TO ANYONE USING THIS, DIRECTLY MODIFYING THE DYNAMICS TABLE
-		-- IS VERY MUCH NOT RECOMMENDED, DO NOT DO IT!!!
+		-- IS VERY MUCH NOT RECOMMENDED, DO NOT DO IT UNLESS YOU KNOW WHAT YOU'RE DOING!!!
 		return self._dynamics
 	end,
 
