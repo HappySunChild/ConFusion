@@ -3,7 +3,7 @@ local memory = require "../core-memory/types"
 
 local change = require "../core-graph/change"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local is_similar = require "./is_similar"
 
@@ -31,7 +31,7 @@ local CLASS = table.freeze {
 	_evaluate = function()
 		return true
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 

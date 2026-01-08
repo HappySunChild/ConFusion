@@ -11,13 +11,13 @@ local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 local evaluate = require "../core-graph/evaluate"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local peek = require "../core-use/peek"
 
 local Timer = require "../chrono/Timer"
 
-type Self<T> = motion.Motion<T> & {
+type Self<T> = {
 	_goal: calc.UsedAs<T>,
 	_generator: calc.UsedAs<motion.MoveGenerator<T>>,
 
@@ -30,7 +30,7 @@ type Self<T> = motion.Motion<T> & {
 	_active_move: motion.AnimationMove<T>,
 
 	_timer: chrono.Timer,
-}
+} & motion.Motion<T>
 
 local function sync_dynamics<T>(
 	motion_obj: Self<T>,
@@ -141,7 +141,7 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 

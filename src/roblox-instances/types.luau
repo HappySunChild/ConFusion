@@ -2,7 +2,7 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
 export type SpecialKeyStage =
-	"self"
+	| "self"
 	| "descendants"
 	| "properties"
 	| "ancestor"
@@ -18,7 +18,7 @@ export type SpecialKey<T = string> = {
 }
 
 export type Properties = { [any]: any }
-export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateObject<Child>
+export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateNode<Child>
 
 export type NewConstructor = (
 	scope: memory.Scope,

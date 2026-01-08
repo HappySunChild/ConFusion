@@ -34,8 +34,8 @@ local confusion = require "./confusion"
 
 export type Scope<T = ConFusionForRoblox> = memory.Scope<T>
 
-export type GraphObject = graph.GraphObject
-export type StateObject<T> = calc.StateObject<T>
+export type GraphNode = graph.GraphNode
+export type StateNode<T> = calc.StateNode<T>
 export type UsedAs<T> = calc.UsedAs<T>
 
 export type Value<T> = calc.Value<T>

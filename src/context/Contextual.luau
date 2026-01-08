@@ -5,10 +5,10 @@ local External = require "../core-external/External"
 
 local parse_error = require "../core-logging/parse_error"
 
-type Self<T> = context.Contextual<T> & {
+type Self<T> = {
 	_default: T,
 	_values: { [thread]: { T } },
-}
+} & context.Contextual<T>
 
 local CLASS = table.freeze {
 	type = "Contextual",

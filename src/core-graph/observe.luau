@@ -21,7 +21,7 @@ end
 ]]
 local function observe(
 	scope: memory.Scope,
-	subject: graph.GraphObject,
+	subject: graph.GraphNode,
 	callback: () -> ()
 ): (() -> ())?
 	if cast_to_graph(subject) == nil then

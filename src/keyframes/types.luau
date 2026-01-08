@@ -1,7 +1,7 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type Keyframes<T> = calc.StateObject<T> & {
+export type Keyframes<T> = calc.StateNode<T> & {
 	type: "State",
 	kind: "Keyframes",
 }

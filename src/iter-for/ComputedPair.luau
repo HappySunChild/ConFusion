@@ -9,7 +9,7 @@ local parse_error = require "../core-logging/parse_error"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local mark_dirty = require "../core-graph/mark_dirty"
 
@@ -98,7 +98,7 @@ local CLASS = table.freeze {
 		self._input_value = nil
 		self._internal_value = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

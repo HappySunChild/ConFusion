@@ -5,7 +5,7 @@ local External = require "../core-external/External"
 
 local change = require "../core-graph/change"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 type Self = chrono.ExternalTime
 
@@ -34,7 +34,7 @@ local CLASS = {
 	destroy = function(self: Self)
 		ALL_TIMERS[self] = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

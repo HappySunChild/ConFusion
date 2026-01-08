@@ -6,7 +6,7 @@ local ExternalDebug = require "../core-external/ExternalDebug"
 local cast_to_graph = require "../core-graph/cast_to_graph"
 
 local function is_scope(value: unknown): boolean
-	return typeof(value) == "table" and rawget(value, 1) ~= nil
+	return typeof(value) == "table" and next(value, #value) == nil
 end
 
 local ACTIVE_TASKS = {}

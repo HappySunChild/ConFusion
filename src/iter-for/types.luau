@@ -10,7 +10,7 @@ export type ComputedPair<IK, IV, OK, OV> = {
 	roam_values: boolean,
 
 	invalidate_pair: (ComputedPair<IK, IV, OK, OV>, new_key: IK, new_value: IV) -> (),
-} & calc.StateObject<{ key: OK, value: OV }>
+} & calc.StateNode<{ key: OK, value: OV }>
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
