@@ -21,7 +21,7 @@ type Configuration<I> = {
 	include: I,
 }
 
-export type ConFusion<I> = {
+export type ConFusion<I = any> = {
 	version: Version,
 
 	-- Core: Memory
@@ -61,7 +61,7 @@ local CORE_CONFUSION = table.freeze {
 	peek = require "./core-use/peek",
 }
 
-local ConFusion = {
+local ConFusion = table.freeze {
 	configure = function<I>(options: Configuration<I>): ConFusion<I>
 		External.set_provider(options.provider)
 		ExternalDebugger.set_debugger(options.debugger)
