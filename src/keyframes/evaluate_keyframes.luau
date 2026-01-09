@@ -17,7 +17,8 @@ local function get_bounding_keys(
 		end
 
 		if
-			keyframe_time >= eval_time and (next_time == nil or keyframe_time < next_time)
+			keyframe_time >= eval_time
+			and (next_time == nil or keyframe_time < next_time)
 		then
 			next_time = keyframe_time
 		end
@@ -26,7 +27,11 @@ local function get_bounding_keys(
 	return prev_time, next_time
 end
 
-local function evaluate_keyframes<T>(eval_time: number, keyframes: { T }, use: calc.Use): T?
+local function evaluate_keyframes<T>(
+	eval_time: number,
+	keyframes: { calc.UsedAs<T> },
+	use: calc.Use
+): T?
 	local prev_time, next_time = get_bounding_keys(eval_time, keyframes)
 
 	if prev_time == next_time and prev_time ~= nil then -- if both times are exactly equal then that means we're exactly on a keyframe

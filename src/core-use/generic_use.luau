@@ -5,7 +5,7 @@ local depend = require "../core-graph/depend"
 
 local peek = require "./peek"
 
-local function generic_use(user: graph.GraphObject): calc.Use
+local function generic_use(user: graph.GraphNode): calc.Use
 	local function use<T>(target: calc.UsedAs<T>): T
 		depend(user, target)
 

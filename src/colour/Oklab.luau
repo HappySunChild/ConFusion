@@ -1,5 +1,6 @@
 local Linear = require "./Linear"
 
+@native
 local function from_linear_to_oklab(lrgb: vector): vector
 	local r, g, b = lrgb.x, lrgb.y, lrgb.z
 
@@ -18,6 +19,7 @@ local function from_linear_to_oklab(lrgb: vector): vector
 	)
 end
 
+@native
 local function from_oklab_to_linear(lab: vector, unclamped: boolean?): vector
 	local L, a, b = lab.x, lab.y, lab.z
 

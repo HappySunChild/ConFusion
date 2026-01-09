@@ -6,7 +6,7 @@ local External = require "../core-external/External"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 local inner_scope = require "../core-memory/inner_scope"
 
 local dissolving_use = require "../core-use/dissolving_use"
@@ -16,11 +16,11 @@ local parse_error = require "../core-logging/parse_error"
 
 local is_similar = require "./is_similar"
 
-type Self<T, S> = calc.Computed<T> & {
+type Self<T, S> = {
 	_inner_scope: memory.Scope<S>?,
 	_processor: calc.ComputedProcessor<S, T>,
 	_use: calc.Use,
-}
+} & calc.Computed<T>
 
 local CLASS = table.freeze {
 	type = "State",
@@ -58,7 +58,7 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

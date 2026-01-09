@@ -4,7 +4,7 @@ local memory = require "../core-memory/types"
 
 local depend = require "../core-graph/depend"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local generic_use = require "../core-use/generic_use"
 
@@ -34,7 +34,7 @@ local CLASS = table.freeze {
 
 		return true
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 

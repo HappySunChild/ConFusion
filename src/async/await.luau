@@ -8,7 +8,7 @@ local cast_to_graph = require "../core-graph/cast_to_graph"
 local observe = require "../core-graph/observe"
 
 -- Pauses the current thread until the subject receives an eager update
-local function await(scope: memory.Scope, subject: graph.GraphObject)
+local function await(scope: memory.Scope, subject: graph.GraphNode)
 	if cast_to_graph(subject) == nil then
 		-- i believe this should error, because if we didn't it would infitely yield a thread
 		-- or cause loops that depend on it to spiral out of control

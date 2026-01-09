@@ -9,7 +9,7 @@ local is_eager = require "./is_eager"
 	Marks a graph node as "dirty", meaning it should be re-evaluated
 	as soon as possible. If it is eager, then the node is immediately re-evaluated.
 ]]
-local function mark_dirty(node: graph.GraphObject)
+local function mark_dirty(node: graph.GraphNode)
 	if node.validity == "busy" then
 		External.log_error(graph.infinite_loop)
 	elseif node.validity == "dirty" then

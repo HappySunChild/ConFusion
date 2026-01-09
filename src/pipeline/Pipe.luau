@@ -13,10 +13,10 @@ local Tween = require "../motion-tweens/Tween"
 
 local inner_scope = require "../core-memory/inner_scope"
 
-type Self<S, T> = pipeline.Pipe<S, T> & {
+type Self<S, T> = {
 	_latest: calc.UsedAs<T>,
 	_internal_scope: memory.Scope<S>,
-}
+} & pipeline.Pipe<S, T>
 
 local CLASS = table.freeze {
 	type = "Pipe",

@@ -10,12 +10,12 @@ local is_similar = require "../core-calc/is_similar"
 
 local evaluate_keyframes = require "./evaluate_keyframes"
 
-type Self<T> = keyframes.Keyframes<T> & {
+type Self<T> = {
 	_alpha: calc.UsedAs<number>,
 	_keyframes: { T },
 
 	_use: calc.Use,
-}
+} & keyframes.Keyframes<T>
 
 local CLASS = table.freeze {
 	type = "State",

@@ -3,11 +3,11 @@ local memory = require "../core-memory/types"
 
 local change = require "../core-graph/change"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
-type Self<T> = instances.AttributeOf<T> & {
+type Self<T> = {
 	_event: RBXScriptConnection,
-}
+} & instances.AttributeOf<T>
 
 local CLASS = table.freeze {
 	type = "State",
@@ -21,7 +21,7 @@ local CLASS = table.freeze {
 	destroy = function<T>(self: Self<T>)
 		self._event:Disconnect()
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

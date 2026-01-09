@@ -9,7 +9,7 @@ local depend = require "../core-graph/depend"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local RangePair = require "./RangePair"
 
@@ -81,7 +81,7 @@ local CLASS = table.freeze {
 		destroy(self._pairs_scope)
 		self._pairs_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

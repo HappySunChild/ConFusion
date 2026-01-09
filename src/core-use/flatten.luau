@@ -2,12 +2,12 @@ local calc = require "../core-calc/types"
 
 local cast_to_state = require "../core-calc/cast_to_state"
 
-local function flatten<T>(use: calc.Use, target: calc.UsedAs<T>): T
-	while cast_to_state(target) ~= nil do
-		target = use(target)
+local function flatten<T>(use: calc.Use, x: calc.UsedAs<T>): T
+	while cast_to_state(x) ~= nil do
+		x = use(x)
 	end
 
-	return target
+	return x
 end
 
 return flatten

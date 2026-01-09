@@ -6,15 +6,15 @@ local ExternalTime = require "./ExternalTime"
 local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local peek = require "../core-use/peek"
 
-type Self = chrono.Timer & {
+type Self = {
 	_paused: boolean,
 	_start: number,
 	_timer: chrono.ExternalTime,
-}
+} & chrono.Timer
 
 local CLASS = table.freeze {
 	type = "State",
@@ -64,7 +64,7 @@ local CLASS = table.freeze {
 
 		return old_value ~= new_value
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 

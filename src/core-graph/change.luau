@@ -6,7 +6,7 @@ local cast_to_graph = require "./cast_to_graph"
 local evaluate = require "./evaluate"
 local is_eager = require "./is_eager"
 
-local function fire_node_observers(node: graph.GraphObject)
+local function fire_node_observers(node: graph.GraphNode)
 	if node._observers == nil then
 		return
 	end
@@ -16,16 +16,16 @@ local function fire_node_observers(node: graph.GraphObject)
 	end
 end
 
-local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject }
-	local eager_users: { graph.GraphObject } = {}
+local function gather_eager_users(node: graph.GraphNode): { graph.GraphNode }
+	local eager_users: { graph.GraphNode } = {}
 
-	local search_now: { graph.GraphObject } = { node }
-	local search_next: { graph.GraphObject } = {}
+	local search_now: { graph.GraphNode } = { node }
+	local search_next: { graph.GraphNode } = {}
 
 	repeat
 		local is_finished = true
 
-		for _, searching: graph.GraphObject in search_now do
+		for _, searching: graph.GraphNode in search_now do
 			for user in searching._users do
 				if user.validity == "busy" then
 					External.log_error(graph.infinite_loop)
@@ -50,7 +50,7 @@ local function gather_eager_users(node: graph.GraphObject): { graph.GraphObject 
 		table.clear(search_next)
 	until is_finished
 
-	table.sort(eager_users, function(x: graph.GraphObject, y: graph.GraphObject)
+	table.sort(eager_users, function(x: graph.GraphNode, y: graph.GraphNode)
 		return x.created_at < y.created_at
 	end)
 
@@ -64,20 +64,20 @@ end
 
 	https://fluff.blog/2024/04/16/monotonic-painting.html
 ]]
-local function change(target: graph.GraphObject)
-	if cast_to_graph(target) == nil then
-		External.log_error(graph.invalid_change_type, nil, typeof(target))
+local function change(node: graph.GraphNode)
+	if cast_to_graph(node) == nil then
+		External.log_error(graph.invalid_change_type, nil, typeof(node))
 	end
 
-	if not evaluate(target, true) then
+	if not evaluate(node, true) then
 		return
 	end
 
-	local eager_users = gather_eager_users(target)
+	local eager_users = gather_eager_users(node)
 
-	fire_node_observers(target)
+	fire_node_observers(node)
 
-	for _, user: graph.GraphObject in eager_users do
+	for _, user: graph.GraphNode in eager_users do
 		if evaluate(user) then
 			fire_node_observers(user)
 		end

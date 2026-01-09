@@ -3,7 +3,7 @@ local graph = require "../core-graph/types"
 --[[
 	Returns `true` if a graph node is eager.
 ]]
-local function is_eager(node: graph.GraphObject): boolean
+local function is_eager(node: graph.GraphNode): boolean
 	if node.timeliness == "eager" then
 		return true
 	end

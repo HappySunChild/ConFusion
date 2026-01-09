@@ -8,7 +8,7 @@ local External = require "../core-external/External"
 local is_similar = require "../core-calc/is_similar"
 
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local parse_error = require "../core-logging/parse_error"
 
@@ -79,7 +79,7 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }

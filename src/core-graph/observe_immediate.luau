@@ -13,7 +13,7 @@ local observe = require "./observe"
 ]]
 local function observe_immediate(
 	scope: memory.Scope,
-	subject: graph.GraphObject,
+	subject: graph.GraphNode,
 	callback: () -> ()
 ): (() -> ())?
 	External.do_task_immediate(callback)

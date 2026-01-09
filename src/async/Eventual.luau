@@ -17,7 +17,7 @@ local evaluate = require "../core-graph/evaluate"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local parse_error = require "../core-logging/parse_error"
 
@@ -31,7 +31,7 @@ type Self<T, S> = async.Eventual<T> & {
 	_is_becoming: boolean,
 	_active_thread: thread?,
 
-	_session_used: { [graph.GraphObject]: true },
+	_session_used: { [graph.GraphNode]: true },
 	_become: (any) -> (),
 	_use: calc.Use,
 }
@@ -108,7 +108,7 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
