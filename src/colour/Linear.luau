@@ -1,3 +1,4 @@
+@native
 local function to_linear(channel: number): number
 	if channel < 0.04045 then
 		return channel / 12.92
@@ -6,6 +7,7 @@ local function to_linear(channel: number): number
 	return ((channel + 0.055) / 1.055) ^ 2.4
 end
 
+@native
 local function to_srgb(channel: number): number
 	if channel <= 0.0031308 then
 		return channel * 12.92
