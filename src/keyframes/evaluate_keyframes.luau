@@ -34,7 +34,11 @@ local function evaluate_keyframes<T>(
 ): T?
 	local prev_time, next_time = get_bounding_keys(eval_time, keyframes)
 
-	if prev_time == next_time and prev_time ~= nil then -- if both times are exactly equal then that means we're exactly on a keyframe
+	if prev_time == nil and next_time == nil then -- neither keys were present, which means no keyframes were defined
+		return nil
+	end
+
+	if prev_time == next_time then -- if both times are exactly equal then that means we're exactly on a keyframe
 		return use(keyframes[eval_time])
 	end
 
@@ -44,13 +48,11 @@ local function evaluate_keyframes<T>(
 		local intermediate_alpha = (eval_time - prev_time) / (next_time - prev_time)
 
 		return lerp_type(prev_value, next_value, intermediate_alpha)
-	elseif next_time == nil then -- open ended towards positive infinity
-		return prev_value
-	elseif prev_time == nil then -- open ended towards negative infinity
-		return next_value
 	end
 
-	return nil -- neither keys were present, which means no keyframes were defined
+	return if next_time == nil
+		then prev_value -- open ended towards infinity
+		else next_value -- open ended towards negative infinity
 end
 
 return evaluate_keyframes
