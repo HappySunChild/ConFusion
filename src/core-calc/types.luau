@@ -4,7 +4,7 @@ local memory = require "../core-memory/types"
 export type StateNode<T> = {
 	type: "State",
 
-	_internal_value: T,
+	_cached_value: T,
 } & graph.GraphNode
 
 export type UsedAs<T> = StateNode<T> | T

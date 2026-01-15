@@ -69,9 +69,9 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = inner_scope
 
-		local old_value = self._internal_value
+		local old_value = self._cached_value
 
-		self._internal_value = output_value
+		self._cached_value = output_value
 
 		return not is_similar(old_value, output_value)
 	end,
@@ -92,7 +92,7 @@ local function RangePair<S, T>(
 	local new_rangepair: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-		_internal_value = nil,
+		_cached_value = nil,
 
 		_using = {},
 		_users = {},

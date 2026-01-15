@@ -26,7 +26,7 @@ local CLASS = table.freeze {
 		depend(self, self._finish)
 		depend(self, self._step)
 
-		local output = self._internal_value
+		local output = self._cached_value
 
 		table.clear(output)
 
@@ -86,7 +86,7 @@ local function Range(
 
 		_using = {},
 		_users = {},
-		_internal_value = {},
+		_cached_value = {},
 
 		_start = start,
 		_finish = finish,

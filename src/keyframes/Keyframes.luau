@@ -29,10 +29,10 @@ local CLASS = table.freeze {
 
 		local use = self._use
 
-		local old_value = self._internal_value
+		local old_value = self._cached_value
 		local new_value = evaluate_keyframes(use(self._alpha), self._keyframes, use)
 
-		self._internal_value = new_value
+		self._cached_value = new_value
 
 		return not is_similar(old_value, new_value)
 	end,

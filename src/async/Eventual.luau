@@ -78,7 +78,7 @@ local CLASS = table.freeze {
 		if self._is_becoming then
 			self._is_becoming = false
 
-			return not is_similar(self._old_value, self._internal_value)
+			return not is_similar(self._old_value, self._cached_value)
 		end
 
 		-- cancel any currently active computations
@@ -90,13 +90,13 @@ local CLASS = table.freeze {
 		-- clear our dependencies, because we're starting a new computation that may not rely on our old dependencies
 		table.clear(self._session_used)
 
-		self._internal_value = self._pending_value
+		self._cached_value = self._pending_value
 		self._old_value = self._pending_value
 
 		-- start computation
 		External.do_task_immediate(handle_eventual_computation, self)
 
-		return not is_similar(self._old_value, self._internal_value)
+		return not is_similar(self._old_value, self._cached_value)
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
 		if self._active_thread ~= nil then
@@ -127,10 +127,10 @@ local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) 
 	end
 
 	local function become(target_value: T)
-		local old_value = eventual._internal_value
+		local old_value = eventual._cached_value
 
 		eventual._old_value = old_value
-		eventual._internal_value = target_value
+		eventual._cached_value = target_value
 
 		if eventual.validity == "busy" then
 			return
@@ -157,7 +157,7 @@ local function Eventual<T, S>(
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = pending_value,
+		_cached_value = pending_value,
 		_pending_value = pending_value,
 		_old_value = nil,
 

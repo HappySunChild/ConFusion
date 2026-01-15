@@ -130,10 +130,10 @@ local CLASS = table.freeze {
 			elapsed = External.get_delta_time()
 		end
 
-		local old_value = self._internal_value :: any
+		local old_value = self._cached_value :: any
 		local new_value, should_sleep = sync_dynamics(self, self._active_move(elapsed))
 
-		self._internal_value = new_value
+		self._cached_value = new_value
 
 		if should_sleep then
 			timer:pause()
@@ -154,7 +154,7 @@ local function Motion<T>(
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
+		_cached_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
 
 		_using = {},
 		_users = {},

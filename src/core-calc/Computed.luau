@@ -38,12 +38,12 @@ local CLASS = table.freeze {
 		local ok, new_value = xpcall(self._processor, parse_error, self._use, inner_scope)
 
 		if ok then
-			local similar = is_similar(self._internal_value, new_value)
+			local similar = is_similar(self._cached_value, new_value)
 
 			destroy(self._inner_scope)
 
 			self._inner_scope = inner_scope
-			self._internal_value = new_value
+			self._cached_value = new_value
 
 			return not similar
 		end
@@ -97,7 +97,7 @@ local function Computed<T, S>(
 	local new_computed: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-		_internal_value = nil,
+		_cached_value = nil,
 
 		_using = {},
 		_users = {},

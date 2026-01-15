@@ -39,12 +39,12 @@ local function AttributeOf<T>(
 
 		_users = {},
 
-		_internal_value = instance:GetAttribute(attribute),
+		_cached_value = instance:GetAttribute(attribute),
 		_event = nil,
 	}, METATABLE) :: any
 
 	new_attribute._event = event:Connect(function()
-		new_attribute._internal_value = instance:GetAttribute(attribute)
+		new_attribute._cached_value = instance:GetAttribute(attribute)
 
 		change(new_attribute)
 	end)

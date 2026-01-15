@@ -16,7 +16,7 @@ local CLASS = {
 	kind = "ExternalTime",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internal_value = External.get_last_update(),
+	_cached_value = External.get_last_update(),
 
 	enable = function(self: Self)
 		ALL_TIMERS[self] = true
@@ -55,7 +55,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 end
 
 External.bind_to_update_step(function(now: number)
-	CLASS._internal_value = now
+	CLASS._cached_value = now
 
 	for timer in ALL_TIMERS do
 		change(timer)

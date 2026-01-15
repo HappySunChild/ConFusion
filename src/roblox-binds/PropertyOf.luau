@@ -52,11 +52,11 @@ local function PropertyOf(
 
 		_users = {},
 
-		_internal_value = instance[property],
+		_cached_value = instance[property],
 		_event = nil,
 	}, METATABLE) :: any
 	new_property._event = event:Connect(function()
-		new_property._internal_value = instance[property]
+		new_property._cached_value = instance[property]
 
 		change(new_property)
 	end)

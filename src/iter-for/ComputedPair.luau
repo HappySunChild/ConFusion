@@ -39,7 +39,7 @@ local CLASS = table.freeze {
 
 	invalidate_pair = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>, new_key: IK, new_value: IV)
 		local old_key, old_value = self._input_key, self._input_value
-		local output = self._internal_value
+		local output = self._cached_value
 
 		self._input_key = new_key
 		self._input_value = new_value
@@ -83,7 +83,7 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = inner_scope
 
-		local output = self._internal_value
+		local output = self._cached_value
 		local old_key, old_value = output.key, output.value
 
 		output.key, output.value = new_key, new_value
@@ -96,7 +96,7 @@ local CLASS = table.freeze {
 
 		self._input_key = nil
 		self._input_value = nil
-		self._internal_value = nil
+		self._cached_value = nil
 
 		destroy_node(self)
 	end,
@@ -124,7 +124,7 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 		_users = {},
 		_using = {},
 
-		_internal_value = { key = nil, value = nil },
+		_cached_value = { key = nil, value = nil },
 
 		_input_key = initial_key,
 		_input_value = initial_value,
