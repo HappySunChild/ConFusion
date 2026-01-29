@@ -96,7 +96,22 @@ local function apply_properties(
 	table.sort(special_keys, sort_keys)
 
 	for _, key: instances.SpecialKey in special_keys do
-		key.apply(scope, instance, n_properties[key])
+		local value = n_properties[key]
+		local ok, err = xpcall(key.apply, parse_error, scope, instance, value)
+
+		if ok then
+			continue
+		end
+
+		External.log_error_nonfatal(
+			instances.specialkey_apply_error,
+			err,
+			key.kind,
+			instance.ClassName,
+			instance.Name,
+			value,
+			key.stage
+		)
 	end
 end
 

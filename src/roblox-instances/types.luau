@@ -43,6 +43,7 @@ return {
 
 	missing_specialkey_stage = "The SpecialKey '%s' is missing a stage property.",
 	invalid_specialkey_stage = "The SpecialKey '%s' has an invalid stage '%s'.",
+	specialkey_apply_error = "The SpecialKey '%s' errored while being applied to %s '%s' with value %* at stage '%s':\nERROR_MESSAGE",
 
 	expected_type = "Expected a %s, got %s.",
 }
