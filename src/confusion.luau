@@ -16,7 +16,7 @@ type Version = {
 
 type Configuration<I> = {
 	version: Version,
-	provider: external.ExternalProvider?,
+	provider: external.ExternalProvider,
 	debugger: external.ExternalDebugger?,
 	include: I,
 }
@@ -68,7 +68,7 @@ local ConFusion = table.freeze {
 
 		local include = options.include
 
-		assert(type(include) == "table", "`export` field should be a table!")
+		assert(type(include) == "table", "`include` field should be a table!")
 
 		local new_confusion = merge(
 			true,
