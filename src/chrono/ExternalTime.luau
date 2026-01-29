@@ -5,7 +5,7 @@ local External = require "../core-external/External"
 
 local change = require "../core-graph/change"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 type Self = chrono.ExternalTime
 
@@ -16,7 +16,7 @@ local CLASS = {
 	kind = "ExternalTime",
 	timeliness = "lazy",
 	_using = table.freeze {},
-	_internal_value = External.get_last_update(),
+	_cached_value = External.get_last_update(),
 
 	enable = function(self: Self)
 		ALL_TIMERS[self] = true
@@ -34,7 +34,7 @@ local CLASS = {
 	destroy = function(self: Self)
 		ALL_TIMERS[self] = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
@@ -55,7 +55,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 end
 
 External.bind_to_update_step(function(now: number)
-	CLASS._internal_value = now
+	CLASS._cached_value = now
 
 	for timer in ALL_TIMERS do
 		change(timer)

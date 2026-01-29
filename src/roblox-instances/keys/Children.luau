@@ -24,7 +24,7 @@ local Children = SpecialKey(
 			old_children, new_children = new_children, old_children
 			old_scopes, new_scopes = new_scopes, old_scopes
 
-			local function process_child(child: instances.Child, name: string?)
+			local function process_child(child: instances.Child)
 				local child_type = typeof(child)
 
 				if child_type == "Instance" then
@@ -37,21 +37,17 @@ local Children = SpecialKey(
 					else
 						old_children[child] = nil
 					end
-
-					if name ~= nil and tonumber(name) == nil then
-						child.Name = name
-					end
 				elseif child_type == "function" then
-					local child_instance = child(apply_to, name)
+					local child_instance = child(apply_to)
 
 					if child_instance then
-						process_child(child_instance, name)
+						process_child(child_instance)
 					end
 				elseif cast_to_state(child) ~= nil then
 					local value = peek(child)
 
 					if value ~= nil then
-						process_child(value, name)
+						process_child(value)
 					end
 
 					local child_scope = old_scopes[child]
@@ -85,12 +81,11 @@ local Children = SpecialKey(
 				instance.Parent = nil
 			end
 
-			table.clear(old_children)
-
 			for _, child_scope in old_scopes do
 				destroy(child_scope)
 			end
 
+			table.clear(old_children)
 			table.clear(old_scopes)
 		end
 

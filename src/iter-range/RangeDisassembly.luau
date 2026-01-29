@@ -9,7 +9,7 @@ local depend = require "../core-graph/depend"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local RangePair = require "./RangePair"
 
@@ -18,7 +18,8 @@ type Self<S, V> = {
 	_finish: calc.UsedAs<number>,
 	_step: calc.UsedAs<number>,
 
-	_pairs: { iter_range.RangePair<V> },
+	_pairs_scope: memory.Scope<S>,
+	_active_pairs: { iter_range.RangePair<V> },
 	_processor: iter_range.RangeDisassemblyProcessor<S, V>,
 } & iter.Disassembly<number, V>
 
@@ -28,8 +29,8 @@ local CLASS = table.freeze {
 	timeliness = "lazy",
 
 	populate = function<S, V>(self: Self<S, V>, use: calc.Use, output: { [number]: V })
-		for index, object in self._pairs do
-			output[index] = object:use_output(use)
+		for index, pair in self._active_pairs do
+			output[index] = use(pair)
 		end
 	end,
 	_evaluate = function<S, V>(self: Self<S, V>)
@@ -37,54 +38,50 @@ local CLASS = table.freeze {
 		depend(self, self._finish)
 		depend(self, self._step)
 
-		local outer_scope = self.scope
-
-		local current_pairs = self._pairs
-		local next_pairs = {}
+		local old_pairs = self._active_pairs
+		local new_pairs = {}
 
 		for new_index = peek(self._start), peek(self._finish), peek(self._step) do
 			-- directly reuse objects that are the same
-			if current_pairs[new_index] ~= nil then
-				next_pairs[new_index] = current_pairs[new_index]
-				current_pairs[new_index] = nil
+			if old_pairs[new_index] ~= nil then
+				new_pairs[new_index] = old_pairs[new_index]
+				old_pairs[new_index] = nil
 
 				continue
 			end
 
 			-- reuse any existing objects that can be repurposed
-			local old_index, reuse_object = next(current_pairs)
+			local old_index, reuse_object = next(old_pairs)
 
 			if reuse_object ~= nil then
-				current_pairs[old_index] = nil
+				old_pairs[old_index] = nil
 
-				reuse_object.input_index = new_index
-				reuse_object:invalidate()
+				reuse_object:invalidate_index(new_index)
 
-				next_pairs[new_index] = reuse_object
+				new_pairs[new_index] = reuse_object
 
 				continue
 			end
 
 			-- create a new object if none are available
-			next_pairs[new_index] =
-				RangePair(derive_scope(outer_scope), new_index, self._processor)
+			new_pairs[new_index] =
+				RangePair(self._pairs_scope, new_index, self._processor)
 		end
 
 		-- clean up remaining objects
-		for _, object in current_pairs do
-			destroy(object.scope)
+		for _, object in old_pairs do
+			object:destroy()
 		end
 
-		self._pairs = next_pairs
+		self._active_pairs = new_pairs
 
 		return true
 	end,
 	destroy = function<S, V>(self: Self<S, V>)
-		for _, object in self._pairs do
-			destroy(object.scope)
-		end
+		destroy(self._pairs_scope)
+		self._pairs_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
@@ -109,7 +106,8 @@ local function RangeDisassembly<S, V>(
 		_finish = finish,
 		_step = step,
 
-		_pairs = {},
+		_active_pairs = {},
+		_pairs_scope = derive_scope(scope),
 		_processor = processor,
 	}, METATABLE) :: any
 

@@ -13,7 +13,7 @@ local function depend_lifetime_formatter(a: unknown, b: unknown): (string, strin
 	return `The dependency '{name_of(b, "object")}'`, `the user '{name_of(a, "object")}'`
 end
 
-local function depend(user: graph.GraphObject, dependency: graph.GraphObject)
+local function depend(user: graph.GraphNode, dependency: graph.GraphNode)
 	if cast_to_graph(dependency) == nil then
 		return
 	end

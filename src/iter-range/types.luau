@@ -5,7 +5,7 @@ local memory = require "../core-memory/types"
 export type Range = {
 	kind: "Range",
 	timeliness: "lazy",
-} & calc.StateObject<{ number }>
+} & calc.StateNode<{ number }>
 export type RangeConstructor = (
 	scope: memory.Scope,
 	start: calc.UsedAs<number>,
@@ -14,12 +14,8 @@ export type RangeConstructor = (
 ) -> Range | { number }
 
 export type RangePair<T> = {
-	scope: memory.Scope<T>?,
-	input_index: number,
-
-	invalidate: (RangePair<T>) -> (),
-	use_output: (RangePair<T>, use: calc.Use) -> T,
-}
+	invalidate_index: (RangePair<T>, new_index: number) -> (),
+} & calc.StateNode<T>
 
 export type RangeDisassemblyProcessor<S, T> = (
 	use: calc.Use,

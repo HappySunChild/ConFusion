@@ -2,7 +2,7 @@ local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
 export type SpecialKeyStage =
-	"self"
+	| "self"
 	| "descendants"
 	| "properties"
 	| "ancestor"
@@ -18,7 +18,7 @@ export type SpecialKey<T = string> = {
 }
 
 export type Properties = { [any]: any }
-export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateObject<Child>
+export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateNode<Child>
 
 export type NewConstructor = (
 	scope: memory.Scope,
@@ -43,6 +43,7 @@ return {
 
 	missing_specialkey_stage = "The SpecialKey '%s' is missing a stage property.",
 	invalid_specialkey_stage = "The SpecialKey '%s' has an invalid stage '%s'.",
+	specialkey_apply_error = "The SpecialKey '%s' errored while being applied to %s '%s' with value %* at stage '%s':\nERROR_MESSAGE",
 
 	expected_type = "Expected a %s, got %s.",
 }

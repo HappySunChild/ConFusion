@@ -8,8 +8,10 @@ export type Motion<T> = {
 	kind: "Motion",
 
 	set_dynamic: (self: Motion<T>, index: number, value: any) -> (),
+	set_dynamics: (self: Motion<T>, dynamics: { any }, at_index: number?) -> (),
 	get_dynamic: (self: Motion<T>, index: number) -> any?,
-} & calc.StateObject<T>
+	get_dynamics: (self: Motion<T>) -> { any },
+} & calc.StateNode<T>
 export type MotionConstructor = <T>(
 	scope: memory.Scope,
 	goal: calc.UsedAs<T>,

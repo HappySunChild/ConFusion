@@ -6,7 +6,7 @@ local External = require "../core-external/External"
 
 local derive_scope = require "../core-memory/derive_scope"
 local destroy = require "../core-memory/destroy"
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 local inner_scope = require "../core-memory/inner_scope"
 
 local dissolving_use = require "../core-use/dissolving_use"
@@ -16,11 +16,11 @@ local parse_error = require "../core-logging/parse_error"
 
 local is_similar = require "./is_similar"
 
-type Self<T, S> = calc.Computed<T> & {
+type Self<T, S> = {
 	_inner_scope: memory.Scope<S>?,
 	_processor: calc.ComputedProcessor<S, T>,
 	_use: calc.Use,
-}
+} & calc.Computed<T>
 
 local CLASS = table.freeze {
 	type = "State",
@@ -38,12 +38,12 @@ local CLASS = table.freeze {
 		local ok, new_value = xpcall(self._processor, parse_error, self._use, inner_scope)
 
 		if ok then
-			local similar = is_similar(self._internal_value, new_value)
+			local similar = is_similar(self._cached_value, new_value)
 
 			destroy(self._inner_scope)
 
 			self._inner_scope = inner_scope
-			self._internal_value = new_value
+			self._cached_value = new_value
 
 			return not similar
 		end
@@ -58,7 +58,7 @@ local CLASS = table.freeze {
 		destroy(self._inner_scope)
 		self._inner_scope = nil
 
-		generic_destroy(self)
+		destroy_node(self)
 	end,
 }
 local METATABLE = table.freeze { __index = CLASS }
@@ -97,7 +97,7 @@ local function Computed<T, S>(
 	local new_computed: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-		_internal_value = nil,
+		_cached_value = nil,
 
 		_using = {},
 		_users = {},

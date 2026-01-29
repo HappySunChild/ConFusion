@@ -1,12 +1,8 @@
 local calc = require "../core-calc/types"
 local memory = require "../core-memory/types"
 
-export type PropertyOf<T> = calc.StateObject<T> & {
-	kind: "PropertyOf",
-}
-export type AttributeOf<T> = calc.StateObject<T> & {
-	kind: "AttributeOf",
-}
+export type PropertyOf<T> = { kind: "PropertyOf" } & calc.StateNode<T>
+export type AttributeOf<T> = { kind: "AttributeOf" } & calc.StateNode<T>
 
 export type PropertyOfConstructor = (
 	scope: memory.Scope,

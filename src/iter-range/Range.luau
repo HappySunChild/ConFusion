@@ -8,13 +8,13 @@ local peek = require "../core-use/peek"
 
 local depend = require "../core-graph/depend"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
-type Self = iter_range.Range & {
+type Self = {
 	_start: calc.UsedAs<number>,
 	_finish: calc.UsedAs<number>,
 	_step: calc.UsedAs<number>,
-}
+} & iter_range.Range
 
 local CLASS = table.freeze {
 	type = "State",
@@ -26,7 +26,7 @@ local CLASS = table.freeze {
 		depend(self, self._finish)
 		depend(self, self._step)
 
-		local output = self._internal_value
+		local output = self._cached_value
 
 		table.clear(output)
 
@@ -36,7 +36,7 @@ local CLASS = table.freeze {
 
 		return true
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -86,7 +86,7 @@ local function Range(
 
 		_using = {},
 		_users = {},
-		_internal_value = {},
+		_cached_value = {},
 
 		_start = start,
 		_finish = finish,

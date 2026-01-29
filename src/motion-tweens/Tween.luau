@@ -9,9 +9,10 @@ local peek = require "../core-use/peek"
 
 local Motion = require "../motion/Motion"
 
+local lerp_type = require "../lerp/lerp_type"
+
 local get_tween_alpha = require "./get_tween_alpha"
 local get_tween_duration = require "./get_tween_duration"
-local lerp = require "./lerp"
 
 local function TweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
 	local curve_generator = function(target: T, start: T): motion.AnimationMove<T>
@@ -21,7 +22,7 @@ local function TweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
 		local new_curve = function(elapsed: number): (boolean, T)
 			local alpha = get_tween_alpha(active_info, elapsed)
 
-			return elapsed >= duration, lerp(start, target, alpha)
+			return elapsed >= duration, lerp_type(start, target, alpha)
 		end
 
 		return new_curve

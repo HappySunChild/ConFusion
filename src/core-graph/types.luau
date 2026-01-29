@@ -1,11 +1,15 @@
 local memory = require "../core-memory/types"
 
-export type Validity = "busy" | "invalid" | "valid"
+export type Validity =
+	| "busy" -- currently reevaluating
+	| "invalid" -- might need to be reevaluated
+	| "dirty" -- definitely needs to be reevaluated
+	| "valid" -- does not need to be reevaluated
 export type Timeliness = "lazy" | "eager"
 
 type Disconnect = () -> ()
 
-export type GraphObject = {
+export type GraphNode = {
 	scope: memory.Scope?,
 
 	type: "Graph",
@@ -17,17 +21,17 @@ export type GraphObject = {
 
 	_last_change: number?,
 	_last_compute: number?,
-	_users: { [GraphObject]: true },
-	_using: { [GraphObject]: true },
+	_users: { [GraphNode]: true },
+	_using: { [GraphNode]: true },
 	_observers: { Disconnect }?,
 
-	_evaluate: (GraphObject) -> boolean,
-	destroy: (GraphObject) -> (),
+	_evaluate: (GraphNode) -> boolean,
+	destroy: (GraphNode) -> (),
 }
 
 export type Observe = (
 	scope: memory.Scope,
-	subject: GraphObject,
+	subject: GraphNode,
 	callback: () -> ()
 ) -> Disconnect?
 

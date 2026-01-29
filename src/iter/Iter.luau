@@ -4,7 +4,7 @@ local memory = require "../core-memory/types"
 
 local depend = require "../core-graph/depend"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local generic_use = require "../core-use/generic_use"
 
@@ -23,7 +23,7 @@ local CLASS = table.freeze {
 			return false
 		end
 
-		local output = self._internal_value
+		local output = self._cached_value
 		local disassembly = self._disassembly
 
 		depend(self, disassembly)
@@ -34,7 +34,7 @@ local CLASS = table.freeze {
 
 		return true
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -43,7 +43,7 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = {},
+		_cached_value = {},
 
 		_using = {},
 		_users = {},

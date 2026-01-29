@@ -7,7 +7,7 @@ export type Eventual<T> = {
 	timeliness: "lazy",
 
 	is_pending: (Eventual<T>) -> boolean,
-} & calc.StateObject<T>
+} & calc.StateNode<T>
 
 export type EventualProcessor<S, T> = (
 	use: calc.Use,
@@ -20,7 +20,7 @@ export type EventualConstructor = <S, T>(
 	pending_value: T
 ) -> Eventual<T>
 
-export type Await = (scope: memory.Scope, subject: graph.GraphObject) -> ()
+export type Await = (scope: memory.Scope, subject: graph.GraphNode) -> ()
 
 return {
 	await_non_graph = "Can't await non-graph values.",

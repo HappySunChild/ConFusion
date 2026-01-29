@@ -1,3 +1,4 @@
+--- Returns whether `a` and `b` are meaningfully similar.
 local function is_similar(a: unknown, b: unknown): boolean
 	local type_a = typeof(a)
 	local is_table = type_a == "table"

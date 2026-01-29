@@ -4,16 +4,15 @@ local cast_to_state = require "../core-calc/cast_to_state"
 
 local evaluate = require "../core-graph/evaluate"
 
-local function peek<T>(
-	target: calc.UsedAs<T>
-): T -- should peek error with use_after_destroy on invalid objects?
-	if cast_to_state(target) ~= nil then
-		evaluate(target)
+local function peek<T>(x: calc.UsedAs<T>): T
+	-- should peek error with use_after_destroy on invalid objects?
+	if cast_to_state(x) ~= nil then
+		evaluate(x)
 
-		return target._internal_value :: T
+		return x._cached_value :: T
 	end
 
-	return target :: T
+	return x :: T
 end
 
 return peek

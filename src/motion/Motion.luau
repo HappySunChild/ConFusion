@@ -11,13 +11,13 @@ local change = require "../core-graph/change"
 local depend = require "../core-graph/depend"
 local evaluate = require "../core-graph/evaluate"
 
-local generic_destroy = require "../core-memory/generic_destroy"
+local destroy_node = require "../core-memory/destroy_node"
 
 local peek = require "../core-use/peek"
 
 local Timer = require "../chrono/Timer"
 
-type Self<T> = motion.Motion<T> & {
+type Self<T> = {
 	_goal: calc.UsedAs<T>,
 	_generator: calc.UsedAs<motion.MoveGenerator<T>>,
 
@@ -30,7 +30,7 @@ type Self<T> = motion.Motion<T> & {
 	_active_move: motion.AnimationMove<T>,
 
 	_timer: chrono.Timer,
-}
+} & motion.Motion<T>
 
 local function sync_dynamics<T>(
 	motion_obj: Self<T>,
@@ -65,13 +65,25 @@ local CLASS = table.freeze {
 	timeliness = "eager",
 
 	set_dynamic = function<T>(self: Self<T>, index: number, value: any)
-		self._active_dynamics[index] = value
+		self._dynamics[index] = value
+		self._regenerate = true
+
+		change(self)
+	end,
+	set_dynamics = function<T>(self: Self<T>, dynamics: { any }, at_index: number?)
+		table.move(dynamics, 1, #dynamics, at_index or 1, self._dynamics)
 		self._regenerate = true
 
 		change(self)
 	end,
 	get_dynamic = function<T>(self: Self<T>, index: number)
-		return self._active_dynamics[index]
+		return self._dynamics[index]
+	end,
+	get_dynamics = function<T>(self: Self<T>): { any }
+		-- considered cloning, but i don't think it's worth it
+		-- WARNING TO ANYONE USING THIS, DIRECTLY MODIFYING THE DYNAMICS TABLE
+		-- IS VERY MUCH NOT RECOMMENDED, DO NOT DO IT UNLESS YOU KNOW WHAT YOU'RE DOING!!!
+		return self._dynamics
 	end,
 
 	_evaluate = function<T>(self: Self<T>)
@@ -118,10 +130,10 @@ local CLASS = table.freeze {
 			elapsed = External.get_delta_time()
 		end
 
-		local old_value = self._internal_value :: any
+		local old_value = self._cached_value :: any
 		local new_value, should_sleep = sync_dynamics(self, self._active_move(elapsed))
 
-		self._internal_value = new_value
+		self._cached_value = new_value
 
 		if should_sleep then
 			timer:pause()
@@ -129,7 +141,7 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
-	destroy = generic_destroy,
+	destroy = destroy_node,
 }
 local METATABLE = table.freeze { __index = CLASS }
 
@@ -142,7 +154,7 @@ local function Motion<T>(
 		scope = scope,
 		created_at = os.clock(),
 
-		_internal_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
+		_cached_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
 
 		_using = {},
 		_users = {},

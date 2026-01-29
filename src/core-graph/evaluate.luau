@@ -5,32 +5,39 @@ local External = require "../core-external/External"
 local cast_to_graph = require "./cast_to_graph"
 local xtypeof = require "./xtypeof"
 
-local function evaluate(target: graph.GraphObject, force_computation: boolean?): boolean
-	if cast_to_graph(target) == nil then
-		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(target))
+--[[
+	Evaluates the graph object if necessary, so that it is up to date.
+	Returns `true` if it meaningfully changed.
+
+	https://fluff.blog/2024/04/16/monotonic-painting.html
+]]
+local function evaluate(node: graph.GraphNode, force_computation: boolean?): boolean
+	if cast_to_graph(node) == nil then
+		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(node))
 
 		return
 	end
 
-	if target.validity == "busy" then
+	if node.validity == "busy" then
 		External.log_error(graph.infinite_loop)
 	end
 
-	local first_evaluation = target._last_change == nil or target._last_compute == nil
-	local is_invalid = target.validity == "invalid"
+	local first_evaluation = node._last_change == nil or node._last_compute == nil
+	local is_dirty = node.validity == "dirty"
+	local is_invalid = node.validity == "invalid"
 
-	if not (first_evaluation or is_invalid or force_computation) then
+	if not (first_evaluation or is_dirty or is_invalid or force_computation) then
 		return false
 	end
 
-	local needs_computation = first_evaluation or force_computation
+	local needs_computation = force_computation or first_evaluation or is_dirty
 
-	-- check if computation is actually needed
+	-- check dependencies to see if any of them have updated before use, if so then we need to be reevaluated
 	if not needs_computation then
-		for dependency in target._using do
+		for dependency in node._using do
 			evaluate(dependency, false)
 
-			if dependency._last_change > target._last_compute then
+			if dependency._last_change > node._last_compute then
 				needs_computation = true
 
 				break
@@ -41,24 +48,24 @@ local function evaluate(target: graph.GraphObject, force_computation: boolean?):
 	local meaningfully_changed = false
 
 	if needs_computation then
-		-- remove dependencies
-		for dependency in target._using do
-			dependency._users[target] = nil
-			target._using[dependency] = nil
+		-- clear dependencies
+		for dependency in node._using do
+			dependency._users[node] = nil
+			node._using[dependency] = nil
 		end
 
-		target.validity = "busy"
+		node.validity = "busy"
 
-		meaningfully_changed = target:_evaluate() or first_evaluation
+		meaningfully_changed = node:_evaluate() or first_evaluation
 
-		target._last_compute = os.clock()
+		node._last_compute = os.clock()
 	end
 
 	if meaningfully_changed then
-		target._last_change = os.clock()
+		node._last_change = os.clock()
 	end
 
-	target.validity = "valid"
+	node.validity = "valid"
 
 	return meaningfully_changed
 end

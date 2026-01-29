@@ -18,7 +18,7 @@ local function AttributeOut(attribute: string): instances.SpecialKey<"AttributeO
 			"observer",
 			"AttributeOut",
 			function(scope: memory.Scope, apply_to: Instance, value: calc.Value<any>)
-				if xtypeof(value) ~= "Value" then
+				if xtypeof(value) ~= "State" or value.Kind ~= "Value" then
 					External.log_error(
 						instances.expected_type,
 						nil,

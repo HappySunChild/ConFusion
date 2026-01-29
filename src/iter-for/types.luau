@@ -3,14 +3,14 @@ local iter = require "../iter/types"
 local memory = require "../core-memory/types"
 
 export type ComputedPair<IK, IV, OK, OV> = {
-	scope: memory.Scope?,
-	input_key: IK,
-	input_value: IV,
+	_input_key: IK,
+	_input_value: IV,
 
-	invalidate_input_key: (ComputedPair<IK, IV, OK, OV>) -> (),
-	invalidate_input_value: (ComputedPair<IK, IV, OK, OV>) -> (),
-	use_output_pair: (ComputedPair<IK, IV, OK, OV>, calc.Use) -> (OK?, OV?),
-}
+	roam_keys: boolean,
+	roam_values: boolean,
+
+	invalidate_pair: (ComputedPair<IK, IV, OK, OV>, new_key: IK, new_value: IV) -> (),
+} & calc.StateNode<{ key: OK, value: OV }>
 
 export type ForPairsProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
