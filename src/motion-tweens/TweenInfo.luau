@@ -1,9 +1,9 @@
-local tweens = require "./types"
+local tweens = require("./types")
 
-local EasingStyles = require "./EasingStyles"
+local EasingStyles = require("./EasingStyles")
 
-local CLASS = table.freeze { type = "TweenInfo" }
-local METATABLE = table.freeze { __index = CLASS }
+local CLASS = table.freeze({ type = "TweenInfo" })
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function TweenInfo(info: {
 	easing_style: ((number) -> number)?,

@@ -1,21 +1,21 @@
-local calc = require "../core-calc/types"
-local iter_for = require "./types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter_for = require("./types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local derive_scope = require("../core-memory/derive_scope")
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
 
-local mark_dirty = require "../core-graph/mark_dirty"
+local mark_dirty = require("../core-graph/mark_dirty")
 
-local is_similar = require "../core-calc/is_similar"
+local is_similar = require("../core-calc/is_similar")
 
-local generic_use = require "../core-use/generic_use"
+local generic_use = require("../core-use/generic_use")
 
 type ComputedPairProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
@@ -33,7 +33,7 @@ type Self<S, IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
 	_use: calc.Use,
 }
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "ComputedPair",
 
@@ -100,8 +100,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function ComputedPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,

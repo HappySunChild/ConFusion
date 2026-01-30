@@ -1,4 +1,4 @@
-local Oklab = require "../colour/Oklab"
+local Oklab = require("../colour/Oklab")
 
 local function pack_type(data_type: string, numbers: { number }): unknown
 	if data_type == "number" then

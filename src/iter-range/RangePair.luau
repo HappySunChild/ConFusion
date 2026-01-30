@@ -1,22 +1,22 @@
-local calc = require "../core-calc/types"
-local iter_range = require "./types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter_range = require("./types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local is_similar = require "../core-calc/is_similar"
+local is_similar = require("../core-calc/is_similar")
 
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
-local mark_dirty = require "../core-graph/mark_dirty"
+local mark_dirty = require("../core-graph/mark_dirty")
 
-local generic_use = require "../core-use/generic_use"
+local generic_use = require("../core-use/generic_use")
 
-local derive_scope = require "../core-memory/derive_scope"
+local derive_scope = require("../core-memory/derive_scope")
 
 type Self<T, S> = {
 	_inner_scope: memory.Scope<S>,
@@ -26,7 +26,7 @@ type Self<T, S> = {
 	_input_index: number,
 } & iter_range.RangePair<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "RangePair",
 	timeliness = "lazy",
@@ -81,8 +81,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function RangePair<S, T>(
 	scope: memory.Scope<S>,

@@ -1,14 +1,14 @@
-local chrono = require "./types"
-local memory = require "../core-memory/types"
+local chrono = require("./types")
+local memory = require("../core-memory/types")
 
-local ExternalTime = require "./ExternalTime"
+local ExternalTime = require("./ExternalTime")
 
-local change = require "../core-graph/change"
-local depend = require "../core-graph/depend"
+local change = require("../core-graph/change")
+local depend = require("../core-graph/depend")
 
-local destroy_node = require "../core-memory/destroy_node"
+local destroy_node = require("../core-memory/destroy_node")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
 type Self = {
 	_paused: boolean,
@@ -16,7 +16,7 @@ type Self = {
 	_timer: chrono.ExternalTime,
 } & chrono.Timer
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Timer",
 	timeliness = "lazy",
@@ -65,8 +65,8 @@ local CLASS = table.freeze {
 		return old_value ~= new_value
 	end,
 	destroy = destroy_node,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function Timer(scope: memory.Scope): chrono.Timer
 	local externaltime = ExternalTime(scope)

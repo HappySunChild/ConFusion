@@ -1,22 +1,22 @@
-local binds = require "./types"
-local instances = require "../roblox-instances/types"
-local memory = require "../core-memory/types"
+local binds = require("./types")
+local instances = require("../roblox-instances/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local change = require "../core-graph/change"
+local change = require("../core-graph/change")
 
-local destroy_node = require "../core-memory/destroy_node"
+local destroy_node = require("../core-memory/destroy_node")
 
 type Self<T> = {
 	_event: RBXScriptConnection,
 } & binds.PropertyOf<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "PropertyOf",
 	timeliness = "lazy",
-	_using = table.freeze {},
+	_using = table.freeze({}),
 
 	_evaluate = function()
 		return true
@@ -26,8 +26,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function PropertyOf(
 	scope: memory.Scope,

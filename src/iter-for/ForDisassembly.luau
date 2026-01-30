@@ -1,17 +1,17 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local iter_for = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local iter_for = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local depend = require "../core-graph/depend"
+local depend = require("../core-graph/depend")
 
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local derive_scope = require("../core-memory/derive_scope")
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
@@ -26,7 +26,7 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	) -> iter_for.ComputedPair<IK, IV, OK, OV>,
 }
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "Graph",
 	kind = "Disassembly",
 	timeliness = "lazy",
@@ -184,8 +184,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,

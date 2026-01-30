@@ -1,10 +1,10 @@
-local graph = require "./types"
+local graph = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local cast_to_graph = require "./cast_to_graph"
-local evaluate = require "./evaluate"
-local is_eager = require "./is_eager"
+local cast_to_graph = require("./cast_to_graph")
+local evaluate = require("./evaluate")
+local is_eager = require("./is_eager")
 
 local function fire_node_observers(node: graph.GraphNode)
 	if node._observers == nil then

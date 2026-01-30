@@ -1,4 +1,4 @@
-local graph = require "../core-graph/types"
+local graph = require("../core-graph/types")
 
 --- A generic destroy function for graph nodes.
 local function destroy_node(node: graph.GraphNode)

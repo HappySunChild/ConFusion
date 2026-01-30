@@ -1,4 +1,4 @@
-local SpecialKey = require "./SpecialKey"
+local SpecialKey = require("./SpecialKey")
 
 return SpecialKey(
 	"last",

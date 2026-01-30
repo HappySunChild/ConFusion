@@ -1,5 +1,5 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
 
 export type PropertyOf<T> = { kind: "PropertyOf" } & calc.StateNode<T>
 export type AttributeOf<T> = { kind: "AttributeOf" } & calc.StateNode<T>

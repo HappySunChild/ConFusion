@@ -1,19 +1,19 @@
-local instances = require "./types"
-local memory = require "../core-memory/types"
+local instances = require("./types")
+local memory = require("../core-memory/types")
 
-local change = require "../core-graph/change"
+local change = require("../core-graph/change")
 
-local destroy_node = require "../core-memory/destroy_node"
+local destroy_node = require("../core-memory/destroy_node")
 
 type Self<T> = {
 	_event: RBXScriptConnection,
 } & instances.AttributeOf<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "AttributeOf",
 	timeliness = "lazy",
-	_using = table.freeze {},
+	_using = table.freeze({}),
 
 	_evaluate = function()
 		return true
@@ -23,8 +23,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function AttributeOf<T>(
 	scope: memory.Scope,

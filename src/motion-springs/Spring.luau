@@ -1,14 +1,14 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
-local motion = require "../motion/types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
+local motion = require("../motion/types")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local Motion = require "../motion/Motion"
+local Motion = require("../motion/Motion")
 
-local pack_type = require "./pack_type"
-local spring_coefficients = require "./spring_coefficients"
-local unpack_type = require "./unpack_type"
+local pack_type = require("./pack_type")
+local spring_coefficients = require("./spring_coefficients")
+local unpack_type = require("./unpack_type")
 
 local EPSILON = 0.0001
 
@@ -39,7 +39,7 @@ local function SpringMover<T>(
 			-- active_pos = table.clone(target_pos)
 			table.move(target_pos, 1, spring_count, 1, start_pos)
 			table.move(target_pos, 1, spring_count, 1, active_pos)
-			
+
 			start_vel = table.create(spring_count, 0)
 			active_vel = table.create(spring_count, 0)
 		else

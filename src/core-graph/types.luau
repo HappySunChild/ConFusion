@@ -1,4 +1,4 @@
-local memory = require "../core-memory/types"
+local memory = require("../core-memory/types")
 
 export type Validity =
 	| "busy" -- currently reevaluating

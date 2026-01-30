@@ -1,7 +1,7 @@
-local calc = require "../core-calc/types"
-local iter_for = require "../iter-for/types"
-local memory = require "../core-memory/types"
-local tweens = require "../motion-tweens/types"
+local calc = require("../core-calc/types")
+local iter_for = require("../iter-for/types")
+local memory = require("../core-memory/types")
+local tweens = require("../motion-tweens/types")
 
 export type Pipe<S, T> = {
 	type: "Pipe",

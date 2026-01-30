@@ -1,13 +1,13 @@
-local HttpService = game:GetService "HttpService"
-local RunService = game:GetService "RunService"
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 
-local external = require "../core-external/types"
+local external = require("../core-external/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
 local scheduler_disconnect
 
-return table.freeze {
+return table.freeze({
 	do_task_immediate = function<A...>(resume: (A...) -> () | thread, ...: A...)
 		return task.spawn(resume, ...)
 	end,
@@ -55,4 +55,4 @@ return table.freeze {
 		task.spawn(error, message, 0)
 	end,
 	log_warn = warn,
-} :: external.ExternalProvider
+}) :: external.ExternalProvider

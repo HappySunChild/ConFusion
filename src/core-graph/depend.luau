@@ -1,13 +1,13 @@
-local graph = require "./types"
+local graph = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local name_of = require "../core-logging/name_of"
+local name_of = require("../core-logging/name_of")
 
-local check_lifetime = require "../core-memory/check_lifetime"
+local check_lifetime = require("../core-memory/check_lifetime")
 
-local cast_to_graph = require "./cast_to_graph"
-local evaluate = require "./evaluate"
+local cast_to_graph = require("./cast_to_graph")
+local evaluate = require("./evaluate")
 
 local function depend_lifetime_formatter(a: unknown, b: unknown): (string, string)
 	return `The dependency '{name_of(b, "object")}'`, `the user '{name_of(a, "object")}'`

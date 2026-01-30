@@ -1,9 +1,9 @@
-local memory = require "./types"
+local memory = require("./types")
 
-local External = require "../core-external/External"
-local ExternalDebug = require "../core-external/ExternalDebug"
+local External = require("../core-external/External")
+local ExternalDebug = require("../core-external/ExternalDebug")
 
-local cast_to_graph = require "../core-graph/cast_to_graph"
+local cast_to_graph = require("../core-graph/cast_to_graph")
 
 local function is_scope(value: unknown): boolean
 	return typeof(value) == "table" and value[1] ~= nil

@@ -1,20 +1,20 @@
-local calc = require "./types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local calc = require("./types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
-local inner_scope = require "../core-memory/inner_scope"
+local derive_scope = require("../core-memory/derive_scope")
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
+local inner_scope = require("../core-memory/inner_scope")
 
-local dissolving_use = require "../core-use/dissolving_use"
-local generic_use = require "../core-use/generic_use"
+local dissolving_use = require("../core-use/dissolving_use")
+local generic_use = require("../core-use/generic_use")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
-local is_similar = require "./is_similar"
+local is_similar = require("./is_similar")
 
 type Self<T, S> = {
 	_inner_scope: memory.Scope<S>?,
@@ -22,7 +22,7 @@ type Self<T, S> = {
 	_use: calc.Use,
 } & calc.Computed<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Computed",
 	timeliness = "lazy",
@@ -60,8 +60,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function check_dissolvable<T, S>(
 	scope: memory.Scope<S>,

@@ -1,19 +1,19 @@
-local calc = require "../core-calc/types"
-local instances = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local instances = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local observe_immediate = require "../core-graph/observe_immediate"
+local observe_immediate = require("../core-graph/observe_immediate")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
-local Parent = require "./keys/Parent"
+local Parent = require("./keys/Parent")
 
-local sort_keys = require "./keys/sort_keys"
-local xtypeof = require "../core-graph/xtypeof"
+local sort_keys = require("./keys/sort_keys")
+local xtypeof = require("../core-graph/xtypeof")
 
 local function raw_set_property(instance: Instance, property: string, value: any)
 	instance[property] = value

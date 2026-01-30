@@ -1,11 +1,11 @@
-local calc = require "../../core-calc/types"
-local instances = require "../types"
+local calc = require("../../core-calc/types")
+local instances = require("../types")
 
-local External = require "../../core-external/External"
+local External = require("../../core-external/External")
 
-local xtypeof = require "../../core-graph/xtypeof"
+local xtypeof = require("../../core-graph/xtypeof")
 
-local SpecialKey = require "./SpecialKey"
+local SpecialKey = require("./SpecialKey")
 
 local function apply_ref(
 	instance: Instance,

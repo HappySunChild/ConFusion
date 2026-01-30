@@ -1,18 +1,18 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local iter_range = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local iter_range = require("./types")
+local memory = require("../core-memory/types")
 
-local cast_to_state = require "../core-calc/cast_to_state"
+local cast_to_state = require("../core-calc/cast_to_state")
 
-local dissolving_use = require "../core-use/dissolving_use"
+local dissolving_use = require("../core-use/dissolving_use")
 
-local destroy = require "../core-memory/destroy"
-local inner_scope = require "../core-memory/inner_scope"
+local destroy = require("../core-memory/destroy")
+local inner_scope = require("../core-memory/inner_scope")
 
-local Iter = require "../iter/Iter"
+local Iter = require("../iter/Iter")
 
-local RangeDisassembly = require "./RangeDisassembly"
+local RangeDisassembly = require("./RangeDisassembly")
 
 local function check_dissolvable<S, T>(
 	scope: memory.Scope<S>,

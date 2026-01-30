@@ -1,17 +1,17 @@
-local instances = require "../types"
-local memory = require "../../core-memory/types"
+local instances = require("../types")
+local memory = require("../../core-memory/types")
 
-local External = require "../../core-external/External"
+local External = require("../../core-external/External")
 
-local cast_to_state = require "../../core-calc/cast_to_state"
+local cast_to_state = require("../../core-calc/cast_to_state")
 
-local peek = require "../../core-use/peek"
+local peek = require("../../core-use/peek")
 
-local destroy = require "../../core-memory/destroy"
+local destroy = require("../../core-memory/destroy")
 
-local observe = require "../../core-graph/observe"
+local observe = require("../../core-graph/observe")
 
-local SpecialKey = require "./SpecialKey"
+local SpecialKey = require("./SpecialKey")
 
 local Children = SpecialKey(
 	"descendants",

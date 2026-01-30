@@ -1,25 +1,25 @@
-local async = require "./types"
-local calc = require "../core-calc/types"
-local graph = require "../core-graph/types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local async = require("./types")
+local calc = require("../core-calc/types")
+local graph = require("../core-graph/types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local cast_to_state = require "../core-calc/cast_to_state"
-local is_similar = require "../core-calc/is_similar"
+local cast_to_state = require("../core-calc/cast_to_state")
+local is_similar = require("../core-calc/is_similar")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local change = require "../core-graph/change"
-local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
+local change = require("../core-graph/change")
+local depend = require("../core-graph/depend")
+local evaluate = require("../core-graph/evaluate")
 
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local derive_scope = require("../core-memory/derive_scope")
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
 type Self<T, S> = async.Eventual<T> & {
 	_inner_scope: memory.Scope<S>,
@@ -60,7 +60,7 @@ local function handle_eventual_computation<T, S>(eventual: Self<T, S>)
 	eventual._active_thread = nil
 end
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Eventual",
 	timeliness = "eager",
@@ -110,8 +110,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
 	local session_used = eventual._session_used

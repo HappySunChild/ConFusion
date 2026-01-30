@@ -1,8 +1,8 @@
-local calc = require "../core-calc/types"
+local calc = require("../core-calc/types")
 
-local cast_to_state = require "../core-calc/cast_to_state"
+local cast_to_state = require("../core-calc/cast_to_state")
 
-local evaluate = require "../core-graph/evaluate"
+local evaluate = require("../core-graph/evaluate")
 
 local function peek<T>(x: calc.UsedAs<T>): T
 	-- should peek error with use_after_destroy on invalid objects?

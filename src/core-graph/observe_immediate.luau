@@ -1,9 +1,9 @@
-local graph = require "./types"
-local memory = require "../core-memory/types"
+local graph = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local observe = require "./observe"
+local observe = require("./observe")
 
 --[[
 	Adds an observer callback to a graph node after immediately calling the callback.

@@ -1,6 +1,6 @@
 --!native
 --!optimize 2
-local tweens = require "./types"
+local tweens = require("./types")
 
 local PI = math.pi
 local TAU = PI * 2
@@ -11,11 +11,11 @@ local sin = math.sin
 local cos = math.cos
 local sqrt = math.sqrt
 
-local new = table.freeze {
+local new = table.freeze({
 	Exponent = function(exponent: number): tweens.EasingStyle
 		local b = 2 ^ (exponent - 1)
 
-		return table.freeze {
+		return table.freeze({
 			Out = function(x: number): number
 				return 1 - (1 - x) ^ exponent
 			end,
@@ -27,14 +27,14 @@ local new = table.freeze {
 					then b * x ^ exponent
 					else 1 - (-2 * x + 2) ^ exponent / 2
 			end,
-		}
+		})
 	end,
 	Overshoot = function(amplitude: number): tweens.EasingStyle
 		local V0 = amplitude
 		local V1 = amplitude + 1
 		local V2 = amplitude * 1.525
 
-		return table.freeze {
+		return table.freeze({
 			Out = function(x: number): number
 				return 1 + V1 * (x - 1) ^ 3 + V0 * (x - 1) ^ 2
 			end,
@@ -46,14 +46,14 @@ local new = table.freeze {
 					then ((2 * x) ^ 2) * ((V2 + 1) * 2 * x - V2) / 2
 					else ((2 * x - 2) ^ 2 * ((V2 + 1) * (x * 2 - 2) + V2) + 2) / 2
 			end,
-		}
+		})
 	end,
 	Elastic = function(
 		period: number
 	): tweens.EasingStyle -- https://devforum.roblox.com/t/does-anyone-know-the-formulas-for-elastic-easing/2819110/2
 		local V0 = TAU / period
 
-		return table.freeze {
+		return table.freeze({
 			Out = function(x: number): number
 				if x <= 0 then
 					return 0
@@ -90,12 +90,12 @@ local new = table.freeze {
 					else 2 ^ (-10 * (2 * x - 1)) * sin((2 * x - 1 + shift) * V0) * -0.5
 						+ 1
 			end,
-		}
+		})
 	end,
-}
+})
 
-local EasingStyles = table.freeze {
-	Constant = table.freeze {
+local EasingStyles = table.freeze({
+	Constant = table.freeze({
 		Out = function(): number
 			return 1
 		end,
@@ -105,8 +105,8 @@ local EasingStyles = table.freeze {
 		InOut = function(x: number): number
 			return if x < 0.5 then 0 else 1
 		end,
-	},
-	Linear = table.freeze {
+	}),
+	Linear = table.freeze({
 		Out = function(x: number): number
 			return x
 		end,
@@ -116,8 +116,8 @@ local EasingStyles = table.freeze {
 		InOut = function(x: number): number
 			return x
 		end,
-	},
-	Exponential = table.freeze {
+	}),
+	Exponential = table.freeze({
 		Out = function(x: number): number
 			return if x == 1 then 1 else 1 - 2 ^ (-10 * x)
 		end,
@@ -132,8 +132,8 @@ local EasingStyles = table.freeze {
 					then 2 ^ (20 * x - 10) / 2
 					else 2 - 2 ^ (-20 * x + 10) / 2
 		end,
-	},
-	Circular = table.freeze {
+	}),
+	Circular = table.freeze({
 		Out = function(x: number): number
 			return sqrt(1 - (x - 1) ^ 2)
 		end,
@@ -145,8 +145,8 @@ local EasingStyles = table.freeze {
 				then 1 - sqrt(1 - (2 * x) ^ 2) / 2
 				else (sqrt(1 - (-2 * x + 2) ^ 2) + 1) / 2
 		end,
-	},
-	Sine = table.freeze {
+	}),
+	Sine = table.freeze({
 		Out = function(x: number): number
 			return sin(x * HALF_PI)
 		end,
@@ -156,7 +156,7 @@ local EasingStyles = table.freeze {
 		InOut = function(x: number): number
 			return -(cos(x * PI) - 1) / 2
 		end,
-	},
+	}),
 
 	Back = new.Overshoot(1),
 	Elastic = new.Elastic(0.3),
@@ -167,6 +167,6 @@ local EasingStyles = table.freeze {
 	Quint = new.Exponent(5),
 
 	new = new,
-}
+})
 
 return EasingStyles

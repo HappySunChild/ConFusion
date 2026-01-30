@@ -1,4 +1,4 @@
-local Oklab = require "../colour/Oklab"
+local Oklab = require("../colour/Oklab")
 
 local function lerp_type<T>(a: T, b: T, alpha: number): T
 	local data_type = typeof(a)

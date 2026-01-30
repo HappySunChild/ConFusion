@@ -1,4 +1,4 @@
-local nicknames = require "./nicknames"
+local nicknames = require("./nicknames")
 
 local function name_of(x: unknown, default: string)
 	local nickname = nicknames[x]

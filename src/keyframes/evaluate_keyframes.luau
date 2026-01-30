@@ -1,6 +1,6 @@
-local calc = require "../core-calc/types"
+local calc = require("../core-calc/types")
 
-local lerp_type = require "../lerp/lerp_type"
+local lerp_type = require("../lerp/lerp_type")
 
 local function get_bounding_keys(
 	eval_time: number,

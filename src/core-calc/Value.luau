@@ -1,20 +1,20 @@
-local calc = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("./types")
+local memory = require("../core-memory/types")
 
-local change = require "../core-graph/change"
+local change = require("../core-graph/change")
 
-local destroy_node = require "../core-memory/destroy_node"
+local destroy_node = require("../core-memory/destroy_node")
 
-local is_similar = require "./is_similar"
+local is_similar = require("./is_similar")
 
 type Self<T> = calc.Value<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Value",
 	timeliness = "lazy",
 
-	_using = table.freeze {},
+	_using = table.freeze({}),
 
 	set = function<T>(self: Self<T>, new_value: T): T
 		if not is_similar(new_value, self._cached_value) then
@@ -32,8 +32,8 @@ local CLASS = table.freeze {
 		return true
 	end,
 	destroy = destroy_node,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 	local new_value: Self<T> = setmetatable({

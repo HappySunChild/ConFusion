@@ -1,15 +1,15 @@
-local instances = require "../types"
+local instances = require("../types")
 
-local External = require "../../core-external/External"
+local External = require("../../core-external/External")
 
-local STAGE_ORDER = table.freeze {
+local STAGE_ORDER = table.freeze({
 	"self",
 	"descendants",
 	"properties",
 	"ancestor",
 	"observer",
 	"last",
-}
+})
 
 local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
 	local a_index = table.find(STAGE_ORDER, a.stage)

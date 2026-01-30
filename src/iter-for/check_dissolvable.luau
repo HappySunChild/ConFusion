@@ -1,15 +1,15 @@
-local calc = require "../core-calc/types"
-local iter_for = require "../iter-for/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter_for = require("../iter-for/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local cast_to_state = require "../core-calc/cast_to_state"
+local cast_to_state = require("../core-calc/cast_to_state")
 
-local dissolving_use = require "../core-use/dissolving_use"
+local dissolving_use = require("../core-use/dissolving_use")
 
-local destroy = require "../core-memory/destroy"
-local inner_scope = require "../core-memory/inner_scope"
+local destroy = require("../core-memory/destroy")
+local inner_scope = require("../core-memory/inner_scope")
 
 local function check_dissolvable<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,

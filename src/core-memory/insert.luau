@@ -1,4 +1,4 @@
-local memory = require "./types"
+local memory = require("./types")
 
 local function insert<Tasks...>(scope: memory.Scope, ...: Tasks...): Tasks...
 	for i = 1, select("#", ...) do

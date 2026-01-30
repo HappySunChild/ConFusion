@@ -1,11 +1,11 @@
-local chrono = require "./types"
-local memory = require "../core-memory/types"
+local chrono = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local change = require "../core-graph/change"
+local change = require("../core-graph/change")
 
-local destroy_node = require "../core-memory/destroy_node"
+local destroy_node = require("../core-memory/destroy_node")
 
 type Self = chrono.ExternalTime
 
@@ -15,7 +15,7 @@ local CLASS = {
 	type = "State",
 	kind = "ExternalTime",
 	timeliness = "lazy",
-	_using = table.freeze {},
+	_using = table.freeze({}),
 	_cached_value = External.get_last_update(),
 
 	enable = function(self: Self)
@@ -37,7 +37,7 @@ local CLASS = {
 		destroy_node(self)
 	end,
 }
-local METATABLE = table.freeze { __index = CLASS }
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({

@@ -1,7 +1,7 @@
-local external = require "./types"
-local logging = require "../core-logging/types"
+local external = require("./types")
+local logging = require("../core-logging/types")
 
-local format_error = require "../core-logging/format_error"
+local format_error = require("../core-logging/format_error")
 
 local bound_callbacks = {}
 local active_provider: external.ExternalProvider? = nil
@@ -13,7 +13,7 @@ local function log_error(message: string, err: logging.Error?, ...: any?): never
 	error(format_error(message, err, ...), 0)
 end
 
-return table.freeze {
+return table.freeze({
 	set_provider = function(new_provider: external.ExternalProvider?)
 		local old_provider = active_provider
 
@@ -107,4 +107,4 @@ return table.freeze {
 			print(formatted_message)
 		end
 	end,
-}
+})

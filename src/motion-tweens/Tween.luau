@@ -1,18 +1,18 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
-local motion = require "../motion/types"
-local tweens = require "./types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
+local motion = require("../motion/types")
+local tweens = require("./types")
 
-local cast_to_state = require "../core-calc/cast_to_state"
+local cast_to_state = require("../core-calc/cast_to_state")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local Motion = require "../motion/Motion"
+local Motion = require("../motion/Motion")
 
-local lerp_type = require "../lerp/lerp_type"
+local lerp_type = require("../lerp/lerp_type")
 
-local get_tween_alpha = require "./get_tween_alpha"
-local get_tween_duration = require "./get_tween_duration"
+local get_tween_alpha = require("./get_tween_alpha")
+local get_tween_duration = require("./get_tween_duration")
 
 local function TweenMover<T>(info: calc.UsedAs<tweens.TweenInfo>)
 	local curve_generator = function(target: T, start: T): motion.AnimationMove<T>

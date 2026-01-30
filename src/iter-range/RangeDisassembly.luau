@@ -1,17 +1,17 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local iter_range = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local iter_range = require("./types")
+local memory = require("../core-memory/types")
 
-local peek = require "../core-use/peek"
+local peek = require("../core-use/peek")
 
-local depend = require "../core-graph/depend"
+local depend = require("../core-graph/depend")
 
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local derive_scope = require("../core-memory/derive_scope")
+local destroy = require("../core-memory/destroy")
+local destroy_node = require("../core-memory/destroy_node")
 
-local RangePair = require "./RangePair"
+local RangePair = require("./RangePair")
 
 type Self<S, V> = {
 	_start: calc.UsedAs<number>,
@@ -23,7 +23,7 @@ type Self<S, V> = {
 	_processor: iter_range.RangeDisassemblyProcessor<S, V>,
 } & iter.Disassembly<number, V>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "Graph",
 	kind = "Disassembly",
 	timeliness = "lazy",
@@ -83,8 +83,8 @@ local CLASS = table.freeze {
 
 		destroy_node(self)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function RangeDisassembly<S, V>(
 	scope: memory.Scope<S>,

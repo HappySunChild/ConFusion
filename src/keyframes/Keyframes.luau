@@ -1,14 +1,14 @@
-local calc = require "../core-calc/types"
-local keyframes = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local keyframes = require("./types")
+local memory = require("../core-memory/types")
 
-local dissolving_use = require "../core-use/dissolving_use"
-local generic_use = require "../core-use/generic_use"
+local dissolving_use = require("../core-use/dissolving_use")
+local generic_use = require("../core-use/generic_use")
 
-local cast_to_state = require "../core-calc/cast_to_state"
-local is_similar = require "../core-calc/is_similar"
+local cast_to_state = require("../core-calc/cast_to_state")
+local is_similar = require("../core-calc/is_similar")
 
-local evaluate_keyframes = require "./evaluate_keyframes"
+local evaluate_keyframes = require("./evaluate_keyframes")
 
 type Self<T> = {
 	_alpha: calc.UsedAs<number>,
@@ -17,7 +17,7 @@ type Self<T> = {
 	_use: calc.Use,
 } & keyframes.Keyframes<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Keyframes",
 	timeliness = "lazy",
@@ -36,8 +36,8 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function check_dissolvable<T>(
 	alpha: calc.UsedAs<number>,
