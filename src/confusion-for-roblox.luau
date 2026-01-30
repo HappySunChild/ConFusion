@@ -182,6 +182,7 @@ local confusion_for_roblox = confusion.configure({
 		Passthrough = require("./roblox-instances/keys/Passthrough"),
 		Ref = require("./roblox-instances/keys/Ref"),
 		Attribute = require("./roblox-instances/keys/Attribute"),
+		Attributes = require("./roblox-instances/keys/Attributes"),
 		AttributeChange = require("./roblox-instances/keys/AttributeChange"),
 		AttributeOut = require("./roblox-instances/keys/AttributeOut"),
 		Tag = require("./roblox-instances/keys/Tag"),
