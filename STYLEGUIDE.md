@@ -66,6 +66,3 @@ end
 ```
 
 This structure is pretty well defined, it keeps the constructor separate from the methods and is relatively rigid. Although it may seem a little backwards to have the methods defined before the constructor, I think it's perfectly fine here (unless your methods need to access the constructor for whatever reason).
-
-## Use string and table call syntax if you want!!
-This one is kind of a given, since Fusion (and by extension ConFusion) is built around this syntax. While, yes this syntax can be quite cursed, it can improve the readability (and aesthetic) of your code (if that's something you really care about).
