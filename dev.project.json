@@ -12,14 +12,21 @@
 				}
 			}
 		},
+		"ServerScriptService": {
+			"$ignoreUnknownInstances": true,
+			"$className": "ServerScriptService",
+			"dev-tests": {
+				"$path": "dev-tests/roblox/server"
+			}
+		},
 		"StarterPlayer": {
 			"$ignoreUnknownInstances": true,
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
 				"$ignoreUnknownInstances": true,
-				"devtests": {
-					"$path": "dev-tests/roblox"
+				"dev-tests": {
+					"$path": "dev-tests/roblox/client"
 				}
 			}
 		}
