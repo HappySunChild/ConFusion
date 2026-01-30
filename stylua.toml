@@ -1,6 +1,6 @@
 syntax = "Luau"
 quote_style = "AutoPreferDouble"
-call_parentheses = "None"
+call_parentheses = "Always"
 column_width = 90
 
 [sort_requires]
