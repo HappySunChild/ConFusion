@@ -7,30 +7,30 @@ GitHub Repository: https://github.com/HappySunChild/ConFusion
 Fusion on GitHub: https://github.com/dphfox/Fusion
 --]]
 
-local calc = require "./core-calc/types"
-local graph = require "./core-graph/types"
-local memory = require "./core-memory/types"
+local calc = require("./core-calc/types")
+local graph = require("./core-graph/types")
+local memory = require("./core-memory/types")
 
-local async = require "./async/types"
-local chrono = require "./chrono/types"
-local context = require "./context/types"
-local keyframes = require "./keyframes/types"
-local pipeline = require "./pipeline/types"
-local safe = require "./safe/types"
+local async = require("./async/types")
+local chrono = require("./chrono/types")
+local context = require("./context/types")
+local keyframes = require("./keyframes/types")
+local pipeline = require("./pipeline/types")
+local safe = require("./safe/types")
 
-local iter = require "./iter/types"
-local iter_for = require "./iter-for/types"
-local iter_range = require "./iter-range/types"
+local iter = require("./iter/types")
+local iter_for = require("./iter-for/types")
+local iter_range = require("./iter-range/types")
 
-local motion = require "./motion/types"
-local springs = require "./motion-springs/types"
-local tweens = require "./motion-tweens/types"
+local motion = require("./motion/types")
+local springs = require("./motion-springs/types")
+local tweens = require("./motion-tweens/types")
 
-local binds = require "./roblox-binds/types"
-local instances = require "./roblox-instances/types"
-local templates = require "./roblox-templates/types"
+local binds = require("./roblox-binds/types")
+local instances = require("./roblox-instances/types")
+local templates = require("./roblox-templates/types")
 
-local confusion = require "./confusion"
+local confusion = require("./confusion")
 
 export type Scope<T = ConFusionForRoblox> = memory.Scope<T>
 
@@ -110,9 +110,11 @@ type ConFusionForRoblox = confusion.ConFusion<{
 	read Passthrough: instances.SpecialKey<"Passthrough">,
 	read Ref: instances.SpecialKey<"Ref">,
 	read Attribute: (attribute: string) -> instances.SpecialKey<"Attribute">,
+	read Attributes: instances.SpecialKey<"Attributes">,
 	read AttributeChange: (attribute: string) -> instances.SpecialKey<"AttributeChange">,
 	read AttributeOut: (attribute: string) -> instances.SpecialKey<"AttributeOut">,
 	read Tag: (tag: string) -> instances.SpecialKey<"Tag">,
+	read Tags: instances.SpecialKey<"Tags">,
 	read Out: (property: string) -> instances.SpecialKey<"Out">,
 	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
 	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
@@ -126,75 +128,76 @@ type ConFusionForRoblox = confusion.ConFusion<{
 	read AttributeOf: binds.AttributeOfConstructor,
 }>
 
-local confusion_for_roblox = confusion.configure {
+local confusion_for_roblox = confusion.configure({
 	version = { major = 1, minor = 0 },
-	provider = require "./roblox-provider/RobloxProvider",
+	provider = require("./roblox-provider/RobloxProvider"),
 	debugger = nil,
 	include = {
 		-- Iter: For
-		ForPairs = require "./iter-for/ForPairs",
-		ForKeys = require "./iter-for/ForKeys",
-		ForValues = require "./iter-for/ForValues",
+		ForPairs = require("./iter-for/ForPairs"),
+		ForKeys = require("./iter-for/ForKeys"),
+		ForValues = require("./iter-for/ForValues"),
 
 		-- Iter: Range
-		ForRange = require "./iter-range/ForRange",
-		Range = require "./iter-range/Range",
+		ForRange = require("./iter-range/ForRange"),
+		Range = require("./iter-range/Range"),
 
 		-- Async
-		Eventual = require "./async/Eventual",
-		await = require "./async/await",
+		Eventual = require("./async/Eventual"),
+		await = require("./async/await"),
 
 		-- Context
-		Contextual = require "./context/Contextual",
+		Contextual = require("./context/Contextual"),
 
 		-- Chrono
-		Timer = require "./chrono/Timer",
+		Timer = require("./chrono/Timer"),
 
 		-- Safe
-		Safe = require "./safe/Safe",
+		Safe = require("./safe/Safe"),
 
 		-- Keyframes
-		Keyframes = require "./keyframes/Keyframes",
+		Keyframes = require("./keyframes/Keyframes"),
 
 		-- Motion
-		Motion = require "./motion/Motion",
+		Motion = require("./motion/Motion"),
 
 		-- Motion: Springs
-		Spring = require "./motion-springs/Spring",
+		Spring = require("./motion-springs/Spring"),
 
 		-- Motion: Tweens
-		Tween = require "./motion-tweens/Tween",
-		TweenInfo = require "./motion-tweens/TweenInfo",
-		EasingStyles = require "./motion-tweens/EasingStyles",
+		Tween = require("./motion-tweens/Tween"),
+		TweenInfo = require("./motion-tweens/TweenInfo"),
+		EasingStyles = require("./motion-tweens/EasingStyles"),
 
 		-- Pipeline
-		Pipe = require "./pipeline/Pipe",
+		Pipe = require("./pipeline/Pipe"),
 
 		-- Roblox: Instances
-		New = require "./roblox-instances/New",
-		Hydrate = require "./roblox-instances/Hydrate",
+		New = require("./roblox-instances/New"),
+		Hydrate = require("./roblox-instances/Hydrate"),
 
-		Children = require "./roblox-instances/keys/Children",
-		OnStartup = require "./roblox-instances/keys/OnStartup",
-		OnRemoval = require "./roblox-instances/keys/OnRemoval",
-		Passthrough = require "./roblox-instances/keys/Passthrough",
-		Ref = require "./roblox-instances/keys/Ref",
-		Attribute = require "./roblox-instances/keys/Attribute",
-		AttributeChange = require "./roblox-instances/keys/AttributeChange",
-		AttributeOut = require "./roblox-instances/keys/AttributeOut",
-		Tag = require "./roblox-instances/keys/Tag",
-		Out = require "./roblox-instances/keys/Out",
-		OnEvent = require "./roblox-instances/keys/OnEvent",
-		OnChange = require "./roblox-instances/keys/OnChange",
+		Children = require("./roblox-instances/keys/Children"),
+		OnStartup = require("./roblox-instances/keys/OnStartup"),
+		OnRemoval = require("./roblox-instances/keys/OnRemoval"),
+		Passthrough = require("./roblox-instances/keys/Passthrough"),
+		Ref = require("./roblox-instances/keys/Ref"),
+		Attribute = require("./roblox-instances/keys/Attribute"),
+		AttributeChange = require("./roblox-instances/keys/AttributeChange"),
+		AttributeOut = require("./roblox-instances/keys/AttributeOut"),
+		Tag = require("./roblox-instances/keys/Tag"),
+		Tags = require("./roblox-instances/keys/Tags"),
+		Out = require("./roblox-instances/keys/Out"),
+		OnEvent = require("./roblox-instances/keys/OnEvent"),
+		OnChange = require("./roblox-instances/keys/OnChange"),
 
 		-- Roblox: Templates
-		FromTemplate = require "./roblox-templates/FromTemplate",
-		QueryDescendants = require "./roblox-templates/QueryDescendants",
+		FromTemplate = require("./roblox-templates/FromTemplate"),
+		QueryDescendants = require("./roblox-templates/QueryDescendants"),
 
 		-- Roblox: Binds
-		PropertyOf = require "./roblox-binds/PropertyOf",
-		AttributeOf = require "./roblox-binds/AttributeOf",
+		PropertyOf = require("./roblox-binds/PropertyOf"),
+		AttributeOf = require("./roblox-binds/AttributeOf"),
 	},
-}
+})
 
 return confusion_for_roblox :: ConFusionForRoblox
