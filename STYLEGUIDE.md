@@ -28,11 +28,11 @@ Also, all imports have to be relative (for now) string imports! No requiring thr
 
 Example:
 ```luau
-local some_types = require "..."
-local some_more_types = require "..."
+local some_types = require("...")
+local some_more_types = require("...")
 
-local some_utility_function = require "..."
-local some_other_utility = require "..."
+local some_utility_function = require("...")
+local some_other_utility = require("...")
 
 -- rest of the file...
 ```
@@ -45,7 +45,7 @@ Classes should always be structured like so:
 ```luau
 type Self = ...
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	-- [static class properties]
 	type = "Example",
 	kind = "example",
@@ -54,8 +54,8 @@ local CLASS = table.freeze {
 	do_something = function(self: Self, ...)
 		...
 	end
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 -- object constructor function
 local function Example(...): Example
