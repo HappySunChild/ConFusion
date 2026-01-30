@@ -3,8 +3,9 @@ local memory = require("../core-memory/types")
 
 export type FromTemplateConstructor = <InstanceT>(
 	scope: memory.Scope,
-	template: InstanceT
-) -> (instances.Properties) -> InstanceT
+	template: InstanceT,
+	properties: instances.Properties
+) -> InstanceT
 
 export type QueryDescendants = (
 	scope: memory.Scope,
