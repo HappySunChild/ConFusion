@@ -31,7 +31,5 @@
 		},
 		"luau-lsp.sourcemap.rojoProjectFile": "dev.project.json",
 		"luau-lsp.platform.type": "roblox",
-		"luau-lsp.completion.imports.enabled": true,
-		"luau-lsp.completion.imports.stringRequires.enabled": true,
 	}
 }
