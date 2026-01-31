@@ -19,6 +19,7 @@ export type SpecialKey<T = string> = {
 
 export type Properties = { [any]: any }
 export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateNode<Child>
+export type Tag = string | { string } | calc.StateNode<Tag>
 
 export type NewConstructor = (
 	scope: memory.Scope,
@@ -40,6 +41,7 @@ return {
 
 	invalid_key_type = "Invalid key type '%s'.",
 	invalid_child_type = "Invalid child type '%s'.",
+	invalid_tag_type = "Invalid tag type '%s'.",
 
 	missing_specialkey_stage = "The SpecialKey '%s' is missing a stage property.",
 	invalid_specialkey_stage = "The SpecialKey '%s' has an invalid stage '%s'.",
