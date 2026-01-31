@@ -14,20 +14,23 @@ local function process_child(
 	parent: Instance,
 	new_children: { [Instance]: true },
 	old_children: { [Instance]: true },
-	new_scopes: memory.Scope,
-	old_scopes: memory.Scope
+	new_scopes: { memory.Scope },
+	old_scopes: { memory.Scope }
 )
 	local child_type = typeof(child)
 
 	if child_type == "Instance" then
 		child = child :: Instance
 
-		if child.Parent == nil and old_children[child] == nil then
-			child.Parent = parent
-		end
-
 		new_children[child] = true
-		old_children[child] = nil
+
+		if old_children[child] == nil then
+			if child.Parent == nil then
+				child.Parent = parent
+			end
+		else
+			old_children[child] = nil
+		end
 	elseif child_type == "function" then
 		local child_instance = child(parent)
 
