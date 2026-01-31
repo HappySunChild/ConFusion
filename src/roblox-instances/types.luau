@@ -23,12 +23,14 @@ export type Tag = string | { string } | calc.StateNode<Tag>
 
 export type NewConstructor = (
 	scope: memory.Scope,
-	class_name: string
-) -> (Properties) -> Instance
+	class_name: string,
+	properties: Properties
+) -> Instance
 export type HydrateConstructor = <InstanceT>(
 	scope: memory.Scope,
-	instance: InstanceT
-) -> (Properties) -> InstanceT
+	instance: InstanceT,
+	properties: Properties
+) -> InstanceT
 
 return {
 	cannot_create_class = "Unable to create instance of type '%s'.",
