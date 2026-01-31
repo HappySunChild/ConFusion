@@ -1,7 +1,7 @@
 syntax = "Luau"
 quote_style = "AutoPreferDouble"
 call_parentheses = "Always"
-column_width = 90
+column_width = 100
 
 [sort_requires]
 enabled = true
