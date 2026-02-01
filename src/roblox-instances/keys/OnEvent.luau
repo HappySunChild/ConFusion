@@ -2,8 +2,7 @@ local instances = require("../types")
 local memory = require("../../core-memory/types")
 
 local External = require("../../core-external/External")
-
-local SpecialKey = require("./SpecialKey")
+local SpecialKey = require("../SpecialKey")
 
 local function get_property(instance: Instance, key: string)
 	return instance[key]
@@ -18,11 +17,7 @@ local function OnEvent(event_name: string): instances.SpecialKey<"OnEvent">
 		key = SpecialKey(
 			"observer",
 			"OnEvent",
-			function(
-				scope: memory.Scope,
-				apply_to: Instance,
-				callback: (...unknown) -> ()
-			)
+			function(scope: memory.Scope, apply_to: Instance, callback: (...unknown) -> ())
 				local ok, event = pcall(get_property, apply_to, event_name)
 
 				if not ok or typeof(event) ~= "RBXScriptSignal" then

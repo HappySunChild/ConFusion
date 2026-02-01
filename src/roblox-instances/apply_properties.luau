@@ -3,16 +3,11 @@ local instances = require("./types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
-local peek = require("../core-use/peek")
-
-local observe_immediate = require("../core-graph/observe_immediate")
-
-local parse_error = require("../core-logging/parse_error")
-
 local Parent = require("./keys/Parent")
-
+local observe_immediate = require("../core-graph/observe_immediate")
+local parse_error = require("../core-logging/parse_error")
 local sort_keys = require("./keys/sort_keys")
+local peek = require("../core-use/peek")
 local xtypeof = require("../core-graph/xtypeof")
 
 local function raw_set_property(instance: Instance, property: string, value: any)
@@ -79,7 +74,7 @@ local function apply_properties(
 	n_properties[Parent] = n_properties.Parent
 	n_properties.Parent = nil
 
-	local special_keys = {}
+	local special_keys: { instances.SpecialKey } = {}
 
 	for key, value in n_properties do
 		local key_type = xtypeof(key)

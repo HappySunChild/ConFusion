@@ -2,15 +2,12 @@ local calc = require("../../core-calc/types")
 local instances = require("../types")
 
 local External = require("../../core-external/External")
-
+local SpecialKey = require("../SpecialKey")
 local xtypeof = require("../../core-graph/xtypeof")
 
-local SpecialKey = require("./SpecialKey")
+type OneOrMore<T> = T | { T }
 
-local function apply_ref(
-	instance: Instance,
-	ref: { calc.Value<Instance> } | calc.Value<Instance>
-)
+local function apply_ref(instance: Instance, ref: OneOrMore<calc.Value<Instance>>)
 	local ref_type = xtypeof(ref)
 
 	if ref_type == "State" and ref.kind == "Value" then
@@ -29,8 +26,12 @@ local function apply_ref(
 	External.log_error(instances.expected_type, nil, "Value", ref_type)
 end
 
-local Ref = SpecialKey("self", "Ref", function(scope, apply_to: Instance, ref: unknown)
-	apply_ref(apply_to, ref)
-end)
+local Ref = SpecialKey(
+	"self",
+	"Ref",
+	function(scope, apply_to: Instance, ref: OneOrMore<calc.Value<Instance>>)
+		apply_ref(apply_to, ref)
+	end
+)
 
 return Ref

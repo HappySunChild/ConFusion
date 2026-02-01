@@ -3,8 +3,7 @@ local instances = require("../types")
 local memory = require("../../core-memory/types")
 
 local External = require("../../core-external/External")
-
-local SpecialKey = require("./SpecialKey")
+local SpecialKey = require("../SpecialKey")
 local cast_to_state = require("../../core-calc/cast_to_state")
 local destroy = require("../../core-memory/destroy")
 local observe_immediate = require("../../core-graph/observe_immediate")
