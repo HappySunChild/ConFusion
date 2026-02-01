@@ -1,3 +1,4 @@
+local calc = require("../../core-calc/types")
 local instances = require("../types")
 local memory = require("../../core-memory/types")
 
@@ -5,85 +6,105 @@ local External = require("../../core-external/External")
 local SpecialKey = require("../SpecialKey")
 local cast_to_state = require("../../core-calc/cast_to_state")
 local destroy = require("../../core-memory/destroy")
-local observe = require("../../core-graph/observe")
+local observe_immediate = require("../../core-graph/observe_immediate")
 local peek = require("../../core-use/peek")
+
+type TagsSet = { [string]: true }
+type TagsScopes = { [string]: memory.Scope }
+
+local function create_reconciler(
+	scope: memory.Scope,
+	processor: (
+		child: instances.Tag,
+		parent: Instance?,
+		new_tags: TagsSet,
+		new_scopes: TagsScopes,
+		old_tags: TagsSet,
+		old_scopes: TagsScopes
+	) -> ()
+)
+	local old_tags: TagsSet, new_tags: TagsSet = {}, {}
+	local old_scopes: TagsScopes, new_scopes: TagsScopes = {}, {}
+
+	local function reconcile(new_tag: instances.Tag?, apply_to: Instance)
+		old_tags, new_tags = new_tags, old_tags
+		old_scopes, new_scopes = new_scopes, old_scopes
+
+		if new_tag ~= nil then
+			processor(new_tag, apply_to, new_tags, new_scopes, old_tags, old_scopes)
+		end
+
+		for old_tag in old_tags do
+			apply_to:RemoveTag(old_tag)
+		end
+
+		for _, scope in old_scopes do
+			destroy(scope)
+		end
+
+		for new_tag in new_tags do
+			apply_to:AddTag(new_tag)
+		end
+
+		table.clear(old_tags)
+		table.clear(old_scopes)
+	end
+
+	-- cleanup
+	table.insert(scope, reconcile)
+
+	return reconcile
+end
+
+local function process_tag(
+	tag: instances.Tag,
+	apply_to: Instance,
+	new_tags: TagsSet,
+	new_scopes: TagsScopes,
+	old_tags: TagsSet,
+	old_scopes: TagsScopes
+)
+	local tag_type = typeof(tag)
+
+	if tag_type == "string" then
+		tag = tag :: string
+
+		new_tags[tag] = true
+		old_tags[tag] = nil
+	elseif cast_to_state(tag_type) ~= nil then
+		tag = tag :: calc.StateNode<instances.Tag>
+
+		local tag_scope = old_scopes[tag]
+
+		if tag_scope == nil then
+			tag_scope = {}
+
+			local reconcile = create_reconciler(tag_scope, process_tag)
+
+			observe_immediate(tag_scope, tag, function()
+				reconcile(peek(tag), apply_to)
+			end)
+		else
+			old_scopes[tag] = nil
+		end
+
+		new_scopes[tag] = tag_scope
+	elseif tag_type == "table" then
+		tag = tag :: { instances.Tag }
+		for _, subtag in tag do
+			process_tag(subtag, apply_to, new_tags, new_scopes, old_tags, old_scopes)
+		end
+	else
+		External.log_error_nonfatal(instances.invalid_tag_type, debug.traceback(nil, 2), tag_type)
+	end
+end
 
 local Tags = SpecialKey(
 	"self",
 	"Tags",
-	function(scope: memory.Scope, apply_to: Instance, tags: instances.Tag?)
-		local new_tags: { [string]: boolean }, old_tags: { [string]: boolean } = {}, {}
-		local new_scopes: { [string]: memory.Scope }, old_scopes: { [string]: memory.Scope } =
-			{}, {}
-
-		local function update_tags()
-			old_tags, new_tags = new_tags, old_tags
-			old_scopes, new_scopes = new_scopes, old_scopes
-
-			local function process_tag(tag: instances.Tag)
-				local tag_type = typeof(tag)
-
-				if tag_type == "string" then -- ROOT CASE
-					print("root tag case")
-
-					new_tags[tag] = true
-					old_tags[tag] = nil
-
-					apply_to:AddTag(tag)
-				elseif cast_to_state(tag) ~= nil then -- STATE CASE
-					local used_tag = peek(tag)
-
-					if used_tag ~= nil then
-						process_tag(used_tag)
-					end
-
-					local tag_scope = old_scopes[tag]
-
-					if tag_scope == nil then
-						tag_scope = {}
-						observe(tag_scope, tag, update_tags)
-					else
-						old_scopes[tag] = nil
-					end
-
-					new_scopes[tag] = tag_scope
-				elseif tag_type == "table" then -- NESTED CASE
-					-- should this use ipairs?
-					for _, subtag in tag :: { instances.Tag } do
-						process_tag(subtag)
-					end
-				else
-					External.log_error_nonfatal(
-						instances.invalid_tag_type,
-						debug.traceback(nil, 2),
-						tag_type
-					)
-				end
-			end
-
-			if tags ~= nil then
-				process_tag(tags)
-			end
-
-			for tag in old_tags do
-				apply_to:RemoveTag(tag)
-			end
-
-			for _, scope in old_scopes do
-				destroy(scope)
-			end
-
-			table.clear(old_scopes)
-			table.clear(old_tags)
-		end
-
-		table.insert(scope, function()
-			tags = nil
-
-			update_tags()
-		end)
-
-		update_tags()
+	function(scope: memory.Scope, apply_to: Instance, root_tag: instances.Tag?)
+		local reconcile = create_reconciler(scope, process_tag)
+		reconcile(root_tag, apply_to)
 	end
 )
 
