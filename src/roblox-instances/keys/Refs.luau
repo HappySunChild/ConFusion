@@ -7,7 +7,7 @@ local xtypeof = require("../../core-graph/xtypeof")
 
 type OneOrMore<T> = T | { T }
 
-local function apply_ref(instance: Instance, ref: OneOrMore<calc.Value<Instance>>)
+local function process_ref(instance: Instance, ref: OneOrMore<calc.Value<Instance>>)
 	local ref_type = xtypeof(ref)
 
 	if ref_type == "State" and ref.kind == "Value" then
@@ -17,21 +17,21 @@ local function apply_ref(instance: Instance, ref: OneOrMore<calc.Value<Instance>
 		return
 	elseif ref_type == "table" then
 		for _, sub_ref in ref do
-			apply_ref(sub_ref, instance)
+			process_ref(sub_ref, instance)
 		end
 
 		return
 	end
 
-	External.log_error(instances.expected_type, nil, "Value", ref_type)
+	External.log_error(instances.invalid_ref_type, nil, ref_type)
 end
 
-local Ref = SpecialKey(
+local Refs = SpecialKey(
 	"self",
-	"Ref",
-	function(scope, apply_to: Instance, ref: OneOrMore<calc.Value<Instance>>)
-		apply_ref(apply_to, ref)
+	"Refs",
+	function(scope, apply_to: Instance, root_ref: OneOrMore<calc.Value<Instance>>)
+		process_ref(apply_to, root_ref)
 	end
 )
 
-return Ref
+return Refs
