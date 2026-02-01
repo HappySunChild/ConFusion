@@ -43,7 +43,7 @@ local function set_property(instance: Instance, property: string, value: any)
 		External.log_error_nonfatal(instances.property_assign_error, err)
 	else
 		External.log_error_nonfatal(
-			instances.property_invalid_type,
+			instances.invalid_property_type,
 			nil,
 			instance.ClassName,
 			property,

@@ -17,7 +17,7 @@ local function Out(property: string): instances.SpecialKey<"Out">
 			"Out",
 			function(scope: memory.Scope, apply_to: Instance, value: calc.Value<any>)
 				if xtypeof(value) ~= "State" or value.kind ~= "Value" then
-					External.log_error(instances.expected_type, nil, "Value", xtypeof(value))
+					External.log_error(instances.invalid_out_type, nil, xtypeof(value))
 				end
 
 				local event = apply_to:GetPropertyChangedSignal(property)
