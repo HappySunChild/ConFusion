@@ -118,21 +118,8 @@ local Children = SpecialKey(
 	"descendants",
 	"Children",
 	function(scope: memory.Scope, apply_to: Instance, root_child: instances.Child)
-		-- local reconcile = create_reconciler(scope, process_child)
-		-- reconcile(root_child, apply_to)
-		local new_children: ChildrenInstances, new_scopes: ChildrenScopes = {}, {}
-
-		table.insert(scope, function()
-			for child in new_children do
-				child.Parent = nil
-			end
-
-			for _, scope in new_scopes do
-				destroy(scope)
-			end
-		end)
-
-		process_child(root_child, apply_to, new_children, new_scopes, {}, {})
+		local reconcile = create_reconciler(scope, process_child)
+		reconcile(root_child, apply_to)
 	end
 )
 
