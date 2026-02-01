@@ -9,7 +9,7 @@ local destroy = require("../../core-memory/destroy")
 local observe_immediate = require("../../core-graph/observe_immediate")
 local peek = require("../../core-use/peek")
 
-type ChildrenInstances = { [Instance]: true }
+type ChildrenSet = { [Instance]: true }
 type ChildrenScopes = { [instances.Child]: memory.Scope }
 
 local function create_reconciler(
@@ -17,13 +17,13 @@ local function create_reconciler(
 	processor: (
 		child: instances.Child,
 		parent: Instance?,
-		new_children: ChildrenInstances,
+		new_children: ChildrenSet,
 		new_scopes: ChildrenScopes,
-		old_children: ChildrenInstances,
+		old_children: ChildrenSet,
 		old_scopes: ChildrenScopes
 	) -> ()
 )
-	local old_children: ChildrenInstances, new_children: ChildrenInstances = {}, {}
+	local old_children: ChildrenSet, new_children: ChildrenSet = {}, {}
 	local old_scopes: ChildrenScopes, new_scopes: ChildrenScopes = {}, {}
 
 	local function reconcile(new_child: instances.Child?, parent: Instance?)
@@ -62,9 +62,9 @@ end
 local function process_child(
 	child: instances.Child,
 	parent: Instance?,
-	new_children: ChildrenInstances,
+	new_children: ChildrenSet,
 	new_scopes: ChildrenScopes,
-	old_children: ChildrenInstances,
+	old_children: ChildrenSet,
 	old_scopes: ChildrenScopes
 )
 	local child_type = typeof(child)
