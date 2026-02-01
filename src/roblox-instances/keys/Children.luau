@@ -1,3 +1,4 @@
+local calc = require("../../core-calc/types")
 local instances = require("../types")
 local memory = require("../../core-memory/types")
 
@@ -9,13 +10,65 @@ local destroy = require("../../core-memory/destroy")
 local observe_immediate = require("../../core-graph/observe_immediate")
 local peek = require("../../core-use/peek")
 
+type Set<T, V = true> = { [T]: V }
+
+local function create_reconciler(
+	scope: memory.Scope,
+	processor: (
+		child: instances.Child,
+		parent: Instance?,
+		new_children: Set<Instance>,
+		new_scopes: Set<instances.Child, memory.Scope>,
+		old_children: Set<Instance>,
+		old_scopes: Set<instances.Child, memory.Scope>
+	) -> ()
+)
+	local old_children: Set<Instance>, new_children: Set<Instance> = {}, {}
+	local old_scopes: Set<instances.Child, memory.Scope>, new_scopes: Set<instances.Child, memory.Scope> =
+		{}, {}
+
+	local function reconcile(new_child: instances.Child?, parent: Instance?)
+		old_children, new_children = new_children, old_children
+		old_scopes, new_scopes = new_scopes, old_scopes
+
+		if new_child ~= nil then
+			processor(new_child, parent, new_children, new_scopes, old_children, old_scopes)
+		end
+
+		for old_child in old_children do
+			old_child.Parent = nil
+		end
+
+		for _, scope in old_scopes do
+			destroy(scope)
+		end
+
+		-- reparenting has been deferred to fix a bug with nested state objects
+		for new_child in new_children do
+			if new_child.Parent == nil then
+				new_child.Parent = parent
+			end
+		end
+
+		table.clear(old_children)
+		table.clear(old_scopes)
+	end
+
+	-- cleanup
+	table.insert(scope, function()
+		reconcile(nil, nil)
+	end)
+
+	return reconcile
+end
+
 local function process_child(
 	child: instances.Child,
-	parent: Instance,
-	new_children: { [Instance]: true },
-	old_children: { [Instance]: true },
-	new_scopes: { memory.Scope },
-	old_scopes: { memory.Scope }
+	parent: Instance?,
+	new_children: Set<Instance>,
+	new_scopes: Set<instances.Child, memory.Scope>,
+	old_children: Set<Instance>,
+	old_scopes: Set<instances.Child, memory.Scope>
 )
 	local child_type = typeof(child)
 
@@ -23,75 +76,27 @@ local function process_child(
 		child = child :: Instance
 
 		new_children[child] = true
-
-		if old_children[child] == nil then
-			if child.Parent == nil then
-				child.Parent = parent
-			end
-		else
-			old_children[child] = nil
-		end
+		old_children[child] = nil
 	elseif child_type == "function" then
-		local child_instance = child(parent)
+		child = child :: (Instance) -> instances.Child
 
-		if child_instance ~= nil then
-			process_child(
-				child_instance,
-				parent,
-				new_children,
-				old_children,
-				new_scopes,
-				old_scopes
-			)
+		local actual_child = child(parent)
+
+		if actual_child ~= nil then
+			process_child(actual_child, parent, new_children, new_scopes, old_children, old_scopes)
 		end
 	elseif cast_to_state(child) ~= nil then
+		child = child :: calc.StateNode<instances.Child>
+
 		local child_scope = old_scopes[child]
 
-		if child_scope == nil then -- setup new scope and listen for changes
+		if child_scope == nil then
 			child_scope = {}
 
-			-- this could probably be moved into a separate function to cut down on duplicate code, but i feel like if i did that i'd break everything somehow
-
-			local sub_new_children, sub_old_children = {}, {}
-			local sub_new_scopes, sub_old_scopes = {}, {}
-
-			table.insert(child_scope, function()
-				for child in sub_new_children do
-					child.Parent = nil
-				end
-
-				for _, scope in sub_new_scopes do
-					destroy(scope)
-				end
-			end)
+			local reconcile = create_reconciler(child_scope, process_child)
 
 			observe_immediate(child_scope, child, function()
-				sub_old_children, sub_new_children = sub_new_children, sub_old_children
-				sub_old_scopes, sub_new_scopes = sub_new_scopes, sub_old_scopes
-
-				local new_child = peek(child)
-
-				if new_child ~= nil then
-					process_child(
-						new_child,
-						parent,
-						sub_new_children,
-						sub_old_children,
-						sub_new_scopes,
-						sub_old_scopes
-					)
-				end
-
-				for child in sub_old_children do
-					child.Parent = nil
-				end
-
-				for _, scope in sub_old_scopes do
-					destroy(scope)
-				end
-
-				table.clear(sub_old_children)
-				table.clear(sub_old_scopes)
+				reconcile(peek(child), parent)
 			end)
 		else
 			old_scopes[child] = nil
@@ -99,8 +104,9 @@ local function process_child(
 
 		new_scopes[child] = child_scope
 	elseif child_type == "table" then
-		for _, descendant in child :: { instances.Child } do
-			process_child(descendant, parent, new_children, old_children, new_scopes, old_scopes)
+		child = child :: { instances.Child }
+		for _, descendant in child do
+			process_child(descendant, parent, new_children, new_scopes, old_children, old_scopes)
 		end
 	else
 		External.log_error_nonfatal(
@@ -114,29 +120,9 @@ end
 local Children = SpecialKey(
 	"descendants",
 	"Children",
-	function(scope: memory.Scope, parent: Instance, root_child: instances.Child?)
-		local root_old_children: { [Instance]: true }, root_new_children: { [Instance]: true } =
-			{}, {}
-		local root_old_scopes: { memory.Scope }, root_new_scopes: { memory.Scope } = {}, {}
-
-		table.insert(scope, function()
-			for child in root_new_children do
-				child.Parent = nil
-			end
-
-			for _, scope in root_new_scopes do
-				destroy(scope)
-			end
-		end)
-
-		process_child(
-			root_child,
-			parent,
-			root_new_children,
-			root_old_children,
-			root_new_scopes,
-			root_old_scopes
-		)
+	function(scope: memory.Scope, apply_to: Instance, root_child: instances.Child)
+		local reconcile = create_reconciler(scope, process_child)
+		reconcile(root_child, apply_to)
 	end
 )
 
