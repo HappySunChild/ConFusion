@@ -66,12 +66,12 @@ local function process_tag(
 )
 	local tag_type = typeof(tag)
 
-	if tag_type == "string" then
+	if tag_type == "string" then -- ROOT CASE
 		tag = tag :: string
 
 		new_tags[tag] = true
 		old_tags[tag] = nil
-	elseif cast_to_state(tag_type) ~= nil then
+	elseif cast_to_state(tag) ~= nil then -- STATE CASE
 		tag = tag :: calc.StateNode<instances.Tag>
 
 		local tag_scope = old_scopes[tag]
@@ -89,10 +89,10 @@ local function process_tag(
 		end
 
 		new_scopes[tag] = tag_scope
-	elseif tag_type == "table" then
+	elseif tag_type == "table" then -- NESTED CASE
 		tag = tag :: { instances.Tag }
-		for _, subtag in tag do
-			process_tag(subtag, apply_to, new_tags, new_scopes, old_tags, old_scopes)
+		for _, sub_tag in tag do
+			process_tag(sub_tag, apply_to, new_tags, new_scopes, old_tags, old_scopes)
 		end
 	else
 		External.log_error_nonfatal(instances.invalid_tag_type, debug.traceback(nil, 2), tag_type)
