@@ -41,8 +41,8 @@ return {
 	property_assign_error = "Error while setting property:\nERROR_MESSAGE",
 
 	invalid_key_type = "Invalid key type: expected a 'string | SpecialKey' type, but got a '%s' type.",
-	invalid_child_type = "Invalid child type: expected a 'Instance | (Instance) -> [RECURSE] | { Instance } | StateNode<[RECURSE]>' type, but got a '%s' type.",
-	invalid_tag_type = "Invalid tag type: expected a 'string | { string } | StateNode<[RECURSE]>' type, but got a '%s' type.",
+	invalid_child_type = "Invalid child type: expected a 'Instance | (Instance) -> [RECURSE] | { [RECURSE] } | StateNode<[RECURSE]>' type, but got a '%s' type.",
+	invalid_tag_type = "Invalid tag type: expected a 'string | { [RECURSE] } | StateNode<[RECURSE]>' type, but got a '%s' type.",
 	invalid_ref_type = "Invalid ref type: expected a 'Value' type, but got a '%s' type.",
 	invalid_out_type = "Invalid out type: expected a 'Value' type, but got a '%s' type.",
 	invalid_property_type = "'%s.%s' expected a '%s' type, but got a '%s' type.",
