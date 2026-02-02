@@ -44,7 +44,7 @@ local function create_reconciler(
 
 		-- reparenting has been deferred to fix a bug with nested state objects
 		for new_child in new_children do
-			if new_child.Parent == nil then
+			if new_child.Parent == nil and old_children[new_child] == nil then
 				new_child.Parent = parent
 			end
 		end

@@ -43,7 +43,9 @@ local function create_reconciler(
 		end
 
 		for new_tag in new_tags do
-			apply_to:AddTag(new_tag)
+			if old_tags[new_tag] == nil then
+				apply_to:AddTag(new_tag)
+			end
 		end
 
 		table.clear(old_tags)
