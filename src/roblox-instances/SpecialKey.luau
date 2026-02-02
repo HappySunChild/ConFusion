@@ -1,10 +1,5 @@
-local instances = require("../types")
-local memory = require("../../core-memory/types")
-
-type SpecialKeyProperties = {
-	name: string?,
-	apply: (scope: memory.Scope, apply_to: Instance, value: unknown) -> (),
-}
+local instances = require("./types")
+local memory = require("../core-memory/types")
 
 local CLASS = table.freeze({
 	type = "SpecialKey",
@@ -23,7 +18,6 @@ local function SpecialKey(
 	return table.freeze(setmetatable({
 		stage = stage,
 		kind = kind,
-
 		apply = apply_callback,
 	}, METATABLE))
 end

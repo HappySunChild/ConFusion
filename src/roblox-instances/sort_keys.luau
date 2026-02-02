@@ -1,21 +1,21 @@
-local instances = require("../types")
+local instances = require("./types")
 
-local External = require("../../core-external/External")
+local External = require("../core-external/External")
 
 local STAGE_ORDER = table.freeze({
-	"self",
-	"descendants",
-	"properties",
-	"ancestor",
-	"observer",
-	"last",
+	self = 1,
+	descendants = 2,
+	properties = 4,
+	ancestor = 8,
+	observer = 16,
+	last = math.huge,
 })
 
 local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
-	local a_index = table.find(STAGE_ORDER, a.stage)
-	local b_index = table.find(STAGE_ORDER, b.stage)
+	local a_order = STAGE_ORDER[a.stage]
+	local b_order = STAGE_ORDER[b.stage]
 
-	if not a_index then
+	if a_order == nil then
 		External.log_warn(
 			if a.stage == nil
 				then instances.missing_specialkey_stage
@@ -25,7 +25,7 @@ local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
 		)
 
 		return true
-	elseif not b_index then
+	elseif b_order == nil then
 		External.log_warn(
 			if b.stage == nil
 				then instances.missing_specialkey_stage
@@ -37,7 +37,7 @@ local function sort_keys(a: instances.SpecialKey, b: instances.SpecialKey)
 		return false
 	end
 
-	return a_index < b_index
+	return a_order < b_order
 end
 
 return sort_keys
