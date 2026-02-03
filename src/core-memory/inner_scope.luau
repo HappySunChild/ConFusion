@@ -17,4 +17,4 @@ local function inner_scope<S, M>(existing: memory.Scope<S>, methods: M?): memory
 	return inner
 end
 
-return inner_scope :: memory.DeriveScope
+return inner_scope

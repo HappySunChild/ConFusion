@@ -25,9 +25,9 @@ export type ConFusion<I = any> = {
 	version: Version,
 
 	-- Core: Memory
-	scoped: memory.DeriveScope,
-	derive_scope: memory.DeriveScope,
-	inner_scope: memory.DeriveScope,
+	scoped: memory.Scoped,
+	derive_scope: memory.Scoped,
+	inner_scope: memory.Scoped,
 	destroy: memory.Destroy,
 	insert: memory.Insert,
 

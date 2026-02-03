@@ -58,4 +58,4 @@ local function destroy(cleanup_task: memory.CleanupTask?)
 	ACTIVE_TASKS[cleanup_task] = nil
 end
 
-return destroy :: memory.Destroy
+return destroy
