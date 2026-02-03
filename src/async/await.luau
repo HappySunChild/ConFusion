@@ -12,7 +12,7 @@ local function await(scope: memory.Scope, subject: graph.GraphNode)
 	if cast_to_graph(subject) == nil then
 		-- i believe this should error, because if we didn't it would infitely yield a thread
 		-- or cause loops that depend on it to spiral out of control
-		External.log_error(async.await_non_graph)
+		External.log_error(async.invalid_await_type, nil, subject)
 	end
 
 	local current = coroutine.running()

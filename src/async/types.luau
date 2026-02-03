@@ -23,5 +23,5 @@ export type EventualConstructor = <S, T>(
 export type Await = (scope: memory.Scope, subject: graph.GraphNode) -> ()
 
 return {
-	await_non_graph = "Can't await non-graph values.",
+	invalid_await_type = "Invalid await type: expected a 'GraphNode' type, but got a '%s' type.",
 }

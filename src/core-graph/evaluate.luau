@@ -2,9 +2,6 @@ local graph = require("./types")
 
 local External = require("../core-external/External")
 
-local cast_to_graph = require("./cast_to_graph")
-local xtypeof = require("./xtypeof")
-
 --[[
 	Evaluates the graph object if necessary, so that it is up to date.
 	Returns `true` if it meaningfully changed.
@@ -12,12 +9,6 @@ local xtypeof = require("./xtypeof")
 	https://fluff.blog/2024/04/16/monotonic-painting.html
 ]]
 local function evaluate(node: graph.GraphNode, force_computation: boolean?): boolean
-	if cast_to_graph(node) == nil then
-		External.log_error_nonfatal(graph.invalid_evaluate_type, nil, xtypeof(node))
-
-		return
-	end
-
 	if node.validity == "busy" then
 		External.log_error(graph.infinite_loop)
 	end
