@@ -16,7 +16,14 @@ local function FromTemplate<InstanceT>(
 	local new_instance = template:Clone()
 
 	if new_instance == nil then
-		External.log_error(templates.cannot_create_template, nil, template:GetFullName())
+		External.log_error(
+			if template.Archivable
+				then templates.cannot_clone_template
+				else templates.cannot_clone_template_unarchivable,
+			nil,
+			template.ClassName,
+			template:GetFullName()
+		)
 	end
 
 	return Hydrate(scope, template, properties)
