@@ -3,59 +3,52 @@ local memory = require("./types")
 local External = require("../core-external/External")
 local ExternalDebug = require("../core-external/ExternalDebug")
 
-local cast_to_graph = require("../core-graph/cast_to_graph")
+local ALREADY_DESTROYING: { [memory.Chore]: true } = {}
 
-local function is_scope(value: unknown): boolean
-	return typeof(value) == "table" and value[1] ~= nil
-end
-
-local ACTIVE_TASKS = {}
-
-local function cleanup(task: memory.CleanupTask?)
-	if task == nil then
+local function cleanup(chore: memory.Chore?)
+	if chore == nil then
 		return
 	end
 
-	if ACTIVE_TASKS[task] ~= nil then
+	if ALREADY_DESTROYING[chore] ~= nil then
 		External.log_error(memory.destroyed_twice)
 	end
 
-	ACTIVE_TASKS[task] = true
+	ALREADY_DESTROYING[chore] = true
 
-	local task_type = typeof(task)
+	if typeof(chore) == "Instance" then -- Roblox Instances
+		chore:Destroy()
+	elseif typeof(chore) == "RBXScriptConnection" then -- Roblox Connections
+		chore = chore :: RBXScriptConnection
 
-	-- TODO: https://github.com/HappySunChild/ConFusion/issues/50
+		chore:Disconnect()
+	elseif typeof(chore) == "function" then -- callback functions
+		chore = chore :: () -> ()
 
-	if task_type == "Instance" then
-		task = task :: Instance
+		chore()
+	elseif typeof(chore) == "table" then
+		if chore[1] ~= nil then -- scope/array of chores
+			chore = chore :: { memory.Chore }
 
-		task:Destroy()
-	elseif task_type == "RBXScriptConnection" then
-		task = task :: RBXScriptConnection
+			for i = #chore, 1, -1 do
+				cleanup(chore[i])
 
-		task:Disconnect()
-	elseif task_type == "function" then
-		task = task :: () -> ()
+				chore[i] = nil
+			end
 
-		task()
-	elseif is_scope(task) then
-		task = task :: { memory.CleanupTask }
-
-		for i = #task, 1, -1 do
-			cleanup(task[i])
-
-			task[i] = nil
+			ExternalDebug.untrack_scope(chore)
+		elseif typeof(chore.destroy) == "function" then -- :destroy method
+			chore:destroy()
+		elseif typeof(chore.Destroy) == "function" then -- :Destroy method
+			chore:Destroy()
+		elseif typeof(chore.disconnect) == "function" then -- :disconnect method
+			chore:disconnect()
+		elseif typeof(chore.Disconnect) == "function" then -- :Disconnect method
+			chore:Disconnect()
 		end
-
-		ExternalDebug.untrack_scope(task)
-	elseif cast_to_graph(task) ~= nil then
-		task:destroy()
-		-- this is kind of annoying.
-		-- else
-		-- 	External.log_warn(memory.unknown_cleanup_task, name_of(cleanup_task, "unknown"))
 	end
 
-	ACTIVE_TASKS[task] = nil
+	ALREADY_DESTROYING[chore] = nil
 end
 
 return cleanup
