@@ -4,19 +4,13 @@ local logging = require("../core-logging/types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
-local is_similar = require("../core-calc/is_similar")
-
-local destroy = require("../core-memory/destroy")
-local destroy_node = require("../core-memory/destroy_node")
-
-local parse_error = require("../core-logging/parse_error")
-
-local mark_dirty = require("../core-graph/mark_dirty")
-
-local generic_use = require("../core-use/generic_use")
-
+local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
+local destroy_node = require("../core-memory/destroy_node")
+local generic_use = require("../core-use/generic_use")
+local is_similar = require("../core-calc/is_similar")
+local mark_dirty = require("../core-graph/mark_dirty")
+local parse_error = require("../core-logging/parse_error")
 
 type Self<T, S> = {
 	_inner_scope: memory.Scope<S>,
@@ -47,26 +41,18 @@ local CLASS = table.freeze({
 		end
 
 		local inner_scope = derive_scope(self.scope)
-		local ok, output_value = xpcall(
-			self._processor,
-			parse_error,
-			self._use,
-			inner_scope,
-			self._input_index
-		)
+		local ok, output_value =
+			xpcall(self._processor, parse_error, self._use, inner_scope, self._input_index)
 
 		if not ok then
-			destroy(inner_scope)
+			cleanup(inner_scope)
 
-			External.log_error_nonfatal(
-				calc.callback_error,
-				output_value :: logging.Error
-			)
+			External.log_error_nonfatal(calc.callback_error, output_value :: logging.Error)
 
 			return false
 		end
 
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = inner_scope
 
 		local old_value = self._cached_value
@@ -76,7 +62,7 @@ local CLASS = table.freeze({
 		return not is_similar(old_value, output_value)
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = nil
 
 		destroy_node(self)

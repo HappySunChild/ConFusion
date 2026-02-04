@@ -3,12 +3,9 @@ local iter_for = require("../iter-for/types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
 local cast_to_state = require("../core-calc/cast_to_state")
-
+local cleanup = require("../core-memory/cleanup")
 local dissolving_use = require("../core-use/dissolving_use")
-
-local destroy = require("../core-memory/destroy")
 local inner_scope = require("../core-memory/inner_scope")
 
 local function check_dissolvable<S, IK, IV, OK, OV>(
@@ -33,7 +30,7 @@ local function check_dissolvable<S, IK, IV, OK, OV>(
 			pcall(processor, dissolving_use, dissolving_scope, key, value)
 
 		if not ok then
-			destroy(dissolving_scope)
+			cleanup(dissolving_scope)
 
 			return false, nil
 		end
@@ -41,11 +38,7 @@ local function check_dissolvable<S, IK, IV, OK, OV>(
 		if output_key == nil or output_value == nil then
 			continue
 		elseif output[output_key] ~= nil then
-			External.log_error_nonfatal(
-				iter_for.for_key_collision,
-				nil,
-				tostring(output_key)
-			)
+			External.log_error_nonfatal(iter_for.for_key_collision, nil, tostring(output_key))
 
 			continue
 		end

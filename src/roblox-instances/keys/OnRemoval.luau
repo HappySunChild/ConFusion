@@ -1,7 +1,7 @@
 local memory = require("../../core-memory/types")
 
 local SpecialKey = require("../SpecialKey")
-local destroy = require("../../core-memory/destroy")
+local cleanup = require("../../core-memory/cleanup")
 
 return SpecialKey(
 	"observer",
@@ -11,7 +11,7 @@ return SpecialKey(
 			scope,
 			apply_to.AncestryChanged:Connect(function(_, parent: Instance?)
 				if parent == nil then
-					destroy(removal_task)
+					cleanup(removal_task)
 				end
 			end)
 		)

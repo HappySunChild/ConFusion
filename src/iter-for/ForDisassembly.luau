@@ -4,14 +4,11 @@ local iter_for = require("./types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
-local peek = require("../core-use/peek")
-
+local cleanup = require("../core-memory/cleanup")
 local depend = require("../core-graph/depend")
-
 local derive_scope = require("../core-memory/derive_scope")
-local destroy = require("../core-memory/destroy")
 local destroy_node = require("../core-memory/destroy_node")
+local peek = require("../core-use/peek")
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
@@ -31,11 +28,7 @@ local CLASS = table.freeze({
 	kind = "Disassembly",
 	timeliness = "lazy",
 
-	populate = function<S, IK, IV, OK, OV>(
-		self: Self<S, IK, IV, OK, OV>,
-		use: calc.Use,
-		output: { [OK]: OV? }
-	)
+	populate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>, use: calc.Use, output: { [OK]: OV? })
 		local min_array_index = math.huge
 		local max_array_index = -math.huge
 		local has_holes = false
@@ -170,8 +163,7 @@ local CLASS = table.freeze({
 
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			new_pairs[pending_key] =
-				pair_constructor(pair_scope, pending_key, pending_value)
+			new_pairs[pending_key] = pair_constructor(pair_scope, pending_key, pending_value)
 		end
 
 		self._active_pairs = new_pairs
@@ -179,7 +171,7 @@ local CLASS = table.freeze({
 		return true
 	end,
 	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		destroy(self._pair_scope)
+		cleanup(self._pair_scope)
 		self._pair_scope = nil
 
 		destroy_node(self)
