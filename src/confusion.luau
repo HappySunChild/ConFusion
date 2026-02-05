@@ -28,7 +28,7 @@ export type ConFusion<I = any> = {
 	scoped: memory.Scoped,
 	derive_scope: memory.Scoped,
 	inner_scope: memory.Scoped,
-	destroy: memory.Destroy,
+	cleanup: memory.Cleanup,
 	insert: memory.Insert,
 
 	-- Core: State
@@ -46,7 +46,7 @@ export type ConFusion<I = any> = {
 
 local CORE_CONFUSION = table.freeze({
 	derive_scope = require("./core-memory/derive_scope"),
-	destroy = require("./core-memory/destroy"),
+	cleanup = require("./core-memory/cleanup"),
 	inner_scope = require("./core-memory/inner_scope"),
 	insert = require("./core-memory/insert"),
 	scoped = require("./core-memory/scoped"),

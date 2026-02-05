@@ -5,7 +5,7 @@ local memory = require("../../core-memory/types")
 local External = require("../../core-external/External")
 local SpecialKey = require("../SpecialKey")
 local cast_to_state = require("../../core-calc/cast_to_state")
-local destroy = require("../../core-memory/destroy")
+local cleanup = require("../../core-memory/cleanup")
 local observe_immediate = require("../../core-graph/observe_immediate")
 local peek = require("../../core-use/peek")
 
@@ -39,7 +39,7 @@ local function create_reconciler(
 		end
 
 		for _, scope in old_scopes do
-			destroy(scope)
+			cleanup(scope)
 		end
 
 		-- reparenting has been deferred to fix a bug with nested state objects

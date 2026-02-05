@@ -15,8 +15,8 @@ local change = require("../core-graph/change")
 local depend = require("../core-graph/depend")
 local evaluate = require("../core-graph/evaluate")
 
+local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy = require("../core-memory/destroy")
 local destroy_node = require("../core-memory/destroy_node")
 
 local parse_error = require("../core-logging/parse_error")
@@ -41,19 +41,14 @@ local function handle_eventual_computation<T, S>(eventual: Self<T, S>)
 
 	local inner_scope = derive_scope(eventual.scope)
 
-	local ok, err: logging.Error = xpcall(
-		eventual._processor,
-		parse_error,
-		eventual._use,
-		inner_scope,
-		eventual._become
-	)
+	local ok, err: logging.Error =
+		xpcall(eventual._processor, parse_error, eventual._use, inner_scope, eventual._become)
 
 	if ok then -- adopt computation scope, clean up old one
-		destroy(eventual._inner_scope)
+		cleanup(eventual._inner_scope)
 		eventual._inner_scope = inner_scope
 	else -- throw away computation scope, invalidated because computation errored
-		destroy(inner_scope)
+		cleanup(inner_scope)
 		External.log_error_nonfatal(calc.callback_error, err)
 	end
 
@@ -105,7 +100,7 @@ local CLASS = table.freeze({
 
 		self._session_used = nil
 
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = nil
 
 		destroy_node(self)

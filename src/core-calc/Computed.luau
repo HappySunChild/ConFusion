@@ -4,8 +4,8 @@ local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
 
+local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy = require("../core-memory/destroy")
 local destroy_node = require("../core-memory/destroy_node")
 local inner_scope = require("../core-memory/inner_scope")
 
@@ -40,7 +40,7 @@ local CLASS = table.freeze({
 		if ok then
 			local similar = is_similar(self._cached_value, new_value)
 
-			destroy(self._inner_scope)
+			cleanup(self._inner_scope)
 
 			self._inner_scope = inner_scope
 			self._cached_value = new_value
@@ -48,14 +48,14 @@ local CLASS = table.freeze({
 			return not similar
 		end
 
-		destroy(inner_scope)
+		cleanup(inner_scope)
 
 		External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
 
 		return false
 	end,
 	destroy = function<T, S>(self: Self<T, S>)
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = nil
 
 		destroy_node(self)
@@ -73,13 +73,13 @@ local function check_dissolvable<T, S>(
 	if success then
 		-- scope went unused, we can clean it up
 		if #dissolving_scope == 1 then
-			destroy(dissolving_scope)
+			cleanup(dissolving_scope)
 		end
 
 		return true, value
 	end
 
-	destroy(dissolving_scope)
+	cleanup(dissolving_scope)
 
 	return false
 end

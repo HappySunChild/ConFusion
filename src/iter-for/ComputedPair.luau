@@ -4,18 +4,13 @@ local logging = require("../core-logging/types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
-local parse_error = require("../core-logging/parse_error")
-
+local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy = require("../core-memory/destroy")
 local destroy_node = require("../core-memory/destroy_node")
-
-local mark_dirty = require("../core-graph/mark_dirty")
-
-local is_similar = require("../core-calc/is_similar")
-
 local generic_use = require("../core-use/generic_use")
+local is_similar = require("../core-calc/is_similar")
+local mark_dirty = require("../core-graph/mark_dirty")
+local parse_error = require("../core-logging/parse_error")
 
 type ComputedPairProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
@@ -73,14 +68,14 @@ local CLASS = table.freeze({
 		)
 
 		if not ok then
-			destroy(inner_scope)
+			cleanup(inner_scope)
 
 			External.log_error_nonfatal(calc.callback_error, new_key :: logging.Error)
 
 			return false
 		end
 
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = inner_scope
 
 		local output = self._cached_value
@@ -91,7 +86,7 @@ local CLASS = table.freeze({
 		return not (is_similar(old_key, new_key) and is_similar(old_value, new_value))
 	end,
 	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = nil
 
 		self._input_key = nil
@@ -109,13 +104,7 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 	initial_value: IV,
 	roam_keys: boolean,
 	roam_values: boolean,
-	processor: ComputedPairProcessor<
-		S,
-		IK,
-		IV,
-		OK,
-		OV
-	>
+	processor: ComputedPairProcessor<S, IK, IV, OK, OV>
 )
 	local new_computedpair = setmetatable({
 		scope = scope,

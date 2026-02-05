@@ -3,15 +3,12 @@ local iter = require("../iter/types")
 local iter_range = require("./types")
 local memory = require("../core-memory/types")
 
-local peek = require("../core-use/peek")
-
-local depend = require("../core-graph/depend")
-
-local derive_scope = require("../core-memory/derive_scope")
-local destroy = require("../core-memory/destroy")
-local destroy_node = require("../core-memory/destroy_node")
-
 local RangePair = require("./RangePair")
+local cleanup = require("../core-memory/cleanup")
+local depend = require("../core-graph/depend")
+local derive_scope = require("../core-memory/derive_scope")
+local destroy_node = require("../core-memory/destroy_node")
+local peek = require("../core-use/peek")
 
 type Self<S, V> = {
 	_start: calc.UsedAs<number>,
@@ -64,8 +61,7 @@ local CLASS = table.freeze({
 			end
 
 			-- create a new object if none are available
-			new_pairs[new_index] =
-				RangePair(self._pairs_scope, new_index, self._processor)
+			new_pairs[new_index] = RangePair(self._pairs_scope, new_index, self._processor)
 		end
 
 		-- clean up remaining objects
@@ -78,7 +74,7 @@ local CLASS = table.freeze({
 		return true
 	end,
 	destroy = function<S, V>(self: Self<S, V>)
-		destroy(self._pairs_scope)
+		cleanup(self._pairs_scope)
 		self._pairs_scope = nil
 
 		destroy_node(self)
