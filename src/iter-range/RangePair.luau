@@ -6,7 +6,7 @@ local memory = require("../core-memory/types")
 local External = require("../core-external/External")
 local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy_node = require("../core-memory/destroy_node")
+local destructor = require("../core-memory/destructor")
 local generic_use = require("../core-use/generic_use")
 local is_similar = require("../core-calc/is_similar")
 local mark_dirty = require("../core-graph/mark_dirty")
@@ -61,14 +61,13 @@ local CLASS = table.freeze({
 
 		return not is_similar(old_value, output_value)
 	end,
-	destroy = function<T, S>(self: Self<T, S>)
-		cleanup(self._inner_scope)
-		self._inner_scope = nil
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
+
+local function destroy_rangepair<T, S>(rangepair: Self<T, S>)
+	cleanup(rangepair._inner_scope)
+	rangepair._inner_scope = nil
+end
 
 local function RangePair<S, T>(
 	scope: memory.Scope<S>,
@@ -91,7 +90,7 @@ local function RangePair<S, T>(
 
 	new_rangepair._use = generic_use(new_rangepair)
 
-	table.insert(scope, new_rangepair)
+	table.insert(scope, destructor(new_rangepair, destroy_rangepair))
 
 	return new_rangepair
 end

@@ -3,18 +3,14 @@ local logging = require("../core-logging/types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
 local cleanup = require("../core-memory/cleanup")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy_node = require("../core-memory/destroy_node")
-local inner_scope = require("../core-memory/inner_scope")
-
+local destructor = require("../core-memory/destructor")
 local dissolving_use = require("../core-use/dissolving_use")
 local generic_use = require("../core-use/generic_use")
-
-local parse_error = require("../core-logging/parse_error")
-
+local inner_scope = require("../core-memory/inner_scope")
 local is_similar = require("./is_similar")
+local parse_error = require("../core-logging/parse_error")
 
 type Self<T, S> = {
 	_inner_scope: memory.Scope<S>?,
@@ -54,12 +50,6 @@ local CLASS = table.freeze({
 
 		return false
 	end,
-	destroy = function<T, S>(self: Self<T, S>)
-		cleanup(self._inner_scope)
-		self._inner_scope = nil
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
@@ -82,6 +72,11 @@ local function check_dissolvable<T, S>(
 	cleanup(dissolving_scope)
 
 	return false
+end
+
+local function destroy_computed<T, S>(computed: Self<T, S>)
+	cleanup(computed._inner_scope)
+	computed._inner_scope = nil
 end
 
 local function Computed<T, S>(
@@ -108,7 +103,7 @@ local function Computed<T, S>(
 
 	new_computed._use = generic_use(new_computed)
 
-	table.insert(scope, new_computed)
+	table.insert(scope, destructor(new_computed, destroy_computed))
 
 	return new_computed
 end

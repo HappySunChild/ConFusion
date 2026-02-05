@@ -7,7 +7,7 @@ local External = require("../core-external/External")
 local cleanup = require("../core-memory/cleanup")
 local depend = require("../core-graph/depend")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy_node = require("../core-memory/destroy_node")
+local destructor = require("../core-memory/destructor")
 local peek = require("../core-use/peek")
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
@@ -170,14 +170,13 @@ local CLASS = table.freeze({
 
 		return true
 	end,
-	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		cleanup(self._pair_scope)
-		self._pair_scope = nil
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
+
+local function destroy_fordiasssembly<S, IK, IV, OK, OV>(fordisassembly: Self<S, IK, IV, OK, OV>)
+	cleanup(fordisassembly._pair_scope)
+	fordisassembly._pair_scope = nil
+end
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
@@ -203,7 +202,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_constructor = constructor,
 	}, METATABLE) :: any
 
-	table.insert(scope, new_disassembly)
+	table.insert(scope, destructor(new_disassembly, destroy_fordiasssembly))
 
 	return new_disassembly
 end
