@@ -26,7 +26,6 @@ export type GraphNode = {
 	_observers: { Disconnect }?,
 
 	_evaluate: (GraphNode) -> boolean,
-	destroy: (GraphNode) -> (),
 }
 
 export type Observe = (
