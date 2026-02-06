@@ -1,20 +1,14 @@
-local calc = require "../../core-calc/types"
-local memory = require "../../core-memory/types"
+local calc = require("../../core-calc/types")
+local memory = require("../../core-memory/types")
 
-local peek = require "../../core-use/peek"
+local SpecialKey = require("../../roblox-instances/keys/SpecialKey")
+local observe_immediate = require("../../core-graph/observe_immediate")
+local peek = require("../../core-use/peek")
 
-local observe_immediate = require "../../core-graph/observe_immediate"
-
-local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
-
-return SpecialKey(
+local StyleProperties = SpecialKey(
 	"self",
 	"StyleProperties",
-	function(
-		scope: memory.Scope,
-		apply_to: StyleRule,
-		properties: { [string]: calc.UsedAs<any> }
-	)
+	function(scope: memory.Scope, apply_to: StyleRule, properties: { [string]: calc.UsedAs<any> })
 		for property, value in properties do
 			observe_immediate(scope, value, function()
 				apply_to:SetProperty(property, peek(value))
@@ -22,3 +16,5 @@ return SpecialKey(
 		end
 	end
 )
+
+return StyleProperties

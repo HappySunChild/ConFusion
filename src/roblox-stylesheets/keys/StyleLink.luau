@@ -1,15 +1,14 @@
-local calc = require "../../core-calc/types"
-local memory = require "../../core-memory/types"
+local calc = require("../../core-calc/types")
+local memory = require("../../core-memory/types")
 
-local apply_properties = require "../../roblox-instances/apply_properties"
+local SpecialKey = require("../../roblox-instances/keys/SpecialKey")
+local apply_properties = require("../../roblox-instances/apply_properties")
 
-local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
-
-return SpecialKey(
+local StyleLink = SpecialKey(
 	"descendants",
 	"StyleLink",
 	function(scope: memory.Scope, apply_to: Instance, style: calc.UsedAs<StyleSheet>)
-		local link = Instance.new "StyleLink"
+		local link = Instance.new("StyleLink")
 
 		apply_properties(scope, link, {
 			Parent = apply_to,
@@ -19,3 +18,5 @@ return SpecialKey(
 		table.insert(scope, link)
 	end
 )
+
+return StyleLink

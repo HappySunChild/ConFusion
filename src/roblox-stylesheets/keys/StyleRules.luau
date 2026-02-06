@@ -1,6 +1,6 @@
-local SpecialKey = require "../../roblox-instances/keys/SpecialKey"
+local SpecialKey = require("../../roblox-instances/keys/SpecialKey")
 
-return SpecialKey(
+local StyleRules = SpecialKey(
 	"self",
 	"StyleRules",
 	function(_, apply_to: StyleBase, rules: { [number]: StyleRule })
@@ -9,3 +9,5 @@ return SpecialKey(
 		end
 	end
 )
+
+return StyleRules
