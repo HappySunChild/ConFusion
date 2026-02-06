@@ -1,21 +1,16 @@
-local calc = require "../core-calc/types"
-local chrono = require "../chrono/types"
-local memory = require "../core-memory/types"
-local motion = require "./types"
+local calc = require("../core-calc/types")
+local chrono = require("../chrono/types")
+local memory = require("../core-memory/types")
+local motion = require("./types")
 
-local External = require "../core-external/External"
-
-local is_similar = require "../core-calc/is_similar"
-
-local change = require "../core-graph/change"
-local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
-
-local destroy_node = require "../core-memory/destroy_node"
-
-local peek = require "../core-use/peek"
-
-local Timer = require "../chrono/Timer"
+local External = require("../core-external/External")
+local Timer = require("../chrono/Timer")
+local change = require("../core-graph/change")
+local depend = require("../core-graph/depend")
+local destructor = require("../core-memory/destructor")
+local evaluate = require("../core-graph/evaluate")
+local is_similar = require("../core-calc/is_similar")
+local peek = require("../core-use/peek")
 
 type Self<T> = {
 	_goal: calc.UsedAs<T>,
@@ -59,7 +54,7 @@ local function sync_dynamics<T>(
 	return output_value, should_sleep
 end
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Motion",
 	timeliness = "eager",
@@ -141,9 +136,8 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
-	destroy = destroy_node,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function Motion<T>(
 	scope: memory.Scope,
@@ -172,7 +166,7 @@ local function Motion<T>(
 		_timer = Timer(scope),
 	}, METATABLE) :: any
 
-	table.insert(scope, new_motion)
+	table.insert(scope, destructor(new_motion))
 
 	evaluate(new_motion, true)
 

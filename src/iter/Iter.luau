@@ -1,19 +1,17 @@
-local calc = require "../core-calc/types"
-local iter = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("./types")
+local memory = require("../core-memory/types")
 
-local depend = require "../core-graph/depend"
-
-local destroy_node = require "../core-memory/destroy_node"
-
-local generic_use = require "../core-use/generic_use"
+local depend = require("../core-graph/depend")
+local destructor = require("../core-memory/destructor")
+local generic_use = require("../core-use/generic_use")
 
 type Self<K, V> = {
 	_use: calc.Use,
 	_disassembly: iter.Disassembly<K, V>,
 } & iter.Iter<K, V>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Iter",
 	timeliness = "lazy",
@@ -34,9 +32,8 @@ local CLASS = table.freeze {
 
 		return true
 	end,
-	destroy = destroy_node,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, V>)
 	local new_iter: Self<K, V> = setmetatable({
@@ -53,7 +50,7 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 
 	new_iter._use = generic_use(new_iter)
 
-	table.insert(scope, new_iter)
+	table.insert(scope, destructor(new_iter))
 
 	return new_iter
 end

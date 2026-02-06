@@ -1,24 +1,24 @@
-local calc = require "../core-calc/types"
-local iter_for = require "../iter-for/types"
-local memory = require "../core-memory/types"
-local pipeline = require "./types"
-local tweens = require "../motion-tweens/types"
+local calc = require("../core-calc/types")
+local iter_for = require("../iter-for/types")
+local memory = require("../core-memory/types")
+local pipeline = require("./types")
+local tweens = require("../motion-tweens/types")
 
-local Computed = require "../core-calc/Computed"
-local ForKeys = require "../iter-for/ForKeys"
-local ForPairs = require "../iter-for/ForPairs"
-local ForValues = require "../iter-for/ForValues"
-local Spring = require "../motion-springs/Spring"
-local Tween = require "../motion-tweens/Tween"
+local Computed = require("../core-calc/Computed")
+local ForKeys = require("../iter-for/ForKeys")
+local ForPairs = require("../iter-for/ForPairs")
+local ForValues = require("../iter-for/ForValues")
+local Spring = require("../motion-springs/Spring")
+local Tween = require("../motion-tweens/Tween")
 
-local inner_scope = require "../core-memory/inner_scope"
+local inner_scope = require("../core-memory/inner_scope")
 
 type Self<S, T> = {
 	_latest: calc.UsedAs<T>,
 	_internal_scope: memory.Scope<S>,
 } & pipeline.Pipe<S, T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "Pipe",
 
 	spring = function<S, T>(
@@ -82,8 +82,8 @@ local CLASS = table.freeze {
 	resolve = function<T>(self: Self<unknown, T>): calc.UsedAs<T>
 		return self._latest
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function Pipe<S, T>(
 	scope: memory.Scope<S>,

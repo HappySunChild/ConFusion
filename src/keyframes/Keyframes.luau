@@ -1,14 +1,13 @@
-local calc = require "../core-calc/types"
-local keyframes = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local keyframes = require("./types")
+local memory = require("../core-memory/types")
 
-local dissolving_use = require "../core-use/dissolving_use"
-local generic_use = require "../core-use/generic_use"
-
-local cast_to_state = require "../core-calc/cast_to_state"
-local is_similar = require "../core-calc/is_similar"
-
-local evaluate_keyframes = require "./evaluate_keyframes"
+local cast_to_state = require("../core-calc/cast_to_state")
+local destructor = require("../core-memory/destructor")
+local dissolving_use = require("../core-use/dissolving_use")
+local evaluate_keyframes = require("./evaluate_keyframes")
+local generic_use = require("../core-use/generic_use")
+local is_similar = require("../core-calc/is_similar")
 
 type Self<T> = {
 	_alpha: calc.UsedAs<number>,
@@ -17,7 +16,7 @@ type Self<T> = {
 	_use: calc.Use,
 } & keyframes.Keyframes<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Keyframes",
 	timeliness = "lazy",
@@ -36,19 +35,15 @@ local CLASS = table.freeze {
 
 		return not is_similar(old_value, new_value)
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
-local function check_dissolvable<T>(
-	alpha: calc.UsedAs<number>,
-	keyframes: { T }
-): (boolean, T?)
+local function check_dissolvable<T>(alpha: calc.UsedAs<number>, keyframes: { T }): (boolean, T?)
 	if cast_to_state(alpha) ~= nil then
 		return false, nil
 	end
 
-	local ok, value =
-		pcall(evaluate_keyframes, alpha :: number, keyframes, dissolving_use)
+	local ok, value = pcall(evaluate_keyframes, alpha :: number, keyframes, dissolving_use)
 
 	if not ok then
 		return false, nil
@@ -80,6 +75,8 @@ local function Keyframes<T>(
 	}, METATABLE) :: any
 
 	new_keyframes._use = generic_use(new_keyframes)
+
+	table.insert(scope, destructor(new_keyframes))
 
 	return new_keyframes
 end

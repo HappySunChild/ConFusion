@@ -1,6 +1,6 @@
-local memory = require "./types"
+local memory = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
 local function check_lifetime<A, B, C...>(
 	a: A,

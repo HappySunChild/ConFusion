@@ -1,4 +1,4 @@
-local graph = require "../core-graph/types"
+local graph = require("../core-graph/types")
 
 --[[
 	Returns `true` if a graph node is eager.

@@ -1,4 +1,4 @@
-local memory = require "../core-memory/types"
+local memory = require("../core-memory/types")
 
 export type Validity =
 	| "busy" -- currently reevaluating
@@ -26,7 +26,6 @@ export type GraphNode = {
 	_observers: { Disconnect }?,
 
 	_evaluate: (GraphNode) -> boolean,
-	destroy: (GraphNode) -> (),
 }
 
 export type Observe = (
@@ -38,8 +37,6 @@ export type Observe = (
 return {
 	infinite_loop = "Detected an infinite loop. Consider adding an explicit breakpoint to your code to prevent a cyclic dependency.",
 
-	cannot_depend = "%s (%s) cannot depend on %s (%s).",
-
-	invalid_evaluate_type = "Invalid evaluate argument, got '%s'.",
-	invalid_change_type = "Can't change non-state value, got '%s'.",
+	cannot_depend_dependency_frozen = "The user '%s' cannot depend on '%s', because the latter is frozen.",
+	cannot_depend_user_frozen = "The user '%s' cannot depend on '%s', because the former is frozen.",
 }

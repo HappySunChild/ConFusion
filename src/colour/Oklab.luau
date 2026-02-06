@@ -1,4 +1,4 @@
-local Linear = require "./Linear"
+local Linear = require("./Linear")
 
 @native
 local function from_linear_to_oklab(lrgb: vector): vector
@@ -44,7 +44,7 @@ local function from_oklab_to_linear(lab: vector, unclamped: boolean?): vector
 	return vector.create(red, green, blue)
 end
 
-return table.freeze {
+return table.freeze({
 	from_linear_to_oklab = from_linear_to_oklab,
 	from_oklab_to_linear = from_oklab_to_linear,
 
@@ -54,4 +54,4 @@ return table.freeze {
 	from_oklab_to_srgb = function(lab: vector, unclamped: boolean?): vector
 		return Linear.from_linear_to_srgb(from_oklab_to_linear(lab, unclamped))
 	end,
-}
+})

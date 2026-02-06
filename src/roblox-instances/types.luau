@@ -1,5 +1,5 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
 
 export type SpecialKeyStage =
 	| "self"
@@ -19,31 +19,35 @@ export type SpecialKey<T = string> = {
 
 export type Properties = { [any]: any }
 export type Child = Instance | ((Instance) -> Child?) | { Child } | calc.StateNode<Child>
+export type Tag = string | { string } | calc.StateNode<Tag>
 
 export type NewConstructor = (
 	scope: memory.Scope,
-	class_name: string
-) -> (Properties) -> Instance
+	class_name: string,
+	properties: Properties
+) -> Instance
 export type HydrateConstructor = <InstanceT>(
 	scope: memory.Scope,
-	instance: InstanceT
-) -> (Properties) -> InstanceT
+	instance: InstanceT,
+	properties: Properties
+) -> InstanceT
 
 return {
 	cannot_create_class = "Unable to create instance of type '%s'.",
 	cannot_connect_change = "The %s class doesn't have a property called '%s'.",
 	cannot_connect_event = "The %s class doesn't have a event called '%s'.",
 
-	property_invalid_type = "'%s.%s' expected a '%s' type, but got a '%s' type.",
 	property_cannot_assign = "The %s class has no assignable property '%s'.",
 	property_assign_error = "Error while setting property:\nERROR_MESSAGE",
 
-	invalid_key_type = "Invalid key type '%s'.",
-	invalid_child_type = "Invalid child type '%s'.",
+	invalid_key_type = "Invalid key type: expected a 'string | SpecialKey' type, but got a '%s' type.",
+	invalid_child_type = "Invalid child type: expected a 'Instance | (Instance) -> [RECURSE] | { [RECURSE] } | StateNode<[RECURSE]>' type, but got a '%s' type.",
+	invalid_tag_type = "Invalid tag type: expected a 'string | { [RECURSE] } | StateNode<[RECURSE]>' type, but got a '%s' type.",
+	invalid_ref_type = "Invalid ref type: expected a 'Value' type, but got a '%s' type.",
+	invalid_out_type = "Invalid out type: expected a 'Value' type, but got a '%s' type.",
+	invalid_property_type = "'%s.%s' expected a '%s' type, but got a '%s' type.",
 
 	missing_specialkey_stage = "The SpecialKey '%s' is missing a stage property.",
 	invalid_specialkey_stage = "The SpecialKey '%s' has an invalid stage '%s'.",
 	specialkey_apply_error = "The SpecialKey '%s' errored while being applied to %s '%s' with value %* at stage '%s':\nERROR_MESSAGE",
-
-	expected_type = "Expected a %s, got %s.",
 }

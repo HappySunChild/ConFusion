@@ -1,6 +1,6 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local memory = require("../core-memory/types")
 
 export type ComputedPair<IK, IV, OK, OV> = {
 	_input_key: IK,

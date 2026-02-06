@@ -1,25 +1,20 @@
-local async = require "./types"
-local calc = require "../core-calc/types"
-local graph = require "../core-graph/types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local async = require("./types")
+local calc = require("../core-calc/types")
+local graph = require("../core-graph/types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
-
-local cast_to_state = require "../core-calc/cast_to_state"
-local is_similar = require "../core-calc/is_similar"
-
-local peek = require "../core-use/peek"
-
-local change = require "../core-graph/change"
-local depend = require "../core-graph/depend"
-local evaluate = require "../core-graph/evaluate"
-
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
-
-local parse_error = require "../core-logging/parse_error"
+local External = require("../core-external/External")
+local cast_to_state = require("../core-calc/cast_to_state")
+local change = require("../core-graph/change")
+local cleanup = require("../core-memory/cleanup")
+local depend = require("../core-graph/depend")
+local derive_scope = require("../core-memory/derive_scope")
+local destructor = require("../core-memory/destructor")
+local evaluate = require("../core-graph/evaluate")
+local is_similar = require("../core-calc/is_similar")
+local parse_error = require("../core-logging/parse_error")
+local peek = require("../core-use/peek")
 
 type Self<T, S> = async.Eventual<T> & {
 	_inner_scope: memory.Scope<S>,
@@ -41,26 +36,21 @@ local function handle_eventual_computation<T, S>(eventual: Self<T, S>)
 
 	local inner_scope = derive_scope(eventual.scope)
 
-	local ok, err: logging.Error = xpcall(
-		eventual._processor,
-		parse_error,
-		eventual._use,
-		inner_scope,
-		eventual._become
-	)
+	local ok, err: logging.Error =
+		xpcall(eventual._processor, parse_error, eventual._use, inner_scope, eventual._become)
 
 	if ok then -- adopt computation scope, clean up old one
-		destroy(eventual._inner_scope)
+		cleanup(eventual._inner_scope)
 		eventual._inner_scope = inner_scope
 	else -- throw away computation scope, invalidated because computation errored
-		destroy(inner_scope)
+		cleanup(inner_scope)
 		External.log_error_nonfatal(calc.callback_error, err)
 	end
 
 	eventual._active_thread = nil
 end
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Eventual",
 	timeliness = "eager",
@@ -98,20 +88,8 @@ local CLASS = table.freeze {
 
 		return not is_similar(self._old_value, self._cached_value)
 	end,
-	destroy = function<T, S>(self: Self<T, S>)
-		if self._active_thread ~= nil then
-			External.cancel_task(self._active_thread)
-		end
-
-		self._session_used = nil
-
-		destroy(self._inner_scope)
-		self._inner_scope = nil
-
-		destroy_node(self)
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) -> ())
 	local session_used = eventual._session_used
@@ -148,6 +126,17 @@ local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) 
 	return use, become
 end
 
+local function destroy_eventual<T, S>(eventual: Self<T, S>)
+	if eventual._active_thread ~= nil then
+		External.cancel_task(eventual._active_thread)
+	end
+
+	eventual._session_used = nil
+
+	cleanup(eventual._inner_scope)
+	eventual._inner_scope = nil
+end
+
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,
 	processor: async.EventualProcessor<S, T>,
@@ -172,7 +161,7 @@ local function Eventual<T, S>(
 
 	new_eventual._use, new_eventual._become = generate_callbacks(new_eventual)
 
-	table.insert(scope, new_eventual)
+	table.insert(scope, destructor(new_eventual, destroy_eventual))
 
 	evaluate(new_eventual, true)
 

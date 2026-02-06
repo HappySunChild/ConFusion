@@ -1,9 +1,9 @@
-local graph = require "./types"
+local graph = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local change = require "./change"
-local is_eager = require "./is_eager"
+local change = require("./change")
+local is_eager = require("./is_eager")
 
 --[[
 	Marks a graph node as "dirty", meaning it should be re-evaluated

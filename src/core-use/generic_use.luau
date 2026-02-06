@@ -1,9 +1,9 @@
-local calc = require "../core-calc/types"
-local graph = require "../core-graph/types"
+local calc = require("../core-calc/types")
+local graph = require("../core-graph/types")
 
-local depend = require "../core-graph/depend"
+local depend = require("../core-graph/depend")
 
-local peek = require "./peek"
+local peek = require("./peek")
 
 local function generic_use(user: graph.GraphNode): calc.Use
 	local function use<T>(target: calc.UsedAs<T>): T

@@ -1,7 +1,7 @@
-local instances = require "../types"
-local memory = require "../../core-memory/types"
+local instances = require("../types")
+local memory = require("../../core-memory/types")
 
-local SpecialKey = require "./SpecialKey"
+local SpecialKey = require("../SpecialKey")
 
 local KEY_CACHE = {}
 

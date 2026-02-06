@@ -1,20 +1,16 @@
-local calc = require "./types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local calc = require("./types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
-
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
-local inner_scope = require "../core-memory/inner_scope"
-
-local dissolving_use = require "../core-use/dissolving_use"
-local generic_use = require "../core-use/generic_use"
-
-local parse_error = require "../core-logging/parse_error"
-
-local is_similar = require "./is_similar"
+local External = require("../core-external/External")
+local cleanup = require("../core-memory/cleanup")
+local derive_scope = require("../core-memory/derive_scope")
+local destructor = require("../core-memory/destructor")
+local dissolving_use = require("../core-use/dissolving_use")
+local generic_use = require("../core-use/generic_use")
+local inner_scope = require("../core-memory/inner_scope")
+local is_similar = require("./is_similar")
+local parse_error = require("../core-logging/parse_error")
 
 type Self<T, S> = {
 	_inner_scope: memory.Scope<S>?,
@@ -22,7 +18,7 @@ type Self<T, S> = {
 	_use: calc.Use,
 } & calc.Computed<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Computed",
 	timeliness = "lazy",
@@ -40,7 +36,7 @@ local CLASS = table.freeze {
 		if ok then
 			local similar = is_similar(self._cached_value, new_value)
 
-			destroy(self._inner_scope)
+			cleanup(self._inner_scope)
 
 			self._inner_scope = inner_scope
 			self._cached_value = new_value
@@ -48,20 +44,14 @@ local CLASS = table.freeze {
 			return not similar
 		end
 
-		destroy(inner_scope)
+		cleanup(inner_scope)
 
 		External.log_error_nonfatal(calc.callback_error, new_value :: logging.Error)
 
 		return false
 	end,
-	destroy = function<T, S>(self: Self<T, S>)
-		destroy(self._inner_scope)
-		self._inner_scope = nil
-
-		destroy_node(self)
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function check_dissolvable<T, S>(
 	scope: memory.Scope<S>,
@@ -73,15 +63,20 @@ local function check_dissolvable<T, S>(
 	if success then
 		-- scope went unused, we can clean it up
 		if #dissolving_scope == 1 then
-			destroy(dissolving_scope)
+			cleanup(dissolving_scope)
 		end
 
 		return true, value
 	end
 
-	destroy(dissolving_scope)
+	cleanup(dissolving_scope)
 
 	return false
+end
+
+local function destroy_computed<T, S>(computed: Self<T, S>)
+	cleanup(computed._inner_scope)
+	computed._inner_scope = nil
 end
 
 local function Computed<T, S>(
@@ -108,7 +103,7 @@ local function Computed<T, S>(
 
 	new_computed._use = generic_use(new_computed)
 
-	table.insert(scope, new_computed)
+	table.insert(scope, destructor(new_computed, destroy_computed))
 
 	return new_computed
 end

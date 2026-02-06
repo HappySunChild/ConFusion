@@ -1,21 +1,16 @@
-local calc = require "../core-calc/types"
-local iter_for = require "./types"
-local logging = require "../core-logging/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter_for = require("./types")
+local logging = require("../core-logging/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
-
-local parse_error = require "../core-logging/parse_error"
-
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
-
-local mark_dirty = require "../core-graph/mark_dirty"
-
-local is_similar = require "../core-calc/is_similar"
-
-local generic_use = require "../core-use/generic_use"
+local External = require("../core-external/External")
+local cleanup = require("../core-memory/cleanup")
+local derive_scope = require("../core-memory/derive_scope")
+local destructor = require("../core-memory/destructor")
+local generic_use = require("../core-use/generic_use")
+local is_similar = require("../core-calc/is_similar")
+local mark_dirty = require("../core-graph/mark_dirty")
+local parse_error = require("../core-logging/parse_error")
 
 type ComputedPairProcessor<S, IK, IV, OK, OV> = (
 	use: calc.Use,
@@ -33,7 +28,7 @@ type Self<S, IK, IV, OK, OV> = iter_for.ComputedPair<IK, IV, OK, OV> & {
 	_use: calc.Use,
 }
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "ComputedPair",
 
@@ -73,14 +68,14 @@ local CLASS = table.freeze {
 		)
 
 		if not ok then
-			destroy(inner_scope)
+			cleanup(inner_scope)
 
 			External.log_error_nonfatal(calc.callback_error, new_key :: logging.Error)
 
 			return false
 		end
 
-		destroy(self._inner_scope)
+		cleanup(self._inner_scope)
 		self._inner_scope = inner_scope
 
 		local output = self._cached_value
@@ -90,18 +85,17 @@ local CLASS = table.freeze {
 
 		return not (is_similar(old_key, new_key) and is_similar(old_value, new_value))
 	end,
-	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		destroy(self._inner_scope)
-		self._inner_scope = nil
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
-		self._input_key = nil
-		self._input_value = nil
-		self._cached_value = nil
+local function destroy_computedpair<S, IK, IV, OK, OV>(computedpair: Self<S, IK, IV, OK, OV>)
+	cleanup(computedpair._inner_scope)
+	computedpair._inner_scope = nil
 
-		destroy_node(self)
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+	computedpair._input_key = nil
+	computedpair._input_value = nil
+	computedpair._cached_value = nil
+end
 
 local function ComputedPair<S, IK, IV, OK, OV>(
 	scope: memory.Scope<S>,
@@ -109,13 +103,7 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 	initial_value: IV,
 	roam_keys: boolean,
 	roam_values: boolean,
-	processor: ComputedPairProcessor<
-		S,
-		IK,
-		IV,
-		OK,
-		OV
-	>
+	processor: ComputedPairProcessor<S, IK, IV, OK, OV>
 )
 	local new_computedpair = setmetatable({
 		scope = scope,
@@ -138,7 +126,7 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 
 	new_computedpair._use = generic_use(new_computedpair)
 
-	table.insert(scope, new_computedpair)
+	table.insert(scope, destructor(new_computedpair, destroy_computedpair))
 
 	return new_computedpair
 end

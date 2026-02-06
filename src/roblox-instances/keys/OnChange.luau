@@ -1,9 +1,8 @@
-local instances = require "../types"
-local memory = require "../../core-memory/types"
+local instances = require("../types")
+local memory = require("../../core-memory/types")
 
-local External = require "../../core-external/External"
-
-local SpecialKey = require "./SpecialKey"
+local External = require("../../core-external/External")
+local SpecialKey = require("../SpecialKey")
 
 local KEY_CACHE = {}
 
@@ -15,8 +14,7 @@ local function OnChange(property: string): instances.SpecialKey<"OnChange">
 			"observer",
 			"OnChange",
 			function(scope: memory.Scope, apply_to: Instance, callback: (any) -> ())
-				local ok, event =
-					pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
+				local ok, event = pcall(apply_to.GetPropertyChangedSignal, apply_to, property)
 
 				if not ok then
 					External.log_error(

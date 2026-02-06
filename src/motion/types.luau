@@ -1,5 +1,5 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
 
 export type AnimationMove<T> = (elapsed: number) -> (boolean, T, ...any)
 export type MoveGenerator<T> = (goal: T, start: T, ...any) -> AnimationMove<T>

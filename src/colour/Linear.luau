@@ -16,11 +16,11 @@ local function to_srgb(channel: number): number
 	return (1.055 * channel ^ (1 / 2.4)) - 0.055
 end
 
-return table.freeze {
+return table.freeze({
 	from_linear_to_srgb = function(rgb: vector): vector
 		return vector.create(to_srgb(rgb.x), to_srgb(rgb.y), to_srgb(rgb.z))
 	end,
 	from_srgb_to_linear = function(srgb: vector): vector
 		return vector.create(to_linear(srgb.x), to_linear(srgb.y), to_linear(srgb.z))
 	end,
-}
+})

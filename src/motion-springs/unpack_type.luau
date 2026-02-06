@@ -1,4 +1,4 @@
-local Oklab = require "../colour/Oklab"
+local Oklab = require("../colour/Oklab")
 
 local function unpack_type(value: any): { number }
 	local data_type = typeof(value)

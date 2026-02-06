@@ -1,7 +1,7 @@
-local instances = require "./types"
-local memory = require "../core-memory/types"
+local instances = require("./types")
+local memory = require("../core-memory/types")
 
-local apply_properties = require "./apply_properties"
+local apply_properties = require("./apply_properties")
 
 local function Hydrate<InstanceT>(
 	scope: memory.Scope,

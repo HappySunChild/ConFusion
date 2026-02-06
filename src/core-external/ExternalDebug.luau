@@ -1,11 +1,11 @@
-local external = require "./types"
-local memory = require "../core-memory/types"
+local external = require("./types")
+local memory = require("../core-memory/types")
 
-local name_of = require "../core-logging/name_of"
+local name_of = require("../core-logging/name_of")
 
 local active_debugger: external.ExternalDebugger? = nil
 
-return table.freeze {
+return table.freeze({
 	name_of = name_of,
 	set_debugger = function(new_debugger: external.ExternalDebugger?)
 		local old_debugger = active_debugger
@@ -36,4 +36,4 @@ return table.freeze {
 
 		active_debugger.untrack_scope(scope)
 	end,
-}
+})

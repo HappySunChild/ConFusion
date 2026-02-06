@@ -1,14 +1,11 @@
-local calc = require "../core-calc/types"
-local iter_range = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter_range = require("./types")
+local memory = require("../core-memory/types")
 
-local cast_to_state = require "../core-calc/cast_to_state"
-
-local peek = require "../core-use/peek"
-
-local depend = require "../core-graph/depend"
-
-local destroy_node = require "../core-memory/destroy_node"
+local cast_to_state = require("../core-calc/cast_to_state")
+local depend = require("../core-graph/depend")
+local destructor = require("../core-memory/destructor")
+local peek = require("../core-use/peek")
 
 type Self = {
 	_start: calc.UsedAs<number>,
@@ -16,7 +13,7 @@ type Self = {
 	_step: calc.UsedAs<number>,
 } & iter_range.Range
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "Range",
 	timeliness = "lazy",
@@ -36,9 +33,8 @@ local CLASS = table.freeze {
 
 		return true
 	end,
-	destroy = destroy_node,
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 local function check_dissolvable(
 	start: calc.UsedAs<number>,
@@ -93,7 +89,7 @@ local function Range(
 		_step = step,
 	}, METATABLE)
 
-	table.insert(scope, new_range)
+	table.insert(scope, destructor(new_range))
 
 	return new_range
 end

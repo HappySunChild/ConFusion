@@ -1,16 +1,16 @@
-local calc = require "../core-calc/types"
-local context = require "./types"
+local calc = require("../core-calc/types")
+local context = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local parse_error = require "../core-logging/parse_error"
+local parse_error = require("../core-logging/parse_error")
 
 type Self<T> = {
 	_default: T,
 	_values: { [thread]: { T } },
 } & context.Contextual<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "Contextual",
 
 	now = function<T>(self: Self<T>): T
@@ -39,9 +39,9 @@ local CLASS = table.freeze {
 
 		return value
 	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
-local WEAK_KEYS_METATABLE = table.freeze { __mode = "k" }
+})
+local METATABLE = table.freeze({ __index = CLASS })
+local WEAK_KEYS_METATABLE = table.freeze({ __mode = "k" })
 
 local function Contextual<T>(default: T): context.Contextual<T>
 	local new_contextual: Self<T> = setmetatable({

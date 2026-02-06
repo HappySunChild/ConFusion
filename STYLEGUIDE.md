@@ -28,11 +28,11 @@ Also, all imports have to be relative (for now) string imports! No requiring thr
 
 Example:
 ```luau
-local some_types = require "..."
-local some_more_types = require "..."
+local some_types = require("...")
+local some_more_types = require("...")
 
-local some_utility_function = require "..."
-local some_other_utility = require "..."
+local some_utility_function = require("...")
+local some_other_utility = require("...")
 
 -- rest of the file...
 ```
@@ -45,7 +45,7 @@ Classes should always be structured like so:
 ```luau
 type Self = ...
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	-- [static class properties]
 	type = "Example",
 	kind = "example",
@@ -54,8 +54,8 @@ local CLASS = table.freeze {
 	do_something = function(self: Self, ...)
 		...
 	end
-}
-local METATABLE = table.freeze { __index = CLASS }
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
 -- object constructor function
 local function Example(...): Example
@@ -66,6 +66,3 @@ end
 ```
 
 This structure is pretty well defined, it keeps the constructor separate from the methods and is relatively rigid. Although it may seem a little backwards to have the methods defined before the constructor, I think it's perfectly fine here (unless your methods need to access the constructor for whatever reason).
-
-## Use string and table call syntax if you want!!
-This one is kind of a given, since Fusion (and by extension ConFusion) is built around this syntax. While, yes this syntax can be quite cursed, it can improve the readability (and aesthetic) of your code (if that's something you really care about).

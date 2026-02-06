@@ -1,16 +1,17 @@
-local graph = require "./types"
+local graph = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local name_of = require "../core-logging/name_of"
+local name_of = require("../core-logging/name_of")
 
-local check_lifetime = require "../core-memory/check_lifetime"
+local check_lifetime = require("../core-memory/check_lifetime")
 
-local cast_to_graph = require "./cast_to_graph"
-local evaluate = require "./evaluate"
+local cast_to_graph = require("./cast_to_graph")
+local evaluate = require("./evaluate")
 
 local function depend_lifetime_formatter(a: unknown, b: unknown): (string, string)
-	return `The dependency '{name_of(b, "object")}'`, `the user '{name_of(a, "object")}'`
+	return `The dependency '{name_of(b, "object")}'`,
+		`being used by the user '{name_of(a, "object")}'`
 end
 
 local function depend(user: graph.GraphNode, dependency: graph.GraphNode)
@@ -22,14 +23,19 @@ local function depend(user: graph.GraphNode, dependency: graph.GraphNode)
 
 	evaluate(dependency)
 
-	if table.isfrozen(user._using) or table.isfrozen(dependency._users) then
+	if table.isfrozen(user._using) then
 		External.log_error(
-			graph.cannot_depend,
+			graph.cannot_depend_user_frozen,
 			nil,
-			name_of(user, "User object"),
-			table.isfrozen(user._using) and "FROZEN" or "NOT FROZEN",
-			name_of(dependency, "Dependency object"),
-			table.isfrozen(dependency._users) and "FROZEN" or "NOT FROZEN"
+			name_of(user, "unknown"),
+			name_of(dependency, "unknown")
+		)
+	elseif table.isfrozen(dependency._users) then
+		External.log_error(
+			graph.cannot_depend_dependency_frozen,
+			nil,
+			name_of(user, "unknown"),
+			name_of(dependency, "unknown")
 		)
 	end
 

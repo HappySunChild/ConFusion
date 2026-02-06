@@ -1,13 +1,13 @@
-local calc = require "./core-calc/types"
-local external = require "./core-external/types"
-local graph = require "./core-graph/types"
-local memory = require "./core-memory/types"
-local use = require "./core-use/types"
+local calc = require("./core-calc/types")
+local external = require("./core-external/types")
+local graph = require("./core-graph/types")
+local memory = require("./core-memory/types")
+local use = require("./core-use/types")
 
-local External = require "./core-external/External"
-local ExternalDebugger = require "./core-external/ExternalDebug"
+local External = require("./core-external/External")
+local ExternalDebugger = require("./core-external/ExternalDebug")
 
-local merge = require "./core-memory/merge"
+local merge = require("./core-memory/merge")
 
 type Version = {
 	read major: number,
@@ -25,10 +25,10 @@ export type ConFusion<I = any> = {
 	version: Version,
 
 	-- Core: Memory
-	scoped: memory.DeriveScope,
-	derive_scope: memory.DeriveScope,
-	inner_scope: memory.DeriveScope,
-	destroy: memory.Destroy,
+	scoped: memory.Scoped,
+	derive_scope: memory.Scoped,
+	inner_scope: memory.Scoped,
+	cleanup: memory.Cleanup,
 	insert: memory.Insert,
 
 	-- Core: State
@@ -44,24 +44,24 @@ export type ConFusion<I = any> = {
 	flatten: use.Flatten,
 } & I
 
-local CORE_CONFUSION = table.freeze {
-	derive_scope = require "./core-memory/derive_scope",
-	destroy = require "./core-memory/destroy",
-	inner_scope = require "./core-memory/inner_scope",
-	insert = require "./core-memory/insert",
-	scoped = require "./core-memory/scoped",
+local CORE_CONFUSION = table.freeze({
+	derive_scope = require("./core-memory/derive_scope"),
+	cleanup = require("./core-memory/cleanup"),
+	inner_scope = require("./core-memory/inner_scope"),
+	insert = require("./core-memory/insert"),
+	scoped = require("./core-memory/scoped"),
 
-	Computed = require "./core-calc/Computed",
-	Value = require "./core-calc/Value",
+	Computed = require("./core-calc/Computed"),
+	Value = require("./core-calc/Value"),
 
-	observe = require "./core-graph/observe",
-	observe_immediate = require "./core-graph/observe_immediate",
+	observe = require("./core-graph/observe"),
+	observe_immediate = require("./core-graph/observe_immediate"),
 
-	flattern = require "./core-use/flatten",
-	peek = require "./core-use/peek",
-}
+	flattern = require("./core-use/flatten"),
+	peek = require("./core-use/peek"),
+})
 
-local ConFusion = table.freeze {
+local ConFusion = table.freeze({
 	configure = function<I>(options: Configuration<I>): ConFusion<I>
 		External.set_provider(options.provider)
 		ExternalDebugger.set_debugger(options.debugger)
@@ -79,6 +79,6 @@ local ConFusion = table.freeze {
 
 		return new_confusion :: ConFusion<I>
 	end,
-}
+})
 
 return ConFusion

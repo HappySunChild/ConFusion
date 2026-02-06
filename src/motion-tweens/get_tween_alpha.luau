@@ -1,4 +1,4 @@
-local tweens = require "./types"
+local tweens = require("./types")
 
 local function get_tween_alpha(info: tweens.TweenInfo, current_time: number)
 	local cycle_count = info.repeat_count + 1

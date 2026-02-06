@@ -1,17 +1,14 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local iter_for = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local iter_for = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
-
-local peek = require "../core-use/peek"
-
-local depend = require "../core-graph/depend"
-
-local derive_scope = require "../core-memory/derive_scope"
-local destroy = require "../core-memory/destroy"
-local destroy_node = require "../core-memory/destroy_node"
+local External = require("../core-external/External")
+local cleanup = require("../core-memory/cleanup")
+local depend = require("../core-graph/depend")
+local derive_scope = require("../core-memory/derive_scope")
+local destructor = require("../core-memory/destructor")
+local peek = require("../core-use/peek")
 
 type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	_input: calc.UsedAs<{ [IK]: IV }>,
@@ -26,16 +23,12 @@ type Self<S, IK, IV, OK, OV> = iter.Disassembly<OK, OV> & {
 	) -> iter_for.ComputedPair<IK, IV, OK, OV>,
 }
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "Graph",
 	kind = "Disassembly",
 	timeliness = "lazy",
 
-	populate = function<S, IK, IV, OK, OV>(
-		self: Self<S, IK, IV, OK, OV>,
-		use: calc.Use,
-		output: { [OK]: OV? }
-	)
+	populate = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>, use: calc.Use, output: { [OK]: OV? })
 		local min_array_index = math.huge
 		local max_array_index = -math.huge
 		local has_holes = false
@@ -49,7 +42,7 @@ local CLASS = table.freeze {
 				continue
 			elseif output[output_key] ~= nil then
 				External.log_error_nonfatal(
-					iter.for_key_collision,
+					iter_for.for_key_collision,
 					nil,
 					output_key,
 					pair.input_key,
@@ -170,22 +163,21 @@ local CLASS = table.freeze {
 
 		-- create new pair objects for any remaining pairs that couldn't be reused.
 		for pending_key, pending_value in pending_pairs do
-			new_pairs[pending_key] =
-				pair_constructor(pair_scope, pending_key, pending_value)
+			new_pairs[pending_key] = pair_constructor(pair_scope, pending_key, pending_value)
 		end
 
 		self._active_pairs = new_pairs
 
 		return true
 	end,
-	destroy = function<S, IK, IV, OK, OV>(self: Self<S, IK, IV, OK, OV>)
-		destroy(self._pair_scope)
-		self._pair_scope = nil
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
-		destroy_node(self)
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+local function destroy_fordiasssembly<S, IK, IV, OK, OV>(fordisassembly: Self<S, IK, IV, OK, OV>)
+	cleanup(fordisassembly._pair_scope)
+	fordisassembly._pair_scope = nil
+	fordisassembly._active_pairs = nil
+end
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
 	scope: memory.Scope,
@@ -211,7 +203,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		_constructor = constructor,
 	}, METATABLE) :: any
 
-	table.insert(scope, new_disassembly)
+	table.insert(scope, destructor(new_disassembly, destroy_fordiasssembly))
 
 	return new_disassembly
 end

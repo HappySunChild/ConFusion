@@ -1,4 +1,4 @@
-local tweens = require "./types"
+local tweens = require("./types")
 
 local function get_tween_duration(info: tweens.TweenInfo)
 	if info.repeat_count == -1 then

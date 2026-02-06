@@ -1,4 +1,4 @@
-local logging = require "./types"
+local logging = require("./types")
 
 local function format_error(
 	message: string,

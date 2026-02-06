@@ -1,6 +1,6 @@
-local calc = require "../core-calc/types"
-local graph = require "../core-graph/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local graph = require("../core-graph/types")
+local memory = require("../core-memory/types")
 
 export type Eventual<T> = {
 	kind: "Eventual",
@@ -23,5 +23,5 @@ export type EventualConstructor = <S, T>(
 export type Await = (scope: memory.Scope, subject: graph.GraphNode) -> ()
 
 return {
-	await_non_graph = "Can't await non-graph values.",
+	invalid_await_type = "Invalid await type: expected a 'GraphNode' type, but got a '%s' type.",
 }

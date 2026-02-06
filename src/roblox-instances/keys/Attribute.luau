@@ -1,12 +1,10 @@
-local calc = require "../../core-calc/types"
-local instances = require "../types"
-local memory = require "../../core-memory/types"
+local calc = require("../../core-calc/types")
+local instances = require("../types")
+local memory = require("../../core-memory/types")
 
-local peek = require "../../core-use/peek"
-
-local observe_immediate = require "../../core-graph/observe_immediate"
-
-local SpecialKey = require "./SpecialKey"
+local SpecialKey = require("../SpecialKey")
+local observe_immediate = require("../../core-graph/observe_immediate")
+local peek = require("../../core-use/peek")
 
 local KEY_CACHE = {}
 

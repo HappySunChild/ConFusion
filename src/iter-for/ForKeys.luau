@@ -1,13 +1,13 @@
-local calc = require "../core-calc/types"
-local iter = require "../iter/types"
-local iter_for = require "./types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local iter = require("../iter/types")
+local iter_for = require("./types")
+local memory = require("../core-memory/types")
 
-local Iter = require "../iter/Iter"
+local Iter = require("../iter/Iter")
 
-local ComputedPair = require "./ComputedPair"
-local ForDisassembly = require "./ForDisassembly"
-local check_dissolvable = require "./check_dissolvable"
+local ComputedPair = require("./ComputedPair")
+local ForDisassembly = require("./ForDisassembly")
+local check_dissolvable = require("./check_dissolvable")
 
 local function ForKeys<S, IK, IV, OK>(
 	scope: memory.Scope<S>,

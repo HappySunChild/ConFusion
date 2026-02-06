@@ -1,4 +1,4 @@
-local graph = require "./types"
+local graph = require("./types")
 
 local function cast_to_graph(x: unknown): graph.GraphNode?
 	if

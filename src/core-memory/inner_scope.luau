@@ -1,6 +1,6 @@
-local memory = require "./types"
+local memory = require("./types")
 
-local derive_scope = require "./derive_scope"
+local derive_scope = require("./derive_scope")
 
 local function inner_scope<S, M>(existing: memory.Scope<S>, methods: M?): memory.Scope<S & M>
 	local inner = derive_scope(existing, methods)
@@ -17,4 +17,4 @@ local function inner_scope<S, M>(existing: memory.Scope<S>, methods: M?): memory
 	return inner
 end
 
-return inner_scope :: memory.DeriveScope
+return inner_scope

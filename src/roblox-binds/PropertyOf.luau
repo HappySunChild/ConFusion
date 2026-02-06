@@ -1,41 +1,37 @@
-local binds = require "./types"
-local instances = require "../roblox-instances/types"
-local memory = require "../core-memory/types"
+local binds = require("./types")
+local instances = require("../roblox-instances/types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
-
-local change = require "../core-graph/change"
-
-local destroy_node = require "../core-memory/destroy_node"
+local External = require("../core-external/External")
+local change = require("../core-graph/change")
+local destructor = require("../core-memory/destructor")
 
 type Self<T> = {
 	_event: RBXScriptConnection,
 } & binds.PropertyOf<T>
 
-local CLASS = table.freeze {
+local CLASS = table.freeze({
 	type = "State",
 	kind = "PropertyOf",
 	timeliness = "lazy",
-	_using = table.freeze {},
+	_using = table.freeze({}),
 
 	_evaluate = function()
 		return true
 	end,
-	destroy = function<T>(self: Self<T>)
-		self._event:Disconnect()
+})
+local METATABLE = table.freeze({ __index = CLASS })
 
-		destroy_node(self)
-	end,
-}
-local METATABLE = table.freeze { __index = CLASS }
+local function destroy_propertyof<T>(propertyof: Self<T>)
+	propertyof._event:Disconnect()
+end
 
 local function PropertyOf(
 	scope: memory.Scope,
 	instance: Instance,
 	property: string
 ): binds.PropertyOf<unknown>
-	local ok, event: RBXScriptSignal =
-		pcall(instance.GetPropertyChangedSignal, instance, property)
+	local ok, event: RBXScriptSignal = pcall(instance.GetPropertyChangedSignal, instance, property)
 
 	if not ok then
 		External.log_error(
@@ -61,7 +57,7 @@ local function PropertyOf(
 		change(new_property)
 	end)
 
-	table.insert(scope, new_property)
+	table.insert(scope, destructor(new_property, destroy_propertyof))
 
 	return new_property
 end

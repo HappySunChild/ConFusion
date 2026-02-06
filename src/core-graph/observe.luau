@@ -1,13 +1,13 @@
-local graph = require "./types"
-local memory = require "../core-memory/types"
+local graph = require("./types")
+local memory = require("../core-memory/types")
 
-local name_of = require "../core-logging/name_of"
-local nicknames = require "../core-logging/nicknames"
+local name_of = require("../core-logging/name_of")
+local nicknames = require("../core-logging/nicknames")
 
-local check_lifetime = require "../core-memory/check_lifetime"
+local check_lifetime = require("../core-memory/check_lifetime")
 
-local cast_to_graph = require "./cast_to_graph"
-local evaluate = require "./evaluate"
+local cast_to_graph = require("./cast_to_graph")
+local evaluate = require("./evaluate")
 
 local function observe_lifetime_formatter(_, b: unknown)
 	return `The subject '{name_of(b)}'`, "it could be observed"

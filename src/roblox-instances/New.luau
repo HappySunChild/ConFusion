@@ -1,7 +1,7 @@
-local instances = require "./types"
-local memory = require "../core-memory/types"
+local instances = require("./types")
+local memory = require("../core-memory/types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
 local apply_properties = require "./apply_properties"
 

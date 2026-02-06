@@ -1,10 +1,9 @@
-local graph = require "./types"
+local graph = require("./types")
 
-local External = require "../core-external/External"
+local External = require("../core-external/External")
 
-local cast_to_graph = require "./cast_to_graph"
-local evaluate = require "./evaluate"
-local is_eager = require "./is_eager"
+local evaluate = require("./evaluate")
+local is_eager = require("./is_eager")
 
 local function fire_node_observers(node: graph.GraphNode)
 	if node._observers == nil then
@@ -65,10 +64,6 @@ end
 	https://fluff.blog/2024/04/16/monotonic-painting.html
 ]]
 local function change(node: graph.GraphNode)
-	if cast_to_graph(node) == nil then
-		External.log_error(graph.invalid_change_type, nil, typeof(node))
-	end
-
 	if not evaluate(node, true) then
 		return
 	end

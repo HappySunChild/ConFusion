@@ -1,15 +1,7 @@
-local graph = require "../core-graph/types"
+local graph = require("../core-graph/types")
 
 --- A generic destroy function for graph nodes.
 local function destroy_node(node: graph.GraphNode)
-	local scope = node.scope
-
-	if scope ~= nil then
-		local index = table.find(scope, node)
-
-		table.remove(scope, index)
-	end
-
 	node.scope = nil
 
 	local using = node._using
@@ -27,4 +19,19 @@ local function destroy_node(node: graph.GraphNode)
 	end
 end
 
-return destroy_node
+local function destructor(
+	node: graph.GraphNode,
+	auxiliary: (node: graph.GraphNode) -> ()?
+): () -> ()
+	local function destroy()
+		destroy_node(node)
+
+		if auxiliary ~= nil then
+			auxiliary(node)
+		end
+	end
+
+	return destroy
+end
+
+return destructor
