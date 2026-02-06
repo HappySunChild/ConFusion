@@ -1,5 +1,5 @@
-local calc = require "../core-calc/types"
-local memory = require "../core-memory/types"
+local calc = require("../core-calc/types")
+local memory = require("../core-memory/types")
 
 export type StyleSheetProperties = {
 	derives: { StyleSheet }?,
@@ -11,9 +11,10 @@ export type StyleSheetProperties = {
 
 export type StyleRuleConstructor = (
 	scope: memory.Scope,
-	selector: string
-) -> (properties: { [string]: any }) -> (subrules: { StyleRule }) -> StyleRule
-
+	selector: string,
+	properties: { [string]: any },
+	subrules: { StyleRule }
+) -> StyleRule
 export type StyleSheetConstructor = (
 	scope: memory.Scope,
 	properties: StyleSheetProperties

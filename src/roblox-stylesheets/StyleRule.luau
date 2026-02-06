@@ -1,28 +1,28 @@
-local memory = require "../core-memory/types"
+local memory = require("../core-memory/types")
 
-local StyleProperties = require "./keys/StyleProperties"
-local StyleRules = require "./keys/StyleRules"
+local StyleProperties = require("./keys/StyleProperties")
+local StyleRules = require("./keys/StyleRules")
+local apply_properties = require("../roblox-instances/apply_properties")
 
-local apply_properties = require "../roblox-instances/apply_properties"
+local function StyleRule(
+	scope: memory.Scope,
+	selector: string,
+	properties: { [string]: any },
+	subrules: { StyleRule }?
+)
+	local new_rule = Instance.new("StyleRule")
 
-local function StyleRule(scope: memory.Scope, selector: string)
-	local new_rule = Instance.new "StyleRule"
+	table.insert(scope, new_rule)
 
-	return function(props: { [string]: any }): (subrules: { StyleRule }) -> StyleRule
-		return function(subrules: { StyleRule }): StyleRule
-			table.insert(scope, new_rule)
+	apply_properties(scope, new_rule, {
+		Selector = selector,
+		Name = selector,
 
-			apply_properties(scope, new_rule, {
-				Selector = selector,
-				Name = selector,
+		[StyleRules] = subrules,
+		[StyleProperties] = properties,
+	})
 
-				[StyleRules] = subrules,
-				[StyleProperties] = props,
-			})
-
-			return new_rule
-		end
-	end
+	return new_rule
 end
 
 return StyleRule
