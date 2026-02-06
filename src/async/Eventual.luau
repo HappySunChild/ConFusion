@@ -5,21 +5,16 @@ local logging = require("../core-logging/types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
 local cast_to_state = require("../core-calc/cast_to_state")
-local is_similar = require("../core-calc/is_similar")
-
-local peek = require("../core-use/peek")
-
 local change = require("../core-graph/change")
-local depend = require("../core-graph/depend")
-local evaluate = require("../core-graph/evaluate")
-
 local cleanup = require("../core-memory/cleanup")
+local depend = require("../core-graph/depend")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy_node = require("../core-memory/destroy_node")
-
+local destructor = require("../core-memory/destructor")
+local evaluate = require("../core-graph/evaluate")
+local is_similar = require("../core-calc/is_similar")
 local parse_error = require("../core-logging/parse_error")
+local peek = require("../core-use/peek")
 
 type Self<T, S> = async.Eventual<T> & {
 	_inner_scope: memory.Scope<S>,
@@ -93,18 +88,6 @@ local CLASS = table.freeze({
 
 		return not is_similar(self._old_value, self._cached_value)
 	end,
-	destroy = function<T, S>(self: Self<T, S>)
-		if self._active_thread ~= nil then
-			External.cancel_task(self._active_thread)
-		end
-
-		self._session_used = nil
-
-		cleanup(self._inner_scope)
-		self._inner_scope = nil
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
@@ -143,6 +126,17 @@ local function generate_callbacks<T, S>(eventual: Self<T, S>): (calc.Use, (any) 
 	return use, become
 end
 
+local function destroy_eventual<T, S>(eventual: Self<T, S>)
+	if eventual._active_thread ~= nil then
+		External.cancel_task(eventual._active_thread)
+	end
+
+	eventual._session_used = nil
+
+	cleanup(eventual._inner_scope)
+	eventual._inner_scope = nil
+end
+
 local function Eventual<T, S>(
 	scope: memory.Scope<S>,
 	processor: async.EventualProcessor<S, T>,
@@ -167,7 +161,7 @@ local function Eventual<T, S>(
 
 	new_eventual._use, new_eventual._become = generate_callbacks(new_eventual)
 
-	table.insert(scope, new_eventual)
+	table.insert(scope, destructor(new_eventual, destroy_eventual))
 
 	evaluate(new_eventual, true)
 

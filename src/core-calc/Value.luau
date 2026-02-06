@@ -2,9 +2,7 @@ local calc = require("./types")
 local memory = require("../core-memory/types")
 
 local change = require("../core-graph/change")
-
-local destroy_node = require("../core-memory/destroy_node")
-
+local destructor = require("../core-memory/destructor")
 local is_similar = require("./is_similar")
 
 type Self<T> = calc.Value<T>
@@ -31,7 +29,6 @@ local CLASS = table.freeze({
 	_evaluate = function()
 		return true
 	end,
-	destroy = destroy_node,
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
@@ -45,7 +42,7 @@ local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 		_users = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, new_value)
+	table.insert(scope, destructor(new_value))
 
 	return new_value
 end

@@ -2,11 +2,9 @@ local calc = require("../core-calc/types")
 local memory = require("../core-memory/types")
 local motion = require("../motion/types")
 
-local peek = require("../core-use/peek")
-
 local Motion = require("../motion/Motion")
-
 local pack_type = require("./pack_type")
+local peek = require("../core-use/peek")
 local spring_coefficients = require("./spring_coefficients")
 local unpack_type = require("./unpack_type")
 

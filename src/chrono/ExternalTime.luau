@@ -2,10 +2,8 @@ local chrono = require("./types")
 local memory = require("../core-memory/types")
 
 local External = require("../core-external/External")
-
 local change = require("../core-graph/change")
-
-local destroy_node = require("../core-memory/destroy_node")
+local destructor = require("../core-memory/destructor")
 
 type Self = chrono.ExternalTime
 
@@ -31,13 +29,12 @@ local CLASS = {
 	_evaluate = function(self: Self)
 		return true
 	end,
-	destroy = function(self: Self)
-		ALL_TIMERS[self] = nil
-
-		destroy_node(self)
-	end,
 }
 local METATABLE = table.freeze({ __index = CLASS })
+
+local function destroy_externaltime(externaltime: Self)
+	ALL_TIMERS[externaltime] = nil
+end
 
 local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({
@@ -49,7 +46,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 
 	ALL_TIMERS[new_externaltime] = true
 
-	table.insert(scope, new_externaltime)
+	table.insert(scope, destructor(new_externaltime, destroy_externaltime))
 
 	return new_externaltime
 end

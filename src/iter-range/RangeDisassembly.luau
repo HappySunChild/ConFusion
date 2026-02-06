@@ -7,7 +7,7 @@ local RangePair = require("./RangePair")
 local cleanup = require("../core-memory/cleanup")
 local depend = require("../core-graph/depend")
 local derive_scope = require("../core-memory/derive_scope")
-local destroy_node = require("../core-memory/destroy_node")
+local destructor = require("../core-memory/destructor")
 local peek = require("../core-use/peek")
 
 type Self<S, V> = {
@@ -73,14 +73,14 @@ local CLASS = table.freeze({
 
 		return true
 	end,
-	destroy = function<S, V>(self: Self<S, V>)
-		cleanup(self._pairs_scope)
-		self._pairs_scope = nil
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
+
+local function destroy_rangedisassembly<S, V>(rangediassembly: Self<S, V>)
+	cleanup(rangediassembly._pairs_scope)
+	rangediassembly._pairs_scope = nil
+	rangediassembly._active_pairs = nil
+end
 
 local function RangeDisassembly<S, V>(
 	scope: memory.Scope<S>,
@@ -107,7 +107,7 @@ local function RangeDisassembly<S, V>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	table.insert(scope, new_disassembly)
+	table.insert(scope, destructor(new_disassembly, destroy_rangedisassembly))
 
 	return new_disassembly
 end

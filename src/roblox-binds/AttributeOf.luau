@@ -2,8 +2,7 @@ local instances = require("./types")
 local memory = require("../core-memory/types")
 
 local change = require("../core-graph/change")
-
-local destroy_node = require("../core-memory/destroy_node")
+local destructor = require("../core-memory/destructor")
 
 type Self<T> = {
 	_event: RBXScriptConnection,
@@ -18,13 +17,12 @@ local CLASS = table.freeze({
 	_evaluate = function()
 		return true
 	end,
-	destroy = function<T>(self: Self<T>)
-		self._event:Disconnect()
-
-		destroy_node(self)
-	end,
 })
 local METATABLE = table.freeze({ __index = CLASS })
+
+local function destroy_attributeof<T>(attributeof: Self<T>)
+	attributeof._event:Disconnect()
+end
 
 local function AttributeOf<T>(
 	scope: memory.Scope,
@@ -49,7 +47,7 @@ local function AttributeOf<T>(
 		change(new_attribute)
 	end)
 
-	table.insert(scope, new_attribute)
+	table.insert(scope, destructor(new_attribute, destroy_attributeof))
 
 	return new_attribute
 end

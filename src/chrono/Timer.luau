@@ -5,9 +5,7 @@ local ExternalTime = require("./ExternalTime")
 
 local change = require("../core-graph/change")
 local depend = require("../core-graph/depend")
-
-local destroy_node = require("../core-memory/destroy_node")
-
+local destructor = require("../core-memory/destructor")
 local peek = require("../core-use/peek")
 
 type Self = {
@@ -64,7 +62,6 @@ local CLASS = table.freeze({
 
 		return old_value ~= new_value
 	end,
-	destroy = destroy_node,
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
@@ -83,7 +80,7 @@ local function Timer(scope: memory.Scope): chrono.Timer
 		_timer = externaltime,
 	}, METATABLE) :: Self
 
-	table.insert(scope, new_timer)
+	table.insert(scope, destructor(new_timer))
 
 	depend(new_timer, externaltime)
 
