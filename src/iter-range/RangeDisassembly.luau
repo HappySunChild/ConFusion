@@ -79,6 +79,7 @@ local METATABLE = table.freeze({ __index = CLASS })
 local function destroy_rangedisassembly<S, V>(rangediassembly: Self<S, V>)
 	cleanup(rangediassembly._pairs_scope)
 	rangediassembly._pairs_scope = nil
+	rangediassembly._active_pairs = nil
 end
 
 local function RangeDisassembly<S, V>(
