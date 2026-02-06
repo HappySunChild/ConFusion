@@ -42,7 +42,7 @@ local CLASS = table.freeze({
 				continue
 			elseif output[output_key] ~= nil then
 				External.log_error_nonfatal(
-					iter.for_key_collision,
+					iter_for.for_key_collision,
 					nil,
 					output_key,
 					pair.input_key,
@@ -176,6 +176,7 @@ local METATABLE = table.freeze({ __index = CLASS })
 local function destroy_fordiasssembly<S, IK, IV, OK, OV>(fordisassembly: Self<S, IK, IV, OK, OV>)
 	cleanup(fordisassembly._pair_scope)
 	fordisassembly._pair_scope = nil
+	fordisassembly._active_pairs = nil
 end
 
 local function ForDisassembly<S, IK, IV, OK, OV>(
