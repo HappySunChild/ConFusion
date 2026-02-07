@@ -7,16 +7,10 @@ local External = require("../core-external/External")
 
 local scheduler_disconnect
 
-return table.freeze({
-	do_task_immediate = function<A...>(resume: (A...) -> () | thread, ...: A...)
-		return task.spawn(resume, ...)
-	end,
-	do_task_deferred = function<A...>(resume: (A...) -> () | thread, ...: A...)
-		return task.defer(resume, ...)
-	end,
-	do_task_delayed = function<A...>(sec: number, resume: (A...) -> () | thread, ...: A...)
-		return task.delay(sec, resume)
-	end,
+local RobloxProvider = table.freeze({
+	do_task_immediate = task.spawn,
+	do_task_deferred = task.defer,
+	do_task_delayed = task.delay,
 	cancel_task = function(thread: thread)
 		local success = pcall(task.cancel, thread)
 
@@ -55,4 +49,6 @@ return table.freeze({
 		task.spawn(error, message, 0)
 	end,
 	log_warn = warn,
-}) :: external.ExternalProvider
+})
+
+return RobloxProvider :: external.ExternalProvider
