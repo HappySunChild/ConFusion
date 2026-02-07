@@ -1,7 +1,7 @@
 local calc = require("../../core-calc/types")
 local memory = require("../../core-memory/types")
 
-local SpecialKey = require("../../roblox-instances/keys/SpecialKey")
+local SpecialKey = require("../../roblox-instances/SpecialKey")
 local observe_immediate = require("../../core-graph/observe_immediate")
 local peek = require("../../core-use/peek")
 

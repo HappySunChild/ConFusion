@@ -1,7 +1,7 @@
 local calc = require("../../core-calc/types")
 local memory = require("../../core-memory/types")
 
-local SpecialKey = require("../../roblox-instances/keys/SpecialKey")
+local SpecialKey = require("../../roblox-instances/SpecialKey")
 local apply_properties = require("../../roblox-instances/apply_properties")
 
 local StyleLink = SpecialKey(
