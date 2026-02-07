@@ -13,7 +13,7 @@ export type StyleRuleConstructor = (
 	scope: memory.Scope,
 	selector: string,
 	properties: { [string]: any },
-	subrules: { StyleRule }
+	subrules: { StyleRule }?
 ) -> StyleRule
 export type StyleSheetConstructor = (
 	scope: memory.Scope,
