@@ -1,6 +1,7 @@
 {
 	"languageMode": "nonstrict",
 	"aliases": {
-		"fusion": "src"
+		"fusion": "src",
+		"lune": "~/.lune/.typedefs/0.10.4/"
 	}
 }
