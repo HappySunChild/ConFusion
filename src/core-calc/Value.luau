@@ -36,13 +36,18 @@ local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 	local new_value: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
+		validity = "valid",
 
 		_cached_value = initial_value,
 
 		_users = {},
 	}, METATABLE) :: any
 
-	table.insert(scope, destructor(new_value))
+	local oldest_task = destructor(new_value)
+
+	new_value._oldest_task = oldest_task
+
+	table.insert(scope, oldest_task)
 
 	return new_value
 end

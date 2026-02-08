@@ -101,9 +101,12 @@ local function Computed<T, S>(
 		_processor = processor,
 	}, METATABLE) :: any
 
-	new_computed._use = generic_use(new_computed)
+	local oldest_task = destructor(new_computed, destroy_computed)
 
-	table.insert(scope, destructor(new_computed, destroy_computed))
+	new_computed._use = generic_use(new_computed)
+	new_computed._oldest_task = oldest_task
+
+	table.insert(scope, oldest_task)
 
 	return new_computed
 end
