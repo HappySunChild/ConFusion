@@ -1,3 +1,3 @@
 return {
-	unpack(require("@self/core")),
+	unpack(require("@self/core-calc")),
 }
