@@ -13,5 +13,11 @@
 		"scope": "luau",
 		"prefix": "=mem",
 		"body": "local memory = require(\"..$1/core-memory/types\")",
+	},
+	"test": {
+		"scope": "luau",
+		"prefix": "=test",
+		"body": "test(\"$1\", function()\n\t$0\nend)",
+		"include": "*.spec.luau"
 	}
 }
