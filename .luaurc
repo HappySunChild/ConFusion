@@ -1,7 +1,6 @@
 {
 	"languageMode": "nonstrict",
 	"aliases": {
-		"fusion": "./src",
-		"spec": "./test"
+		"fusion": "./src"
 	}
 }
