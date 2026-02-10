@@ -1,4 +1,4 @@
 return {
-	require("@self/core-calc"),
-	require("@self/core-memory"),
+	require("@self/core_calc"),
+	require("@self/core_memory"),
 }

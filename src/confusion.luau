@@ -1,13 +1,13 @@
-local calc = require("./core-calc/types")
-local external = require("./core-external/types")
-local graph = require("./core-graph/types")
-local memory = require("./core-memory/types")
-local use = require("./core-use/types")
+local calc = require("./core_calc/types")
+local external = require("./core_external/types")
+local graph = require("./core_graph/types")
+local memory = require("./core_memory/types")
+local use = require("./core_use/types")
 
-local External = require("./core-external/External")
-local ExternalDebugger = require("./core-external/ExternalDebug")
+local External = require("./core_external/External")
+local ExternalDebugger = require("./core_external/ExternalDebug")
 
-local merge = require("./core-memory/merge")
+local merge = require("./core_memory/merge")
 
 type Version = {
 	read major: number,
@@ -45,40 +45,38 @@ export type ConFusion<I = any> = {
 } & I
 
 local CORE_CONFUSION = table.freeze({
-	derive_scope = require("./core-memory/derive_scope"),
-	cleanup = require("./core-memory/cleanup"),
-	inner_scope = require("./core-memory/inner_scope"),
-	insert = require("./core-memory/insert"),
-	scoped = require("./core-memory/scoped"),
+	derive_scope = require("./core_memory/derive_scope"),
+	cleanup = require("./core_memory/cleanup"),
+	inner_scope = require("./core_memory/inner_scope"),
+	insert = require("./core_memory/insert"),
+	scoped = require("./core_memory/scoped"),
 
-	Computed = require("./core-calc/Computed"),
-	Value = require("./core-calc/Value"),
+	Computed = require("./core_calc/Computed"),
+	Value = require("./core_calc/Value"),
 
-	observe = require("./core-graph/observe"),
-	observe_immediate = require("./core-graph/observe_immediate"),
+	observe = require("./core_graph/observe"),
+	observe_immediate = require("./core_graph/observe_immediate"),
 
-	flattern = require("./core-use/flatten"),
-	peek = require("./core-use/peek"),
+	flattern = require("./core_use/flatten"),
+	peek = require("./core_use/peek"),
 })
 
-local ConFusion = table.freeze({
-	configure = function<I>(options: Configuration<I>): ConFusion<I>
-		External.set_provider(options.provider)
-		ExternalDebugger.set_debugger(options.debugger)
+local function confusion<I>(options: Configuration<I>): ConFusion<I>
+	External.set_provider(options.provider)
+	ExternalDebugger.set_debugger(options.debugger)
 
-		local include = options.include
+	local include = options.include
 
-		assert(type(include) == "table", "`include` field should be a table!")
+	assert(type(include) == "table", "`include` field should be a table!")
 
-		local new_confusion = merge(
-			true,
-			table.clone(CORE_CONFUSION),
-			include,
-			{ version = options.version } -- always override version field
-		)
+	local new_confusion = merge(
+		true,
+		table.clone(CORE_CONFUSION),
+		include,
+		{ version = options.version } -- always override version field
+	)
 
-		return new_confusion :: ConFusion<I>
-	end,
-})
+	return new_confusion :: ConFusion<I>
+end
 
-return ConFusion
+return confusion

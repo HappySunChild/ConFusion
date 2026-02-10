@@ -1,4 +1,4 @@
-local External = require("@fusion/core-external/External")
+local External = require("@fusion/core_external/External")
 
 local SpecTask = require("./SpecTask")
 

@@ -1,9 +1,9 @@
-local calc = require("../core-calc/types")
+local calc = require("../core_calc/types")
 local context = require("./types")
 
-local External = require("../core-external/External")
+local External = require("../core_external/External")
 
-local parse_error = require("../core-logging/parse_error")
+local parse_error = require("../core_logging/parse_error")
 
 type Self<T> = {
 	_default: T,

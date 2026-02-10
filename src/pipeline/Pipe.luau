@@ -1,17 +1,17 @@
-local calc = require("../core-calc/types")
-local iter_for = require("../iter-for/types")
-local memory = require("../core-memory/types")
+local calc = require("../core_calc/types")
+local iter_for = require("../iter_for/types")
+local memory = require("../core_memory/types")
 local pipeline = require("./types")
-local tweens = require("../motion-tweens/types")
+local tweens = require("../motion_tweens/types")
 
-local Computed = require("../core-calc/Computed")
-local ForKeys = require("../iter-for/ForKeys")
-local ForPairs = require("../iter-for/ForPairs")
-local ForValues = require("../iter-for/ForValues")
-local Spring = require("../motion-springs/Spring")
-local Tween = require("../motion-tweens/Tween")
+local Computed = require("../core_calc/Computed")
+local ForKeys = require("../iter_for/ForKeys")
+local ForPairs = require("../iter_for/ForPairs")
+local ForValues = require("../iter_for/ForValues")
+local Spring = require("../motion_springs/Spring")
+local Tween = require("../motion_tweens/Tween")
 
-local inner_scope = require("../core-memory/inner_scope")
+local inner_scope = require("../core_memory/inner_scope")
 
 type Self<S, T> = {
 	_latest: calc.UsedAs<T>,
@@ -85,10 +85,7 @@ local CLASS = table.freeze({
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
-local function Pipe<S, T>(
-	scope: memory.Scope<S>,
-	initial_value: calc.UsedAs<T>
-): pipeline.Pipe<S, T>
+local function Pipe<S, T>(scope: memory.Scope<S>, initial_value: calc.UsedAs<T>): pipeline.Pipe<S, T>
 	local new_pipe: Self<S, T> = setmetatable({
 		_internal_scope = inner_scope(scope),
 		_latest = initial_value,

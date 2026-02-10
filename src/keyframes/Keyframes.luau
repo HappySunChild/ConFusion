@@ -1,13 +1,13 @@
-local calc = require("../core-calc/types")
+local calc = require("../core_calc/types")
 local keyframes = require("./types")
-local memory = require("../core-memory/types")
+local memory = require("../core_memory/types")
 
-local cast_to_state = require("../core-calc/cast_to_state")
-local destructor = require("../core-memory/destructor")
-local dissolving_use = require("../core-use/dissolving_use")
+local cast_to_state = require("../core_calc/cast_to_state")
+local destructor = require("../core_memory/destructor")
+local dissolving_use = require("../core_use/dissolving_use")
 local evaluate_keyframes = require("./evaluate_keyframes")
-local generic_use = require("../core-use/generic_use")
-local is_similar = require("../core-calc/is_similar")
+local generic_use = require("../core_use/generic_use")
+local is_similar = require("../core_calc/is_similar")
 
 type Self<T> = {
 	_alpha: calc.UsedAs<number>,

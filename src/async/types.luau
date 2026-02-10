@@ -1,6 +1,6 @@
-local calc = require("../core-calc/types")
-local graph = require("../core-graph/types")
-local memory = require("../core-memory/types")
+local calc = require("../core_calc/types")
+local graph = require("../core_graph/types")
+local memory = require("../core_memory/types")
 
 export type Eventual<T> = {
 	kind: "Eventual",

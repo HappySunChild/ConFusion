@@ -1,16 +1,16 @@
-local calc = require("../core-calc/types")
+local calc = require("../core_calc/types")
 local chrono = require("../chrono/types")
-local memory = require("../core-memory/types")
+local memory = require("../core_memory/types")
 local motion = require("./types")
 
-local External = require("../core-external/External")
+local External = require("../core_external/External")
 local Timer = require("../chrono/Timer")
-local change = require("../core-graph/change")
-local depend = require("../core-graph/depend")
-local destructor = require("../core-memory/destructor")
-local evaluate = require("../core-graph/evaluate")
-local is_similar = require("../core-calc/is_similar")
-local peek = require("../core-use/peek")
+local change = require("../core_graph/change")
+local depend = require("../core_graph/depend")
+local destructor = require("../core_memory/destructor")
+local evaluate = require("../core_graph/evaluate")
+local is_similar = require("../core_calc/is_similar")
+local peek = require("../core_use/peek")
 
 type Self<T> = {
 	_goal: calc.UsedAs<T>,

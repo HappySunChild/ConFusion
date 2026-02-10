@@ -1,5 +1,5 @@
-local calc = require("../core-calc/types")
-local graph = require("../core-graph/types")
+local calc = require("../core_calc/types")
+local graph = require("../core_graph/types")
 
 export type Disassembly<OK, OV> = {
 	populate: (Disassembly<OK, OV>, use: calc.Use, output: { [OK]: OV }) -> (),

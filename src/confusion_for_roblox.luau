@@ -1,0 +1,204 @@
+--[[
+package: confusion_for_roblox
+
+ConFusion - A variant of Fusion that will cause confusion.
+
+GitHub Repository: https://github.com/HappySunChild/ConFusion
+Fusion on GitHub: https://github.com/dphfox/Fusion
+--]]
+
+local calc = require("./core_calc/types")
+local graph = require("./core_graph/types")
+local memory = require("./core_memory/types")
+
+local async = require("./async/types")
+local chrono = require("./chrono/types")
+local context = require("./context/types")
+local keyframes = require("./keyframes/types")
+local pipeline = require("./pipeline/types")
+local safe = require("./safe/types")
+
+local iter = require("./iter/types")
+local iter_for = require("./iter_for/types")
+local iter_range = require("./iter_range/types")
+
+local motion = require("./motion/types")
+local springs = require("./motion_springs/types")
+local tweens = require("./motion_tweens/types")
+
+local binds = require("./roblox_binds/types")
+local instances = require("./roblox_instances/types")
+local templates = require("./roblox_templates/types")
+
+local confusion = require("./confusion")
+
+export type Scope<T = ConFusionForRoblox> = memory.Scope<T>
+
+export type GraphNode = graph.GraphNode
+export type StateNode<T> = calc.StateNode<T>
+export type UsedAs<T> = calc.UsedAs<T>
+
+export type Value<T> = calc.Value<T>
+export type Computed<T> = calc.Computed<T>
+export type Use = calc.Use
+
+export type Iter<K, V> = iter.Iter<K, V>
+
+export type Range = iter_range.Range
+
+export type Motion<T> = motion.Motion<T>
+export type TweenInfo = tweens.TweenInfo
+
+export type Eventual<T> = async.Eventual<T>
+
+export type Contextual<T> = context.Contextual<T>
+
+export type Timer = chrono.Timer
+
+export type Pipe<T, S = unknown> = pipeline.Pipe<S, T>
+
+export type SpecialKey<T = string> = instances.SpecialKey
+export type Child = instances.Child
+
+type ConFusionForRoblox = confusion.ConFusion<{
+	-- Iter: For
+	read ForPairs: iter_for.ForPairsConstructor,
+	read ForKeys: iter_for.ForKeysConstructor,
+	read ForValues: iter_for.ForValuesConstructor,
+
+	-- Iter: Range
+	read ForRange: iter_range.ForRangeConstructor,
+	read Range: iter_range.RangeConstructor,
+
+	-- Async
+	read Eventual: async.EventualConstructor,
+	read await: async.Await,
+
+	-- Context
+	read Contextual: context.ContextConstructor,
+
+	-- Chrono
+	read Timer: chrono.TimerConstructor,
+
+	-- Safe
+	read Safe: safe.Safe,
+
+	-- Keyframes
+	read Keyframes: keyframes.KeyframesConstructor,
+
+	-- Motion
+	read Motion: motion.MotionConstructor,
+
+	-- Motion: Springs
+	read Spring: springs.SpringConstructor,
+
+	-- Motion: Tweens
+	read Tween: tweens.TweenConstructor,
+	read EasingStyles: tweens.EasingStyles,
+	read TweenInfo: tweens.TweenInfoConstructor,
+
+	-- Pipeline
+	read Pipe: pipeline.PipeConstructor,
+
+	-- Roblox: Instances
+	read New: instances.NewConstructor,
+	read Hydrate: instances.HydrateConstructor,
+
+	read Children: instances.SpecialKey<"Children">,
+	read OnStartup: instances.SpecialKey<"OnStartup">,
+	read OnRemoval: instances.SpecialKey<"OnRemoval">,
+	read Passthrough: instances.SpecialKey<"Passthrough">,
+	read Refs: instances.SpecialKey<"Refs">,
+	read Attribute: (attribute: string) -> instances.SpecialKey<"Attribute">,
+	read Attributes: instances.SpecialKey<"Attributes">,
+	read AttributeChange: (attribute: string) -> instances.SpecialKey<"AttributeChange">,
+	read AttributeOut: (attribute: string) -> instances.SpecialKey<"AttributeOut">,
+	read Tag: (tag: string) -> instances.SpecialKey<"Tag">,
+	read Tags: instances.SpecialKey<"Tags">,
+	read Out: (property: string) -> instances.SpecialKey<"Out">,
+	read OnEvent: (event: string) -> instances.SpecialKey<"OnEvent">,
+	read OnChange: (property: string) -> instances.SpecialKey<"OnChange">,
+
+	-- Roblox: Templates
+	read FromTemplate: templates.FromTemplateConstructor,
+	read QueryDescendants: templates.QueryDescendants,
+
+	-- Roblox: Binds
+	read PropertyOf: binds.PropertyOfConstructor,
+	read AttributeOf: binds.AttributeOfConstructor,
+}>
+
+local confusion_for_roblox = confusion.configure({
+	version = { major = 1, minor = 0 },
+	provider = require("./roblox_provider/RobloxProvider"),
+	debugger = nil,
+	include = {
+		-- Iter: For
+		ForPairs = require("./iter_for/ForPairs"),
+		ForKeys = require("./iter_for/ForKeys"),
+		ForValues = require("./iter_for/ForValues"),
+
+		-- Iter: Range
+		ForRange = require("./iter_range/ForRange"),
+		Range = require("./iter_range/Range"),
+
+		-- Async
+		Eventual = require("./async/Eventual"),
+		await = require("./async/await"),
+
+		-- Context
+		Contextual = require("./context/Contextual"),
+
+		-- Chrono
+		Timer = require("./chrono/Timer"),
+
+		-- Safe
+		Safe = require("./safe/Safe"),
+
+		-- Keyframes
+		Keyframes = require("./keyframes/Keyframes"),
+
+		-- Motion
+		Motion = require("./motion/Motion"),
+
+		-- Motion: Springs
+		Spring = require("./motion_springs/Spring"),
+
+		-- Motion: Tweens
+		Tween = require("./motion_tweens/Tween"),
+		TweenInfo = require("./motion_tweens/TweenInfo"),
+		EasingStyles = require("./motion_tweens/EasingStyles"),
+
+		-- Pipeline
+		Pipe = require("./pipeline/Pipe"),
+
+		-- Roblox: Instances
+		New = require("./roblox_instances/New"),
+		Hydrate = require("./roblox_instances/Hydrate"),
+
+		Children = require("./roblox_instances/keys/Children"),
+		OnStartup = require("./roblox_instances/keys/OnStartup"),
+		OnRemoval = require("./roblox_instances/keys/OnRemoval"),
+		Passthrough = require("./roblox_instances/keys/Passthrough"),
+		Refs = require("./roblox_instances/keys/Refs"),
+		Attribute = require("./roblox_instances/keys/Attribute"),
+		Attributes = require("./roblox_instances/keys/Attributes"),
+		AttributeChange = require("./roblox_instances/keys/AttributeChange"),
+		AttributeOut = require("./roblox_instances/keys/AttributeOut"),
+		Tag = require("./roblox_instances/keys/Tag"),
+		Tags = require("./roblox_instances/keys/Tags"),
+		Out = require("./roblox_instances/keys/Out"),
+		OnEvent = require("./roblox_instances/keys/OnEvent"),
+		OnChange = require("./roblox_instances/keys/OnChange"),
+
+		-- Roblox: Templates
+		FromTemplate = require("./roblox_templates/FromTemplate"),
+		QueryDescendants = require("./roblox_templates/QueryDescendants"),
+
+		-- Roblox: Binds
+		PropertyOf = require("./roblox_binds/PropertyOf"),
+		AttributeOf = require("./roblox_binds/AttributeOf"),
+	},
+})
+
+return confusion_for_roblox :: ConFusionForRoblox

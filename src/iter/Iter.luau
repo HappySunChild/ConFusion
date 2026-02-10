@@ -1,10 +1,10 @@
-local calc = require("../core-calc/types")
+local calc = require("../core_calc/types")
 local iter = require("./types")
-local memory = require("../core-memory/types")
+local memory = require("../core_memory/types")
 
-local depend = require("../core-graph/depend")
-local destructor = require("../core-memory/destructor")
-local generic_use = require("../core-use/generic_use")
+local depend = require("../core_graph/depend")
+local destructor = require("../core_memory/destructor")
+local generic_use = require("../core_use/generic_use")
 
 type Self<K, V> = {
 	_use: calc.Use,

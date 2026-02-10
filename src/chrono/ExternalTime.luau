@@ -1,9 +1,9 @@
 local chrono = require("./types")
-local memory = require("../core-memory/types")
+local memory = require("../core_memory/types")
 
-local External = require("../core-external/External")
-local change = require("../core-graph/change")
-local destructor = require("../core-memory/destructor")
+local External = require("../core_external/External")
+local change = require("../core_graph/change")
+local destructor = require("../core_memory/destructor")
 
 type Self = chrono.ExternalTime
 

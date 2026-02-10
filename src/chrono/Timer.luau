@@ -1,12 +1,12 @@
 local chrono = require("./types")
-local memory = require("../core-memory/types")
+local memory = require("../core_memory/types")
 
 local ExternalTime = require("./ExternalTime")
 
-local change = require("../core-graph/change")
-local depend = require("../core-graph/depend")
-local destructor = require("../core-memory/destructor")
-local peek = require("../core-use/peek")
+local change = require("../core_graph/change")
+local depend = require("../core_graph/depend")
+local destructor = require("../core_memory/destructor")
+local peek = require("../core_use/peek")
 
 type Self = {
 	_paused: boolean,
