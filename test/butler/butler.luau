@@ -34,16 +34,18 @@ export type Options = {
 }
 
 export type Configured = {
-	unit: (label: string, tests: { TestRunner }) -> UnitRunner,
-	test: (label: string, run: TestBody) -> TestRunner,
+	unit: (label: string, body: UnitBody) -> UnitRunner,
 	expect: (any) -> expect.ExpectTests,
 
 	run_units: (units: { UnitRunner }) -> UnitsRunResult,
 }
 
 type TestBody = (remark: (string) -> ()) -> ()
-type TestRunner = (butler_hooks.ButlerHooks) -> TestRunResult
-type UnitRunner = (butler_hooks.ButlerHooks) -> UnitRunResult
+export type Test = (label: string, run: TestBody) -> ()
+
+type UnitBody = (test: Test) -> ()
+export type TestRunner = (butler_hooks.ButlerHooks) -> TestRunResult
+export type UnitRunner = (butler_hooks.ButlerHooks) -> UnitRunResult
 
 local function test_error_handler(err: Error | string): Error
 	if typeof(err) == "string" then
@@ -57,34 +59,39 @@ local function test_error_handler(err: Error | string): Error
 	return err
 end
 
-local function test(label: string, run: TestBody): TestRunner
-	local function run_test(test_hooks: butler_hooks.ButlerHooks)
-		test_hooks.notify("before_test", label)
+local function unit(label: string, body: UnitBody): UnitRunner
+	local tests = {}
 
-		local remarks = {}
+	local function test(label: string, run: TestBody)
+		local function run_test(test_hooks: butler_hooks.ButlerHooks)
+			test_hooks.notify("before_test", label)
 
-		local function remark(text: string)
-			table.insert(remarks, text)
+			local remarks = {}
+
+			local function remark(text: string)
+				table.insert(remarks, text)
+			end
+
+			local ok, err: Error? =
+				xpcall(run :: ((string) -> ()) -> any?, test_error_handler, remark)
+
+			local test_run_result: TestRunResult = {
+				label = label,
+				status = if ok then "pass" else "fail",
+				remarks = remarks,
+				error = err,
+			}
+
+			test_hooks.notify("after_test", label, test_run_result)
+
+			return test_run_result
 		end
 
-		local ok, err: Error? = xpcall(run :: ((string) -> ()) -> any?, test_error_handler, remark)
-
-		local test_run_result: TestRunResult = {
-			label = label,
-			status = if ok then "pass" else "fail",
-			remarks = remarks,
-			error = err,
-		}
-
-		test_hooks.notify("after_test", label, test_run_result)
-
-		return test_run_result
+		table.insert(tests, run_test)
 	end
 
-	return run_test
-end
+	body(test)
 
-local function unit(label: string, tests: { TestRunner }): UnitRunner
 	local function run_unit(unit_hooks: butler_hooks.ButlerHooks)
 		unit_hooks.notify("before_unit", label)
 
@@ -156,7 +163,6 @@ end
 local function butler(options: Options): Configured
 	local new_butler = {
 		unit = unit,
-		test = test,
 		expect = expect,
 
 		run_units = units_runner(butler_hooks(options.hooks)),

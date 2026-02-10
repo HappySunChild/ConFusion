@@ -179,7 +179,7 @@ local CLASS = table.freeze({
 		return self
 	end,
 
-	to_fail = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
+	to_throw = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
 		local a = self.val
 
 		check(type(a) == "function", "expect() value must be a function")
@@ -192,7 +192,7 @@ local CLASS = table.freeze({
 
 		return self
 	end,
-	to_never_fail = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
+	to_never_throw = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
 		local f = self.val
 
 		check(type(f) == "function", "expect() value must be a function")
@@ -206,7 +206,7 @@ local CLASS = table.freeze({
 		return self
 	end,
 
-	to_fail_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
+	to_throw_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
 		local f = self.val
 		local ok, err: string = pcall(f, ...)
 
@@ -220,7 +220,7 @@ local CLASS = table.freeze({
 
 		return self
 	end,
-	to_never_fail_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
+	to_never_throw_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
 		local f = self.val
 		local ok, err: string = pcall(f, ...)
 

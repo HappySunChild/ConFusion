@@ -2,108 +2,111 @@ local Value = require("@fusion/core-calc/Value")
 local cleanup = require("@fusion/core-memory/cleanup")
 local peek = require("@fusion/core-use/peek")
 
-local butler = require("@spec/butler")
-local unit, test, expect = butler.unit, butler.test, butler.expect
+local butler = require("@butler/butler")
 
-return unit("Value", {
-	test("constructs in scopes", function()
-		local scope = {}
-		local value = Value(scope, nil)
+return function(configured: butler.Configured)
+	local unit, expect = configured.unit, configured.expect
 
-		expect(value):to_be_a("table")
-		expect(value.type):to_equal("State")
-		expect(value.kind):to_equal("Value")
-		expect(table.find(scope, value._oldest_task)):to_exist()
+	return unit("Value", function(test: butler.Test)
+		test("constructs", function()
+			local scope = {}
+			local value = Value(scope, nil)
 
-		cleanup(scope)
-	end),
-	test("is destroyable", function()
-		local value = Value({}, nil)
-		expect(cleanup):to_never_fail(value)
-	end),
-	test("accepts a default value", function()
-		local scope = {}
-		local value = Value(scope, 5)
-		expect(peek(value)):to_equal(5)
-		cleanup(scope)
-	end),
-	test("is settable", function()
-		local scope = {}
-		local value = Value(scope, 0)
-		expect(peek(value)):to_equal(0)
+			expect(value):to_be_a("table")
+			expect(value.type):to_equal("State")
+			expect(value.kind):to_equal("Value")
+			expect(table.find(scope, value._oldest_task)):to_exist()
 
-		value:set(10)
-		expect(peek(value)):to_equal(10)
+			cleanup(scope)
+		end)
+		test("destroyable", function()
+			local value = Value({}, nil)
+			expect(cleanup):to_never_throw(value)
+		end)
+		test("default", function()
+			local scope = {}
+			local value = Value(scope, 5)
+			expect(peek(value)):to_equal(5)
+			cleanup(scope)
+		end)
+		test("settable", function()
+			local scope = {}
+			local value = Value(scope, 0)
+			expect(peek(value)):to_equal(0)
 
-		value:set("foo")
-		expect(peek(value)):to_equal("foo")
+			value:set(10)
+			expect(peek(value)):to_equal(10)
 
-		cleanup(scope)
-	end),
-	test("updates its last changed time on set", function()
-		local scope = {}
-		local value = Value(scope, 1)
+			value:set("foo")
+			expect(peek(value)):to_equal("foo")
 
-		local before = value._last_change
-		value:set(2)
-		expect(value._last_change):to_never_equal(before)
+			cleanup(scope)
+		end)
+		test("updates _last_change on set", function()
+			local scope = {}
+			local value = Value(scope, 1)
 
-		before = value._last_change
-		value:set(3)
-		expect(value._last_change):to_never_equal(before)
+			local before = value._last_change
+			value:set(2)
+			expect(value._last_change):to_never_equal(before)
 
-		before = value._last_change
-		value:set("foo")
-		expect(value._last_change):to_never_equal(before)
+			before = value._last_change
+			value:set(3)
+			expect(value._last_change):to_never_equal(before)
 
-		cleanup(scope)
-	end),
-	test("[cf] does not update its last changed time on set, if similar", function()
-		local scope = {}
-		local value = Value(scope, 1)
+			before = value._last_change
+			value:set("foo")
+			expect(value._last_change):to_never_equal(before)
 
-		local before = value._last_change
-		value:set(2)
-		expect(value._last_change):to_never_equal(before)
+			cleanup(scope)
+		end)
+		test("doesn't update _last_change on similar sets", function()
+			local scope = {}
+			local value = Value(scope, 1)
 
-		before = value._last_change
-		value:set(2)
-		expect(value._last_change):to_equal(before)
+			local before = value._last_change
+			value:set(2)
+			expect(value._last_change):to_never_equal(before)
 
-		cleanup(scope)
-	end),
-	test("is always valid", function()
-		local scope = {}
-		local value = Value(scope, 1)
-		expect(value.validity):to_equal("valid")
+			before = value._last_change
+			value:set(2)
+			expect(value._last_change):to_equal(before)
 
-		value:set(2)
-		expect(value.validity):to_equal("valid")
+			cleanup(scope)
+		end)
+		test("validity", function()
+			local scope = {}
+			local value = Value(scope, 1)
+			expect(value.validity):to_equal("valid")
 
-		value:set(3)
-		expect(value.validity):to_equal("valid")
+			value:set(2)
+			expect(value.validity):to_equal("valid")
 
-		value:set(4)
-		expect(value.validity):to_equal("valid")
+			value:set(3)
+			expect(value.validity):to_equal("valid")
 
-		cleanup(scope)
-	end),
-	test("always returns the set value", function()
-		local scope = {}
-		local value = Value(scope, 0)
+			value:set(4)
+			expect(value.validity):to_equal("valid")
 
-		local foo = value:set(10)
-		expect(foo):to_equal(10)
+			cleanup(scope)
+		end)
+		test("returns set", function()
+			local scope = {}
+			local value = Value(scope, 0)
 
-		local bar = value:set(10)
-		expect(bar):to_equal(10)
+			local foo = value:set(10)
+			expect(foo):to_equal(10)
 
-		local baz = value:set(25)
-		expect(baz):to_equal(25)
+			local bar = value:set(10)
+			expect(bar):to_equal(10)
 
-		local garb = value:set(25)
-		expect(garb):to_equal(25)
+			local baz = value:set(25)
+			expect(baz):to_equal(25)
 
-		cleanup(scope)
-	end),
-})
+			local garb = value:set(25)
+			expect(garb):to_equal(25)
+
+			cleanup(scope)
+		end)
+	end)
+end

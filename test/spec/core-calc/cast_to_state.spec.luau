@@ -2,36 +2,39 @@ local Value = require("@fusion/core-calc/Value")
 local cast_to_state = require("@fusion/core-calc/cast_to_state")
 local cleanup = require("@fusion/core-memory/cleanup")
 
-local butler = require("@spec/butler")
-local unit, test, expect = butler.unit, butler.test, butler.expect
+local butler = require("@butler/butler")
 
-return unit("cast_to_state", {
-	test("should return nil for regular non-state values", function()
-		local value_num = 10
-		local value_str = "hello"
-		local value_tble = {}
+return function(configured: butler.Configured)
+	local unit, expect = configured.unit, configured.expect
 
-		expect(cast_to_state(value_num)):to_never_exist()
-		expect(cast_to_state(value_str)):to_never_exist()
-		expect(cast_to_state(value_tble)):to_never_exist()
-	end),
-	test("should return the passed in state value", function()
-		local scope = {}
-		local new_value = Value(scope, 10)
+	return unit("cast_to_state", function(test: butler.Test)
+		test("nonstate", function()
+			local value_num = 10
+			local value_str = "hello"
+			local value_tble = {}
 
-		expect(cast_to_state(new_value)):to_exist():to_equal(new_value)
+			expect(cast_to_state(value_num)):to_never_exist()
+			expect(cast_to_state(value_str)):to_never_exist()
+			expect(cast_to_state(value_tble)):to_never_exist()
+		end)
+		test("state", function()
+			local scope = {}
+			local new_value = Value(scope, 10)
 
-		cleanup(scope)
-	end),
-	test('should return tables with key [type] == "State"', function()
-		local dummy_state = { type = "State" }
-		local dummy_state_with_meta = setmetatable({}, { __index = { type = "State" } })
-		local non_state = { type = "not State" }
-		local non_state_with_meta = setmetatable({}, { __index = { type = "not State" } })
+			expect(cast_to_state(new_value)):to_exist():to_equal(new_value)
 
-		expect(cast_to_state(dummy_state)):to_exist():to_equal(dummy_state)
-		expect(cast_to_state(dummy_state_with_meta)):to_exist():to_equal(dummy_state_with_meta)
-		expect(cast_to_state(non_state)):to_never_exist()
-		expect(cast_to_state(non_state_with_meta)):to_never_exist()
-	end),
-})
+			cleanup(scope)
+		end)
+		test("dummy state", function()
+			local dummy_state = { type = "State" }
+			local dummy_state_with_meta = setmetatable({}, { __index = { type = "State" } })
+			local non_state = { type = "not State" }
+			local non_state_with_meta = setmetatable({}, { __index = { type = "not State" } })
+
+			expect(cast_to_state(dummy_state)):to_exist():to_equal(dummy_state)
+			expect(cast_to_state(dummy_state_with_meta)):to_exist():to_equal(dummy_state_with_meta)
+			expect(cast_to_state(non_state)):to_never_exist()
+			expect(cast_to_state(non_state_with_meta)):to_never_exist()
+		end)
+	end)
+end
