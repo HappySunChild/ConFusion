@@ -1,7 +1,7 @@
 type Pair = { key: string, value: string }
 
-local function render_table_pairs(pairs: { Pair }, depth: number)
-	if #pairs == 0 then
+local function render_table_pairs(ordered_pairs: { Pair }, depth: number)
+	if #ordered_pairs == 0 then
 		return "{}"
 	end
 
@@ -10,7 +10,7 @@ local function render_table_pairs(pairs: { Pair }, depth: number)
 
 	local lines = { "{" }
 
-	for _, pair in pairs do
+	for _, pair in ordered_pairs do
 		table.insert(lines, `{inner_indent}[{pair.key}] = {pair.value};`)
 	end
 
@@ -19,7 +19,7 @@ local function render_table_pairs(pairs: { Pair }, depth: number)
 	return table.concat(lines, "\n")
 end
 
-local function repr(value: unknown): string
+local function fmt_repr(value: unknown): string
 	local value_type = type(value)
 
 	if value_type == "string" then
@@ -46,32 +46,32 @@ local function repr(value: unknown): string
 
 		local function recursive(target: any, depth: number): string
 			if type(target) ~= "table" then
-				return repr(target)
+				return fmt_repr(target)
 			end
 
 			if active[target] ~= nil then
 				return `[ RECURSIVE +{depth - active[target] - 1} ]`
 			end
 
-			local display_pairs: { Pair } = {}
-
 			active[target] = depth
 
-			for key, value in target do
-				table.insert(display_pairs, {
-					key = recursive(key, depth + 1),
-					value = recursive(value, depth + 1),
+			local ordered_pairs: { Pair } = {}
+
+			for k, v in target do
+				table.insert(ordered_pairs, {
+					key = recursive(k, depth + 1),
+					value = recursive(v, depth + 1),
 				})
 			end
 
-			table.sort(display_pairs, function(a: Pair, b: Pair)
+			table.sort(ordered_pairs, function(a: Pair, b: Pair)
 				return a.key < b.key
 			end)
 
 			local isfrozen = table.isfrozen(target)
-			local metatable: any = getmetatable(target)
+			local metatable = getmetatable(target) :: any
 
-			local output = render_table_pairs(display_pairs, depth)
+			local output = render_table_pairs(ordered_pairs, depth)
 
 			if metatable then
 				output = `setmetatable({output}, {recursive(metatable, depth)})`
@@ -92,4 +92,4 @@ local function repr(value: unknown): string
 	return tostring(value)
 end
 
-return repr :: (value: unknown) -> string
+return fmt_repr :: (value: unknown) -> string

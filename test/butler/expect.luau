@@ -1,6 +1,7 @@
-local repr = require("../fmt/repr")
+local fmt_repr = require("./fmt_repr")
 
 type Indexable = { [any]: any }
+type Callable<A... = ...any, R... = ...any> = (A...) -> R...
 
 export type ExpectTests = {
 	to_exist: (ExpectTests) -> ExpectTests,
@@ -21,11 +22,11 @@ export type ExpectTests = {
 	to_have_value: (ExpectTests, value: any) -> ExpectTests,
 	to_never_have_value: (ExpectTests, value: any) -> ExpectTests,
 
-	to_fail: (ExpectTests, ...unknown) -> ExpectTests,
-	to_never_fail: (ExpectTests, ...unknown) -> ExpectTests,
+	to_throw: (ExpectTests, ...unknown) -> ExpectTests,
+	to_never_throw: (ExpectTests, ...unknown) -> ExpectTests,
 
-	to_fail_with: (ExpectTests, message: string, ...unknown) -> ExpectTests,
-	to_never_fail_with: (ExpectTests, message: string, ...unknown) -> ExpectTests,
+	to_throw_with: (ExpectTests, message: string, ...unknown) -> ExpectTests,
+	to_never_throw_with: (ExpectTests, message: string, ...unknown) -> ExpectTests,
 }
 type Self<T = unknown> = {
 	val: T,
@@ -43,7 +44,7 @@ local function fail(value: any, reason: string, ...: any)
 		message = `Expectation not met, because:\n{reason}`,
 		trace = debug.traceback(nil, 3),
 		line = debug.info(3, "l"),
-		code = `expect({repr(value)}):{label}({table.concat({ ... }, ", ")})`,
+		code = `expect({fmt_repr(value)}):{label}({table.concat({ ... }, ", ")})`,
 	}, 0)
 end
 
@@ -73,14 +74,14 @@ local CLASS = table.freeze({
 
 	to_equal = function(self: Self, x: any): Self
 		if self.val ~= x then
-			fail(self.val, `does not equal {repr(x)}`, repr(x))
+			fail(self.val, `does not equal {fmt_repr(x)}`, fmt_repr(x))
 		end
 
 		return self
 	end,
 	to_never_equal = function(self: Self, x: any): Self
 		if self.val == x then
-			fail(self.val, `equals {repr(x)}`, repr(x))
+			fail(self.val, `equals {fmt_repr(x)}`, fmt_repr(x))
 		end
 
 		return self
@@ -90,7 +91,7 @@ local CLASS = table.freeze({
 		local a = self.val
 
 		if typeof(a) ~= x_type then
-			fail(a, `isn't of type '{x_type}'`, repr(x_type))
+			fail(a, `isn't of type '{x_type}'`, fmt_repr(x_type))
 		end
 
 		return self
@@ -99,7 +100,7 @@ local CLASS = table.freeze({
 		local a = self.val
 
 		if typeof(a) == x_type then
-			fail(a, `is of type '{x_type}'`, repr(x_type))
+			fail(a, `is of type '{x_type}'`, fmt_repr(x_type))
 		end
 
 		return self
@@ -113,7 +114,7 @@ local CLASS = table.freeze({
 		check(type(tolerance) == "number", "to_be_near() tolerance must be a number.")
 
 		if math.abs(a - x) > tolerance then
-			fail(a, `|{repr(self.val)} - {x}| > {tolerance}`, x, tolerance)
+			fail(a, `|{fmt_repr(self.val)} - {x}| > {tolerance}`, x, tolerance)
 		end
 
 		return self
@@ -126,7 +127,7 @@ local CLASS = table.freeze({
 		check(type(tolerance) == "number", "to_be_near() tolerance must be a number.")
 
 		if math.abs(a - x) <= tolerance then
-			fail(a, `|{repr(self.val)} - {x}| <= {tolerance}`, repr(x), repr(tolerance))
+			fail(a, `|{fmt_repr(self.val)} - {x}| <= {tolerance}`, fmt_repr(x), fmt_repr(tolerance))
 		end
 
 		return self
@@ -138,7 +139,7 @@ local CLASS = table.freeze({
 		check(can_index(a), "expect() value must be indexable")
 
 		if a[key] == nil then
-			fail(a, `value at key [{repr(key)}] == nil`, repr(key))
+			fail(a, `value at key [{fmt_repr(key)}] == nil`, fmt_repr(key))
 		end
 
 		return self
@@ -149,7 +150,7 @@ local CLASS = table.freeze({
 		check(can_index(a), "expect() value must be indexable")
 
 		if a[key] ~= nil then
-			fail(a, `value at key [{repr(key)}] ~= nil`, repr(key))
+			fail(a, `value at key [{fmt_repr(key)}] ~= nil`, fmt_repr(key))
 		end
 
 		return self
@@ -161,7 +162,7 @@ local CLASS = table.freeze({
 		check(can_index(a), "expect() value must be indexable")
 
 		if table.find(a, value) == nil then
-			fail(a, `does not have a {repr(value)}`, repr(value))
+			fail(a, `does not have a {fmt_repr(value)}`, fmt_repr(value))
 		end
 
 		return self
@@ -172,13 +173,13 @@ local CLASS = table.freeze({
 		check(can_index(a), "expect() value must be indexable")
 
 		if table.find(a, value) ~= nil then
-			fail(a, `does have a {repr(value)}`, repr(value))
+			fail(a, `does have a {fmt_repr(value)}`, fmt_repr(value))
 		end
 
 		return self
 	end,
 
-	to_fail = function<A...>(self: Self<(A...) -> ...any>, ...: A...): Self<(A...) -> ...any>
+	to_fail = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
 		local a = self.val
 
 		check(type(a) == "function", "expect() value must be a function")
@@ -191,7 +192,7 @@ local CLASS = table.freeze({
 
 		return self
 	end,
-	to_never_fail = function<A...>(self: Self<(A...) -> ...any>, ...: A...): Self<(A...) -> ...any>
+	to_never_fail = function<A...>(self: Self<Callable<A...>>, ...: A...): Self<Callable<A...>>
 		local f = self.val
 
 		check(type(f) == "function", "expect() value must be a function")
@@ -205,34 +206,26 @@ local CLASS = table.freeze({
 		return self
 	end,
 
-	to_fail_with = function<A...>(
-		self: Self<(A...) -> ...any>,
-		message: string,
-		...: A...
-	): Self<(A...) -> ...any>
+	to_fail_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
 		local f = self.val
 		local ok, err: string = pcall(f, ...)
 
 		if ok then
-			fail(f, "did not fail", repr(message), ...)
+			fail(f, "did not fail", fmt_repr(message), ...)
 		end
 
 		if not err:lower():match(message:lower()) then
-			fail(f, `failed with {repr(err)}`, repr(message), ...)
+			fail(f, `failed with {fmt_repr(err)}`, fmt_repr(message), ...)
 		end
 
 		return self
 	end,
-	to_never_fail_with = function<A...>(
-		self: Self<(A...) -> ...any>,
-		message: string,
-		...: A...
-	): Self<(A...) -> ...any>
+	to_never_fail_with = function<A...>(self: Self<Callable<A...>>, message: string, ...: A...): Self<Callable<A...>>
 		local f = self.val
 		local ok, err: string = pcall(f, ...)
 
 		if not ok and err:lower():match(message:lower()) then
-			fail(f, `failed with {repr(err)}`, repr(message), ...)
+			fail(f, `failed with {fmt_repr(err)}`, fmt_repr(message), ...)
 		end
 
 		return self

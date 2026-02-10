@@ -1,27 +1,29 @@
-local types = require("../types")
+local butler = require("../butler")
+local butler_hooks = require("../butler_hooks")
 
-local format_duration = require("./format_duration")
+export type HookMethod = | "add_annotations" | "add_line_items" | butler_hooks.HookMethod
 
 type FormattedResult = {
-	test: types.Test,
-	result: types.TestRunResult,
+	test_results: butler.TestRunResult,
 	icon: string,
 
 	full_label: string,
 	annotations: string,
 }
 
-type FmtOptions = {
+export type Options = {
+	hooks: { butler_hooks.Hook }?,
 	disable_unicode: boolean?,
 	disable_emoji: boolean?,
 	disable_color: boolean?,
-
 	line_width: number?,
 }
 
-local ANSI_RESET = "\x1b[0m"
+local function butler_pretty(options: Options)
+	local hooks = butler_hooks(options.hooks)
 
-local function results_formatter(options: FmtOptions)
+	local ANSI_RESET = "\x1b[0m"
+
 	local DISABLE_UNICODE = options.disable_unicode
 	local DISABLE_EMOJI = options.disable_emoji
 	local DISABLE_COLOR = options.disable_color
@@ -69,7 +71,8 @@ local function results_formatter(options: FmtOptions)
 
 	local DIVIDER = if DISABLE_UNICODE then "=" else "═"
 	local MARGIN_LINE = if DISABLE_UNICODE then "|" else "│"
-	local ARROW = if DISABLE_UNICODE then ">" else "▸"
+	local ARROW = if DISABLE_UNICODE then " > " else " ▸ "
+	local BULLET = if DISABLE_UNICODE then "-" else "•"
 
 	local PASS_ICON = if DISABLE_EMOJI
 		then pass_bright(if DISABLE_UNICODE then "[PASS]" else "✔")
@@ -89,38 +92,65 @@ local function results_formatter(options: FmtOptions)
 
 	local FULL_DIVIDER = dim(string.rep(DIVIDER, LINE_WIDTH))
 
-	local function fmt(units_results: types.UnitsRunResult): string
+	local function run_fmt(units_results: butler.UnitsRunResult): string
 		local lines = {}
 
 		local pretty_results: { FormattedResult } = {}
+		local remarkable_pretty_results: { FormattedResult } = {}
 
-		for _, unit_result in units_results.individual_units do
-			for test, test_result in unit_result.individual do
-				local status_emoji = if test_result.status == "pass" then PASS_ICON else FAIL_ICON
-				local annotations = {
-					"",
-					format_duration(test_result.duration),
+		for _, unit_results in units_results.individual_units do
+			local individual = unit_results.individual
+
+			for _, test_result in individual do
+				-- local test_result = individual[test]
+				local status_emojis = if test_result.status == "pass" then PASS_ICON else FAIL_ICON
+				local annotations = ""
+
+				local function add_annotation(annotation: string)
+					annotations ..= ` - {annotation}`
+				end
+
+				hooks.notify("add_annotations", test_result, options, add_annotation)
+
+				local pretty = {
+					-- test = test,
+					test_results = test_result,
+					icon = status_emojis,
+
+					full_label = `{unit_results.label}{ARROW}{test_result.label}`,
+					annotations = dim(annotations),
 				}
 
-				table.insert(pretty_results, {
-					test = test,
-					result = test_result,
-					icon = status_emoji,
+				if #test_result.remarks > 0 then
+					table.insert(remarkable_pretty_results, pretty)
+				end
 
-					full_label = `{unit_result.label} {ARROW} {test.label}`,
-					annotations = dim(table.concat(annotations, " - ")),
-				})
+				table.insert(pretty_results, pretty)
 			end
 		end
 
-		-- ERRORS
+		-- REMARKS SECTION
+		if #remarkable_pretty_results > 0 then
+			table.insert(lines, title(`Remarks from {#remarkable_pretty_results} test(s)`) .. "\n")
 
+			for _, pretty in remarkable_pretty_results do
+				local results = pretty.test_results
+
+				table.insert(lines, `{pretty.icon} {pretty.full_label}`)
+				for _, remark in results.remarks do
+					table.insert(lines, `    {BULLET} {remark}`)
+				end
+				table.insert(lines, "")
+			end
+		end
+
+		-- ERRORS SECTION
 		if units_results.total_tally.fail > 0 then
 			table.insert(lines, title(`Errors from {units_results.total_tally.fail} test(s)`))
 			table.insert(lines, "")
 
 			for _, pretty in pretty_results do
-				local err = pretty.result.error
+				local err = pretty.test_results.error
 
 				if err == nil then
 					continue
@@ -152,19 +182,14 @@ local function results_formatter(options: FmtOptions)
 			end
 		end
 
-		-- STATUS
-
-		table.insert(lines, title(`Status of {#pretty_results} test(s)`))
-		table.insert(lines, "")
-
+		-- STATUS SECTION
+		table.insert(lines, title(`Status of {#pretty_results} test(s)`) .. "\n")
 		for _, pretty in pretty_results do
 			table.insert(lines, `{pretty.icon} {pretty.full_label}{pretty.annotations}`)
 		end
-
 		table.insert(lines, "")
 
-		-- CONCLUSION
-
+		-- TOTAL TALLY SECTION
 		local total_tally = units_results.total_tally
 
 		table.insert(
@@ -172,27 +197,34 @@ local function results_formatter(options: FmtOptions)
 			title(`{pass(total_tally.pass)} passed, {fail(total_tally.fail)} failed`)
 		)
 
+		-- BONUS ITEMS SECTION
 		local line_items = {}
 
 		local function add_line_item(key: string, value: string)
 			table.insert(line_items, `{dim(key .. ":")} {value}`)
 		end
 
-		add_line_item("Total Duration", tint_string(format_duration(units_results.total_duration)))
+		hooks.notify("add_line_items", units_results, options, add_line_item)
 
-		table.insert(lines, "")
-
-		for _, item in line_items do
-			table.insert(lines, item)
+		if #line_items > 0 then
+			table.insert(lines, "")
+			for _, item in line_items do
+				table.insert(lines, item)
+			end
+			table.insert(lines, "")
+			table.insert(lines, FULL_DIVIDER)
 		end
-
-		table.insert(lines, "")
-		table.insert(lines, FULL_DIVIDER)
 
 		return table.concat(lines, "\n")
 	end
 
-	return fmt
+	local pretty_hook: butler_hooks.Hook = {
+		after_units = function(_, results: butler.UnitsRunResult)
+			print(run_fmt(results))
+		end,
+	}
+
+	return pretty_hook
 end
 
-return results_formatter
+return butler_pretty
