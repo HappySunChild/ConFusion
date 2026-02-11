@@ -1,14 +1,20 @@
-local units = require("./spec")
-
 local butler = require("@butler/butler")
 local butler_chrono = require("@butler/hooks/butler_chrono")
 local butler_pretty = require("@butler/hooks/butler_pretty")
+
+local External = require("@fusion/core_external/External")
+
+local SpecProvider = require("./SpecProvider")
+local units = require("./spec")
+
+External.set_provider(SpecProvider)
 
 local configured = butler({
 	hooks = {
 		butler_chrono,
 		butler_pretty({
 			disable_emoji = true,
+			line_width = 100,
 			hooks = { butler_chrono },
 		}),
 	},
