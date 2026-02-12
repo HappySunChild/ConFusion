@@ -92,10 +92,11 @@ local function Computed<T, S>(
 	local new_computed: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-		_cached_value = nil,
-
+		validity = "valid",
 		_using = {},
 		_users = {},
+
+		_cached_value = nil,
 
 		_inner_scope = nil,
 		_processor = processor,

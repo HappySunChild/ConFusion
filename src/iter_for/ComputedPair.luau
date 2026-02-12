@@ -108,7 +108,7 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 	local new_computedpair = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 		_using = {},
 

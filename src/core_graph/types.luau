@@ -16,7 +16,7 @@ export type GraphNode = {
 	kind: string?,
 
 	created_at: number?,
-	validity: Validity?,
+	validity: Validity,
 	timeliness: Timeliness,
 
 	_last_change: number?,

@@ -70,13 +70,15 @@ local function Timer(scope: memory.Scope): chrono.Timer
 	local new_timer = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
+		validity = "valid",
+		_using = {},
+		_users = {},
+
 		_cached_value = 0,
 
 		_paused = false,
 		_start = peek(externaltime),
 
-		_using = {},
-		_users = {},
 		_timer = externaltime,
 	}, METATABLE) :: Self
 

@@ -34,7 +34,7 @@ local function AttributeOf<T>(
 	local new_attribute: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 
 		_cached_value = instance:GetAttribute(attribute),

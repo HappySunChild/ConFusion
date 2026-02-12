@@ -39,11 +39,11 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 	local new_iter: Self<K, V> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
-		_cached_value = {},
-
+		validity = "valid",
 		_using = {},
 		_users = {},
+
+		_cached_value = {},
 
 		_disassembly = disassembly,
 	}, METATABLE) :: any

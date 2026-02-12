@@ -77,10 +77,11 @@ local function RangePair<S, T>(
 	local new_rangepair: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-		_cached_value = nil,
-
+		validity = "valid",
 		_using = {},
 		_users = {},
+
+		_cached_value = nil,
 
 		_input_index = initial_index,
 

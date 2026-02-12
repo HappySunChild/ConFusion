@@ -40,7 +40,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 	local new_externaltime = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 	}, METATABLE) :: Self
 

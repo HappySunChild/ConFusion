@@ -94,7 +94,7 @@ local function RangeDisassembly<S, V>(
 	local new_disassembly: Self<S, V> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 		_using = {},
 

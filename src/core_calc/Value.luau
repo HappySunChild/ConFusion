@@ -37,10 +37,9 @@ local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
+		_users = {},
 
 		_cached_value = initial_value,
-
-		_users = {},
 	}, METATABLE) :: any
 
 	local oldest_task = destructor(new_value)

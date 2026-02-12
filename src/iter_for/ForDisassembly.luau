@@ -191,7 +191,7 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 	local new_disassembly: Self<S, IK, IV, OK, OV> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 		_using = {},
 

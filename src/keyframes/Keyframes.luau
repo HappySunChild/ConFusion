@@ -66,7 +66,7 @@ local function Keyframes<T>(
 	local new_keyframes: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 		_using = {},
 

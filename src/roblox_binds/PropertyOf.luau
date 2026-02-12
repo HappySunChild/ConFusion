@@ -45,7 +45,7 @@ local function PropertyOf(
 	local new_property: binds.PropertyOf<unknown> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
+		validity = "valid",
 		_users = {},
 
 		_cached_value = instance[property],

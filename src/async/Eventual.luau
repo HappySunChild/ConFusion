@@ -145,13 +145,14 @@ local function Eventual<T, S>(
 	local new_eventual: Self<T, S> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
+		validity = "valid",
+
+		_using = {},
+		_users = {},
 
 		_cached_value = pending_value,
 		_pending_value = pending_value,
 		_old_value = nil,
-
-		_using = {},
-		_users = {},
 
 		_is_becoming = false,
 		_session_used = {},

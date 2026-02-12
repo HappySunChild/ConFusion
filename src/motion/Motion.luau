@@ -147,11 +147,11 @@ local function Motion<T>(
 	local new_motion: Self<T> = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
-
-		_cached_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
-
+		validity = "valid",
 		_using = {},
 		_users = {},
+
+		_cached_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
 
 		_goal = goal,
 		_generator = move_generator,
