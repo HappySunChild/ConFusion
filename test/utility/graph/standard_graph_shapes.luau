@@ -54,7 +54,7 @@ local standard_graph_shapes: { GraphShape } = {
 		facts = { well_formed = true },
 		repr = {
 			"A B C",
-			" ↘↓↙",
+			" ↘↓↙ ",
 			"  D  ",
 		},
 		ids = { "A", "B", "C", "D" },
