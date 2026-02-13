@@ -2,10 +2,14 @@
 local graph = require("@fusion/core_graph/types")
 local standard_graph_shapes = require("./standard_graph_shapes")
 
+export type GraphNode = {
+	id: string,
+} & graph.GraphNode
+
 export type Graph = {
 	shape: standard_graph_shapes.GraphShape,
-	nodes: { [string]: graph.GraphNode },
-	all_nodes: { graph.GraphNode },
+	nodes: { [string]: GraphNode },
+	all_nodes: { GraphNode },
 }
 
 local function assemble_graph(shape: standard_graph_shapes.GraphShape): Graph
@@ -13,7 +17,8 @@ local function assemble_graph(shape: standard_graph_shapes.GraphShape): Graph
 	local all_nodes = {}
 
 	for _, id in shape.ids do
-		local new_node: graph.GraphNode = {
+		local new_node: GraphNode = {
+			id = id,
 			scope = nil,
 			created_at = 0,
 			users = {},
