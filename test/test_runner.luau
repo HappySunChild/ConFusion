@@ -13,6 +13,7 @@ local configured = butler({
 	hooks = {
 		butler_chrono,
 		butler_pretty({
+			disable_color = game ~= nil,
 			disable_emoji = true,
 			line_width = 100,
 			hooks = { butler_chrono },
