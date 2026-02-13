@@ -1,3 +1,4 @@
+--!strict
 local graph = require("@fusion/core_graph/types")
 local memory = require("@fusion/core_memory/types")
 
@@ -13,16 +14,33 @@ local CLASS = table.freeze({
 })
 local METATABLE = table.freeze({ __index = CLASS })
 
-local function GraphNode(scope: memory.Scope, is_eager: boolean?): graph.GraphNode
-	local new_graphnode = setmetatable({
+type Options = {
+	timeliness: graph.Timeliness?,
+	evaluate: ((graph.GraphNode) -> boolean)?,
+
+	can_be_used: boolean?,
+	can_use: boolean?,
+}
+
+local function GraphNode(scope: memory.Scope, options: Options?): graph.GraphNode
+	local new_graphnode: graph.GraphNode = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		timeliness = if is_eager then "eager" else nil,
+		timeliness = if options ~= nil then options.timeliness else nil,
+		_evaluate = if options ~= nil then options.evaluate else nil,
 
 		_users = {},
 		_using = {},
-	}, METATABLE)
+	}, METATABLE) :: any
+
+	if options and options.can_be_used == false then
+		table.freeze(new_graphnode._users)
+	end
+
+	if options and options.can_use == false then
+		table.freeze(new_graphnode._using)
+	end
 
 	local oldest_task = destructor(new_graphnode)
 	new_graphnode._oldest_task = oldest_task

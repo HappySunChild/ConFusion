@@ -1,4 +1,5 @@
 return {
+	require("@self/depend.spec"),
 	require("@self/is_eager.spec"),
 	require("@self/mark_dirty.spec"),
 	require("@self/observe_immediate.spec"),
