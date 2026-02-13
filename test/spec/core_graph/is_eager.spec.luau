@@ -1,6 +1,6 @@
 local butler = require("@butler/butler")
 
-local GraphNode = require("@test/utility/GraphNode")
+local GraphNode = require("@utility/GraphNode")
 local cleanup = require("@fusion/core_memory/cleanup")
 local is_eager = require("@fusion/core_graph/is_eager")
 local observe = require("@fusion/core_graph/observe")

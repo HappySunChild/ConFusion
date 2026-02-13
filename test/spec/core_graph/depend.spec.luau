@@ -1,6 +1,6 @@
 local butler = require("@butler/butler")
 
-local GraphNode = require("@test/utility/GraphNode")
+local GraphNode = require("@utility/GraphNode")
 local cleanup = require("@fusion/core_memory/cleanup")
 local depend = require("@fusion/core_graph/depend")
 
@@ -13,13 +13,13 @@ return function(configured: butler.Configured)
 			local user_node = GraphNode(scope)
 
 			depend(user_node, 123)
-			expect(next(user_node._using)):to_never_exist()
+			expect(next(user_node.using)):to_never_exist()
 
 			depend(user_node, "foo")
-			expect(next(user_node._using)):to_never_exist()
+			expect(next(user_node.using)):to_never_exist()
 
 			depend(user_node, {})
-			expect(next(user_node._using)):to_never_exist()
+			expect(next(user_node.using)):to_never_exist()
 
 			cleanup(scope)
 		end)
@@ -29,8 +29,8 @@ return function(configured: butler.Configured)
 			local dependency_node = GraphNode(scope)
 
 			depend(user_node, dependency_node)
-			expect(user_node._using[dependency_node]):to_equal(true)
-			expect(dependency_node._users[user_node]):to_equal(true)
+			expect(user_node.using[dependency_node]):to_equal(true)
+			expect(dependency_node.users[user_node]):to_equal(true)
 
 			cleanup(scope)
 		end)
@@ -40,8 +40,8 @@ return function(configured: butler.Configured)
 			local dependency_node = GraphNode(scope, { can_be_used = false })
 
 			expect(depend):to_throw(user_node, dependency_node)
-			expect(user_node._using[dependency_node]):to_never_exist()
-			expect(dependency_node._users[user_node]):to_never_exist()
+			expect(user_node.using[dependency_node]):to_never_exist()
+			expect(dependency_node.users[user_node]):to_never_exist()
 
 			cleanup(scope)
 		end)
@@ -51,8 +51,8 @@ return function(configured: butler.Configured)
 			local dependency_node = GraphNode(scope)
 
 			expect(depend):to_throw(user_node, dependency_node)
-			expect(user_node._using[dependency_node]):to_never_exist()
-			expect(dependency_node._users[user_node]):to_never_exist()
+			expect(user_node.using[dependency_node]):to_never_exist()
+			expect(dependency_node.users[user_node]):to_never_exist()
 
 			cleanup(scope)
 		end)

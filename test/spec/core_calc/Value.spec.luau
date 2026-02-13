@@ -42,35 +42,35 @@ return function(configured: butler.Configured)
 
 			cleanup(scope)
 		end)
-		test("updates _last_change on set", function()
+		test("updates last_change on set", function()
 			local scope = {}
 			local value = Value(scope, 1)
 
-			local before = value._last_change
+			local before = value.last_change
 			value:set(2)
-			expect(value._last_change):to_never_equal(before)
+			expect(value.last_change):to_never_equal(before)
 
-			before = value._last_change
+			before = value.last_change
 			value:set(3)
-			expect(value._last_change):to_never_equal(before)
+			expect(value.last_change):to_never_equal(before)
 
-			before = value._last_change
+			before = value.last_change
 			value:set("foo")
-			expect(value._last_change):to_never_equal(before)
+			expect(value.last_change):to_never_equal(before)
 
 			cleanup(scope)
 		end)
-		test("doesn't update _last_change on similar sets", function()
+		test("doesn't update last_change on similar sets", function()
 			local scope = {}
 			local value = Value(scope, 1)
 
-			local before = value._last_change
+			local before = value.last_change
 			value:set(2)
-			expect(value._last_change):to_never_equal(before)
+			expect(value.last_change):to_never_equal(before)
 
-			before = value._last_change
+			before = value.last_change
 			value:set(2)
-			expect(value._last_change):to_equal(before)
+			expect(value.last_change):to_equal(before)
 
 			cleanup(scope)
 		end)

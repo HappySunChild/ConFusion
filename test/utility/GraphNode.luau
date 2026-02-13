@@ -30,16 +30,16 @@ local function GraphNode(scope: memory.Scope, options: Options?): graph.GraphNod
 		timeliness = if options ~= nil then options.timeliness else nil,
 		_evaluate = if options ~= nil then options.evaluate else nil,
 
-		_users = {},
-		_using = {},
+		users = {},
+		using = {},
 	}, METATABLE) :: any
 
 	if options and options.can_be_used == false then
-		table.freeze(new_graphnode._users)
+		table.freeze(new_graphnode.users)
 	end
 
 	if options and options.can_use == false then
-		table.freeze(new_graphnode._using)
+		table.freeze(new_graphnode.using)
 	end
 
 	local oldest_task = destructor(new_graphnode)
