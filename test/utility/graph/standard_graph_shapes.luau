@@ -236,6 +236,9 @@ local standard_graph_shapes: { GraphShape } = {
 		ids = { "A", "B", "C", "D" },
 		edges = {
 			{ from = "A", to = "B" },
+			{ from = "B", to = "C" },
+			{ from = "C", to = "D" },
+			{ from = "D", to = "A" },
 		},
 	},
 }
