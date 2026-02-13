@@ -21,8 +21,8 @@ export type GraphNode = {
 
 	last_change: number?,
 	last_compute: number?,
-	users: { [GraphNode]: true },
-	using: { [GraphNode]: true },
+	users: { [GraphNode]: true }, -- aka dependentSet
+	using: { [GraphNode]: true }, -- aka dependencySet
 	_observers: { Disconnect }?,
 
 	_evaluate: (GraphNode) -> boolean,
