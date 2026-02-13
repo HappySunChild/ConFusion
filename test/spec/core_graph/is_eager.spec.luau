@@ -31,7 +31,7 @@ return function(configured: butler.Configured)
 		end)
 		test("eager node", function()
 			local scope = {}
-			local node = GraphNode(scope, true)
+			local node = GraphNode(scope, { timeliness = "eager" })
 
 			expect(is_eager(node)):to_equal(true)
 
@@ -39,7 +39,7 @@ return function(configured: butler.Configured)
 		end)
 		test("eager node with observers", function()
 			local scope = {}
-			local node = GraphNode(scope, true)
+			local node = GraphNode(scope, { timeliness = "eager" })
 
 			expect(is_eager(node)):to_equal(true)
 

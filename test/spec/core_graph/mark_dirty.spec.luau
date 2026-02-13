@@ -19,7 +19,7 @@ return function(configured: butler.Configured)
 		end)
 		test("eager", function()
 			local scope = {}
-			local node = GraphNode(scope, true)
+			local node = GraphNode(scope, { timeliness = "eager" })
 
 			expect(node.validity):to_equal("valid")
 			mark_dirty(node)
