@@ -1,7 +1,7 @@
 local assemble_graph = require("./assemble_graph")
 
 local VALIDITY_SYMBOLS = { valid = "✓", invalid = "✕", busy = "○", dirty = "◇" }
-local TIMELINESS_SYMBOLS = { lazy = "□", eager = "■" }
+local TIMELINESS_SYMBOLS = { lazy = "β", eager = "Ω" }
 local ARROWS = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" }
 
 local function format_graph(graph: assemble_graph.Graph): string
