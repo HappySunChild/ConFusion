@@ -40,8 +40,8 @@ local function Iter<K, V>(scope: memory.Scope, disassembly: iter.Disassembly<K, 
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_using = {},
-		_users = {},
+		using = {},
+		users = {},
 
 		_cached_value = {},
 

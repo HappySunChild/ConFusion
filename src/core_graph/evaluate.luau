@@ -13,7 +13,7 @@ local function evaluate(node: graph.GraphNode, force_computation: boolean?): boo
 		External.log_error(graph.infinite_loop)
 	end
 
-	local first_evaluation = node._last_change == nil or node._last_compute == nil
+	local first_evaluation = node.last_change == nil or node.last_compute == nil
 	local is_dirty = node.validity == "dirty"
 	local is_invalid = node.validity == "invalid"
 
@@ -25,10 +25,10 @@ local function evaluate(node: graph.GraphNode, force_computation: boolean?): boo
 
 	-- check dependencies to see if any of them have updated before use, if so then we need to be reevaluated
 	if not needs_computation then
-		for dependency in node._using do
+		for dependency in node.using do
 			evaluate(dependency, false)
 
-			if dependency._last_change > node._last_compute then
+			if dependency.last_change > node.last_compute then
 				needs_computation = true
 
 				break
@@ -40,20 +40,20 @@ local function evaluate(node: graph.GraphNode, force_computation: boolean?): boo
 
 	if needs_computation then
 		-- clear dependencies
-		for dependency in node._using do
-			dependency._users[node] = nil
-			node._using[dependency] = nil
+		for dependency in node.using do
+			dependency.users[node] = nil
+			node.using[dependency] = nil
 		end
 
 		node.validity = "busy"
 
 		meaningfully_changed = node:_evaluate() or first_evaluation
 
-		node._last_compute = os.clock()
+		node.last_compute = os.clock()
 	end
 
 	if meaningfully_changed then
-		node._last_change = os.clock()
+		node.last_change = os.clock()
 	end
 
 	node.validity = "valid"

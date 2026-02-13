@@ -13,7 +13,7 @@ local CLASS = {
 	type = "State",
 	kind = "ExternalTime",
 	timeliness = "lazy",
-	_using = table.freeze({}),
+	using = table.freeze({}),
 	_cached_value = External.get_last_update(),
 
 	enable = function(self: Self)
@@ -41,7 +41,7 @@ local function ExternalTime(scope: memory.Scope): chrono.ExternalTime
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
+		users = {},
 	}, METATABLE) :: Self
 
 	ALL_TIMERS[new_externaltime] = true

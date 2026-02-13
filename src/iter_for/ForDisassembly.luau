@@ -192,8 +192,8 @@ local function ForDisassembly<S, IK, IV, OK, OV>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
-		_using = {},
+		users = {},
+		using = {},
 
 		_input = input,
 

@@ -20,14 +20,14 @@ local function depend(user: graph.GraphNode, dependency: any?)
 
 	evaluate(dependency)
 
-	if table.isfrozen(user._using) then
+	if table.isfrozen(user.using) then
 		External.log_error(
 			graph.cannot_depend_user_frozen,
 			nil,
 			name_of(user, "unknown"),
 			name_of(dependency, "unknown")
 		)
-	elseif table.isfrozen(dependency._users) then
+	elseif table.isfrozen(dependency.users) then
 		External.log_error(
 			graph.cannot_depend_dependency_frozen,
 			nil,
@@ -36,8 +36,8 @@ local function depend(user: graph.GraphNode, dependency: any?)
 		)
 	end
 
-	user._using[dependency] = true
-	dependency._users[user] = true
+	user.using[dependency] = true
+	dependency.users[user] = true
 end
 
 return depend

@@ -71,8 +71,8 @@ local function Timer(scope: memory.Scope): chrono.Timer
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_using = {},
-		_users = {},
+		using = {},
+		users = {},
 
 		_cached_value = 0,
 

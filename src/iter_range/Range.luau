@@ -79,9 +79,9 @@ local function Range(
 	local new_range = setmetatable({
 		scope = scope,
 		created_at = os.clock(),
+		using = {},
+		users = {},
 
-		_using = {},
-		_users = {},
 		_cached_value = {},
 
 		_start = start,

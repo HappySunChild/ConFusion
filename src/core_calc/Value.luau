@@ -12,7 +12,7 @@ local CLASS = table.freeze({
 	kind = "Value",
 	timeliness = "lazy",
 
-	_using = table.freeze({}),
+	using = table.freeze({}),
 
 	set = function<T>(self: Self<T>, new_value: T): T
 		if not is_similar(new_value, self._cached_value) then
@@ -37,7 +37,7 @@ local function Value<T>(scope: memory.Scope, initial_value: T): calc.Value<T>
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
+		users = {},
 
 		_cached_value = initial_value,
 	}, METATABLE) :: any

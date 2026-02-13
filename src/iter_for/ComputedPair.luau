@@ -109,8 +109,8 @@ local function ComputedPair<S, IK, IV, OK, OV>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
-		_using = {},
+		users = {},
+		using = {},
 
 		_cached_value = { key = nil, value = nil },
 

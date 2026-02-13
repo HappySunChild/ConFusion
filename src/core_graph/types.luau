@@ -19,10 +19,10 @@ export type GraphNode = {
 	validity: Validity,
 	timeliness: Timeliness,
 
-	_last_change: number?,
-	_last_compute: number?,
-	_users: { [GraphNode]: true },
-	_using: { [GraphNode]: true },
+	last_change: number?,
+	last_compute: number?,
+	users: { [GraphNode]: true },
+	using: { [GraphNode]: true },
 	_observers: { Disconnect }?,
 
 	_evaluate: (GraphNode) -> boolean,

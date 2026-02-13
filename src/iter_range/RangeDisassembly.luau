@@ -95,8 +95,8 @@ local function RangeDisassembly<S, V>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
-		_using = {},
+		users = {},
+		using = {},
 
 		_start = start,
 		_finish = finish,

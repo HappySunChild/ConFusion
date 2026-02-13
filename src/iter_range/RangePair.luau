@@ -78,8 +78,8 @@ local function RangePair<S, T>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_using = {},
-		_users = {},
+		using = {},
+		users = {},
 
 		_cached_value = nil,
 

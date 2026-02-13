@@ -148,8 +148,8 @@ local function Motion<T>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_using = {},
-		_users = {},
+		using = {},
+		users = {},
 
 		_cached_value = nil, -- this is handled by the evaluate call below, so we can just leave this nil :3
 

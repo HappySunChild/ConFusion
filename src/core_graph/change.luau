@@ -25,7 +25,7 @@ local function gather_eager_users(node: graph.GraphNode): { graph.GraphNode }
 		local is_finished = true
 
 		for _, searching: graph.GraphNode in search_now do
-			for user in searching._users do
+			for user in searching.users do
 				if user.validity == "busy" then
 					External.log_error(graph.infinite_loop)
 				end

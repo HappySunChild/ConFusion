@@ -12,7 +12,7 @@ local CLASS = table.freeze({
 	type = "State",
 	kind = "AttributeOf",
 	timeliness = "lazy",
-	_using = table.freeze({}),
+	using = table.freeze({}),
 
 	_evaluate = function()
 		return true
@@ -35,7 +35,7 @@ local function AttributeOf<T>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
+		users = {},
 
 		_cached_value = instance:GetAttribute(attribute),
 		_event = nil,

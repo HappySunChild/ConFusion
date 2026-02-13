@@ -14,7 +14,7 @@ local CLASS = table.freeze({
 	type = "State",
 	kind = "PropertyOf",
 	timeliness = "lazy",
-	_using = table.freeze({}),
+	using = table.freeze({}),
 
 	_evaluate = function()
 		return true
@@ -46,7 +46,7 @@ local function PropertyOf(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
+		users = {},
 
 		_cached_value = instance[property],
 		_event = nil,

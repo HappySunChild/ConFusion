@@ -146,9 +146,8 @@ local function Eventual<T, S>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-
-		_using = {},
-		_users = {},
+		using = {},
+		users = {},
 
 		_cached_value = pending_value,
 		_pending_value = pending_value,

@@ -67,8 +67,8 @@ local function Keyframes<T>(
 		scope = scope,
 		created_at = os.clock(),
 		validity = "valid",
-		_users = {},
-		_using = {},
+		users = {},
+		using = {},
 
 		_alpha = alpha,
 		_keyframes = keyframes,
