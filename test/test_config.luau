@@ -1,0 +1,20 @@
+return {
+	all_units = {
+		-- require("./confusion/core_calc/Computed.spec"),
+		-- require("./confusion/core_calc/Value.spec"),
+		-- require("./confusion/core_calc/cast_to_state.spec"),
+		-- require("./confusion/core_calc/is_similar.spec"),
+		-- require("./confusion/core_graph/change.spec"),
+		-- require("./confusion/core_graph/depend.spec"),
+		require("./confusion/core_graph/evaluate.spec"),
+		-- require("./confusion/core_graph/is_eager.spec"),
+		-- require("./confusion/core_graph/mark_dirty.spec"),
+		-- require("./confusion/core_graph/observe_immediate.spec"),
+		-- require("./confusion/core_graph/observe.spec"),
+		-- require("./confusion/core_memory/cleanup.spec"),
+		-- require("./confusion/core_memory/derive_scope.spec"),
+		-- require("./confusion/core_memory/inner_scope.spec"),
+		-- require("./confusion/core_memory/insert.spec"),
+		-- require("./confusion/core_memory/scoped.spec"),
+	},
+}

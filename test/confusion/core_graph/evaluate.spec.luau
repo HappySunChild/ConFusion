@@ -5,9 +5,9 @@ local evaluate = require("@fusion/core_graph/evaluate")
 
 local check_graph = require("@utility/graph/check_graph")
 local generate_tests = require("@utility/graph/generate_tests")
-local graph_filters = require("@utility/graph/filters")
-local graph_selectors = require("@utility/graph/selectors")
-local graph_tests = require("@utility/graph/tests")
+local graph_filters = require("@utility/graph/graph_filters")
+local graph_selectors = require("@utility/graph/graph_selectors")
+local graph_tests = require("@utility/graph/graph_tests")
 
 return function(configured: butler.Configured)
 	local unit = configured.unit
